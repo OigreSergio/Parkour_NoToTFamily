@@ -216,3 +216,48 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# === OS / editors ===
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# === Secrets ===
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# === Node / Next.js ===
+node_modules/
+.next/
+out/
+.npm/
+*.tsbuildinfo
+coverage/
+
+# === Flutter / Dart ===
+mobile/.dart_tool/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/build/
+mobile/ios/Pods/
+mobile/ios/Flutter/Flutter.framework/
+mobile/ios/Flutter/Flutter.podspec
+mobile/ios/Flutter/flutter_export_environment.sh
+mobile/ios/Flutter/Generated.xcconfig
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/key.properties
+mobile/android/app/release/
+mobile/pubspec.lock
+
+# === Logs / temp ===
+*.log
+logs/
+tmp/
