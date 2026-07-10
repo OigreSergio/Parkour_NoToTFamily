@@ -34,7 +34,10 @@ class Spot {
     required this.photoUrls,
     required this.difficulty,
     required this.status,
+    this.water = false,
     required this.submittedBy,
+    this.likes = 0,
+    this.liked = false,
     required this.verifiedAt,
     required this.createdAt,
   });
@@ -50,9 +53,49 @@ class Spot {
 
   /// `pending` | `verified` | `rejected`.
   final String status;
+
+  /// Whether there is a drinking-water source (fountain, tap) at or near the
+  /// spot. Client-side field; defaults to `false` until the backend exposes it.
+  final bool water;
+
   final String? submittedBy;
+
+  /// Total number of likes the spot has received.
+  final int likes;
+
+  /// Whether the current user has liked this spot. Toggle with [toggleLike].
+  final bool liked;
+
   final DateTime? verifiedAt;
   final DateTime createdAt;
+
+  /// Returns a copy with the like state flipped and the [likes] count adjusted
+  /// accordingly — used for optimistic UI updates before the backend confirms.
+  Spot toggleLike() => copyWith(
+        liked: !liked,
+        likes: liked ? likes - 1 : likes + 1,
+      );
+
+  Spot copyWith({
+    bool? water,
+    int? likes,
+    bool? liked,
+  }) =>
+      Spot(
+        id: id,
+        name: name,
+        description: description,
+        location: location,
+        photoUrls: photoUrls,
+        difficulty: difficulty,
+        status: status,
+        water: water ?? this.water,
+        submittedBy: submittedBy,
+        likes: likes ?? this.likes,
+        liked: liked ?? this.liked,
+        verifiedAt: verifiedAt,
+        createdAt: createdAt,
+      );
 
   factory Spot.fromJson(Map<String, dynamic> json) => Spot(
         id: json['id'] as String,
@@ -64,7 +107,10 @@ class Spot {
             .toList(growable: false),
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
         status: (json['status'] as String?) ?? 'verified',
+        water: (json['water'] as bool?) ?? false,
         submittedBy: json['submitted_by'] as String?,
+        likes: (json['likes'] as num?)?.toInt() ?? 0,
+        liked: (json['liked'] as bool?) ?? false,
         verifiedAt: json['verified_at'] == null
             ? null
             : DateTime.parse(json['verified_at'] as String),
@@ -79,7 +125,10 @@ class Spot {
         'photo_urls': photoUrls,
         'difficulty': difficulty,
         'status': status,
+        'water': water,
         'submitted_by': submittedBy,
+        'likes': likes,
+        'liked': liked,
         'verified_at': verifiedAt?.toIso8601String(),
         'created_at': createdAt.toIso8601String(),
       };
