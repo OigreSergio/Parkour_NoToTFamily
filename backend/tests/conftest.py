@@ -4,15 +4,12 @@ import pytest
 from asgi_lifespan import LifespanManager
 from httpx import ASGITransport, AsyncClient
 
-
-@pytest.fixture(autouse=True, scope="session")
-def _set_test_env() -> None:
-    os.environ.setdefault("ENV", "test")
-    os.environ.setdefault("JWT_SECRET", "test-secret-not-used-in-prod")
-    os.environ.setdefault(
-        "DATABASE_URL",
-        "postgresql+asyncpg://parkour:parkour@localhost:5432/parkour_test",
-    )
+# Applied at import time (not in a fixture) so that test modules importing
+# app code at collection time already see a valid configuration. Set (not
+# setdefault) so the suite never runs against whatever DB the shell points at.
+os.environ["ENV"] = "test"
+os.environ["JWT_SECRET"] = "test-secret-not-used-in-prod"
+os.environ["DATABASE_URL"] = "postgresql+asyncpg://parkour:parkour@localhost:5432/parkour_test"
 
 
 @pytest.fixture

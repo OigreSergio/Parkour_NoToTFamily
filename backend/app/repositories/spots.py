@@ -50,6 +50,18 @@ async def list_by_status(session: AsyncSession, status: SpotStatus, *, limit: in
     return list((await session.execute(stmt)).scalars())
 
 
+async def list_by_submitter(
+    session: AsyncSession, submitter_id: UUID, *, limit: int = 100
+) -> list[Spot]:
+    stmt = (
+        select(Spot)
+        .where(Spot.submitted_by == submitter_id)
+        .order_by(Spot.created_at.desc())
+        .limit(limit)
+    )
+    return list((await session.execute(stmt)).scalars())
+
+
 async def set_verified(session: AsyncSession, *, spot: Spot, verifier_id: UUID) -> Spot:
     spot.status = SpotStatus.verified
     spot.verified_by = verifier_id

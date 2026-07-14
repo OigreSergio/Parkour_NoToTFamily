@@ -21,6 +21,15 @@ limiter = Limiter(key_func=get_remote_address, default_limits=["120/minute"])
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("startup", env=settings.env)
+    if settings.initial_admin_email and settings.initial_admin_password:
+        from app.db.session import SessionLocal
+        from app.services.bootstrap import ensure_initial_admin
+
+        try:
+            async with SessionLocal() as session:
+                await ensure_initial_admin(session)
+        except Exception:  # pragma: no cover - seeding must never block startup
+            log.exception("initial_admin_seed_failed")
     yield
     log.info("shutdown")
 

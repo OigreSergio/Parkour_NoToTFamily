@@ -38,6 +38,17 @@ class SpotRejectRequest(BaseModel):
     reason: str = Field(min_length=3, max_length=500)
 
 
+class SpotVerifyRequest(BaseModel):
+    """Admin attestation recorded when a spot is approved.
+
+    ``photos_real`` must be explicitly true: an admin cannot verify a spot
+    without confirming its photos show a real, parkour-suitable location.
+    """
+
+    photos_real: bool
+    note: str | None = Field(default=None, max_length=500)
+
+
 class SpotSearchQuery(BaseModel):
     lat: float = Field(ge=-90, le=90)
     lng: float = Field(ge=-180, le=180)

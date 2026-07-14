@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, Query, status
 from geoalchemy2.shape import to_shape
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -54,8 +56,18 @@ async def list_nearby(
     return [_to_out(s) for s in spots]
 
 
+@router.get("/mine", response_model=list[SpotOut])
+async def my_submissions(
+    user: User = Depends(current_user),
+    session: AsyncSession = Depends(db_session),
+) -> list[SpotOut]:
+    """The caller's own submissions, whatever their moderation status."""
+    spots = await spots_repo.list_by_submitter(session, user.id)
+    return [_to_out(s) for s in spots]
+
+
 @router.get("/{spot_id}", response_model=SpotOut)
-async def get_spot(spot_id, session: AsyncSession = Depends(db_session)) -> SpotOut:
+async def get_spot(spot_id: UUID, session: AsyncSession = Depends(db_session)) -> SpotOut:
     spot = await spots_repo.get(session, spot_id)
     if spot is None:
         raise NotFound("spot not found")
