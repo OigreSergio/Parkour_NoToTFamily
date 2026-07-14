@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -10,9 +11,12 @@ export default function SpotsQueuePage() {
   const [spots, setSpots] = useState<Spot[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Per-spot "I confirm the photos show a real, suitable location" attestation.
+  const [photosConfirmed, setPhotosConfirmed] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function load() {
@@ -27,9 +31,10 @@ export default function SpotsQueuePage() {
   }
 
   async function verify(id: string) {
+    if (!photosConfirmed[id]) return;
     setBusyId(id);
     try {
-      await api.verifySpot(id);
+      await api.verifySpot(id, true);
       setSpots((cur) => cur?.filter((s) => s.id !== id) ?? null);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed');
@@ -61,9 +66,14 @@ export default function SpotsQueuePage() {
     <div className="container">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h1>Pending spots</h1>
-        <button className="secondary" onClick={logout}>
-          Log out
-        </button>
+        <div className="row">
+          <Link href="/spots/new">
+            <button>Add spot</button>
+          </Link>
+          <button className="secondary" onClick={logout}>
+            Log out
+          </button>
+        </div>
       </div>
 
       {error && <p style={{ color: 'var(--danger)' }}>{error}</p>}
@@ -80,18 +90,37 @@ export default function SpotsQueuePage() {
           </div>
           <p>{spot.description || <span className="muted">(no description)</span>}</p>
           <div className="row" style={{ flexWrap: 'wrap' }}>
+            {spot.photo_urls.length === 0 && (
+              <span className="muted">No photos — cannot be verified.</span>
+            )}
             {spot.photo_urls.map((url) => (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                key={url}
-                src={url}
-                alt=""
-                style={{ width: 160, height: 120, objectFit: 'cover', borderRadius: 6 }}
-              />
+              <a key={url} href={url} target="_blank" rel="noreferrer">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={url}
+                  alt=""
+                  style={{ width: 160, height: 120, objectFit: 'cover', borderRadius: 6 }}
+                />
+              </a>
             ))}
           </div>
+          <label className="row" style={{ gap: 8 }}>
+            <input
+              type="checkbox"
+              checked={photosConfirmed[spot.id] ?? false}
+              disabled={spot.photo_urls.length === 0}
+              onChange={(e) =>
+                setPhotosConfirmed((cur) => ({ ...cur, [spot.id]: e.target.checked }))
+              }
+            />
+            I confirm the photos are real and show a publicly accessible, parkour-suitable
+            location.
+          </label>
           <div className="row">
-            <button disabled={busyId === spot.id} onClick={() => verify(spot.id)}>
+            <button
+              disabled={busyId === spot.id || !photosConfirmed[spot.id]}
+              onClick={() => verify(spot.id)}
+            >
               Verify
             </button>
             <button
