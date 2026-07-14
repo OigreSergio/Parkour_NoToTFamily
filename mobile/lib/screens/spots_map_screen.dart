@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../models/spot.dart';
 import '../providers.dart';
 import '../services/location_service.dart';
 import '../widgets/error_view.dart';
+import 'login_screen.dart';
 import 'spot_detail_screen.dart';
+import 'submit_spot_screen.dart';
 
 /// OpenStreetMap view (via `flutter_map`) with one marker per verified spot.
-/// Tapping a marker shows its name and description.
+/// Tapping a marker shows its name and description; a long-press anywhere
+/// proposes a new spot at that location (login required — the submission
+/// stays `pending` until an admin verifies it).
 class SpotsMapScreen extends ConsumerWidget {
   const SpotsMapScreen({super.key});
 
@@ -29,6 +34,7 @@ class SpotsMapScreen extends ConsumerWidget {
         options: MapOptions(
           initialCenter: center,
           initialZoom: 12,
+          onLongPress: (_, point) => _proposeSpot(context, ref, point),
         ),
         children: [
           TileLayer(
@@ -55,6 +61,29 @@ class SpotsMapScreen extends ConsumerWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  void _proposeSpot(BuildContext context, WidgetRef ref, LatLng point) {
+    final user = ref.read(authControllerProvider).valueOrNull;
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Sign in to suggest a new spot.'),
+          action: SnackBarAction(
+            label: 'Sign in',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const LoginScreen()),
+            ),
+          ),
+        ),
+      );
+      return;
+    }
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => SubmitSpotScreen(location: point),
       ),
     );
   }

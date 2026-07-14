@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'screens/profile_screen.dart';
 import 'screens/spots_list_screen.dart';
 import 'screens/spots_map_screen.dart';
 
@@ -25,7 +26,7 @@ class ParkourApp extends StatelessWidget {
   }
 }
 
-/// Root shell with two tabs: Map and List.
+/// Root shell with three tabs: Map, List and Profile.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -36,8 +37,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
 
-  static const _titles = ['Map', 'List'];
-  static const _screens = [SpotsMapScreen(), SpotsListScreen()];
+  static const _titles = ['Map', 'List', 'Profile'];
+  static const _screens = [
+    SpotsMapScreen(),
+    SpotsListScreen(),
+    ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.list_outlined),
             selectedIcon: Icon(Icons.list),
             label: 'List',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: 'Profile',
           ),
         ],
       ),
