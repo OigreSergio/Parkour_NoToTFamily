@@ -86,11 +86,12 @@ before they go public.
 
 | Feature                | Backend | Mobile              | Web admin | Status        |
 | ---------------------- | ------- | ------------------- | --------- | ------------- |
-| Auth (email + JWT)     | ✅      | ⏳ planned          | ⏳        | In progress   |
+| Auth (email + JWT)     | ✅      | ✅                  | ✅        | **Shipped**   |
 | Map / list of spots    | ✅      | ✅ read-only        | —         | **Shipped**   |
 | Spot detail            | ✅      | ✅                  | —         | **Shipped**   |
-| Submit a spot          | ✅      | ⏳ planned          | —         | Planned       |
-| Verify a spot          | ✅      | —                   | ⏳        | Planned       |
+| Submit a spot          | ✅      | ✅                  | —         | **Shipped**   |
+| Verify a spot          | ✅      | —                   | ✅        | **Shipped**   |
+| Admin adds a spot      | ✅      | —                   | ✅        | **Shipped**   |
 | Likes on spots         | ⏳      | ✅ client-side stub | —         | Client-first  |
 | "Water nearby" flag    | ⏳      | ✅ client-side stub | ⏳        | Client-first  |
 | Chat                   | ✅      | ⏳ planned          | —         | Planned       |
@@ -117,15 +118,19 @@ a scrollable list, with a detail view. No auth required.
   endpoints; show a water indicator on the map marker and detail screen.
 - **Depends on:** Milestone 3 auth (a like belongs to a user).
 
-### Milestone 3 — Auth on mobile
-Login/register flow against `POST /api/v1/auth/*`; store the JWT + refresh token
-securely (`flutter_secure_storage`); attach `Authorization: Bearer` to
-requests. Unlocks likes, spot submission and chat.
+### Milestone 3 — Auth on mobile ✅ (done)
+Login/register flow against `POST /api/v1/auth/*`; JWT + refresh token stored
+securely (`flutter_secure_storage`); `Authorization: Bearer` attached (with a
+transparent refresh-and-retry on 401). New accounts are always regular users;
+the first admin is seeded server-side from `INITIAL_ADMIN_*` env vars.
 
-### Milestone 4 — Submit a spot
-Mobile submit form → `POST /api/v1/spots` (`status = pending`); web-admin
-moderation queue → `POST /api/v1/spots/{id}/verify` with the moderation audit
-log.
+### Milestone 4 — Submit a spot ✅ (done)
+Long-press on the mobile map → submit form → `POST /api/v1/spots`
+(`status = pending`), plus a "My submissions" screen (`GET /api/v1/spots/mine`).
+Web-admin moderation queue → `POST /api/v1/admin/spots/{id}/verify` requires an
+explicit `photos_real` attestation and writes the moderation audit log; admins
+can also publish spots directly via `POST /api/v1/admin/spots`. See
+[`SPOT_VERIFICATION.md`](SPOT_VERIFICATION.md) for the role matrix.
 
 ### Milestone 5 — Chat
 WebSocket `/api/v1/ws/chat`, conversation list + room on mobile.
