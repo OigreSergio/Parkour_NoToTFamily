@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="../favicon.ico">
+<title>Parkour NoToT Family — Stato progetto</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg: #ECEDEA;
+    --panel: #F7F7F5;
+    --ink: #191A1C;
+    --ink-soft: #5A5C58;
+    --line: #D3D5CF;
+    --accent: #2743E3;
+    --accent-ink: #FFFFFF;
+    --ok: #2E7D46;
+    --wait: #B97A0E;
+    --map-bg: #1D1F24;
+    --map-grid: #2C2F36;
+    --map-dot: #8FA0FF;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16171A;
+      --panel: #1E2024;
+      --ink: #E8E9E6;
+      --ink-soft: #9A9C99;
+      --line: #33353A;
+      --accent: #7C90FF;
+      --accent-ink: #10122B;
+      --ok: #5FBF82;
+      --wait: #E0A94E;
+      --map-bg: #101114;
+      --map-grid: #24262C;
+      --map-dot: #8FA0FF;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #ECEDEA; --panel: #F7F7F5; --ink: #191A1C; --ink-soft: #5A5C58;
+    --line: #D3D5CF; --accent: #2743E3; --accent-ink: #FFFFFF;
+    --ok: #2E7D46; --wait: #B97A0E;
+    --map-bg: #1D1F24; --map-grid: #2C2F36; --map-dot: #8FA0FF;
+  }
+  :root[data-theme="dark"] {
+    --bg: #16171A; --panel: #1E2024; --ink: #E8E9E6; --ink-soft: #9A9C99;
+    --line: #33353A; --accent: #7C90FF; --accent-ink: #10122B;
+    --ok: #5FBF82; --wait: #E0A94E;
+    --map-bg: #101114; --map-grid: #24262C; --map-dot: #8FA0FF;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.55;
+    margin: 0;
+    padding: 0 20px 64px;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; }
+
+  header { padding: 44px 0 28px; border-bottom: 3px solid var(--ink); }
+  .kicker {
+    font-size: 12px; font-weight: 600; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 10px;
+  }
+  h1 {
+    font-size: clamp(30px, 6vw, 44px); font-weight: 800; line-height: 1.02;
+    letter-spacing: -.015em; text-transform: uppercase; margin: 0;
+    text-wrap: balance;
+  }
+  .sub { color: var(--ink-soft); margin: 14px 0 0; max-width: 56ch; }
+  .stamp {
+    display: inline-block; margin-top: 18px; padding: 5px 12px;
+    background: var(--accent); color: var(--accent-ink);
+    font-size: 12.5px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase;
+  }
+
+  section { margin-top: 44px; }
+  h2 {
+    font-size: 13px; font-weight: 700; letter-spacing: .16em;
+    text-transform: uppercase; margin: 0 0 16px; color: var(--ink);
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  h2::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+
+  ol.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+  ol.steps li {
+    display: grid; grid-template-columns: 26px 1fr; gap: 12px;
+    background: var(--panel); border: 1px solid var(--line);
+    padding: 14px 16px; align-items: start;
+  }
+  .tick {
+    width: 22px; height: 22px; border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 800; margin-top: 1px;
+  }
+  .tick.done { background: var(--ok); color: var(--bg); }
+  .tick.todo { background: transparent; color: var(--wait); border: 2px dashed var(--wait); font-size: 11px; }
+  .step-title { font-weight: 650; }
+  .step-note { color: var(--ink-soft); font-size: 14px; margin-top: 2px; }
+  .step-note code {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; background: var(--bg); border: 1px solid var(--line);
+    padding: 1px 5px;
+  }
+
+  .map-panel { background: var(--map-bg); border: 1px solid var(--line); padding: 8px; }
+  .map-panel svg { display: block; width: 100%; height: auto; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14.5px; }
+  th {
+    text-align: left; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+    color: var(--ink-soft); font-weight: 700; padding: 0 10px 8px 0;
+    border-bottom: 2px solid var(--ink);
+  }
+  td { padding: 10px 10px 10px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  td.num { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink-soft); white-space: nowrap; }
+  .badge {
+    display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .08em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 999px;
+    background: color-mix(in srgb, var(--ok) 15%, transparent); color: var(--ok);
+  }
+  .diff { letter-spacing: .12em; color: var(--accent); font-weight: 700; }
+  .water { color: var(--ink-soft); font-size: 13px; }
+
+  ul.log { list-style: none; margin: 0; padding: 0; }
+  ul.log li {
+    display: grid; grid-template-columns: 92px 1fr; gap: 16px;
+    padding: 12px 0; border-bottom: 1px solid var(--line);
+  }
+  .log-date {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 12.5px; color: var(--ink-soft); font-variant-numeric: tabular-nums;
+    padding-top: 2px;
+  }
+  .log-what { font-size: 15px; }
+  .log-what strong { font-weight: 650; }
+
+  footer { margin-top: 52px; color: var(--ink-soft); font-size: 13px; border-top: 3px solid var(--ink); padding-top: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">Parkour NoToT Family</p>
+    <h1>Stato del progetto</h1>
+    <p class="sub">Spot verificati sulla mappa, chat tra traceur e video di allenamento.
+    Questa pagina viene aggiornata a ogni modifica: stesso link, sempre l'ultima versione.</p>
+    <span class="stamp">Aggiornata al 19 luglio 2026</span>
+  </header>
+
+  <section>
+    <h2>Setup Supabase</h2>
+    <ol class="steps">
+      <li>
+        <span class="tick done">✓</span>
+        <div>
+          <div class="step-title">Schema del database pronto e testato</div>
+          <div class="step-note">8 tabelle con Row Level Security completa, verificate su PostgreSQL + PostGIS:
+          profili, spot con moderazione, like, log di moderazione, chat e video.</div>
+        </div>
+      </li>
+      <li>
+        <span class="tick todo">1</span>
+        <div>
+          <div class="step-title">Eseguire il SQL nel dashboard — tocca a Sergio</div>
+          <div class="step-note">Dashboard Supabase → SQL Editor → incolla tutto
+          <code>supabase/migrations/0001_initial.sql</code> → Run.</div>
+        </div>
+      </li>
+      <li>
+        <span class="tick todo">2</span>
+        <div>
+          <div class="step-title">Passare le chiavi API — tocca a Sergio</div>
+          <div class="step-note">Publishable key (<code>sb_publishable_…</code>) per l'app,
+          più secret key e URL del progetto per il seed (meglio come variabili d'ambiente).</div>
+        </div>
+      </li>
+      <li>
+        <span class="tick todo">3</span>
+        <div>
+          <div class="step-title">Seed: account admin + spot di Roma — lo lancia Claude</div>
+          <div class="step-note">Crea <code>admin@pkfamily.app</code> con password generata
+          (riportata una sola volta) e inserisce i 5 spot qui sotto come verificati.</div>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>I 5 spot di Roma pronti per il seed</h2>
+    <div class="map-panel" role="img" aria-label="Mappa schematica di Roma con i cinque spot: Foro Italico a nord, Colle Oppio e Gazometro al centro, Parco degli Acquedotti a est, EUR Laghetto a sud.">
+      <!-- lng 12.44–12.58 → x 40–740 ; lat 41.955–41.815 → y 30–370 -->
+      <svg viewBox="0 0 780 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="grid" width="52" height="52" patternUnits="userSpaceOnUse">
+            <path d="M52 0H0V52" fill="none" stroke="var(--map-grid)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="780" height="400" fill="var(--map-bg)"/>
+        <rect width="780" height="400" fill="url(#grid)"/>
+        <!-- Tevere, corso schematico nord→sud -->
+        <path d="M 320 0 C 330 60, 290 100, 310 150 C 335 210, 265 240, 285 290 C 300 330, 260 370, 270 400"
+              fill="none" stroke="var(--map-grid)" stroke-width="14" stroke-linecap="round" opacity="0.9"/>
+        <text x="252" y="120" fill="var(--map-grid)" font-size="13" font-family="ui-monospace, Menlo, monospace" transform="rotate(-70 252 120)" letter-spacing="3">TEVERE</text>
+
+        <!-- Foro Italico 12.4547, 41.9339 → x 113, y 81 -->
+        <g><circle cx="113" cy="81" r="7" fill="var(--map-dot)"/><circle cx="113" cy="81" r="13" fill="none" stroke="var(--map-dot)" opacity=".4"/>
+        <text x="130" y="86" fill="#C9CFEA" font-size="15" font-weight="600" font-family="inherit">Foro Italico</text></g>
+
+        <!-- Colle Oppio 12.4964, 41.8925 → x 322, y 182 -->
+        <g><circle cx="322" cy="182" r="7" fill="var(--map-dot)"/><circle cx="322" cy="182" r="13" fill="none" stroke="var(--map-dot)" opacity=".4"/>
+        <text x="339" y="177" fill="#C9CFEA" font-size="15" font-weight="600" font-family="inherit">Colle Oppio</text></g>
+
+        <!-- Gazometro 12.4776, 41.8697 → x 228, y 237 -->
+        <g><circle cx="228" cy="237" r="7" fill="var(--map-dot)"/><circle cx="228" cy="237" r="13" fill="none" stroke="var(--map-dot)" opacity=".4"/>
+        <text x="245" y="255" fill="#C9CFEA" font-size="15" font-weight="600" font-family="inherit">Gazometro Ostiense</text></g>
+
+        <!-- Acquedotti 12.5583, 41.8443 → x 632, y 299 -->
+        <g><circle cx="632" cy="299" r="7" fill="var(--map-dot)"/><circle cx="632" cy="299" r="13" fill="none" stroke="var(--map-dot)" opacity=".4"/>
+        <text x="649" y="293" fill="#C9CFEA" font-size="15" font-weight="600" font-family="inherit">Parco degli Acquedotti</text></g>
+
+        <!-- EUR 12.4707, 41.8299 → x 194, y 333 -->
+        <g><circle cx="194" cy="333" r="7" fill="var(--map-dot)"/><circle cx="194" cy="333" r="13" fill="none" stroke="var(--map-dot)" opacity=".4"/>
+        <text x="211" y="351" fill="#C9CFEA" font-size="15" font-weight="600" font-family="inherit">EUR Laghetto</text></g>
+      </svg>
+    </div>
+    <table>
+      <thead><tr><th>Spot</th><th>Difficoltà</th><th>Coordinate</th><th>Stato</th></tr></thead>
+      <tbody>
+        <tr><td>Colle Oppio<div class="water">acqua vicina</div></td><td class="diff">●●○○○</td><td class="num">41.8925, 12.4964</td><td><span class="badge">verificato</span></td></tr>
+        <tr><td>EUR Laghetto<div class="water">acqua vicina</div></td><td class="diff">●●●○○</td><td class="num">41.8299, 12.4707</td><td><span class="badge">verificato</span></td></tr>
+        <tr><td>Foro Italico</td><td class="diff">●●●●○</td><td class="num">41.9339, 12.4547</td><td><span class="badge">verificato</span></td></tr>
+        <tr><td>Parco degli Acquedotti</td><td class="diff">●●●○○</td><td class="num">41.8443, 12.5583</td><td><span class="badge">verificato</span></td></tr>
+        <tr><td>Gazometro Ostiense</td><td class="diff">●●●●○</td><td class="num">41.8697, 12.4776</td><td><span class="badge">verificato</span></td></tr>
+      </tbody>
+    </table>
+    <p class="water" style="margin-top:10px">Gli spot compaiono nell'app come «verificati» dopo l'esecuzione del seed (passo 3).</p>
+  </section>
+
+  <section>
+    <h2>Registro modifiche</h2>
+    <ul class="log">
+      <li>
+        <span class="log-date">19 lug 2026</span>
+        <span class="log-what"><strong>Pagina di stato pubblica su GitHub Pages.</strong>
+        Accessibile via QR senza login, accanto alla web preview dell'app.</span>
+      </li>
+      <li>
+        <span class="log-date">19 lug 2026</span>
+        <span class="log-what"><strong>Schema Supabase completo con RLS.</strong>
+        Migrazione <code style="font-family:ui-monospace,Menlo,monospace;font-size:13px">0001_initial.sql</code>:
+        8 tabelle, PostGIS, trigger di creazione profilo alla registrazione, policy testate
+        (gli anonimi vedono solo spot verificati; nessuna auto-promozione ad admin; chat visibile ai soli membri).
+        Script di seed idempotente pronto.</span>
+      </li>
+      <li>
+        <span class="log-date">18 lug 2026</span>
+        <span class="log-what"><strong>App mobile in Flutter.</strong> Mappa e lista spot in sola lettura,
+        con like e indicatore acqua lato client. Regole di progetto e roadmap documentate.</span>
+      </li>
+      <li>
+        <span class="log-date">17 lug 2026</span>
+        <span class="log-what"><strong>Fondamenta del monorepo.</strong> Backend FastAPI,
+        pannello admin Next.js, docker-compose con PostGIS e Redis.</span>
+      </li>
+    </ul>
+  </section>
+
+  <footer>
+    Parkour NoToT Family · <a href="../" style="color:var(--accent)">apri la web preview dell'app</a> · pagina di stato del progetto · si aggiorna a ogni push, il link non cambia.
+  </footer>
+</div>
+
+</body>
+</html>
