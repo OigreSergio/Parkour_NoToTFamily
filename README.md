@@ -8,11 +8,22 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 .
 ├── backend/      FastAPI + PostgreSQL/PostGIS API
 ├── mobile/       Flutter app (iOS + Android)
-├── web-admin/    Next.js admin dashboard (spot moderation)
+├── web-admin/    Next.js admin dashboard (spot moderation, backup panel)
 ├── docs/         Architecture and product docs
-├── .github/      CI workflows, issue/PR templates, dependabot
+├── scripts/      Repo-level tooling (backup manifest generator)
+├── 📲/           24h-rotating backup manifest + direct links (see 📲/BACKUP.md)
+├── .github/      CI workflows (daily backup), dependabot
 └── docker-compose.yml
 ```
+
+## Backup
+
+Every 24 hours the `Daily backup` workflow destroys and regenerates
+[`📲/backup-latest.json`](📲/backup-latest.json) (all branches + dataset
+checksums, with direct download links) and uploads a full `git bundle` of the
+repository as a 1-day-retention artifact. Direct links and restore steps:
+[`📲/BACKUP.md`](📲/BACKUP.md). Admins also get a live view at `/backup` in
+the web-admin dashboard.
 
 ## Core features
 

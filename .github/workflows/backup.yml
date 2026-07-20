@@ -1,0 +1,48 @@
+name: Daily backup
+
+# 24-hour backup rotation for the 📲/ folder:
+# - destroys and regenerates 📲/backup-latest.json (manifest of every branch
+#   + dataset checksums), committing it back to the branch;
+# - uploads a full `git bundle` of the whole repository as an artifact with
+#   1-day retention, so the binary backup self-destructs after 24h and is
+#   recreated by the next run.
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Destroy and regenerate the 24h manifest
+        run: |
+          rm -f "📲/backup-latest.json"
+          python3 scripts/make_backup.py
+
+      - name: Commit the regenerated manifest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "📲/backup-latest.json"
+          git commit -m "chore(backup): regenerate 24h backup manifest [skip ci]" \
+            || echo "manifest unchanged"
+          git push
+
+      - name: Create full-repository bundle (all branches)
+        run: git bundle create parkour-notot-full-backup.bundle --all
+
+      - name: Upload bundle artifact (self-destructs after 24h)
+        uses: actions/upload-artifact@v4
+        with:
+          name: parkour-notot-full-backup
+          path: parkour-notot-full-backup.bundle
+          retention-days: 1

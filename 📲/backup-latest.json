@@ -1,0 +1,114 @@
+{
+  "backup": "Parkour NoToT Family — full repository backup manifest",
+  "repo": "https://github.com/OigreSergio/Parkour_NoToTFamily",
+  "generated_at": "2026-07-20T17:01:19+00:00",
+  "expires_at": "2026-07-21T17:01:19+00:00",
+  "rotation": "This file is destroyed and regenerated every 24h by .github/workflows/backup.yml; the full git bundle artifact of the same run self-destructs after 1 day.",
+  "full_bundle_artifact": "https://github.com/OigreSergio/Parkour_NoToTFamily/actions/workflows/backup.yml",
+  "branches": [
+    {
+      "name": "claude/android-to-flutter-migration-t666xm",
+      "sha": "0c4ce1dea94f7441dcf5bc95881446ce9db9cb0a",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/0c4ce1dea94f7441dcf5bc95881446ce9db9cb0a",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/claude/android-to-flutter-migration-t666xm"
+    },
+    {
+      "name": "claude/parkour-spot-mapping-system-7xzxrn",
+      "sha": "f6f423beb39b76c2befaf412f4b7c262a99773bd",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/f6f423beb39b76c2befaf412f4b7c262a99773bd",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/claude/parkour-spot-mapping-system-7xzxrn"
+    },
+    {
+      "name": "claude/roma-fountains-map-bc9g9z",
+      "sha": "97b801d4378ae58d1463ec5d2d619230777fd2f7",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/97b801d4378ae58d1463ec5d2d619230777fd2f7",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/claude/roma-fountains-map-bc9g9z"
+    },
+    {
+      "name": "claude/supabase-tables-rls-wd9mlj",
+      "sha": "e9bb03331bd065f8529118e19796485f0d58c434",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/e9bb03331bd065f8529118e19796485f0d58c434",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/claude/supabase-tables-rls-wd9mlj"
+    },
+    {
+      "name": "dependabot/docker/backend/python-3.14-slim",
+      "sha": "d05f017824182dc408d22abc0e6c14426986398f",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/d05f017824182dc408d22abc0e6c14426986398f",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/docker/backend/python-3.14-slim"
+    },
+    {
+      "name": "dependabot/github_actions/actions/checkout-7",
+      "sha": "e6053f85c816e139ddec2cdc6b59791f3cd4d615",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/e6053f85c816e139ddec2cdc6b59791f3cd4d615",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/github_actions/actions/checkout-7"
+    },
+    {
+      "name": "dependabot/github_actions/actions/setup-node-6",
+      "sha": "7a0a05cbb77a44584fd242a5a0aa75bb36ca185b",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/7a0a05cbb77a44584fd242a5a0aa75bb36ca185b",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/github_actions/actions/setup-node-6"
+    },
+    {
+      "name": "dependabot/github_actions/actions/setup-python-6",
+      "sha": "292041822998aee50e9c0ffa44b8aa3946d32bfe",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/292041822998aee50e9c0ffa44b8aa3946d32bfe",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/github_actions/actions/setup-python-6"
+    },
+    {
+      "name": "dependabot/github_actions/github/codeql-action-4",
+      "sha": "8c608b3284bed5b35b1e56bfeaa9de58ca43d114",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/8c608b3284bed5b35b1e56bfeaa9de58ca43d114",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/github_actions/github/codeql-action-4"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/web-admin/eslint-10.3.0",
+      "sha": "33e18fa21dfe109486768d880c5a47476d94e269",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/33e18fa21dfe109486768d880c5a47476d94e269",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/npm_and_yarn/web-admin/eslint-10.3.0"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/web-admin/eslint-config-next-16.2.6",
+      "sha": "18261dc8c82c163104d801b570fdef037e84f0b2",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/18261dc8c82c163104d801b570fdef037e84f0b2",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/npm_and_yarn/web-admin/eslint-config-next-16.2.6"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/web-admin/next-16.2.6",
+      "sha": "79a9c65dfd5c03305828a8af58e10a5001badc97",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/79a9c65dfd5c03305828a8af58e10a5001badc97",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/npm_and_yarn/web-admin/next-16.2.6"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/web-admin/prettier-3.8.3",
+      "sha": "26334c71596f9d59f73fd2b8f6b21980bee3f06b",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/26334c71596f9d59f73fd2b8f6b21980bee3f06b",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/npm_and_yarn/web-admin/prettier-3.8.3"
+    },
+    {
+      "name": "dependabot/npm_and_yarn/web-admin/typescript-6.0.3",
+      "sha": "f6b68876e23f0975471249ec23ef03a0f118a39b",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/f6b68876e23f0975471249ec23ef03a0f118a39b",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/dependabot/npm_and_yarn/web-admin/typescript-6.0.3"
+    },
+    {
+      "name": "gh-pages",
+      "sha": "aa430cc99b9194a5fe8bd443a41b814aba30f630",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/aa430cc99b9194a5fe8bd443a41b814aba30f630",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/gh-pages"
+    },
+    {
+      "name": "main",
+      "sha": "0c4ce1dea94f7441dcf5bc95881446ce9db9cb0a",
+      "zip_url": "https://codeload.github.com/OigreSergio/Parkour_NoToTFamily/zip/0c4ce1dea94f7441dcf5bc95881446ce9db9cb0a",
+      "branch_url": "https://github.com/OigreSergio/Parkour_NoToTFamily/tree/main"
+    }
+  ],
+  "datasets": [
+    {
+      "path": "mobile/assets/data/fountains_roma.json",
+      "sha256": "ece320c76a7b1eaa4b956261063272ea55d37ab0334549e85a498fd026882ed0",
+      "bytes": 404773
+    }
+  ],
+  "restore": "Download the bundle artifact, then: git clone parkour-notot-full-backup.bundle restored/ (contains every branch); or download a branch zip_url above."
+}
