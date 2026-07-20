@@ -61,9 +61,12 @@ export default function SpotsQueuePage() {
     <div className="container">
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h1>Pending spots</h1>
-        <button className="secondary" onClick={logout}>
-          Log out
-        </button>
+        <div className="row">
+          <a href="/backup">📲 Backup</a>
+          <button className="secondary" onClick={logout}>
+            Log out
+          </button>
+        </div>
       </div>
 
       {error && <p style={{ color: 'var(--danger)' }}>{error}</p>}

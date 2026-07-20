@@ -17,8 +17,10 @@ eggs/
 lib/
 lib64/
 # The `lib/` rule above is Python packaging output; keep the Flutter client
-# source (mobile/lib/) tracked.
+# source (mobile/lib/) and the web-admin TS sources (web-admin/src/lib/)
+# tracked.
 !mobile/lib/
+!web-admin/src/lib/
 parts/
 sdist/
 var/
