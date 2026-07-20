@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'screens/fountains_map_screen.dart';
 import 'screens/spots_list_screen.dart';
 import 'screens/spots_map_screen.dart';
 
@@ -42,7 +43,20 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Parkour NoToT · ${_titles[_index]}')),
+      appBar: AppBar(
+        title: Text('Parkour NoToT · ${_titles[_index]}'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.water_drop),
+            tooltip: 'Fontanelle di Roma',
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const FountainsMapScreen(),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: IndexedStack(index: _index, children: _screens),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,

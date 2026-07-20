@@ -22,6 +22,7 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 | Map / spots         | `GET /api/v1/spots`, geo search via PostGIS | Map screen    | —         |
 | Submit a spot       | `POST /api/v1/spots` (status = `pending`)  | Submit form   | —         |
 | Verify a spot       | `POST /api/v1/spots/{id}/verify` (admin)   | —             | Queue UI  |
+| Fountains map (Roma) | dataset script (OSM × Wikidata merge)     | Fountains map | —         |
 | Chat                | WebSocket `/api/v1/ws/chat`                | Chat screen   | —         |
 | Videos              | `GET /api/v1/videos`                        | Videos screen | CMS       |
 

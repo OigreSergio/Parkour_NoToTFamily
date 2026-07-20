@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,5 +12,8 @@ void main() {
     // The bottom navigation exposes the two tabs.
     expect(find.text('Map'), findsWidgets);
     expect(find.text('List'), findsWidgets);
+
+    // The app bar exposes the fountains-map shortcut (top right).
+    expect(find.byIcon(Icons.water_drop), findsOneWidget);
   });
 }

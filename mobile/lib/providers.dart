@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'models/fountain.dart';
 import 'models/spot.dart';
+import 'repositories/fountain_repository.dart';
 import 'repositories/spot_repository.dart';
 import 'services/api_client.dart';
 import 'services/location_service.dart';
@@ -35,3 +37,14 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         lng: center.longitude,
       );
 });
+
+/// Rome drinking-fountain data source (bundled asset).
+final fountainRepositoryProvider = Provider<FountainRepository>(
+  (ref) => FountainRepository(),
+);
+
+/// The merged Rome drinking-fountain dataset (OpenStreetMap × Wikidata),
+/// shown on the fountains map.
+final fountainsProvider = FutureProvider<FountainDataset>(
+  (ref) => ref.watch(fountainRepositoryProvider).loadFountains(),
+);

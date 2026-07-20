@@ -93,6 +93,7 @@ before they go public.
 | Verify a spot          | ✅      | —                   | ⏳        | Planned       |
 | Likes on spots         | ⏳      | ✅ client-side stub | —         | Client-first  |
 | "Water nearby" flag    | ⏳      | ✅ client-side stub | ⏳        | Client-first  |
+| Fountains map (Roma)   | —       | ✅ offline dataset  | —         | **Shipped**   |
 | Chat                   | ✅      | ⏳ planned          | —         | Planned       |
 | Videos                 | ✅      | ⏳ planned          | ⏳        | Planned       |
 
@@ -107,6 +108,16 @@ before they go public.
 ### Milestone 1 — Read-only spots ✅ (done)
 Flutter client reads verified spots and shows them on a `flutter_map` map and in
 a scrollable list, with a detail view. No auth required.
+
+### Milestone 1b — Rome fountains map ✅ (done)
+A second map (fountain icon in the app bar, top right) showing Rome's public
+drinking fountains. The dataset cross-references the open databases behind the
+popular fountain apps — OpenStreetMap via Overpass (the data used by WeTap and
+Fontanelle d'Italia) and Wikidata — merged by ~30 m proximity with
+per-fountain source attribution and confidence. Generated offline by
+`backend/scripts/build_fountains_dataset.py` and bundled as
+`mobile/assets/data/fountains_roma.json`, so the map works offline. Re-run the
+script periodically to refresh the data.
 
 ### Milestone 2 — Engagement: likes & attributes (next)
 - **Backend:** add `likes` (count) and per-user like tracking, plus a `water`
