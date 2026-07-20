@@ -149,7 +149,7 @@
     <h1>Stato del progetto</h1>
     <p class="sub">Spot verificati sulla mappa, chat tra traceur e video di allenamento.
     Questa pagina viene aggiornata a ogni modifica: stesso link, sempre l'ultima versione.</p>
-    <span class="stamp">Aggiornata al 19 luglio 2026</span>
+    <span class="stamp">Aggiornata al 20 luglio 2026</span>
   </header>
 
   <section>
@@ -164,15 +164,15 @@
         </div>
       </li>
       <li>
-        <span class="tick todo">1</span>
+        <span class="tick done">✓</span>
         <div>
-          <div class="step-title">Eseguire il SQL nel dashboard — tocca a Sergio</div>
-          <div class="step-note">Dashboard Supabase → SQL Editor → incolla tutto
-          <code>supabase/migrations/0001_initial.sql</code> → Run.</div>
+          <div class="step-title">Tabelle create nel database Supabase</div>
+          <div class="step-note">SQL eseguito il 20 luglio nel progetto PkFAMILY:
+          le 8 tabelle e le policy RLS sono attive.</div>
         </div>
       </li>
       <li>
-        <span class="tick todo">2</span>
+        <span class="tick todo">1</span>
         <div>
           <div class="step-title">Passare le chiavi API — tocca a Sergio</div>
           <div class="step-note">Publishable key (<code>sb_publishable_…</code>) per l'app,
@@ -180,10 +180,10 @@
         </div>
       </li>
       <li>
-        <span class="tick todo">3</span>
+        <span class="tick todo">2</span>
         <div>
           <div class="step-title">Seed: account admin + spot di Roma — lo lancia Claude</div>
-          <div class="step-note">Crea <code>admin@pkfamily.app</code> con password generata
+          <div class="step-note">Crea <code>adminpkfamily@gmail.com</code> con password generata
           (riportata una sola volta) e inserisce i 5 spot qui sotto come verificati.</div>
         </div>
       </li>
@@ -238,12 +238,18 @@
         <tr><td>Gazometro Ostiense</td><td class="diff">●●●●○</td><td class="num">41.8697, 12.4776</td><td><span class="badge">verificato</span></td></tr>
       </tbody>
     </table>
-    <p class="water" style="margin-top:10px">Gli spot compaiono nell'app come «verificati» dopo l'esecuzione del seed (passo 3).</p>
+    <p class="water" style="margin-top:10px">Gli spot compaiono nell'app come «verificati» dopo l'esecuzione del seed (passo 2).</p>
   </section>
 
   <section>
     <h2>Registro modifiche</h2>
     <ul class="log">
+      <li>
+        <span class="log-date">20 lug 2026</span>
+        <span class="log-what"><strong>Database attivo su Supabase.</strong>
+        Tabelle e Row Level Security create nel progetto PkFAMILY.
+        Email admin aggiornata a adminpkfamily@gmail.com. In attesa delle chiavi API per il seed.</span>
+      </li>
       <li>
         <span class="log-date">19 lug 2026</span>
         <span class="log-what"><strong>Pagina di stato pubblica su GitHub Pages.</strong>
