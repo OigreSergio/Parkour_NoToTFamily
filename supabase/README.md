@@ -25,7 +25,7 @@ SUPABASE_SECRET_KEY=sb_secret_... \
 node supabase/seed/seed.mjs
 ```
 
-Creates `admin@pkfamily.app` (password generated and printed **once** — save
+Creates `adminpkfamily@gmail.com` (password generated and printed **once** — save
 it in a password manager) and inserts five verified Rome spots. Safe to
 re-run: it skips whatever already exists.
 

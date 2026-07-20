@@ -2,7 +2,7 @@
 // ============================================================================
 // Parkour NoToT Family — Supabase seed
 //
-// Creates the admin account (admin@pkfamily.app) with a generated password
+// Creates the admin account (adminpkfamily@gmail.com) with a generated password
 // (printed ONCE to stdout — store it in a password manager) and inserts the
 // five Rome spots as `verified`.
 //
@@ -54,7 +54,7 @@ function generatePassword() {
   return [group(), group(), group(), group()].join("-");
 }
 
-const ADMIN_EMAIL = "admin@pkfamily.app";
+const ADMIN_EMAIL = "adminpkfamily@gmail.com";
 
 async function ensureAdmin() {
   const existing = await api("/auth/v1/admin/users?page=1&per_page=200");
