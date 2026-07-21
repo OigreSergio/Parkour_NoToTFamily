@@ -1,7 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'models/bank_details.dart';
 import 'models/spot.dart';
+import 'repositories/payment_repository.dart';
 import 'repositories/spot_repository.dart';
 import 'services/api_client.dart';
 import 'services/location_service.dart';
@@ -35,3 +37,14 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         lng: center.longitude,
       );
 });
+
+/// Payment data source.
+final paymentRepositoryProvider = Provider<PaymentRepository>(
+  (ref) => PaymentRepository(ref.watch(apiClientProvider)),
+);
+
+/// Bank-transfer details for the Support screen (`null` until the backend
+/// deployment configures them).
+final bankDetailsProvider = FutureProvider<BankDetails?>(
+  (ref) => ref.watch(paymentRepositoryProvider).fetchBankDetails(),
+);

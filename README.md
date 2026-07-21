@@ -7,7 +7,7 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 ```
 .
 ├── backend/      FastAPI + PostgreSQL/PostGIS API
-├── mobile/       Flutter app (iOS + Android)
+├── mobile/       Flutter app (iOS + Android + Web/PWA)
 ├── web-admin/    Next.js admin dashboard (spot moderation)
 ├── docs/         Architecture and product docs
 ├── .github/      CI workflows, issue/PR templates, dependabot
@@ -24,6 +24,7 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 | Verify a spot       | `POST /api/v1/spots/{id}/verify` (admin)   | —             | Queue UI  |
 | Chat                | WebSocket `/api/v1/ws/chat`                | Chat screen   | —         |
 | Videos              | `GET /api/v1/videos`                        | Videos screen | CMS       |
+| Support (donations) | `GET /api/v1/payments/bank-details`         | Support tab   | —         |
 
 ## Spot lifecycle
 
@@ -57,7 +58,7 @@ npm run dev
 docker compose up --build
 ```
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) and [docs/WEB_APP.md](docs/WEB_APP.md) for details.
 
 ## Contributing
 

@@ -30,6 +30,13 @@ class Settings(BaseSettings):
     initial_admin_email: str | None = None
     initial_admin_password: str | None = None
 
+    # Bank-transfer donation details shown in the app. Kept out of the
+    # (public) repository on purpose — set them only in the deployment's .env.
+    payments_beneficiary: str | None = None
+    payments_iban: str | None = None
+    payments_bic: str | None = None
+    payments_transfer_note: str | None = None
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def split_origins(cls, v: object) -> object:
