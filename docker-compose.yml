@@ -27,10 +27,19 @@ services:
 
   api:
     build: ./backend
-    env_file: ./backend/.env
+    # Optional extras (e.g. PAYMENTS_*) — the stack runs fine without it.
+    env_file:
+      - path: ./backend/.env
+        required: false
+    # Local-dev defaults so `docker compose up` works with zero setup.
+    # These override backend/.env — never use this compose file in production.
     environment:
       DATABASE_URL: postgresql+asyncpg://parkour:parkour@db:5432/parkour
       REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: dev-only-secret-not-for-production
+      INITIAL_ADMIN_EMAIL: admin@notot.family
+      INITIAL_ADMIN_PASSWORD: admin-dev-password
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8000
     depends_on:
       db:
         condition: service_healthy
