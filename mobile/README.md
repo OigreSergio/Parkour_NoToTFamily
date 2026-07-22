@@ -3,9 +3,10 @@
 Cross-platform client (**Android + iOS + Web/PWA**) written in **Dart /
 Flutter**. It talks to the Python (FastAPI) backend over HTTP.
 
-Current scope is **read-only**: browse verified parkour spots on a map and in a
-list, plus a Support tab with the project's bank-transfer details. Login, photo
-upload and reviews are intentionally not wired up yet.
+Current scope: browse verified parkour spots on a map and in a list, submit a
+new spot for review (email/password sign-in), and a Support tab with the
+project's bank-transfer details. Photo upload and reviews are intentionally
+not wired up yet.
 
 ## Run
 
@@ -39,17 +40,20 @@ lib/
 ├── providers.dart                   Riverpod providers (client, repos, location, spots, bank details)
 ├── models/
 │   ├── spot.dart                    Spot model (fromJson/toJson) — matches SpotOut
+│   ├── auth_tokens.dart             JWT pair — matches TokenPair
 │   └── bank_details.dart            Bank-transfer details — matches BankDetailsOut
 ├── services/
-│   ├── api_client.dart              http client, configurable base URL
+│   ├── api_client.dart              http client (GET/POST + bearer), configurable base URL
 │   └── location_service.dart        geolocator wrapper with fallback centre
 ├── repositories/
-│   ├── spot_repository.dart         GET /api/v1/spots (verified spots only)
+│   ├── spot_repository.dart         GET/POST /api/v1/spots
+│   ├── auth_repository.dart         POST /api/v1/auth/{register,login}
 │   └── payment_repository.dart      GET /api/v1/payments/bank-details
 ├── screens/
 │   ├── spots_map_screen.dart        flutter_map + one marker per spot
 │   ├── spots_list_screen.dart       scrollable list, tap → detail
 │   ├── spot_detail_screen.dart      single-spot detail view
+│   ├── submit_spot_screen.dart      sign-in/sign-up + new-spot form (FAB)
 │   └── support_screen.dart          bank-transfer details with tap-to-copy
 └── widgets/
     └── error_view.dart              shared error/retry state

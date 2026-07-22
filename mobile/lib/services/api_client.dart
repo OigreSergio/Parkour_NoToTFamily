@@ -42,6 +42,30 @@ class ApiClient {
     return jsonDecode(res.body);
   }
 
+  /// `POST` [body] as JSON to [path] (relative to [baseUrl]) and return the
+  /// decoded JSON response body (or `null` for empty responses). Pass
+  /// [bearerToken] for endpoints that require authentication.
+  Future<dynamic> postJson(
+    String path, {
+    Object? body,
+    String? bearerToken,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final res = await _http.post(
+      uri,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        if (bearerToken != null) 'Authorization': 'Bearer $bearerToken',
+      },
+      body: jsonEncode(body ?? const <String, dynamic>{}),
+    );
+    if (res.statusCode < 200 || res.statusCode >= 300) {
+      throw ApiException(res.statusCode, res.body, uri);
+    }
+    return res.body.isEmpty ? null : jsonDecode(res.body);
+  }
+
   /// Release the underlying connection pool.
   void close() => _http.close();
 }

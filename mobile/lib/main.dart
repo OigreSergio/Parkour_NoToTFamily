@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/spots_list_screen.dart';
 import 'screens/spots_map_screen.dart';
+import 'screens/submit_spot_screen.dart';
 import 'screens/support_screen.dart';
 
 void main() {
@@ -49,6 +50,17 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('Parkour NoToT · ${_titles[_index]}')),
       body: IndexedStack(index: _index, children: _screens),
+      floatingActionButton: _index == 2
+          ? null
+          : FloatingActionButton.extended(
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: const Text('Add spot'),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const SubmitSpotScreen(),
+                ),
+              ),
+            ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),

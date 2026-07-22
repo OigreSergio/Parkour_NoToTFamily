@@ -12,6 +12,30 @@ class SpotRepository {
 
   static const String _spotsPath = '/api/v1/spots';
 
+  /// Submit a new spot for review. Requires a logged-in user's [accessToken];
+  /// the backend stores it with `status = "pending"` until an admin verifies
+  /// it, so it will NOT appear in [fetchSpots] right away.
+  Future<Spot> submitSpot({
+    required String name,
+    String description = '',
+    required double lat,
+    required double lng,
+    int difficulty = 1,
+    required String accessToken,
+  }) async {
+    final data = await _api.postJson(
+      _spotsPath,
+      bearerToken: accessToken,
+      body: {
+        'name': name,
+        'description': description,
+        'location': {'lat': lat, 'lng': lng},
+        'difficulty': difficulty,
+      },
+    );
+    return Spot.fromJson(data as Map<String, dynamic>);
+  }
+
   /// Fetch verified spots near ([lat], [lng]) within [radiusMeters].
   ///
   /// The backend requires a search centre, so callers pass the user's GPS

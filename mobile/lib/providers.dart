@@ -1,8 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import 'models/auth_tokens.dart';
 import 'models/bank_details.dart';
 import 'models/spot.dart';
+import 'repositories/auth_repository.dart';
 import 'repositories/payment_repository.dart';
 import 'repositories/spot_repository.dart';
 import 'services/api_client.dart';
@@ -37,6 +39,15 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         lng: center.longitude,
       );
 });
+
+/// Auth endpoints (register/login).
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => AuthRepository(ref.watch(apiClientProvider)),
+);
+
+/// The logged-in user's JWT pair, or `null` when signed out. Held in memory
+/// only — enough for submitting spots; persistent sessions come later.
+final authTokensProvider = StateProvider<AuthTokens?>((ref) => null);
 
 /// Payment data source.
 final paymentRepositoryProvider = Provider<PaymentRepository>(
