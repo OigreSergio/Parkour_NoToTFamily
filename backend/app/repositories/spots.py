@@ -25,6 +25,9 @@ async def create(session: AsyncSession, *, data: SpotCreate, submitted_by: UUID)
     )
     session.add(spot)
     await session.flush()
+    # Re-read the row so `location` comes back as a WKBElement — callers
+    # serialise it with `to_shape`, which rejects the raw WKT string above.
+    await session.refresh(spot)
     return spot
 
 

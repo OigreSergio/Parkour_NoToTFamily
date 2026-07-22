@@ -11,6 +11,10 @@ from app.api.v1 import api_router
 from app.core.config import get_settings
 from app.core.exceptions import AppError
 from app.core.logging import configure_logging, log
+from app.core.security import hash_password
+from app.db.session import SessionLocal
+from app.models.user import User, UserRole
+from app.repositories import users as users_repo
 
 settings = get_settings()
 configure_logging(debug=settings.debug)
@@ -18,9 +22,31 @@ configure_logging(debug=settings.debug)
 limiter = Limiter(key_func=get_remote_address, default_limits=["120/minute"])
 
 
+async def _ensure_initial_admin() -> None:
+    """Create the INITIAL_ADMIN_* user on startup if it doesn't exist yet."""
+    if not (settings.initial_admin_email and settings.initial_admin_password):
+        return
+    async with SessionLocal() as session:
+        existing = await users_repo.get_by_email(session, settings.initial_admin_email)
+        if existing is not None:
+            return
+        session.add(
+            User(
+                email=settings.initial_admin_email.lower(),
+                password_hash=hash_password(settings.initial_admin_password),
+                display_name="Admin",
+                role=UserRole.admin,
+                is_email_verified=True,
+            )
+        )
+        await session.commit()
+        log.info("initial_admin_created", email=settings.initial_admin_email)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     log.info("startup", env=settings.env)
+    await _ensure_initial_admin()
     yield
     log.info("shutdown")
 
