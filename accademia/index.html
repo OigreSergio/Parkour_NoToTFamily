@@ -1,0 +1,906 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16171A">
+<title>PkFAMILY · Accademia</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤸</text></svg>">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --bg: #ECEDEA;
+    --panel: #F7F7F5;
+    --ink: #191A1C;
+    --ink-soft: #5A5C58;
+    --line: #D3D5CF;
+    --accent: #2743E3;
+    --accent-ink: #FFFFFF;
+    --ok: #2E7D46;
+    --wait: #B97A0E;
+    --danger: #B3362B;
+    --chip: #E4E5E1;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16171A;
+      --panel: #1E2024;
+      --ink: #E8E9E6;
+      --ink-soft: #9A9C99;
+      --line: #33353A;
+      --accent: #7C90FF;
+      --accent-ink: #10122B;
+      --ok: #5FBF82;
+      --wait: #E0A94E;
+      --danger: #E07A6E;
+      --chip: #26282D;
+    }
+  }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.5;
+    padding-bottom: calc(64px + env(safe-area-inset-bottom));
+  }
+  header.app {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    padding: calc(10px + env(safe-area-inset-top)) 16px 10px;
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  header.app .brand { font-weight: 800; letter-spacing: -0.02em; font-size: 18px; }
+  header.app .brand span { color: var(--accent); }
+  header.app .sub { color: var(--ink-soft); font-size: 13px; }
+  main { max-width: 640px; margin: 0 auto; padding: 16px; }
+  h2 { font-size: 22px; letter-spacing: -0.02em; margin: 8px 0 4px; }
+  h3 { font-size: 15px; margin: 20px 0 8px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.06em; }
+  p.lead { color: var(--ink-soft); margin: 0 0 16px; font-size: 14px; }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .card.tap { cursor: pointer; }
+  .card.tap:active { transform: scale(0.99); }
+
+  .row { display: flex; align-items: center; gap: 10px; }
+  .row .grow { flex: 1; min-width: 0; }
+  .title { font-weight: 700; font-size: 15px; }
+  .meta { color: var(--ink-soft); font-size: 12.5px; }
+
+  .chip {
+    display: inline-block; font-size: 11.5px; font-weight: 600;
+    padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--ink-soft);
+    margin-right: 4px; white-space: nowrap;
+  }
+  .chip.lv-principiante { color: var(--ok); }
+  .chip.lv-intermedio  { color: var(--wait); }
+  .chip.lv-avanzato    { color: var(--danger); }
+  .state {
+    font-size: 20px; width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--chip); flex: none;
+  }
+  .state.landed { background: var(--ok); }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hub-tile {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 14px; cursor: pointer; text-align: left; font: inherit; color: inherit;
+  }
+  .hub-tile .emoji { font-size: 26px; }
+  .hub-tile .t { font-weight: 700; margin-top: 6px; }
+  .hub-tile .d { color: var(--ink-soft); font-size: 12.5px; }
+
+  .bar { height: 8px; border-radius: 999px; background: var(--chip); overflow: hidden; margin-top: 8px; }
+  .bar > i { display: block; height: 100%; background: var(--accent); border-radius: 999px; transition: width .3s; }
+
+  button.btn {
+    font: inherit; font-weight: 700; border: 1px solid var(--line);
+    background: var(--panel); color: var(--ink);
+    border-radius: 12px; padding: 10px 14px; cursor: pointer;
+  }
+  button.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  button.btn.small { padding: 7px 10px; font-size: 13px; border-radius: 10px; }
+  button.btn:active { transform: scale(0.98); }
+  .btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+
+  input[type="search"], input[type="date"], select {
+    font: inherit; width: 100%;
+    background: var(--panel); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px;
+  }
+  .filters { display: flex; gap: 8px; margin: 10px 0; }
+  .filters select { width: auto; flex: 1; }
+
+  nav.tabs {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 10;
+    background: var(--panel); border-top: 1px solid var(--line);
+    display: flex; justify-content: space-around;
+    padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  nav.tabs a {
+    text-decoration: none; color: var(--ink-soft); font-size: 11px; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 4px 10px; border-radius: 10px; min-width: 56px;
+  }
+  nav.tabs a .ico { font-size: 20px; line-height: 1; }
+  nav.tabs a.on { color: var(--accent); background: var(--chip); }
+
+  .steps { counter-reset: step; padding: 0; margin: 8px 0; list-style: none; }
+  .steps li {
+    counter-increment: step; position: relative;
+    padding: 0 0 14px 40px; font-size: 14.5px;
+  }
+  .steps li::before {
+    content: counter(step);
+    position: absolute; left: 0; top: 0;
+    width: 26px; height: 26px; border-radius: 999px;
+    background: var(--accent); color: var(--accent-ink);
+    font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  ul.plain { padding-left: 18px; margin: 8px 0; font-size: 14px; }
+  ul.plain li { margin-bottom: 6px; }
+
+  .callout {
+    border-left: 3px solid var(--wait);
+    background: var(--chip); border-radius: 0 12px 12px 0;
+    padding: 10px 12px; font-size: 13.5px; margin: 12px 0;
+  }
+  .callout.safety { border-left-color: var(--danger); }
+
+  .videobox {
+    position: relative; border-radius: 14px; overflow: hidden;
+    background: #000; aspect-ratio: 16 / 9; margin: 12px 0;
+  }
+  .videobox iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .videobox .ph {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 8px; color: #fff; text-align: center; padding: 16px;
+  }
+  .videobox .ph .play { font-size: 42px; }
+  .videobox .ph small { opacity: 0.75; }
+
+  .badgegrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .badge {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 12px 8px; text-align: center;
+  }
+  .badge .e { font-size: 30px; filter: grayscale(1); opacity: 0.35; }
+  .badge.won .e { filter: none; opacity: 1; }
+  .badge .n { font-size: 12px; font-weight: 700; margin-top: 4px; }
+  .badge .d { font-size: 11px; color: var(--ink-soft); }
+
+  .back { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 14px; display: inline-block; margin-bottom: 8px; }
+  .goalline { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+
+  #toast {
+    position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%) translateY(20px);
+    background: var(--ink); color: var(--bg);
+    padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: 14px;
+    opacity: 0; pointer-events: none; transition: all .3s; z-index: 20; white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="app">
+  <div class="brand">Pk<span>FAMILY</span></div>
+  <div class="sub">Accademia — tutorial &amp; video</div>
+</header>
+
+<main id="app"></main>
+
+<nav class="tabs">
+  <a href="#/" data-tab="home"><span class="ico">🏠</span>Home</a>
+  <a href="#/tutorial" data-tab="tutorial"><span class="ico">🎓</span>Tutorial</a>
+  <a href="#/trick" data-tab="trick"><span class="ico">📖</span>Trick</a>
+  <a href="#/obiettivi" data-tab="obiettivi"><span class="ico">🎯</span>Obiettivi</a>
+  <a href="#/badge" data-tab="badge"><span class="ico">🏅</span>Badge</a>
+</nav>
+
+<div id="toast"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   PkFAMILY Accademia — modulo tutorial & video
+   Concept ispirato a "Ultimate Parkour App":
+   hub centrale → tutorial (scritti + video) → trick database
+   ricercabile → obiettivi con promemoria → progressi → badge.
+   Persistenza: localStorage (v2: Supabase videos/video_progress).
+   ============================================================ */
+
+const LIVELLI = ["principiante", "intermedio", "avanzato"];
+const CATEGORIE = {
+  fond:  { nome: "Fondamentali", emoji: "🧱" },
+  vault: { nome: "Vault",        emoji: "🐒" },
+  salti: { nome: "Salti & Precision", emoji: "🦘" },
+  muri:  { nome: "Muri",         emoji: "🧗" },
+  flip:  { nome: "Flip & Acro",  emoji: "🤸" },
+};
+
+/* Trick database: tutorial scritti completi; il campo `video` (URL YouTube
+   embed) verrà popolato con i video ufficiali PkFAMILY — finché è null la
+   scheda offre la ricerca del tutorial su YouTube. */
+const TRICKS = [
+  {
+    id: "atterraggio", nome: "Atterraggio (Landing)", cat: "fond", lv: "principiante",
+    prereq: [], video: null, yt: "parkour landing tutorial atterraggio",
+    desc: "La base di tutto il parkour: assorbire l'impatto in modo sicuro e silenzioso.",
+    steps: [
+      "Parti da fermo su un muretto basso (max altezza ginocchia).",
+      "Atterra sull'avampiede, con i piedi alla larghezza delle spalle.",
+      "Piega ginocchia e anche per assorbire — le ginocchia non superano mai le punte dei piedi.",
+      "Le braccia scendono davanti a te per bilanciare; lo sguardo resta avanti.",
+      "Obiettivo: atterraggio silenzioso. Se fa rumore, stai assorbendo poco.",
+    ],
+    errori: ["Atterrare sui talloni", "Ginocchia che collassano verso l'interno", "Guardare i piedi"],
+    safety: "Aumenta l'altezza solo quando 10 atterraggi di fila sono silenziosi e stabili.",
+  },
+  {
+    id: "roll", nome: "Capovolta (Safety Roll)", cat: "fond", lv: "principiante",
+    prereq: ["atterraggio"], video: null, yt: "parkour roll tutorial capovolta",
+    desc: "La capovolta di sicurezza dissipa l'energia di un salto e protegge la schiena.",
+    steps: [
+      "Su prato o tappeto: accovacciati, mano guida a terra davanti a te.",
+      "Ruota sopra la spalla (non sulla testa!): la traiettoria va da spalla a fianco opposto.",
+      "Rimani raccolto: mento al petto, gambe piegate.",
+      "Esci dalla capovolta in piedi, senza usare le mani.",
+      "Poi collegala a un piccolo salto: atterraggio → capovolta → corsa.",
+    ],
+    errori: ["Rotolare dritto sulla colonna", "Testa che tocca terra", "Aprirsi durante la rotazione"],
+    safety: "Impara prima su morbido. La capovolta su cemento arriva solo quando la tecnica è perfetta.",
+  },
+  {
+    id: "precision", nome: "Precision Jump", cat: "fond", lv: "principiante",
+    prereq: ["atterraggio"], video: null, yt: "precision jump parkour tutorial",
+    desc: "Salto di precisione a piedi pari: da fermo, atterri esattamente dove vuoi.",
+    steps: [
+      "Trova due linee a terra o due muretti bassi vicini.",
+      "Carica piegando le ginocchia, braccia indietro.",
+      "Esplodi in avanti lanciando le braccia; ginocchia al petto in volo.",
+      "Atterra sull'avampiede, fermo e stabile: 'stick' senza passi extra.",
+      "Aumenta gradualmente distanza e poi altezza del target.",
+    ],
+    errori: ["Atterrare in overshoot (passi in avanti)", "Braccia non coordinate", "Target troppo ambizioso subito"],
+    safety: "Prima la distanza a terra, poi i muretti. Controlla sempre che il bordo non sia scivoloso.",
+  },
+  {
+    id: "quadrupedia", nome: "Quadrupedia (QM)", cat: "fond", lv: "principiante",
+    prereq: [], video: null, yt: "quadrupedal movement parkour tutorial",
+    desc: "Camminata a quattro zampe: costruisce forza, coordinazione e controllo per tutti i movimenti.",
+    steps: [
+      "Posizione: mani sotto le spalle, ginocchia sotto le anche, sollevate da terra.",
+      "Muovi mano destra + piede sinistro insieme, poi alterna.",
+      "Schiena piatta, testa in linea, movimenti lenti e controllati.",
+      "Varianti: avanti, indietro, laterale, su rail bassa.",
+    ],
+    errori: ["Sedere troppo alto", "Movimenti frettolosi", "Trattenere il respiro"],
+    safety: "Nessun rischio particolare: perfetto per il riscaldamento di ogni sessione.",
+  },
+  {
+    id: "balance", nome: "Equilibrio su rail", cat: "fond", lv: "principiante",
+    prereq: [], video: null, yt: "rail balance parkour tutorial",
+    desc: "Camminare ed essere stabili su una ringhiera: la base per precision e cat su rail.",
+    steps: [
+      "Inizia su un muretto largo, poi passa a una rail bassa.",
+      "Piedi leggermente ruotati verso l'esterno, braccia aperte.",
+      "Sguardo avanti (non sui piedi), passi piccoli e lenti.",
+      "Progressione: fermo 30s → camminata → giro su te stesso → squat sulla rail.",
+    ],
+    errori: ["Guardare i piedi", "Braccia rigide lungo i fianchi", "Passi lunghi"],
+    safety: "Resta su rail basse finché scendere controllato non è automatico.",
+  },
+  {
+    id: "safety-vault", nome: "Safety Vault", cat: "vault", lv: "principiante",
+    prereq: ["atterraggio"], video: null, yt: "safety vault parkour tutorial",
+    desc: "Il primo vault da imparare: superi un ostacolo appoggiando una mano e il piede opposto.",
+    steps: [
+      "Avvicinati con corsa leggera a un muretto alto circa come il bacino.",
+      "Appoggia una mano sull'ostacolo e il piede opposto sul bordo.",
+      "Fai passare la gamba libera tra mano e piede d'appoggio.",
+      "Spingi con la mano per uscire e riprendi subito la corsa.",
+    ],
+    errori: ["Fermarsi prima dell'ostacolo", "Gamba che urta il muretto", "Non riprendere la corsa in uscita"],
+    safety: "Controlla che la superficie di appoggio non sia bagnata o instabile.",
+  },
+  {
+    id: "speed-vault", nome: "Speed Vault", cat: "vault", lv: "intermedio",
+    prereq: ["safety-vault"], video: null, yt: "speed vault parkour tutorial",
+    desc: "Vault veloce con una sola mano: il corpo passa laterale sopra l'ostacolo quasi senza toccarlo.",
+    steps: [
+      "Corri verso l'ostacolo con buona velocità.",
+      "Salta lateralmente lanciando le gambe di lato, appoggia solo una mano.",
+      "Il corpo resta quasi orizzontale sopra l'ostacolo.",
+      "Atterra sulla gamba esterna e continua a correre senza perdere ritmo.",
+    ],
+    errori: ["Rallentare prima del vault", "Appoggiare troppo peso sulla mano", "Atterrare a piedi pari fermandosi"],
+    safety: "Padroneggia il safety vault prima: lo speed è lo stesso pattern con più velocità.",
+  },
+  {
+    id: "lazy-vault", nome: "Lazy Vault", cat: "vault", lv: "intermedio",
+    prereq: ["safety-vault"], video: null, yt: "lazy vault parkour tutorial",
+    desc: "Vault elegante da approccio laterale: passi le gambe una dopo l'altra sopra l'ostacolo.",
+    steps: [
+      "Avvicinati all'ostacolo camminando in diagonale/laterale.",
+      "Appoggia la mano interna, lancia la gamba interna sopra l'ostacolo.",
+      "Segui con la gamba esterna mentre cambi mano d'appoggio.",
+      "Atterra morbido continuando nella direzione di marcia.",
+    ],
+    errori: ["Approccio troppo frontale", "Cambiare mano in ritardo", "Gambe basse che urtano"],
+    safety: "Inizia da fermo su un muretto basso per capire il gioco di mani.",
+  },
+  {
+    id: "kong", nome: "Kong Vault", cat: "vault", lv: "intermedio",
+    prereq: ["safety-vault", "precision"], video: null, yt: "kong vault parkour tutorial monkey vault",
+    desc: "Il vault iconico: tuffo in avanti, entrambe le mani sull'ostacolo, gambe che passano in mezzo.",
+    steps: [
+      "Progressione a terra: quadrupedia esplosiva con spinta delle braccia.",
+      "Su un muretto basso: appoggia le mani e fai passare le ginocchia in mezzo (kong da fermo).",
+      "Aggiungi rincorsa corta: tuffo con anche alte, spalle avanti.",
+      "Spingi forte con le mani per liberare le gambe e atterrare oltre l'ostacolo.",
+      "Aumenta lunghezza e altezza dell'ostacolo solo gradualmente.",
+    ],
+    errori: ["Anche troppo basse (piedi che urtano)", "Mani appoggiate troppo presto", "Tuffo senza spinta delle braccia"],
+    safety: "Il kong richiede impegno: se non sei convinto, non partire. Meglio un drill in più su ostacolo basso.",
+  },
+  {
+    id: "dash-vault", nome: "Dash Vault", cat: "vault", lv: "avanzato",
+    prereq: ["kong", "speed-vault"], video: null, yt: "dash vault parkour tutorial",
+    desc: "Il contrario del kong: prima passano i piedi, poi spingi con le mani dietro di te.",
+    steps: [
+      "Salta verso l'ostacolo lanciando i piedi in avanti (posizione seduta in volo).",
+      "Le mani arrivano dopo, dietro il bacino, sull'ostacolo.",
+      "Spingi con le mani per proiettarti in avanti e alzare le anche.",
+      "Atterra ammortizzando e riprendi la corsa.",
+    ],
+    errori: ["Sedersi sull'ostacolo", "Mani troppo presto", "Spinta debole (atterraggio corto)"],
+    safety: "Prova prima la 'seduta in volo' su un plinto morbido o muretto basso.",
+  },
+  {
+    id: "reverse-vault", nome: "Reverse Vault", cat: "vault", lv: "avanzato",
+    prereq: ["speed-vault", "lazy-vault"], video: null, yt: "reverse vault parkour tutorial",
+    desc: "Vault con rotazione di 360°: superi l'ostacolo girando le spalle alla direzione di marcia.",
+    steps: [
+      "Avvicinati come per uno speed vault ma appoggia la mano opposta, incrociata.",
+      "Lascia che le spalle ruotino: la schiena passa sopra l'ostacolo.",
+      "Segui la rotazione con la seconda mano per stabilità.",
+      "Completa i 360° atterrando nella direzione di corsa.",
+    ],
+    errori: ["Rotazione incompleta", "Perdere di vista l'atterraggio troppo a lungo", "Approccio troppo veloce all'inizio"],
+    safety: "Impara la meccanica da fermo, su un ostacolo alto fino al bacino.",
+  },
+  {
+    id: "cat-leap", nome: "Cat Leap", cat: "salti", lv: "intermedio",
+    prereq: ["precision", "atterraggio"], video: null, yt: "cat leap parkour tutorial arm jump",
+    desc: "Salto verso un muro verticale: ti aggrappi al bordo con le mani, piedi appoggiati al muro.",
+    steps: [
+      "Trova un muro con bordo afferrabile, più alto di te.",
+      "Salta verso il muro: prima toccano i piedi (gambe piegate), poi le mani afferrano il bordo.",
+      "Posizione cat: braccia semi-tese, piedi in appoggio, corpo raccolto.",
+      "Climb-up per uscire: trazione + spinta dei piedi per salire oltre il bordo.",
+    ],
+    errori: ["Arrivare prima con le mani (sbatti il corpo)", "Braccia completamente tese (strappo)", "Piedi che scivolano per gambe tese"],
+    safety: "Controlla sempre che il bordo sia solido e non tagliente. Inizia da distanze corte.",
+  },
+  {
+    id: "running-precision", nome: "Running Precision", cat: "salti", lv: "intermedio",
+    prereq: ["precision"], video: null, yt: "running precision jump parkour tutorial",
+    desc: "Precision con rincorsa: stacchi da un piede e atterri preciso a piedi pari.",
+    steps: [
+      "Segna un punto di stacco e un target a terra.",
+      "Rincorsa corta (3-5 passi), stacco da un piede.",
+      "In volo richiama entrambe le gambe avanti per atterrare a piedi pari.",
+      "Stick dell'atterraggio sull'avampiede, come nel precision da fermo.",
+    ],
+    errori: ["Stacco a due piedi", "Non richiamare le gambe (atterri lungo)", "Guardare lo stacco invece del target"],
+    safety: "A terra finché la percentuale di stick non è >80%, poi su muretti.",
+  },
+  {
+    id: "stride", nome: "Stride", cat: "salti", lv: "intermedio",
+    prereq: ["running-precision"], video: null, yt: "stride parkour tutorial",
+    desc: "Falcata gigante tra due ostacoli: corri 'attraverso' il vuoto senza fermarti.",
+    steps: [
+      "Trova due muretti a distanza di falcata (inizia corto).",
+      "Corri e stacca da un piede atterrando sull'altro piede sul secondo muretto.",
+      "Mantieni il busto alto e la corsa fluida, come un passo allungato.",
+      "Concatena: stride → stride → precision.",
+    ],
+    errori: ["Saltare 'in alto' invece che 'in avanti'", "Atterrare col tallone", "Esitare prima dello stacco"],
+    safety: "Simula a terra con linee/segni prima di salire sui muretti.",
+  },
+  {
+    id: "plyo", nome: "Plyo / Crane", cat: "salti", lv: "avanzato",
+    prereq: ["running-precision", "cat-leap"], video: null, yt: "plyo crane jump parkour tutorial",
+    desc: "Atterraggio con un piede sul bordo e l'altro sotto: per target troppo lontani per il precision.",
+    steps: [
+      "Salta come un running precision verso un muretto alto.",
+      "Un piede atterra sul bordo, l'altra gamba resta sotto, ammortizzando contro il muro.",
+      "Spingi con la gamba d'appoggio per salire in piedi sul muretto.",
+      "Allena entrambe le gambe di stacco/appoggio.",
+    ],
+    errori: ["Ginocchio d'appoggio che sbatte sul muro", "Piede troppo poco sul bordo", "Ansia da commitment: mezzo salto"],
+    safety: "Proteggi gli stinchi nelle prime sessioni; scegli bordi non scivolosi.",
+  },
+  {
+    id: "wall-run", nome: "Wall Run / Passamuro", cat: "muri", lv: "intermedio",
+    prereq: ["cat-leap"], video: null, yt: "wall run parkour tutorial passamuro",
+    desc: "Correre su per un muro alto usando un appoggio del piede per raggiungere il bordo.",
+    steps: [
+      "Rincorsa decisa verso il muro, leggermente angolata.",
+      "Un piede spinge sul muro all'altezza del bacino: spinta verso l'ALTO, non in avanti.",
+      "Braccia che salgono esplosive; afferra il bordo con entrambe le mani.",
+      "Climb-up per uscire in piedi sul muro.",
+      "Progressione: muri sempre più alti, poi un solo appoggio pulito.",
+    ],
+    errori: ["Piede troppo basso sul muro", "Spingere in avanti (rimbalzi via)", "Testa indietro durante la spinta"],
+    safety: "Verifica l'atterraggio dietro di te: se scivoli devi poter cadere pulito.",
+  },
+  {
+    id: "tic-tac", nome: "Tic Tac", cat: "muri", lv: "intermedio",
+    prereq: ["precision"], video: null, yt: "tic tac parkour tutorial",
+    desc: "Un passo sul muro per cambiare direzione o superare un ostacolo laterale.",
+    steps: [
+      "Corri in diagonale verso un muro.",
+      "Appoggia un piede sul muro (altezza bacino) e spingi lateralmente.",
+      "Usa la spinta per redirigere il salto verso il target (precision, vault, cat).",
+      "Concatena: tic tac → precision, tic tac → cat leap.",
+    ],
+    errori: ["Piede parallelo al muro che scivola", "Angolo di approccio troppo frontale", "Spinta debole"],
+    safety: "Muro asciutto e suola pulita: il tic tac vive sull'aderenza.",
+  },
+  {
+    id: "climb-up", nome: "Climb-up", cat: "muri", lv: "intermedio",
+    prereq: ["cat-leap"], video: null, yt: "climb up parkour tutorial muscle up wall",
+    desc: "Dalla posizione cat (appesi al bordo) a in piedi sul muro, in modo fluido.",
+    steps: [
+      "Parti in posizione cat: mani sul bordo, piedi sul muro.",
+      "Tira con le braccia e spingi con i piedi contemporaneamente.",
+      "Porta il petto sopra il bordo, poi trasforma la trazione in spinta (come un dip).",
+      "Porta un piede sul bordo ed esci in piedi.",
+    ],
+    errori: ["Tirare solo di braccia", "Gomiti che si aprono", "Fermarsi col petto al bordo"],
+    safety: "Rinforza prima trazioni e dip: il climb-up è forza + tecnica.",
+  },
+  {
+    id: "wall-spin", nome: "Wall Spin", cat: "muri", lv: "avanzato",
+    prereq: ["kong", "tic-tac"], video: null, yt: "wall spin parkour tutorial",
+    desc: "Rotazione a 360° con le mani in appoggio sul muro: spettacolare e più facile di quanto sembri.",
+    steps: [
+      "Avvicinati al muro in leggera diagonale.",
+      "Appoggia le mani sul muro (una sopra l'altra), spingi e lancia le gambe.",
+      "Ruota attorno al punto di appoggio, testa che segue la rotazione.",
+      "Stacca le mani e atterra fronte alla direzione di uscita.",
+    ],
+    errori: ["Mani troppo distanti tra loro", "Rotazione piatta (poca spinta)", "Paura di girare la testa"],
+    safety: "Prova la meccanica su un muretto orizzontale basso (palm spin) prima del muro verticale.",
+  },
+  {
+    id: "kip-up", nome: "Kip-up", cat: "flip", lv: "intermedio",
+    prereq: ["roll"], video: null, yt: "kip up tutorial",
+    desc: "Da sdraiato a in piedi con un colpo di reni: stile puro, ottimo per il controllo del corpo.",
+    steps: [
+      "Sdraiato a terra, gambe raccolte al petto, mani a terra accanto alle orecchie.",
+      "Lancia le gambe in alto e in avanti (non solo in avanti!).",
+      "Spingi con le mani e inarca la schiena.",
+      "Atterra sui piedi con ginocchia piegate, petto in su.",
+    ],
+    errori: ["Lancio delle gambe troppo orizzontale", "Nessuna spinta delle mani", "Piedi che atterrano troppo avanti"],
+    safety: "Su tappeto o prato. Riscalda bene polsi e schiena.",
+  },
+  {
+    id: "palm-spin", nome: "Palm Spin", cat: "flip", lv: "intermedio",
+    prereq: ["safety-vault"], video: null, yt: "palm spin parkour tutorial",
+    desc: "Rotazione orizzontale sopra un muretto con appoggio delle mani: introduzione al mondo degli spin.",
+    steps: [
+      "Muretto basso: appoggia entrambe le mani sul bordo.",
+      "Salta e porta le anche sopra le mani, iniziando la rotazione.",
+      "Il corpo ruota parallelo al muretto; la testa guida la rotazione.",
+      "Atterra dallo stesso lato di partenza, fronte al muretto.",
+    ],
+    errori: ["Anche basse", "Rotazione lenta per paura", "Mollare le mani troppo presto"],
+    safety: "Ottimo primo 'trick da spin': il muretto sostiene tutto il movimento.",
+  },
+  {
+    id: "backflip", nome: "Backflip", cat: "flip", lv: "avanzato",
+    prereq: ["roll", "kip-up"], video: null, yt: "backflip tutorial progressione salto mortale indietro",
+    desc: "Il salto mortale all'indietro: il trick più desiderato. Va costruito con una progressione seria.",
+    steps: [
+      "Prerequisiti: salto verticale esplosivo e candela (salto con anche alte e ginocchia al petto).",
+      "In palestra/su morbido: back tuck assistito da uno spotter o in buca.",
+      "Impara il set: braccia in alto, salto VERTICALE, poi ginocchia al petto (mai indietro con le spalle).",
+      "Apri la rotazione quando vedi il suolo, atterra con ginocchia piegate.",
+      "Solo dopo decine di ripetizioni pulite: erba, poi superfici dure.",
+    ],
+    errori: ["Buttare la testa/spalle indietro invece di saltare in alto", "Raccolta lenta delle ginocchia", "Aprire troppo presto o troppo tardi"],
+    safety: "MAI da soli le prime volte: serve spotter o tappetone. Il backflip su cemento è il punto di arrivo, non di partenza.",
+  },
+  {
+    id: "frontflip", nome: "Frontflip", cat: "flip", lv: "avanzato",
+    prereq: ["roll", "backflip"], video: null, yt: "frontflip tutorial salto mortale avanti",
+    desc: "Salto mortale in avanti: rotazione più facile da generare ma atterraggio cieco.",
+    steps: [
+      "Progressione: tuffo-capovolta su morbido → front tuck in buca/tappetone.",
+      "Rincorsa corta, stacco a due piedi con braccia che lanciano in alto-avanti.",
+      "Raccogliti forte: ginocchia al petto, mento al petto.",
+      "Spot dell'atterraggio a 3/4 di rotazione, apri e ammortizza.",
+    ],
+    errori: ["Tuffarsi in avanti senza salire", "Raccolta debole", "Aprire in ritardo (atterri seduto)"],
+    safety: "L'atterraggio è cieco: costruisci in palestra la sensibilità di rotazione prima di uscire.",
+  },
+  {
+    id: "sideflip", nome: "Sideflip", cat: "flip", lv: "avanzato",
+    prereq: ["backflip"], video: null, yt: "sideflip tutorial salto mortale laterale",
+    desc: "Mortale laterale: per molti il flip più naturale da portare in strada.",
+    steps: [
+      "Dal trampolino/morbido: salto laterale con raccolta delle ginocchia.",
+      "Stacco a due piedi, lancio delle braccia verso l'alto-lato.",
+      "Raccogli le ginocchia verso la spalla che guida la rotazione.",
+      "Spot laterale del suolo, apri e atterra fronte alla direzione originale.",
+    ],
+    errori: ["Rotazione mista (metà back metà side)", "Testa nascosta (perdi lo spot)", "Stacco sbilanciato"],
+    safety: "Come per tutti i flip: palestra → erba → strada, mai saltare passaggi.",
+  },
+  {
+    id: "webster", nome: "Webster", cat: "flip", lv: "avanzato",
+    prereq: ["frontflip"], video: null, yt: "webster flip tutorial",
+    desc: "Frontflip con stacco da una gamba: fluido, si collega benissimo alla corsa.",
+    steps: [
+      "Dalla camminata: calcia indietro-alto con una gamba mentre il busto si tuffa avanti.",
+      "La gamba di stacco spinge, quella libera genera la rotazione.",
+      "Raccogli entrambe le gambe a metà rotazione.",
+      "Spot e apertura come nel frontflip.",
+    ],
+    errori: ["Calcio debole della gamba libera", "Busto che si piega senza salire", "Stacco frenato"],
+    safety: "Prima il frontflip solido, poi il webster su morbido.",
+  },
+  {
+    id: "back-handspring", nome: "Back Handspring (Flick)", cat: "flip", lv: "avanzato",
+    prereq: ["kip-up", "backflip"], video: null, yt: "back handspring flick tutorial",
+    desc: "Ribaltata indietro con passaggio sulle mani: porta d'ingresso per le combo acrobatiche.",
+    steps: [
+      "In palestra con spotter: dalla posizione 'seduta a mezz'aria' spingi indietro.",
+      "Lancia le braccia oltre la testa, guardale durante il volo.",
+      "Le mani toccano terra a braccia tese, corpo inarcato.",
+      "Colpo di reni (courbette): gambe che frustano a terra, busto che risale.",
+    ],
+    errori: ["Saltare in alto invece che indietro", "Gomiti piegati all'appoggio", "Testa in avanti (perdi orientamento)"],
+    safety: "Trick da palestra con assistenza: il flick autodidatta su duro è il modo migliore per farsi male.",
+  },
+];
+
+/* Badge: gamification (come i 30+ achievement dell'app originale, ridotti al set utile) */
+const BADGES = [
+  { id: "primo-passo", emoji: "👟", nome: "Primo passo", desc: "Metti un trick in allenamento",
+    test: s => Object.values(s.progress).some(v => v === "training" || v === "landed") },
+  { id: "first-landed", emoji: "🎉", nome: "First landed", desc: "Landa il tuo primo trick",
+    test: s => contaLanded(s) >= 1 },
+  { id: "cinque-landed", emoji: "🔥", nome: "In fiamme", desc: "5 trick landati",
+    test: s => contaLanded(s) >= 5 },
+  { id: "dieci-landed", emoji: "💎", nome: "Collezionista", desc: "10 trick landati",
+    test: s => contaLanded(s) >= 10 },
+  { id: "fondamenta", emoji: "🧱", nome: "Fondamenta solide", desc: "Tutti i fondamentali landati",
+    test: s => TRICKS.filter(t => t.cat === "fond").every(t => s.progress[t.id] === "landed") },
+  { id: "vault-master", emoji: "🐒", nome: "Vault master", desc: "Tutti i vault landati",
+    test: s => TRICKS.filter(t => t.cat === "vault").every(t => s.progress[t.id] === "landed") },
+  { id: "wall-rat", emoji: "🧗", nome: "Wall rat", desc: "Tutti i trick a muro landati",
+    test: s => TRICKS.filter(t => t.cat === "muri").every(t => s.progress[t.id] === "landed") },
+  { id: "flip-fever", emoji: "🤸", nome: "Flip fever", desc: "Landa il tuo primo flip",
+    test: s => TRICKS.filter(t => t.cat === "flip").some(t => s.progress[t.id] === "landed") },
+  { id: "goal-setter", emoji: "🎯", nome: "Mira al bersaglio", desc: "Imposta il tuo primo obiettivo",
+    test: s => Object.keys(s.goals).length >= 1 },
+  { id: "goal-hit", emoji: "🏆", nome: "Obiettivo centrato", desc: "Landa un trick che era un obiettivo",
+    test: s => Object.keys(s.goals).some(id => s.progress[id] === "landed") },
+  { id: "studioso", emoji: "📚", nome: "Studioso", desc: "Apri 10 schede tutorial",
+    test: s => (s.opened || []).length >= 10 },
+  { id: "accademia", emoji: "👑", nome: "Accademia completata", desc: "Landa tutti i trick",
+    test: s => TRICKS.every(t => s.progress[t.id] === "landed") },
+];
+
+/* ---------- stato ---------- */
+const STORE_KEY = "pkfamily_accademia_v1";
+let stato = caricaStato();
+
+function caricaStato() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return Object.assign({ progress: {}, goals: {}, opened: [], badges: [] }, JSON.parse(raw));
+  } catch (e) { /* storage non disponibile: si vive in memoria */ }
+  return { progress: {}, goals: {}, opened: [], badges: [] };
+}
+function salvaStato() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(stato)); } catch (e) { /* ok */ }
+  controllaBadge();
+}
+function contaLanded(s) { return Object.values(s.progress).filter(v => v === "landed").length; }
+
+function controllaBadge() {
+  for (const b of BADGES) {
+    if (!stato.badges.includes(b.id) && b.test(stato)) {
+      stato.badges.push(b.id);
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(stato)); } catch (e) { /* ok */ }
+      toast(`🏅 Badge sbloccato: ${b.nome}!`);
+    }
+  }
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("show"), 2600);
+}
+
+/* ---------- helpers ---------- */
+const $app = document.getElementById("app");
+const byId = id => TRICKS.find(t => t.id === id);
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+function statoTrick(id) { return stato.progress[id] || "todo"; }
+function iconaStato(id) {
+  const s = statoTrick(id);
+  return s === "landed" ? "✅" : s === "training" ? "💪" : "▫️";
+}
+function chipLivello(lv) { return `<span class="chip lv-${lv}">${lv}</span>`; }
+
+function cardTrick(t) {
+  const s = statoTrick(t.id);
+  return `<div class="card tap row" onclick="location.hash='#/trick/${t.id}'">
+    <div class="state ${s === "landed" ? "landed" : ""}">${iconaStato(t.id)}</div>
+    <div class="grow">
+      <div class="title">${esc(t.nome)}</div>
+      <div class="meta">${CATEGORIE[t.cat].emoji} ${CATEGORIE[t.cat].nome} · ${chipLivello(t.lv)}</div>
+    </div>
+    <div class="meta">›</div>
+  </div>`;
+}
+
+/* ---------- viste ---------- */
+function vistaHome() {
+  const landed = contaLanded(stato);
+  const training = Object.values(stato.progress).filter(v => v === "training").length;
+  const pct = Math.round(landed / TRICKS.length * 100);
+  const nGoals = Object.keys(stato.goals).filter(id => statoTrick(id) !== "landed").length;
+  const nBadges = stato.badges.length;
+  return `
+    <h2>Ciao, traceur 👋</h2>
+    <p class="lead">La tua accademia di parkour: tutorial, trick, obiettivi e badge.</p>
+    <div class="card">
+      <div class="row"><div class="grow title">I tuoi progressi</div>
+        <div class="meta">${landed}/${TRICKS.length} landati</div></div>
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="meta" style="margin-top:6px">${training} in allenamento · ${nBadges} badge · ${nGoals} obiettivi attivi</div>
+    </div>
+    <div class="btnrow">
+      <button class="btn primary" onclick="suggerisci()">✨ Suggeriscimi un trick</button>
+    </div>
+    <h3>Esplora</h3>
+    <div class="grid2">
+      <button class="hub-tile" onclick="location.hash='#/tutorial'">
+        <div class="emoji">🎓</div><div class="t">Tutorial</div>
+        <div class="d">Percorsi guidati per livello, scritti + video</div>
+      </button>
+      <button class="hub-tile" onclick="location.hash='#/trick'">
+        <div class="emoji">📖</div><div class="t">Trick database</div>
+        <div class="d">${TRICKS.length} trick ricercabili per nome e categoria</div>
+      </button>
+      <button class="hub-tile" onclick="location.hash='#/obiettivi'">
+        <div class="emoji">🎯</div><div class="t">Obiettivi</div>
+        <div class="d">Fissa il prossimo trick da landare</div>
+      </button>
+      <button class="hub-tile" onclick="location.hash='#/badge'">
+        <div class="emoji">🏅</div><div class="t">Badge</div>
+        <div class="d">${nBadges}/${BADGES.length} sbloccati</div>
+      </button>
+    </div>
+    <h3>PkFAMILY</h3>
+    <div class="card tap row" onclick="window.open('https://oigresergio.github.io/Parkour_NoToTFamily/','_blank')">
+      <div class="state">🗺️</div>
+      <div class="grow"><div class="title">Mappa degli spot</div>
+      <div class="meta">Trova dove allenare questi trick a Roma</div></div>
+      <div class="meta">↗</div>
+    </div>`;
+}
+
+function vistaTutorial() {
+  let html = `<h2>Tutorial 🎓</h2>
+    <p class="lead">Percorsi per livello: completa i principianti prima di passare oltre. Ogni scheda ha il tutorial scritto passo-passo e il video.</p>`;
+  for (const lv of LIVELLI) {
+    const list = TRICKS.filter(t => t.lv === lv);
+    const done = list.filter(t => statoTrick(t.id) === "landed").length;
+    const pct = Math.round(done / list.length * 100);
+    html += `<h3>${lv} — ${done}/${list.length}</h3>
+      <div class="bar" style="margin-bottom:10px"><i style="width:${pct}%"></i></div>
+      ${list.map(cardTrick).join("")}`;
+  }
+  return html;
+}
+
+function vistaDatabase() {
+  const q = (stato._q || "").toLowerCase();
+  const fc = stato._fc || "";
+  const fl = stato._fl || "";
+  const list = TRICKS.filter(t =>
+    (!q || t.nome.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)) &&
+    (!fc || t.cat === fc) && (!fl || t.lv === fl));
+  return `<h2>Trick database 📖</h2>
+    <p class="lead">Cerca tra ${TRICKS.length} trick. Il database cresce con la community.</p>
+    <input type="search" placeholder="Cerca un trick… (es. kong, flip)" value="${esc(stato._q || "")}"
+      oninput="stato._q=this.value;aggiornaLista()">
+    <div class="filters">
+      <select onchange="stato._fc=this.value;aggiornaLista()">
+        <option value="">Tutte le categorie</option>
+        ${Object.entries(CATEGORIE).map(([k, c]) =>
+          `<option value="${k}" ${fc === k ? "selected" : ""}>${c.emoji} ${c.nome}</option>`).join("")}
+      </select>
+      <select onchange="stato._fl=this.value;aggiornaLista()">
+        <option value="">Tutti i livelli</option>
+        ${LIVELLI.map(l => `<option value="${l}" ${fl === l ? "selected" : ""}>${l}</option>`).join("")}
+      </select>
+    </div>
+    <div id="lista-trick">${list.map(cardTrick).join("") || `<p class="lead">Nessun trick trovato.</p>`}</div>`;
+}
+
+function aggiornaLista() {
+  const q = (stato._q || "").toLowerCase();
+  const fc = stato._fc || "";
+  const fl = stato._fl || "";
+  const list = TRICKS.filter(t =>
+    (!q || t.nome.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q)) &&
+    (!fc || t.cat === fc) && (!fl || t.lv === fl));
+  const el = document.getElementById("lista-trick");
+  if (el) el.innerHTML = list.map(cardTrick).join("") || `<p class="lead">Nessun trick trovato.</p>`;
+}
+
+function vistaObiettivi() {
+  const attivi = Object.entries(stato.goals).filter(([id]) => statoTrick(id) !== "landed");
+  const fatti = Object.entries(stato.goals).filter(([id]) => statoTrick(id) === "landed");
+  const oggi = new Date(); oggi.setHours(0, 0, 0, 0);
+  const rendi = ([id, g]) => {
+    const t = byId(id); if (!t) return "";
+    let quando = "";
+    if (g.data) {
+      const giorni = Math.round((new Date(g.data) - oggi) / 86400000);
+      quando = giorni > 1 ? `⏳ ${giorni} giorni` : giorni === 1 ? "⏳ domani!" :
+               giorni === 0 ? "🔥 oggi!" : `⚠️ scaduto da ${-giorni} g`;
+    }
+    return `<div class="card tap row" onclick="location.hash='#/trick/${id}'">
+      <div class="state ${statoTrick(id) === "landed" ? "landed" : ""}">${statoTrick(id) === "landed" ? "🏆" : "🎯"}</div>
+      <div class="grow"><div class="title">${esc(t.nome)}</div>
+      <div class="meta">${quando || "senza scadenza"}</div></div>
+      <div class="meta">›</div>
+    </div>`;
+  };
+  return `<h2>Obiettivi 🎯</h2>
+    <p class="lead">Scegli il prossimo trick da landare e datti una scadenza: la costanza batte il talento.</p>
+    ${attivi.length ? attivi.map(rendi).join("") :
+      `<div class="card"><div class="title">Nessun obiettivo attivo</div>
+       <div class="meta">Apri un trick dal database e tocca "Imposta obiettivo".</div></div>`}
+    ${fatti.length ? `<h3>Centrati 🏆</h3>${fatti.map(rendi).join("")}` : ""}
+    <div class="btnrow"><button class="btn primary" onclick="suggerisci()">✨ Suggeriscimi un trick</button></div>`;
+}
+
+function vistaBadge() {
+  return `<h2>Badge 🏅</h2>
+    <p class="lead">${stato.badges.length}/${BADGES.length} sbloccati. Allenati e collezionali tutti.</p>
+    <div class="badgegrid">
+      ${BADGES.map(b => `<div class="badge ${stato.badges.includes(b.id) ? "won" : ""}">
+        <div class="e">${b.emoji}</div><div class="n">${b.nome}</div><div class="d">${b.desc}</div>
+      </div>`).join("")}
+    </div>`;
+}
+
+function vistaTrick(id) {
+  const t = byId(id);
+  if (!t) return `<p class="lead">Trick non trovato.</p>`;
+  if (!stato.opened.includes(id)) { stato.opened.push(id); salvaStato(); }
+  const s = statoTrick(id);
+  const prereqOk = t.prereq.every(p => statoTrick(p) === "landed");
+  const video = t.video
+    ? `<div class="videobox"><iframe src="${t.video}" title="Video tutorial" allowfullscreen
+         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe></div>`
+    : `<div class="videobox"><div class="ph">
+         <div class="play">▶️</div>
+         <div><b>Video PkFAMILY in arrivo</b></div>
+         <small>Nel frattempo guarda i migliori tutorial della community</small>
+         <button class="btn small" onclick="window.open('https://www.youtube.com/results?search_query=${encodeURIComponent(t.yt)}','_blank')">Cerca su YouTube ↗</button>
+       </div></div>`;
+  return `
+    <a class="back" href="#/trick">‹ Trick database</a>
+    <h2>${esc(t.nome)}</h2>
+    <div class="meta" style="margin-bottom:8px">${CATEGORIE[t.cat].emoji} ${CATEGORIE[t.cat].nome} · ${chipLivello(t.lv)}</div>
+    <p class="lead">${esc(t.desc)}</p>
+    ${video}
+    <div class="btnrow">
+      <button class="btn small ${s === "todo" ? "primary" : ""}" onclick="setProgress('${id}','todo')">▫️ Da imparare</button>
+      <button class="btn small ${s === "training" ? "primary" : ""}" onclick="setProgress('${id}','training')">💪 In allenamento</button>
+      <button class="btn small ${s === "landed" ? "primary" : ""}" onclick="setProgress('${id}','landed')">✅ Landed!</button>
+    </div>
+    ${t.prereq.length ? `<h3>Prerequisiti ${prereqOk ? "✅" : ""}</h3>
+      ${t.prereq.map(p => cardTrick(byId(p))).join("")}
+      ${prereqOk ? "" : `<div class="callout">Prima di provare questo trick, landa i prerequisiti: la progressione è la tua assicurazione.</div>`}` : ""}
+    <h3>Tutorial passo-passo</h3>
+    <ol class="steps">${t.steps.map(x => `<li>${esc(x)}</li>`).join("")}</ol>
+    <h3>Errori comuni</h3>
+    <ul class="plain">${t.errori.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    <div class="callout safety">🛡️ <b>Landa sicuro:</b> ${esc(t.safety)}</div>
+    <h3>Obiettivo</h3>
+    ${stato.goals[id]
+      ? `<div class="card row"><div class="state">🎯</div>
+           <div class="grow"><div class="title">Obiettivo attivo</div>
+           <div class="meta">${stato.goals[id].data ? "entro il " + new Date(stato.goals[id].data).toLocaleDateString("it-IT") : "senza scadenza"}</div></div>
+           <button class="btn small" onclick="rimuoviObiettivo('${id}')">Rimuovi</button></div>`
+      : `<div class="card"><div class="title" style="margin-bottom:6px">Vuoi landarlo entro una data?</div>
+           <div class="goalline">
+             <input type="date" id="goal-data">
+             <button class="btn small primary" onclick="impostaObiettivo('${id}')">🎯 Imposta</button>
+           </div></div>`}`;
+}
+
+/* ---------- azioni ---------- */
+function setProgress(id, val) {
+  stato.progress[id] = val;
+  salvaStato();
+  if (val === "landed") toast("✅ Landed! Grande!");
+  render();
+}
+function impostaObiettivo(id) {
+  const el = document.getElementById("goal-data");
+  stato.goals[id] = { data: el && el.value ? el.value : null };
+  salvaStato();
+  toast("🎯 Obiettivo impostato!");
+  render();
+}
+function rimuoviObiettivo(id) {
+  delete stato.goals[id];
+  salvaStato();
+  render();
+}
+function suggerisci() {
+  /* come il "suggestions generator" dell'app originale: propone un trick
+     sbloccato (prerequisiti landati) e non ancora landato */
+  const pronti = TRICKS.filter(t => statoTrick(t.id) !== "landed" &&
+    t.prereq.every(p => statoTrick(p) === "landed"));
+  const pool = pronti.length ? pronti : TRICKS.filter(t => statoTrick(t.id) !== "landed");
+  if (!pool.length) { toast("👑 Li hai landati tutti!"); return; }
+  const scelto = pool[Math.floor(Math.random() * pool.length)];
+  toast(`✨ Prova: ${scelto.nome}`);
+  location.hash = "#/trick/" + scelto.id;
+}
+
+/* ---------- router ---------- */
+function render() {
+  const hash = location.hash || "#/";
+  const parti = hash.replace(/^#\//, "").split("/");
+  let tab = "home", html = "";
+  if (parti[0] === "tutorial") { tab = "tutorial"; html = vistaTutorial(); }
+  else if (parti[0] === "trick" && parti[1]) { tab = "trick"; html = vistaTrick(parti[1]); }
+  else if (parti[0] === "trick") { tab = "trick"; html = vistaDatabase(); }
+  else if (parti[0] === "obiettivi") { tab = "obiettivi"; html = vistaObiettivi(); }
+  else if (parti[0] === "badge") { tab = "badge"; html = vistaBadge(); }
+  else { html = vistaHome(); }
+  $app.innerHTML = html;
+  document.querySelectorAll("nav.tabs a").forEach(a =>
+    a.classList.toggle("on", a.dataset.tab === tab));
+  window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", render);
+controllaBadge();
+render();
+</script>
+</body>
+</html>
