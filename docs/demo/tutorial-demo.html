@@ -493,7 +493,7 @@
       <li>Da <strong>Anonimo</strong> e <strong>Ospite</strong>: i trick <em>beginner</em> si aprono e "riproducono"; quelli intermediate/advanced mostrano il paywall con URL nascosto.</li>
       <li>Da <strong>Abbonato</strong>: tutti i video sono sbloccati.</li>
       <li>Griglia categorie → lista filtrata; lente 🔍 per cercare; omino 🏃 per segnare un trick come "landed".</li>
-      <li><strong>Suggestions</strong>: "New Trick" propone trick non ancora landed vicini al tuo livello (max +2 di difficoltà).</li>
+      <li><strong>Suggestions</strong>: "New Trick" pesca a caso tra i trick non ancora landed; con − Easier / + Harder / 🔀 Switch type aggiusti difficoltà o tipologia, e i filtri fissano una categoria.</li>
     </ol>
   </div>
 </div>
@@ -549,6 +549,7 @@
     landed: new Set(),
     search: '',
     searching: false,
+    suggestCat: null,          // category pinned in the Suggestion Generator
   };
 
   // The exact rule from backend/app/services/video_service.py.
@@ -706,15 +707,18 @@
     state.view = { name: 'detail', id, from };
   }
 
-  // Same rule as mobile/lib/screens/suggestion_screen.dart.
-  function suggestions() {
-    const landedMax = TRICKS.filter((t) => state.landed.has(t.id))
-      .reduce((m, t) => Math.max(m, t.diff), 0);
-    const ceiling = landedMax === 0 ? 3 : landedMax + 2;
-    return TRICKS
-      .filter((t) => !state.landed.has(t.id) && t.diff <= ceiling)
-      .sort((a, b) => a.diff - b.diff);
-  }
+  // Same rule as mobile/lib/screens/suggestion_screen.dart: fully random
+  // picks among not-landed tricks, steered by the easier/harder/switch
+  // controls and the category chips.
+  const notLanded = () => TRICKS.filter((t) => !state.landed.has(t.id));
+  const suggestPool = () =>
+    notLanded().filter((t) => !state.suggestCat || t.cat === state.suggestCat);
+  const pickRandom = (pool) => pool[Math.floor(Math.random() * pool.length)];
+
+  const SUGGEST_CHIPS = [
+    [null, 'Any'], ['flips', 'Flips'], ['basics', 'Basics'], ['vaults', 'Vaults'],
+    ['wall_tricks', 'Wall'], ['bar_tricks', 'Bar'], ['ground_tricks', 'Ground'], ['other', 'Other'],
+  ];
 
   function suggestionCard(t) {
     const c = catOf(t.cat);
@@ -726,31 +730,76 @@
     </div>`;
   }
 
+  function steer(filterFn, emptyMsg) {
+    const found = suggestPool().filter(filterFn);
+    if (found.length === 0) { toast(emptyMsg); return; }
+    renderSuggest(pickRandom(found).id, state.view.showAll);
+  }
+
   function renderSuggest(pickedId, showAll) {
+    state.view = { name: 'suggest', pickedId, showAll };
     $('#appbar').innerHTML = `
       <button class="backlink" data-nav="home" aria-label="Indietro">‹</button>
       <h1>Suggestion Generator</h1><span style="min-width:34px"></span>`;
-    const pool = suggestions();
+    const pool = suggestPool();
     const picked = pickedId ? TRICKS.find((t) => t.id === pickedId) : null;
     $('#screen').innerHTML = `
       <div class="suggestwrap">
-        <p class="hint">Premi il pulsante per un suggerimento basato sui trick che hai già landed
-          (${state.landed.size} finora). Tocca il suggerimento per aprire il tutorial.</p>
+        <p class="hint">"New Trick" pesca a caso tra i trick che non hai ancora landed
+          (${state.landed.size} landed finora). Poi aggiusta il tiro: più facile, più difficile
+          o cambia tipologia.</p>
+        <div class="roles" style="padding:0;flex-wrap:wrap" role="group" aria-label="Filtra per tipologia">
+          ${SUGGEST_CHIPS.map(([key, label]) =>
+            `<button class="role" style="flex:0 0 auto;padding:5px 12px" data-chip="${key ?? ''}"
+              aria-pressed="${state.suggestCat === key}">${label}</button>`).join('')}
+        </div>
         ${picked ? suggestionCard(picked) : '<div class="spacer" style="display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3">💡</div>'}
-        ${showAll ? `<div class="suggestion-list">${pool.slice(0, 8).map(suggestionCard).join('')}</div>` : ''}
+        ${picked ? `
+        <div class="roles" style="padding:0">
+          <button class="role" id="easier">− Easier</button>
+          <button class="role" id="harder">+ Harder</button>
+          <button class="role" id="switchType">🔀 Switch type</button>
+        </div>` : ''}
+        ${showAll ? `<div class="suggestion-list">${[...pool].sort((a, b) => a.diff - b.diff).map(suggestionCard).join('')}</div>` : ''}
         <div class="spacer"></div>
         <button class="bigbtn" id="newTrick" ${pool.length === 0 ? 'disabled' : ''}>New Trick</button>
         <button class="bigbtn" id="allSuggestions" ${pool.length === 0 ? 'disabled' : ''}>All Suggestions</button>
-        ${pool.length === 0 ? '<p class="hint">Hai landed tutto al tuo livello — grande!</p>' : ''}
+        ${pool.length === 0 ? '<p class="hint">Hai landed tutto qui — grande!</p>' : ''}
       </div>`;
+
+    document.querySelectorAll('[data-chip]').forEach((chip) =>
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        state.suggestCat = chip.dataset.chip || null;
+        renderSuggest(state.view.pickedId, state.view.showAll);
+      }));
     const nt = $('#newTrick');
-    if (nt) nt.addEventListener('click', () => {
-      const pick = pool[Math.floor(Math.random() * pool.length)];
-      renderSuggest(pick.id, showAll);
+    if (nt) nt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSuggest(pickRandom(pool).id, showAll);
     });
     const all = $('#allSuggestions');
-    if (all) all.addEventListener('click', () => renderSuggest(pickedId, !showAll));
-    state.view = { name: 'suggest', pickedId, showAll };
+    if (all) all.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSuggest(pickedId, !showAll);
+    });
+    if (picked) {
+      $('#easier').addEventListener('click', (e) => {
+        e.stopPropagation();
+        steer((t) => t.diff < picked.diff, 'Nessun trick più facile qui: cambia tipologia o filtro.');
+      });
+      $('#harder').addEventListener('click', (e) => {
+        e.stopPropagation();
+        steer((t) => t.diff > picked.diff, 'Nessun trick più difficile qui: cambia tipologia o filtro.');
+      });
+      $('#switchType').addEventListener('click', (e) => {
+        e.stopPropagation();
+        state.suggestCat = null;
+        const found = notLanded().filter((t) => t.cat !== picked.cat);
+        if (found.length === 0) { toast('Nessun trick in altre tipologie.'); return; }
+        renderSuggest(pickRandom(found).id, showAll);
+      });
+    }
   }
 
   /* ---------- routing / events ---------- */
