@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parkour NoToT · Demo Tutorial</title>
+<style>
+  :root {
+    --ink: #1c2733;
+    --ink-soft: #5b6975;
+    --ground: #eceff1;
+    --surface: #ffffff;
+    --surface-2: #f5f7f8;
+    --line: #d8dee3;
+    --header: #2e6e97;
+    --header-ink: #ffffff;
+    --accent: #1fa88c;
+    --lock: #8a949c;
+    --landed: #e23b3b;
+    --good: #34a853;
+    --warn: #f5a623;
+    --hard: #e2593b;
+    --shadow: 0 1px 3px rgba(28, 39, 51, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e8edf1;
+      --ink-soft: #9fadb8;
+      --ground: #141a1f;
+      --surface: #1e262d;
+      --surface-2: #242e36;
+      --line: #33404a;
+      --header: #24597c;
+      --header-ink: #f2f7fa;
+      --lock: #74808a;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="light"] {
+    --ink: #1c2733;
+    --ink-soft: #5b6975;
+    --ground: #eceff1;
+    --surface: #ffffff;
+    --surface-2: #f5f7f8;
+    --line: #d8dee3;
+    --header: #2e6e97;
+    --header-ink: #ffffff;
+    --lock: #8a949c;
+    --shadow: 0 1px 3px rgba(28, 39, 51, 0.12);
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8edf1;
+    --ink-soft: #9fadb8;
+    --ground: #141a1f;
+    --surface: #1e262d;
+    --surface-2: #242e36;
+    --line: #33404a;
+    --header: #24597c;
+    --header-ink: #f2f7fa;
+    --lock: #74808a;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.45;
+  }
+
+  .page {
+    max-width: 460px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- demo banner (outside the "app") ---------- */
+  .banner {
+    padding: 12px 16px 10px;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+  .banner strong { color: var(--ink); }
+  .banner code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+
+  /* ---------- role switcher ---------- */
+  .roles {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+  }
+  .role {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: 20px;
+    padding: 7px 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .role small { display: block; font-weight: 400; font-size: 0.66rem; }
+  .role[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .role:focus-visible, .icon-btn:focus-visible, .tile:focus-visible,
+  .row:focus-visible, .bigbtn:focus-visible, .runner:focus-visible,
+  .subscribe:focus-visible, .backlink:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- app frame ---------- */
+  .app {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    margin: 0 12px 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    min-height: 620px;
+  }
+  .appbar {
+    background: var(--header);
+    color: var(--header-ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    min-height: 52px;
+  }
+  .appbar h1 {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    flex: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .icon-btn {
+    background: none;
+    border: 0;
+    color: var(--header-ink);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    min-width: 34px;
+  }
+  .icon-btn[hidden] { display: none; }
+  .searchbox {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.16);
+    border: 0;
+    border-radius: 8px;
+    color: var(--header-ink);
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+  .searchbox::placeholder { color: rgba(255, 255, 255, 0.65); }
+
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- tutorials grid ---------- */
+  .suggest-cta {
+    margin: 12px 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+  .tile {
+    border: 0;
+    border-radius: 12px;
+    color: #fff;
+    min-height: 96px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.12s;
+  }
+  .tile:active { transform: scale(0.97); }
+  .tile .glyph { font-size: 1.7rem; }
+  .tile .count { font-size: 0.7rem; font-weight: 500; opacity: 0.85; }
+
+  /* ---------- trick list ---------- */
+  .colhead {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--header);
+    color: var(--header-ink);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.94;
+  }
+  .rows { background: var(--surface); }
+  .row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 46px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 0;
+    border-bottom: 1px dashed var(--line);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .row:hover { background: var(--surface-2); }
+  .thumb {
+    width: 46px;
+    height: 34px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #fff;
+    flex: none;
+  }
+  .row .name { font-weight: 600; font-size: 0.94rem; }
+  .row .sub { font-size: 0.72rem; color: var(--lock); }
+  .empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+
+  /* difficulty gauge */
+  .gauge { position: relative; width: 34px; height: 34px; flex: none; }
+  .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .gauge .num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* landed toggle */
+  .runner {
+    background: none;
+    border: 0;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
+    filter: grayscale(1) opacity(0.4);
+    transition: filter 0.15s, transform 0.15s;
+  }
+  .runner[aria-pressed="true"] { filter: none; transform: scale(1.1); }
+
+  .lockmark { color: var(--lock); font-size: 0.95rem; }
+
+  /* ---------- detail ---------- */
+  .detail { padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+  .player {
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #26313a;
+  }
+  .player .bg { position: absolute; inset: 0; opacity: 0.55; }
+  .player .inner {
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+  }
+  .player .play { font-size: 3rem; cursor: pointer; }
+  .player.locked .inner h3 { margin: 0; font-size: 1.05rem; }
+  .player.locked .inner p { margin: 0; font-size: 0.8rem; opacity: 0.85; max-width: 30ch; }
+  .subscribe {
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .meta { display: flex; align-items: center; gap: 12px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 3px 10px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .meta .runner { margin-left: auto; font-size: 1.5rem; }
+  .desc { margin: 0; font-size: 0.92rem; max-width: 62ch; }
+  .apinote {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .apinote code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+  }
+
+  /* ---------- suggestions ---------- */
+  .suggestwrap { padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .suggestwrap .hint { font-size: 0.82rem; color: var(--ink-soft); text-align: center; margin: 0; }
+  .bigbtn {
+    background: var(--header);
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 18px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .bigbtn:disabled { opacity: 0.45; cursor: default; }
+  .suggestion-list { display: flex; flex-direction: column; gap: 8px; }
+  .spacer { flex: 1; }
+
+  /* ---------- bottom nav ---------- */
+  .navbar {
+    display: flex;
+    background: #2b3238;
+    color: #cdd5db;
+  }
+  .navbar .nav {
+    flex: 1;
+    background: none;
+    border: 0;
+    color: inherit;
+    padding: 10px 4px 12px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .navbar .nav .g { font-size: 1.15rem; }
+  .navbar .nav[aria-current="true"] { color: #ffffff; font-weight: 700; }
+  .navbar .nav:disabled { opacity: 0.45; cursor: default; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--ground);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    max-width: 90vw;
+    z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .backlink {
+    background: none;
+    border: 0;
+    color: var(--header-ink);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  .checklist {
+    margin: 0 16px 28px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 0.82rem;
+  }
+  .checklist h2 { margin: 0 0 8px; font-size: 0.9rem; }
+  .checklist ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="page">
+  <p class="banner">
+    <strong>Demo interattiva</strong> del branch <code>claude/parkour-tutorial-accessibility</code> —
+    replica la UI Flutter e le risposte reali di <code>GET /api/v1/videos</code>.
+    Cambia profilo per vedere cosa sblocca il backend:
+  </p>
+
+  <div class="roles" role="group" aria-label="Profilo di accesso simulato">
+    <button class="role" data-role="anon" aria-pressed="true">Anonimo<small>nessun accesso</small></button>
+    <button class="role" data-role="guest" aria-pressed="false">Ospite<small>accesso senza email</small></button>
+    <button class="role" data-role="sub" aria-pressed="false">Abbonato<small>premium sbloccati</small></button>
+  </div>
+
+  <div class="app">
+    <div class="appbar" id="appbar"></div>
+    <div class="screen" id="screen"></div>
+    <nav class="navbar" aria-label="Navigazione app">
+      <button class="nav" disabled><span class="g">🗺️</span>Map</button>
+      <button class="nav" disabled><span class="g">📋</span>List</button>
+      <button class="nav" aria-current="true" id="navTutorials"><span class="g">📖</span>Tutorials</button>
+    </nav>
+  </div>
+
+  <div class="checklist">
+    <h2>Cosa testare prima del merge</h2>
+    <ol>
+      <li>Da <strong>Anonimo</strong> e <strong>Ospite</strong>: i trick <em>beginner</em> si aprono e "riproducono"; quelli intermediate/advanced mostrano il paywall con URL nascosto.</li>
+      <li>Da <strong>Abbonato</strong>: tutti i video sono sbloccati.</li>
+      <li>Griglia categorie → lista filtrata; lente 🔍 per cercare; omino 🏃 per segnare un trick come "landed".</li>
+      <li><strong>Suggestions</strong>: "New Trick" propone trick non ancora landed vicini al tuo livello (max +2 di difficoltà).</li>
+    </ol>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Same taxonomy and colors as mobile/lib/screens/tutorials_screen.dart.
+  const CATEGORIES = [
+    { key: 'flips',         label: 'Flips',         color: '#34A853', glyph: '🤸' },
+    { key: 'basics',        label: 'Basics',        color: '#A6408F', glyph: '🚶' },
+    { key: 'vaults',        label: 'Vaults',        color: '#2A6AA8', glyph: '🦘' },
+    { key: 'wall_tricks',   label: 'Wall Tricks',   color: '#C99A18', glyph: '🧗' },
+    { key: 'bar_tricks',    label: 'Bar Tricks',    color: '#F0913A', glyph: '🤾' },
+    { key: 'other',         label: 'Other Tricks',  color: '#7B2FBE', glyph: '✨' },
+    { key: 'ground_tricks', label: 'Ground Tricks', color: '#E23B3B', glyph: '🤼' },
+    { key: null,            label: 'All Tricks',    color: '#1FA88C', glyph: '🗂️' },
+  ];
+
+  // Sample catalog mirroring what the backend serves (level drives the gating).
+  const TRICKS = [
+    { id: 'roll',       title: 'Safety Roll',    cat: 'basics',        level: 'beginner',     diff: 1, desc: 'Distribute the impact across shoulder and back. The most important technique in parkour: learn it before anything else.' },
+    { id: 'precision',  title: 'Precision Jump', cat: 'basics',        level: 'beginner',     diff: 1, desc: 'Two-footed jump landing on a precise target: rail, ledge or curb.' },
+    { id: 'catleap',    title: 'Cat Leap',       cat: 'basics',        level: 'beginner',     diff: 2, desc: 'Jump to a wall and land hanging on the top edge, feet against the surface.' },
+    { id: 'turnvault',  title: 'Turn Vault',     cat: 'basics',        level: 'beginner',     diff: 2, desc: 'Vault over a rail turning 180° to land facing it — the safe way down.' },
+    { id: 'speed',      title: 'Speed',          cat: 'vaults',        level: 'beginner',     diff: 1, desc: 'The fastest vault: one hand on the obstacle, legs pass to the side.' },
+    { id: 'dash',       title: 'Dash',           cat: 'vaults',        level: 'beginner',     diff: 2, desc: 'Legs go first, hands push behind you at the end of the obstacle.' },
+    { id: 'kong',       title: 'Kong',           cat: 'vaults',        level: 'beginner',     diff: 3, desc: 'Dive over the obstacle, hands land first, legs pass between the arms.' },
+    { id: 'kash',       title: 'Kash',           cat: 'vaults',        level: 'intermediate', diff: 5, desc: 'A Kong that flows directly into a Dash: two vaults, one movement.' },
+    { id: 'dkong',      title: 'Double Kong',    cat: 'vaults',        level: 'intermediate', diff: 8, desc: 'Two obstacles, one jump — a Kong that covers both before landing.' },
+    { id: 'kong360',    title: '360 Kong',       cat: 'vaults',        level: 'advanced',     diff: 8, desc: 'A Kong with a full 360° rotation over the obstacle.' },
+    { id: 'front',      title: 'Frontflip',      cat: 'flips',         level: 'intermediate', diff: 5, desc: 'Forward somersault from standing or running takeoff.' },
+    { id: 'back',       title: 'Backflip',       cat: 'flips',         level: 'intermediate', diff: 5, desc: 'Backward somersault — commit to the set and spot the landing.' },
+    { id: 'back360',    title: 'Backflip 360',   cat: 'flips',         level: 'advanced',     diff: 6, desc: 'Backflip with a full twist. Advanced rotation control required.' },
+    { id: 'aerial',     title: 'Aerial',         cat: 'flips',         level: 'advanced',     diff: 7, desc: 'A no-handed cartwheel, launched from a strong hurdle step.' },
+    { id: 'wallrun',    title: 'Wall Run',       cat: 'wall_tricks',   level: 'beginner',     diff: 2, desc: 'Run at the wall, step up and grab the top edge.' },
+    { id: 'tictac',     title: 'Tic Tac',        cat: 'wall_tricks',   level: 'beginner',     diff: 2, desc: 'Push off a wall to redirect your momentum over an obstacle.' },
+    { id: 'wallspin',   title: 'Wall Spin',      cat: 'wall_tricks',   level: 'intermediate', diff: 6, desc: 'Hands on the wall, body spins around them — parallel to the ground.' },
+    { id: 'underbar',   title: 'Underbar',       cat: 'bar_tricks',    level: 'beginner',     diff: 3, desc: 'Dive feet-first through the gap between two bars.' },
+    { id: 'lache',      title: 'Lache',          cat: 'bar_tricks',    level: 'intermediate', diff: 5, desc: 'Swing from a bar and release to fly to the next obstacle.' },
+    { id: 'barkip',     title: 'Bar Kip',        cat: 'bar_tricks',    level: 'intermediate', diff: 4, desc: 'From hanging under the bar, kip up to support on top of it.' },
+    { id: 'cartwheel',  title: 'Cartwheel',      cat: 'ground_tricks', level: 'beginner',     diff: 1, desc: 'Sideways rotation over your hands — the base for many ground moves.' },
+    { id: 'macaco',     title: 'Macaco',         cat: 'ground_tricks', level: 'intermediate', diff: 4, desc: 'Backward capoeira sweep: one hand plants, legs whip over.' },
+    { id: 'bkick',      title: 'Butterfly Kick', cat: 'ground_tricks', level: 'intermediate', diff: 4, desc: 'Horizontal spinning kick, chest parallel to the ground.' },
+    { id: 'rayden',     title: 'Rayden',         cat: 'other',         level: 'advanced',     diff: 9, desc: 'Dive Kong straight into a roll on the far side. High commitment.' },
+    { id: 'gainer',     title: 'Cheat Gainer',   cat: 'other',         level: 'intermediate', diff: 6, desc: 'A backflip travelling forward, taken off one leg.' },
+    { id: 'diveroll',   title: '360 Dive Roll',  cat: 'other',         level: 'advanced',     diff: 8, desc: 'Dive with a 360° spin, absorbed into a roll on landing.' },
+  ];
+
+  const state = {
+    role: 'anon',              // anon | guest | sub  → mirrors backend viewer state
+    view: { name: 'home' },    // home | list | detail | suggest
+    landed: new Set(),
+    search: '',
+    searching: false,
+  };
+
+  // The exact rule from backend/app/services/video_service.py.
+  const isPremium = (t) => t.level !== 'beginner';
+  const isLocked = (t) => isPremium(t) && state.role !== 'sub';
+
+  const catOf = (key) => CATEGORIES.find((c) => c.key === key);
+  const $ = (sel) => document.querySelector(sel);
+  const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+  function gauge(diff) {
+    const d = Math.max(1, Math.min(10, diff));
+    const color = d <= 3 ? 'var(--good)' : d <= 5 ? 'var(--warn)' : d <= 7 ? '#f0913a' : 'var(--hard)';
+    const r = 14, c = 2 * Math.PI * r;
+    return `<span class="gauge" role="img" aria-label="Difficoltà ${d} su 10">
+      <svg viewBox="0 0 34 34">
+        <circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--line)" stroke-width="3.5"></circle>
+        <circle cx="17" cy="17" r="${r}" fill="none" stroke="${color}" stroke-width="3.5"
+          stroke-linecap="round" stroke-dasharray="${(c * d / 10).toFixed(1)} ${c.toFixed(1)}"></circle>
+      </svg>
+      <span class="num">${d}</span>
+    </span>`;
+  }
+
+  function runnerBtn(t, size) {
+    const on = state.landed.has(t.id);
+    return `<button class="runner" style="${size ? 'font-size:' + size : ''}" data-landed="${t.id}"
+      aria-pressed="${on}" title="${on ? 'Landed! Tocca per annullare' : 'Segna come landed'}">🏃</button>`;
+  }
+
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  /* ---------- screens ---------- */
+
+  function renderHome() {
+    $('#appbar').innerHTML = '<h1>Tutorials</h1>';
+    $('#screen').innerHTML = `
+      <button class="suggest-cta" data-nav="suggest">💡 Suggestion Generator</button>
+      <div class="grid">
+        ${CATEGORIES.map((c) => {
+          const n = TRICKS.filter((t) => c.key === null || t.cat === c.key).length;
+          return `<button class="tile" style="background:${c.color}" data-cat="${c.key ?? ''}">
+            <span class="glyph">${c.glyph}</span>${c.label}
+            <span class="count">${n} tricks</span>
+          </button>`;
+        }).join('')}
+      </div>`;
+  }
+
+  function renderList(catKey) {
+    const cat = catOf(catKey);
+    const title = cat ? (cat.key === null ? 'All Trick Tutorials' : cat.label) : 'All Trick Tutorials';
+    $('#appbar').innerHTML = `
+      <button class="backlink" data-nav="home" aria-label="Indietro">‹</button>
+      ${state.searching
+        ? `<input class="searchbox" id="search" placeholder="Search tricks…" value="${esc(state.search)}" aria-label="Cerca trick">`
+        : `<h1>${esc(title)}</h1>`}
+      <button class="icon-btn" id="toggleSearch" aria-label="Cerca">${state.searching ? '✕' : '🔍'}</button>`;
+
+    const q = state.search.trim().toLowerCase();
+    const items = TRICKS
+      .filter((t) => (catKey === null || t.cat === catKey))
+      .filter((t) => !q || t.title.toLowerCase().includes(q))
+      .sort((a, b) => a.title.localeCompare(b.title));
+
+    $('#screen').innerHTML = `
+      <div class="colhead"><span>Trick</span><span>Difficulty</span><span>Landed</span></div>
+      <div class="rows">
+        ${items.length === 0 ? '<p class="empty">No tutorials here yet.</p>' : items.map((t) => {
+          const c = catOf(t.cat);
+          return `<div class="row" data-open="${t.id}" tabindex="0" role="button"
+              aria-label="${esc(t.title)}, difficoltà ${t.diff} su 10${isLocked(t) ? ', premium bloccato' : ''}">
+            <span class="thumb" style="background:${c.color}">${c.glyph}</span>
+            <span>
+              <span class="name">${esc(t.title)}</span>
+              ${isLocked(t) ? '<br><span class="sub">🔒 Premium — subscribe to watch</span>' : ''}
+            </span>
+            ${gauge(t.diff)}
+            ${runnerBtn(t)}
+          </div>`;
+        }).join('')}
+      </div>`;
+
+    if (state.searching) {
+      const input = $('#search');
+      input.focus();
+      input.addEventListener('input', () => {
+        state.search = input.value;
+        renderList(catKey);
+        const again = $('#search');
+        again.focus();
+        again.setSelectionRange(again.value.length, again.value.length);
+      });
+    }
+    $('#toggleSearch').addEventListener('click', () => {
+      state.searching = !state.searching;
+      if (!state.searching) state.search = '';
+      renderList(catKey);
+    });
+  }
+
+  function renderDetail(id, from) {
+    const t = TRICKS.find((x) => x.id === id);
+    const c = catOf(t.cat);
+    const locked = isLocked(t);
+    $('#appbar').innerHTML = `
+      <button class="backlink" data-nav-back="1" aria-label="Indietro">‹</button>
+      <h1>${esc(t.title)}</h1><span style="min-width:34px"></span>`;
+
+    $('#screen').innerHTML = `
+      <div class="detail">
+        ${locked ? `
+          <div class="player locked">
+            <div class="bg" style="background:${c.color}"></div>
+            <div class="inner">
+              <span style="font-size:2rem">🔒</span>
+              <h3>Premium tutorial</h3>
+              <p>Subscribe to unlock intermediate and advanced technique videos.</p>
+              <button class="subscribe" id="subBtn">Subscribe</button>
+            </div>
+          </div>` : `
+          <div class="player">
+            <div class="bg" style="background:${c.color}"></div>
+            <div class="inner">
+              <span class="play" id="playBtn" role="button" tabindex="0" aria-label="Riproduci">▶️</span>
+              <span style="font-size:0.75rem;opacity:0.85">video: ${esc(t.id)}.mp4</span>
+            </div>
+          </div>`}
+        <div class="meta">
+          ${gauge(t.diff)}
+          <span class="chip">${isPremium(t) ? '⭐' : '🔓'} ${t.level}</span>
+          <span class="chip">${c.glyph} ${c.label}</span>
+          ${runnerBtn(t, '1.5rem')}
+        </div>
+        <p class="desc">${esc(t.desc)}</p>
+        <p class="apinote">Risposta del backend per questo profilo:
+          <code>{"locked": ${locked}, "is_premium": ${isPremium(t)}, "url": ${locked ? 'null' : '"https://…/' + t.id + '.mp4"'}}</code>
+        </p>
+      </div>`;
+
+    const sub = $('#subBtn');
+    if (sub) sub.addEventListener('click', () => toast('Nell’app reale: "Subscriptions are coming soon!" — qui puoi passare al profilo Abbonato in alto.'));
+    const play = $('#playBtn');
+    if (play) {
+      const go = () => toast('▶ Il video parte: URL fornito dal backend per questo profilo.');
+      play.addEventListener('click', go);
+      play.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    }
+    state.view = { name: 'detail', id, from };
+  }
+
+  // Same rule as mobile/lib/screens/suggestion_screen.dart.
+  function suggestions() {
+    const landedMax = TRICKS.filter((t) => state.landed.has(t.id))
+      .reduce((m, t) => Math.max(m, t.diff), 0);
+    const ceiling = landedMax === 0 ? 3 : landedMax + 2;
+    return TRICKS
+      .filter((t) => !state.landed.has(t.id) && t.diff <= ceiling)
+      .sort((a, b) => a.diff - b.diff);
+  }
+
+  function suggestionCard(t) {
+    const c = catOf(t.cat);
+    return `<div class="row" style="border:1px solid var(--line);border-radius:10px" data-open="${t.id}" tabindex="0" role="button">
+      <span class="thumb" style="background:${c.color}">${c.glyph}</span>
+      <span><span class="name">${esc(t.title)}</span><br>
+        <span class="sub">${isLocked(t) ? '🔒 Premium — subscribe to watch' : t.level}</span></span>
+      ${gauge(t.diff)}<span></span>
+    </div>`;
+  }
+
+  function renderSuggest(pickedId, showAll) {
+    $('#appbar').innerHTML = `
+      <button class="backlink" data-nav="home" aria-label="Indietro">‹</button>
+      <h1>Suggestion Generator</h1><span style="min-width:34px"></span>`;
+    const pool = suggestions();
+    const picked = pickedId ? TRICKS.find((t) => t.id === pickedId) : null;
+    $('#screen').innerHTML = `
+      <div class="suggestwrap">
+        <p class="hint">Premi il pulsante per un suggerimento basato sui trick che hai già landed
+          (${state.landed.size} finora). Tocca il suggerimento per aprire il tutorial.</p>
+        ${picked ? suggestionCard(picked) : '<div class="spacer" style="display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3">💡</div>'}
+        ${showAll ? `<div class="suggestion-list">${pool.slice(0, 8).map(suggestionCard).join('')}</div>` : ''}
+        <div class="spacer"></div>
+        <button class="bigbtn" id="newTrick" ${pool.length === 0 ? 'disabled' : ''}>New Trick</button>
+        <button class="bigbtn" id="allSuggestions" ${pool.length === 0 ? 'disabled' : ''}>All Suggestions</button>
+        ${pool.length === 0 ? '<p class="hint">Hai landed tutto al tuo livello — grande!</p>' : ''}
+      </div>`;
+    const nt = $('#newTrick');
+    if (nt) nt.addEventListener('click', () => {
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      renderSuggest(pick.id, showAll);
+    });
+    const all = $('#allSuggestions');
+    if (all) all.addEventListener('click', () => renderSuggest(pickedId, !showAll));
+    state.view = { name: 'suggest', pickedId, showAll };
+  }
+
+  /* ---------- routing / events ---------- */
+
+  function render() {
+    const v = state.view;
+    if (v.name === 'home') renderHome();
+    else if (v.name === 'list') renderList(v.cat);
+    else if (v.name === 'detail') renderDetail(v.id, v.from);
+    else renderSuggest(v.pickedId, v.showAll);
+  }
+
+  document.addEventListener('click', (e) => {
+    const roleBtn = e.target.closest('.role');
+    if (roleBtn) {
+      state.role = roleBtn.dataset.role;
+      document.querySelectorAll('.role').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === roleBtn)));
+      const names = { anon: 'Anonimo', guest: 'Ospite senza email', sub: 'Abbonato' };
+      toast(state.role === 'sub'
+        ? 'Abbonato: il backend restituisce tutti gli URL.'
+        : names[state.role] + ': video beginner liberi, premium bloccati.');
+      render();
+      return;
+    }
+    const landedBtn = e.target.closest('[data-landed]');
+    if (landedBtn) {
+      const id = landedBtn.dataset.landed;
+      if (!state.landed.delete(id)) state.landed.add(id);
+      render();
+      return;
+    }
+    const openRow = e.target.closest('[data-open]');
+    if (openRow) { renderDetail(openRow.dataset.open, state.view); return; }
+    const catTile = e.target.closest('[data-cat]');
+    if (catTile) {
+      state.searching = false; state.search = '';
+      state.view = { name: 'list', cat: catTile.dataset.cat || null };
+      render();
+      return;
+    }
+    const nav = e.target.closest('[data-nav]');
+    if (nav) { state.view = { name: nav.dataset.nav }; render(); return; }
+    const back = e.target.closest('[data-nav-back]');
+    if (back) { state.view = state.view.from || { name: 'home' }; render(); return; }
+    if (e.target.closest('#navTutorials')) { state.view = { name: 'home' }; render(); }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.row[data-open]')) {
+      e.preventDefault();
+      renderDetail(e.target.dataset.open, state.view);
+    }
+  });
+
+  render();
+</script>
+
+</body>
+</html>
