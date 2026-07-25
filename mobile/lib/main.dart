@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'screens/spots_list_screen.dart';
 import 'screens/spots_map_screen.dart';
+import 'screens/tutorials_screen.dart';
 
 void main() {
   runApp(const ProviderScope(child: ParkourApp()));
@@ -25,7 +26,7 @@ class ParkourApp extends StatelessWidget {
   }
 }
 
-/// Root shell with two tabs: Map and List.
+/// Root shell with three tabs: Map, List and Tutorials.
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -36,8 +37,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
 
-  static const _titles = ['Map', 'List'];
-  static const _screens = [SpotsMapScreen(), SpotsListScreen()];
+  static const _titles = ['Map', 'List', 'Tutorials'];
+  static const _screens = [
+    SpotsMapScreen(),
+    SpotsListScreen(),
+    TutorialsScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -57,6 +62,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.list_outlined),
             selectedIcon: Icon(Icons.list),
             label: 'List',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.menu_book_outlined),
+            selectedIcon: Icon(Icons.menu_book),
+            label: 'Tutorials',
           ),
         ],
       ),
