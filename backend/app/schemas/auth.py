@@ -12,6 +12,12 @@ class LoginRequest(BaseModel):
     password: str = Field(min_length=8, max_length=128)
 
 
+class GuestLoginRequest(BaseModel):
+    """Device-only sign-in: no email required, optional display name."""
+
+    display_name: str | None = Field(default=None, min_length=2, max_length=80)
+
+
 class RefreshRequest(BaseModel):
     refresh_token: str
 

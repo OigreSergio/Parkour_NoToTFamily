@@ -10,8 +10,10 @@ class UserOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
-    email: EmailStr
+    email: EmailStr | None
     display_name: str
     role: UserRole
     is_email_verified: bool
+    is_guest: bool = False
+    is_subscribed: bool = False
     created_at: datetime

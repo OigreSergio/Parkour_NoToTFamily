@@ -15,11 +15,29 @@ from app.core.security import (
 )
 from app.models.user import RefreshToken, User
 from app.repositories import users as users_repo
-from app.schemas.auth import LoginRequest, RegisterRequest, TokenPair
+from app.schemas.auth import GuestLoginRequest, LoginRequest, RegisterRequest, TokenPair
 
 
 def _hash_refresh(token: str) -> str:
     return hashlib.sha256(token.encode()).hexdigest()
+
+
+async def login_guest(session: AsyncSession, data: GuestLoginRequest) -> TokenPair:
+    """Create a device-only guest account (no email) and issue tokens.
+
+    Guests can browse the app and watch beginner tutorials; premium levels
+    stay locked until they subscribe (which requires a full account).
+    """
+    display_name = data.display_name or f"Guest-{secrets.token_hex(3)}"
+    user = await users_repo.create(
+        session,
+        email=None,
+        password_hash=None,
+        display_name=display_name,
+        is_guest=True,
+    )
+    await session.commit()
+    return await issue_tokens(session, user)
 
 
 async def register(session: AsyncSession, data: RegisterRequest) -> User:
@@ -52,7 +70,11 @@ async def issue_tokens(session: AsyncSession, user: User) -> TokenPair:
 
 async def login(session: AsyncSession, data: LoginRequest) -> TokenPair:
     user = await users_repo.get_by_email(session, data.email)
-    if user is None or not verify_password(data.password, user.password_hash):
+    if (
+        user is None
+        or user.password_hash is None
+        or not verify_password(data.password, user.password_hash)
+    ):
         raise Unauthorized("invalid credentials")
     if not user.is_active:
         raise Unauthorized("account disabled")

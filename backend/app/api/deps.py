@@ -39,6 +39,23 @@ async def current_user(
     return user
 
 
+async def optional_current_user(
+    authorization: str = Header(default=""),
+    session: AsyncSession = Depends(db_session),
+) -> User | None:
+    """Resolve the caller if a valid bearer token is present, else None.
+
+    Used by public endpoints (e.g. the tutorial catalog) that stay readable
+    for anonymous visitors but unlock more for authenticated subscribers.
+    """
+    if not authorization:
+        return None
+    try:
+        return await current_user(authorization=authorization, session=session)
+    except Unauthorized:
+        return None
+
+
 async def require_admin(user: User = Depends(current_user)) -> User:
     if user.role != UserRole.admin:
         raise Forbidden("admin role required")
