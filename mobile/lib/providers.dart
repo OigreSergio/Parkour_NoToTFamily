@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 import 'models/spot.dart';
+import 'models/video.dart';
 import 'repositories/spot_repository.dart';
+import 'repositories/video_repository.dart';
 import 'services/api_client.dart';
 import 'services/location_service.dart';
 
@@ -35,3 +37,35 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         lng: center.longitude,
       );
 });
+
+/// Tutorial video data source.
+final videoRepositoryProvider = Provider<VideoRepository>(
+  (ref) => VideoRepository(ref.watch(apiClientProvider)),
+);
+
+/// All tutorial videos. The backend marks premium ones as `locked` for
+/// viewers without a subscription; beginner tutorials are open to everyone,
+/// including guests signed in without an email.
+final tutorialsProvider = FutureProvider<List<TutorialVideo>>(
+  (ref) => ref.watch(videoRepositoryProvider).fetchTutorials(),
+);
+
+/// IDs of the tricks the user marked as landed. Client-side stub (kept in
+/// memory) until the backend persists per-user progress — same pattern as
+/// spot likes.
+class LandedTricksNotifier extends StateNotifier<Set<String>> {
+  LandedTricksNotifier() : super(const {});
+
+  void toggle(String videoId) {
+    final next = Set<String>.of(state);
+    if (!next.add(videoId)) {
+      next.remove(videoId);
+    }
+    state = next;
+  }
+}
+
+final landedTricksProvider =
+    StateNotifierProvider<LandedTricksNotifier, Set<String>>(
+  (ref) => LandedTricksNotifier(),
+);

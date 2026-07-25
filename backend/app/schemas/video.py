@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.models.video import VideoCategory, VideoLevel
+from app.models.video import TrickCategory, VideoCategory, VideoLevel
 
 
 class VideoOut(BaseModel):
@@ -12,11 +12,18 @@ class VideoOut(BaseModel):
     id: UUID
     title: str
     description: str
-    url: str
+    # None when the viewer is not allowed to watch (see `locked`).
+    url: str | None
     thumbnail_url: str | None
     category: VideoCategory
     level: VideoLevel
+    trick_category: TrickCategory | None = None
+    difficulty: int = 1
     duration_seconds: int
+    # True for videos above beginner level, which require a subscription.
+    is_premium: bool = False
+    # True when the current viewer cannot watch this video (url is hidden).
+    locked: bool = False
     created_at: datetime
 
 
@@ -27,4 +34,6 @@ class VideoCreate(BaseModel):
     thumbnail_url: str | None = Field(default=None, max_length=500)
     category: VideoCategory
     level: VideoLevel
+    trick_category: TrickCategory | None = None
+    difficulty: int = Field(default=1, ge=1, le=10)
     duration_seconds: int = Field(default=0, ge=0)

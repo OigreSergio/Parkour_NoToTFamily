@@ -8,11 +8,13 @@ PostgreSQL 16 with the **PostGIS** extension for geospatial queries.
 | Column           | Type         | Notes                                          |
 | ---------------- | ------------ | ---------------------------------------------- |
 | id               | uuid PK      |                                                |
-| email            | citext UNIQUE |                                                |
-| password_hash    | text         | Argon2id                                       |
+| email            | citext UNIQUE | nullable — guest accounts have no email       |
+| password_hash    | text         | Argon2id; nullable for guests                  |
 | display_name     | text         |                                                |
 | role             | text         | `user` \| `admin`                              |
 | is_email_verified| bool         |                                                |
+| is_guest         | bool         | device-only sign-in via `POST /auth/guest`     |
+| is_subscribed    | bool         | unlocks premium (non-beginner) tutorials       |
 | created_at       | timestamptz  |                                                |
 
 ### `refresh_tokens`
@@ -47,14 +49,22 @@ Audit log of every admin action on a spot.
 1:1 and group chat. `messages.body` is text only for v1 (no media).
 
 ### `videos`
-| Column     | Type | Notes                                      |
-| ---------- | ---- | ------------------------------------------ |
-| id         | uuid PK |                                         |
-| title      | text |                                            |
-| url        | text | YouTube/Vimeo embed URL                    |
-| category   | text | `recovery` \| `practice` \| `conditioning` |
-| level      | text | `beginner` \| `intermediate` \| `advanced` |
-| created_at | timestamptz |                                     |
+| Column         | Type | Notes                                      |
+| -------------- | ---- | ------------------------------------------ |
+| id             | uuid PK |                                         |
+| title          | text |                                            |
+| url            | text | YouTube/Vimeo embed URL                    |
+| category       | text | `recovery` \| `practice` \| `conditioning` |
+| level          | text | `beginner` \| `intermediate` \| `advanced` |
+| trick_category | text | nullable — `flips` \| `basics` \| `vaults` \| `wall_tricks` \| `bar_tricks` \| `ground_tricks` \| `other` |
+| difficulty     | int  | 1–10, drives the tutorial difficulty gauge |
+| created_at     | timestamptz |                                     |
+
+**Access rule** (enforced in `app/services/video_service.py`): everyone can
+browse the catalog — anonymous, guest (no email) and registered users alike.
+`beginner` videos are watchable by all; `intermediate`/`advanced` videos are
+returned with `locked=true` and `url=null` unless the viewer has
+`is_subscribed` (admins always watch).
 
 ## Migrations
 

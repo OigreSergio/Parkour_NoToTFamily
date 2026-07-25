@@ -94,7 +94,10 @@ before they go public.
 | Likes on spots         | ⏳      | ✅ client-side stub | —         | Client-first  |
 | "Water nearby" flag    | ⏳      | ✅ client-side stub | ⏳        | Client-first  |
 | Chat                   | ✅      | ⏳ planned          | —         | Planned       |
-| Videos                 | ✅      | ⏳ planned          | ⏳        | Planned       |
+| Videos / tutorials     | ✅      | ✅ read-only        | ⏳        | **Shipped**   |
+| Guest sign-in (no email)| ✅     | ⏳ planned          | —         | In progress   |
+| Premium gating (subscription) | ✅ | ✅ paywall UI    | —         | **Shipped**   |
+| Landed tricks          | ⏳      | ✅ client-side stub | —         | Client-first  |
 
 > **Client-first** means the mobile model already carries the field (optional,
 > defaulted) so the UI can be built, but the backend does not persist it yet.
