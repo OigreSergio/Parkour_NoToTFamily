@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Spot Villa Borghese",
+    "description": "Spot segnalato via mail (adminpkfamily@gmail.com) il 26/07/2026, oggetto \"Nuovo spot di parkour\". Coordinate originali: 41°54'25.9\"N 12°26'60.0\"E. Foto di riferimento nella mail (spot01-spot06.jpeg).",
+    "lat": 41.907194,
+    "lng": 12.45,
+    "difficulty": 1,
+    "photo_urls": []
+  },
+  {
+    "name": "Spot con fontanella - Trastevere/Gianicolo",
+    "description": "Spot segnalato via mail (adminpkfamily@gmail.com) il 26/07/2026, oggetto \"spot di parkour\". Coordinate originali: 41°53'38.6\"N 12°26'00.0\"E. Fontanella accanto allo spot: 41°53'38.4\"N 12°26'00.2\"E (41.894000, 12.433389). Foto di riferimento nella mail (sppk03-sppk10, pkspo1, pksp02).",
+    "lat": 41.894056,
+    "lng": 12.433333,
+    "difficulty": 1,
+    "photo_urls": []
+  }
+]
