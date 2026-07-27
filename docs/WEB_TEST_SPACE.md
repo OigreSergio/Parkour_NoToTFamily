@@ -27,6 +27,23 @@ controllato servirà un hosting con protezione (es. Cloudflare Access, basic
 auth su un piccolo server) — sensato solo se il test si allarga oltre la
 cerchia fidata.
 
+## Modalità test attiva sul bundle
+
+Sul bundle pubblicato sono applicate le patch di
+`scripts/patch-gh-pages-test-free.py`:
+
+- **mappa satellitare** (tile raster Esri World Imagery);
+- **spot fissi**: i 26 spot di `scripts/data/webapp_fixed_spots.json` sono
+  incorporati nel bundle e fusi con quelli di Supabase (la mappa è popolata
+  anche se il backend è irraggiungibile);
+- **tutto gratuito**: `useEntitlements` ritorna sempre `hasBase/hasChat/
+  hasVideo/hasAny = true` e il banner "Iscriviti" è disattivato. Nota: le
+  RLS lato Supabase restano attive, quindi le *scritture* riservate (es.
+  commenti senza abbonamento) falliscono comunque lato server.
+
+Dopo un nuovo export Expo le patch vanno riapplicate al nuovo bundle
+(`python3 scripts/patch-gh-pages-test-free.py <entry.js>`) prima del push.
+
 ## Rideploy dell'app aggiornata
 
 Ogni volta che vuoi pubblicare una nuova build web nell'anteprima:

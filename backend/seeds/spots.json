@@ -6,5 +6,205 @@
     "difficulty": 2,
     "description": "Piazzetta pedonale sulla salita verso la metro Cipro. Fioriere rialzate in mattoni con bordi in travertino, muretti e panchine in pietra: perfette per precision jump, stride e vault a varie distanze. Dalla piazza parte una lunga scalinata con muretti laterali inclinati in mattoni e travertino, corrimano in ferro e diverse rampe: ottima per salti in discesa, precision sui muretti, rail e linee in dislivello. Zona pubblica, fondo in sampietrini e lastre di pietra.",
     "photo_urls": []
+  },
+  {
+    "name": "EUR Laghetto",
+    "lat": 41.8305,
+    "lng": 12.4703,
+    "difficulty": 3,
+    "description": "Piazzali larghi, panche in marmo e dislivelli intorno al laghetto. Superfici lisce, ottime per flow.",
+    "photo_urls": []
+  },
+  {
+    "name": "Villa Borghese — Piazza di Siena",
+    "lat": 41.9142,
+    "lng": 12.4849,
+    "difficulty": 1,
+    "description": "Tronchi, muretti bassi e prati per allenare atterraggi e capriole in sicurezza.",
+    "photo_urls": []
+  },
+  {
+    "name": "Foro Italico — Stadio dei Marmi",
+    "lat": 41.9317,
+    "lng": 12.4547,
+    "difficulty": 4,
+    "description": "Gradonate in marmo e muri alti: spot tecnico per salti di precisione e passamuro. Attenzione ai custodi.",
+    "photo_urls": []
+  },
+  {
+    "name": "Garbatella — Scalinate",
+    "lat": 41.8622,
+    "lng": 12.4823,
+    "difficulty": 3,
+    "description": "Scalinate strette, ringhiere e cortili del quartiere storico. Rail session e cat leap tra i lotti.",
+    "photo_urls": []
+  },
+  {
+    "name": "MA Spot — Largo Emanuele Ruspoli",
+    "lat": 41.858017,
+    "lng": 12.455528,
+    "difficulty": 3,
+    "description": "Largo Emanuele Ruspoli 16, Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Metro Colosseo",
+    "lat": 41.891806,
+    "lng": 12.491545,
+    "difficulty": 3,
+    "description": "Rione I Monti, vicino alla fermata Metro Colosseo.",
+    "photo_urls": []
+  },
+  {
+    "name": "Parkour Park Municipio Roma III",
+    "lat": 41.960813,
+    "lng": 12.539902,
+    "difficulty": 3,
+    "description": "Piazzale Ennio Flaiano, 00139 Roma. Parkour park attrezzato.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot EUR",
+    "lat": 41.829641,
+    "lng": 12.466853,
+    "difficulty": 3,
+    "description": "Quartiere EUR, 00144 Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Rooftop Casal Lumbroso",
+    "lat": 41.862819,
+    "lng": 12.363478,
+    "difficulty": 3,
+    "description": "Rooftop a Casal Lumbroso.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Pizzeria Massimina",
+    "lat": 41.877788,
+    "lng": 12.349671,
+    "difficulty": 3,
+    "description": "Vicino alla pizzeria, La Massimina.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Scuola Massimina",
+    "lat": 41.882734,
+    "lng": 12.360117,
+    "difficulty": 3,
+    "description": "Via Giuseppe Sano, 00166 La Massimina-Casal Lumbroso.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Massimina Parco Nord",
+    "lat": 41.87995,
+    "lng": 12.359791,
+    "difficulty": 3,
+    "description": "Parco, La Massimina-Casal Lumbroso, 00166 Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Massimina Parco Sud",
+    "lat": 41.869537,
+    "lng": 12.356947,
+    "difficulty": 3,
+    "description": "Parco, La Massimina-Casal Lumbroso, 00166 Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Corviale 1",
+    "lat": 41.851164,
+    "lng": 12.413137,
+    "difficulty": 3,
+    "description": "Corviale, Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Corviale 2",
+    "lat": 41.850893,
+    "lng": 12.41161,
+    "difficulty": 3,
+    "description": "Corviale, Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Corviale 3",
+    "lat": 41.851311,
+    "lng": 12.412888,
+    "difficulty": 3,
+    "description": "Corviale, Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Tufello",
+    "lat": 41.95479,
+    "lng": 12.532099,
+    "difficulty": 3,
+    "description": "Tufello, Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Via Giovanni Prati",
+    "lat": 41.87381,
+    "lng": 12.462786,
+    "difficulty": 3,
+    "description": "Via Giovanni Prati 12, 00152 Roma (Monteverde).",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Primavalle",
+    "lat": 41.90608,
+    "lng": 12.415025,
+    "difficulty": 3,
+    "description": "Quartiere XXVII Primavalle, Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Villa Carpegna",
+    "lat": 41.895616,
+    "lng": 12.427432,
+    "difficulty": 3,
+    "description": "Villa Carpegna, Municipio Roma XIII, 00165 Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Colosseo — Monte Oppio",
+    "lat": 41.890649,
+    "lng": 12.497617,
+    "difficulty": 3,
+    "description": "Viale del Monte Oppio, 00184 Roma.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot NoToT Game",
+    "lat": 41.865012,
+    "lng": 12.44643,
+    "difficulty": 3,
+    "description": "Via Giulio Tarra 34, 00151 Roma. Lo spot del NoToT game.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot Colonne Colosseo",
+    "lat": 41.890839,
+    "lng": 12.494949,
+    "difficulty": 3,
+    "description": "Le colonne vicino al Colosseo.",
+    "photo_urls": []
+  },
+  {
+    "name": "Colle Oppio Park",
+    "lat": 41.8925,
+    "lng": 12.4966,
+    "difficulty": 1,
+    "description": "Muretti, scalinate e rail nel parco sopra il Colosseo. Ottimo per precision e vault di base.",
+    "photo_urls": []
+  },
+  {
+    "name": "Spot con fontanella - Trastevere/Gianicolo",
+    "lat": 41.894056,
+    "lng": 12.433333,
+    "difficulty": 1,
+    "description": "Spot con fontanella nella zona Trastevere/Gianicolo: acqua sempre disponibile durante gli allenamenti.",
+    "photo_urls": []
   }
 ]
