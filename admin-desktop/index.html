@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PkFAMILY — Console Admin</title>
+<style>
+  * { box-sizing: border-box; }
+  :root {
+    --bg:#16171A; --panel:#1E2024; --panel2:#23262B; --ink:#E8E9E6; --ink-soft:#9A9C99;
+    --line:#33353A; --accent:#7C90FF; --accent-ink:#10122B;
+    --ok:#5FBF82; --warn:#E0A94E; --bad:#E06C5F;
+  }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif; }
+  .wrap { max-width:1100px; margin:0 auto; padding:0 20px 60px; }
+  header { display:flex; align-items:center; gap:14px; padding:20px 0; border-bottom:3px solid var(--ink); flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; text-transform:uppercase; letter-spacing:.08em; }
+  header .dot { width:10px; height:10px; border-radius:50%; background:var(--bad); }
+  header .dot.on { background:var(--ok); }
+  header .spacer { flex:1; }
+  nav { display:flex; gap:6px; margin:18px 0; flex-wrap:wrap; }
+  nav button { background:var(--panel); border:1px solid var(--line); color:var(--ink); padding:8px 16px; cursor:pointer; font-weight:600; font-size:13px; letter-spacing:.05em; text-transform:uppercase; }
+  nav button.active { background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+  .card { background:var(--panel); border:1px solid var(--line); padding:16px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; }
+  .stat b { display:block; font-size:30px; font-variant-numeric:tabular-nums; }
+  .stat span { color:var(--ink-soft); font-size:12px; text-transform:uppercase; letter-spacing:.08em; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th { text-align:left; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); border-bottom:2px solid var(--ink); padding:6px 8px 6px 0; }
+  td { border-bottom:1px solid var(--line); padding:9px 8px 9px 0; vertical-align:top; }
+  .b { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; text-transform:uppercase; letter-spacing:.05em; }
+  .b.verified { background:rgba(95,191,130,.15); color:var(--ok); }
+  .b.pending  { background:rgba(224,169,78,.15);  color:var(--warn); }
+  .b.rejected { background:rgba(224,108,95,.15);  color:var(--bad); }
+  .b.admin    { background:rgba(124,144,255,.18); color:var(--accent); }
+  .b.banned   { background:rgba(224,108,95,.15);  color:var(--bad); }
+  button.a { background:transparent; border:1px solid var(--line); color:var(--ink); padding:4px 10px; cursor:pointer; font-size:12.5px; margin:1px 2px 1px 0; }
+  button.a:hover { border-color:var(--accent); color:var(--accent); }
+  button.a.danger:hover { border-color:var(--bad); color:var(--bad); }
+  button.primary { background:var(--accent); color:var(--accent-ink); border:none; padding:10px 18px; font-weight:700; cursor:pointer; }
+  input, select { background:var(--panel2); color:var(--ink); border:1px solid var(--line); padding:8px 10px; font-size:14px; }
+  input:focus, select:focus, button:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  .row { display:flex; gap:10px; align-items:center; margin:14px 0; flex-wrap:wrap; }
+  .muted { color:var(--ink-soft); font-size:13px; }
+  #toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--accent); color:var(--accent-ink); padding:10px 18px; font-weight:700; display:none; max-width:90vw; }
+  #login { max-width:520px; margin:60px auto; }
+  #login input { width:100%; margin:6px 0 14px; }
+  .tablewrap { overflow-x:auto; }
+  h2 { font-size:14px; text-transform:uppercase; letter-spacing:.1em; }
+  @media (prefers-color-scheme: light) { /* la console è pensata scura, resta scura: scelta deliberata */ }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <span class="dot" id="statusDot"></span>
+    <h1>PkFAMILY · Console Admin</h1>
+    <span class="muted" id="whoami"></span>
+    <span class="spacer"></span>
+    <button class="a danger" id="logoutBtn" style="display:none">Disconnetti</button>
+  </header>
+
+  <div id="login" class="card">
+    <h2>Accesso admin</h2>
+    <p class="muted">Questa console usa la <b>secret key</b> di Supabase: pieno controllo, solo per l'admin,
+    solo su questo PC. La chiave resta salvata in questo browser (localStorage) e non viene inviata a nessuno
+    tranne che a Supabase.</p>
+    <label>Project URL</label>
+    <input id="inUrl" value="https://gkdzdtxqkftebrxhgway.supabase.co">
+    <label>Secret key (sb_secret_…)</label>
+    <input id="inKey" type="password" placeholder="sb_secret_…">
+    <button class="primary" id="loginBtn">Entra</button>
+    <p class="muted" id="loginErr"></p>
+  </div>
+
+  <div id="app" style="display:none">
+    <nav>
+      <button data-tab="dash" class="active">Panoramica</button>
+      <button data-tab="spots">Spot</button>
+      <button data-tab="users">Utenti</button>
+      <button data-tab="reports">Segnalazioni</button>
+      <button data-tab="backup">Backup</button>
+    </nav>
+
+    <div id="tab-dash">
+      <div class="grid" id="stats"></div>
+    </div>
+
+    <div id="tab-spots" style="display:none">
+      <div class="row">
+        <select id="spotFilter">
+          <option value="">Tutti gli stati</option>
+          <option value="pending">In attesa</option>
+          <option value="verified">Verificati</option>
+          <option value="rejected">Rifiutati</option>
+        </select>
+        <input id="spotSearch" placeholder="Cerca per nome…">
+        <button class="a" id="spotReload">Aggiorna</button>
+      </div>
+      <div class="tablewrap card"><table id="spotTable"></table></div>
+    </div>
+
+    <div id="tab-users" style="display:none">
+      <div class="row"><button class="a" id="userReload">Aggiorna</button></div>
+      <div class="tablewrap card"><table id="userTable"></table></div>
+    </div>
+
+    <div id="tab-reports" style="display:none">
+      <div class="row"><button class="a" id="repReload">Aggiorna</button></div>
+      <div class="tablewrap card"><table id="repTable"></table></div>
+    </div>
+
+    <div id="tab-backup" style="display:none">
+      <div class="card">
+        <h2>Backup completo</h2>
+        <p class="muted">Scarica tutto il database (incluse le email degli utenti) in un file JSON.
+        Conservalo <b>solo su questo PC</b> — contiene dati personali. Consigliato: una volta a settimana.</p>
+        <button class="primary" id="backupBtn">Scarica backup completo</button>
+        <p class="muted">Il backup pubblico automatico (senza dati personali) si rigenera ogni 24 h qui:<br>
+        <a style="color:var(--accent)" href="https://github.com/OigreSergio/Parkour_NoToTFamily/blob/backup/%F0%9F%93%B2/backup-quotidiano.json">branch backup → 📲/backup-quotidiano.json</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+let URL0 = localStorage.getItem("pkadmin.url") || "";
+let KEY = localStorage.getItem("pkadmin.key") || "";
+
+const TABLES = ["spots","spot_photos","fountains","profiles","posts","comments","post_likes",
+  "post_saves","ratings","videos","video_progress","reports","chats","chat_members",
+  "messages","entitlements","blocked_users"];
+
+function toast(msg, ok = true) {
+  const t = $("#toast");
+  t.textContent = msg;
+  t.style.background = ok ? "var(--accent)" : "var(--bad)";
+  t.style.color = ok ? "var(--accent-ink)" : "#fff";
+  t.style.display = "block";
+  clearTimeout(t._h); t._h = setTimeout(() => (t.style.display = "none"), 3500);
+}
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+async function api(path, init = {}) {
+  const res = await fetch(URL0 + path, {
+    ...init,
+    headers: { apikey: KEY, Authorization: "Bearer " + KEY, "Content-Type": "application/json", ...(init.headers || {}) },
+  });
+  const text = await res.text();
+  if (!res.ok) throw new Error(res.status + ": " + text.slice(0, 300));
+  return { body: text ? JSON.parse(text) : null, headers: res.headers };
+}
+async function count(table, q = "") {
+  const { headers } = await api(`/rest/v1/${table}?select=id${q}&limit=1`, { headers: { Prefer: "count=exact", Range: "0-0" } })
+    .catch(() => ({ headers: new Headers() }));
+  const cr = headers.get?.("content-range") || "";
+  return cr.includes("/") ? Number(cr.split("/")[1]) : "–";
+}
+
+// ---------- login ----------
+async function tryLogin() {
+  URL0 = $("#inUrl").value.trim().replace(/\/$/, "");
+  KEY = $("#inKey").value.trim();
+  try {
+    await api("/rest/v1/spots?select=id&limit=1");
+    localStorage.setItem("pkadmin.url", URL0);
+    localStorage.setItem("pkadmin.key", KEY);
+    start();
+  } catch (e) {
+    $("#loginErr").textContent = "Accesso fallito: " + e.message;
+  }
+}
+$("#loginBtn").onclick = tryLogin;
+$("#inKey").addEventListener("keydown", e => { if (e.key === "Enter") tryLogin(); });
+$("#logoutBtn").onclick = () => {
+  localStorage.removeItem("pkadmin.key");
+  location.reload();
+};
+
+// ---------- tabs ----------
+document.querySelectorAll("nav button").forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll("nav button").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    ["dash","spots","users","reports","backup"].forEach(t => $("#tab-" + t).style.display = t === b.dataset.tab ? "" : "none");
+    if (b.dataset.tab === "dash") loadStats();
+    if (b.dataset.tab === "spots") loadSpots();
+    if (b.dataset.tab === "users") loadUsers();
+    if (b.dataset.tab === "reports") loadReports();
+  };
+});
+
+// ---------- panoramica ----------
+async function loadStats() {
+  const defs = [
+    ["Spot totali", () => count("spots")],
+    ["Verificati", () => count("spots", "&status=eq.verified")],
+    ["In attesa", () => count("spots", "&status=eq.pending")],
+    ["Rifiutati", () => count("spots", "&status=eq.rejected")],
+    ["Utenti", () => count("profiles")],
+    ["Post", () => count("posts")],
+    ["Segnalazioni", () => count("reports")],
+    ["Video", () => count("videos")],
+  ];
+  $("#stats").innerHTML = defs.map(([l]) => `<div class="card stat"><b>…</b><span>${l}</span></div>`).join("");
+  const vals = await Promise.all(defs.map(([, f]) => f()));
+  $("#stats").innerHTML = defs.map(([l], i) => `<div class="card stat"><b>${vals[i]}</b><span>${l}</span></div>`).join("");
+}
+
+// ---------- spot ----------
+async function loadSpots() {
+  const f = $("#spotFilter").value, s = $("#spotSearch").value.trim();
+  let q = "/rest/v1/spots?select=*&order=created_at.desc&limit=200";
+  if (f) q += "&status=eq." + f;
+  if (s) q += "&name=ilike.*" + encodeURIComponent(s) + "*";
+  const { body: rows } = await api(q);
+  $("#spotTable").innerHTML =
+    "<tr><th>Nome</th><th>Livello</th><th>Stato</th><th>Creato</th><th>Azioni</th></tr>" +
+    rows.map(r => `<tr>
+      <td><b>${esc(r.name)}</b><div class="muted">${esc((r.description || "").slice(0, 90))}</div></td>
+      <td>${esc(r.skill_level || "")}${r.has_fountain ? ' · <span class="muted">fontanella</span>' : ""}</td>
+      <td><span class="b ${esc(r.status)}">${esc(r.status)}</span>${r.rejection_reason ? `<div class="muted">${esc(r.rejection_reason)}</div>` : ""}</td>
+      <td class="muted">${(r.created_at || "").slice(0, 10)}</td>
+      <td>
+        ${r.status !== "verified" ? `<button class="a" onclick="spotVerify('${r.id}')">Verifica</button>` : ""}
+        ${r.status !== "rejected" ? `<button class="a" onclick="spotReject('${r.id}')">Rifiuta</button>` : ""}
+        <button class="a" onclick="spotEdit('${r.id}', this)">Modifica</button>
+        <button class="a danger" onclick="spotDelete('${r.id}', '${esc(r.name).replace(/'/g, "\\'")}')">Elimina</button>
+      </td></tr>`).join("");
+  window._spots = Object.fromEntries(rows.map(r => [r.id, r]));
+}
+window.spotVerify = async (id) => {
+  await api(`/rest/v1/spots?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ status: "verified", rejection_reason: null, verified_at: new Date().toISOString() }) });
+  toast("Spot verificato ✓"); loadSpots();
+};
+window.spotReject = async (id) => {
+  const reason = prompt("Motivo del rifiuto (visibile all'autore):", "");
+  if (reason === null) return;
+  await api(`/rest/v1/spots?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ status: "rejected", rejection_reason: reason || null }) });
+  toast("Spot rifiutato"); loadSpots();
+};
+window.spotEdit = async (id) => {
+  const r = window._spots[id];
+  const name = prompt("Nome:", r.name); if (name === null) return;
+  const description = prompt("Descrizione:", r.description || ""); if (description === null) return;
+  await api(`/rest/v1/spots?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ name, description }) });
+  toast("Spot aggiornato ✓"); loadSpots();
+};
+window.spotDelete = async (id, name) => {
+  if (!confirm(`Eliminare definitivamente lo spot "${name}"? L'operazione non è reversibile.`)) return;
+  await api(`/rest/v1/spots?id=eq.${id}`, { method: "DELETE" });
+  toast("Spot eliminato"); loadSpots();
+};
+$("#spotReload").onclick = loadSpots;
+$("#spotFilter").onchange = loadSpots;
+$("#spotSearch").addEventListener("keydown", e => { if (e.key === "Enter") loadSpots(); });
+
+// ---------- utenti ----------
+async function loadUsers() {
+  const [{ body: profiles }, { body: auth }] = await Promise.all([
+    api("/rest/v1/profiles?select=*&order=created_at"),
+    api("/auth/v1/admin/users?page=1&per_page=200"),
+  ]);
+  const emails = Object.fromEntries((auth.users || []).map(u => [u.id, u.email]));
+  $("#userTable").innerHTML =
+    "<tr><th>Username</th><th>Email</th><th>Ruolo</th><th>Stato</th><th>Iscritto</th><th>Azioni</th></tr>" +
+    profiles.map(p => `<tr>
+      <td><b>${esc(p.username)}</b></td>
+      <td class="muted">${esc(emails[p.id] || "—")}</td>
+      <td>${p.role === "admin" ? '<span class="b admin">admin</span>' : "user"}</td>
+      <td>${p.banned ? '<span class="b banned">bannato</span>' : '<span class="muted">attivo</span>'}</td>
+      <td class="muted">${(p.created_at || "").slice(0, 10)}</td>
+      <td>
+        <button class="a ${p.banned ? "" : "danger"}" onclick="userBan('${p.id}', ${!p.banned})">${p.banned ? "Sbanna" : "Banna"}</button>
+        <button class="a" onclick="userRole('${p.id}', '${p.role === "admin" ? "user" : "admin"}')">${p.role === "admin" ? "Togli admin" : "Rendi admin"}</button>
+        <button class="a" onclick="userPwd('${p.id}', '${esc(p.username)}')">Reset password</button>
+      </td></tr>`).join("");
+}
+window.userBan = async (id, banned) => {
+  if (banned && !confirm("Bannare questo utente? Non potrà più usare l'app.")) return;
+  await api(`/rest/v1/profiles?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ banned }) });
+  toast(banned ? "Utente bannato" : "Utente riattivato"); loadUsers();
+};
+window.userRole = async (id, role) => {
+  if (role === "admin" && !confirm("Dare i permessi di amministratore a questo utente?")) return;
+  await api(`/rest/v1/profiles?id=eq.${id}`, { method: "PATCH", body: JSON.stringify({ role }) });
+  toast("Ruolo aggiornato ✓"); loadUsers();
+};
+window.userPwd = async (id, username) => {
+  if (!confirm(`Generare una nuova password per "${username}"?`)) return;
+  const abc = "abcdefghjkmnpqrstuvwxyz23456789";
+  const buf = crypto.getRandomValues(new Uint8Array(20));
+  const pwd = Array.from(buf, (b, i) => abc[b % abc.length] + ((i + 1) % 5 === 0 && i < 19 ? "-" : "")).join("");
+  await api(`/auth/v1/admin/users/${id}`, { method: "PUT", body: JSON.stringify({ password: pwd }) });
+  prompt("Nuova password (mostrata solo ora — salvala nel gestore password):", pwd);
+};
+$("#userReload").onclick = loadUsers;
+
+// ---------- segnalazioni ----------
+async function loadReports() {
+  const { body: rows } = await api("/rest/v1/reports?select=*&order=created_at.desc&limit=200");
+  $("#repTable").innerHTML = rows.length
+    ? "<tr><th>Motivo</th><th>Riferimento</th><th>Data</th></tr>" +
+      rows.map(r => `<tr><td>${esc(r.reason)}</td>
+        <td class="muted">${r.post_id ? "post " + r.post_id.slice(0, 8) : r.comment_id ? "commento " + r.comment_id.slice(0, 8) : r.message_id ? "messaggio " + r.message_id.slice(0, 8) : "—"}</td>
+        <td class="muted">${(r.created_at || "").slice(0, 16).replace("T", " ")}</td></tr>`).join("")
+    : "<tr><td class='muted'>Nessuna segnalazione 🎉</td></tr>";
+}
+$("#repReload").onclick = loadReports;
+
+// ---------- backup ----------
+$("#backupBtn").onclick = async () => {
+  toast("Backup in corso…");
+  const backup = { progetto: URL0, modalita: "completo", generato_il: new Date().toISOString(), tabelle: {} };
+  for (const t of TABLES) {
+    try {
+      const rows = [];
+      for (let from = 0; ; from += 1000) {
+        const { body: chunk } = await api(`/rest/v1/${t}?select=*`, { headers: { Range: `${from}-${from + 999}` } });
+        rows.push(...chunk);
+        if (chunk.length < 1000) break;
+      }
+      backup.tabelle[t] = rows;
+    } catch { /* tabella non leggibile: salta */ }
+  }
+  const { body: auth } = await api("/auth/v1/admin/users?page=1&per_page=200");
+  backup.utenti_auth = (auth.users || []).map(({ id, email, created_at, last_sign_in_at, user_metadata }) => ({ id, email, created_at, last_sign_in_at, user_metadata }));
+  const blob = new Blob([JSON.stringify(backup, null, 1)], { type: "application/json" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `pkfamily-backup-completo-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  toast("Backup scaricato ✓ Conservalo solo su questo PC.");
+};
+
+// ---------- avvio ----------
+function start() {
+  $("#login").style.display = "none";
+  $("#app").style.display = "";
+  $("#logoutBtn").style.display = "";
+  $("#statusDot").classList.add("on");
+  $("#whoami").textContent = new URL(URL0).host;
+  loadStats();
+}
+if (URL0 && KEY) {
+  $("#inUrl").value = URL0;
+  api("/rest/v1/spots?select=id&limit=1").then(start).catch(() => {});
+}
+</script>
+</body>
+</html>

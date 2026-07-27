@@ -264,3 +264,6 @@ mobile/pubspec.lock
 *.log
 logs/
 tmp/
+
+# Backup completo: contiene dati personali, resta locale
+📲/backup-completo.json
