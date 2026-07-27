@@ -105,5 +105,42 @@ src = replace_once(
     "app gratuita (useEntitlements)",
 )
 
+# --- 4a. Espone l'istanza MapLibre per pk-route.js -------------------------
+src = replace_once(
+    src,
+    "S.current=t,()=>{t.remove(),S.current=null,e.remove()}",
+    "S.current=t,globalThis.__pkMap=t,"
+    "()=>{t.remove(),S.current=null,globalThis.__pkMap=null,e.remove()}",
+    "espone __pkMap",
+)
+
+# --- 4b. Pulsante "Distanza & percorso" sulla scheda spot ------------------
+pk_btn = (
+    "(0,h.jsx)(n.default,{onPress:()=>{globalThis.__pkRoute&&globalThis.__pkRoute("
+    "{id:p.id,name:p.name,lat:p.lat,lng:p.lng})},hitSlop:8,"
+    "children:(0,h.jsx)(l.default,{style:j.openLink,children:'🧭 Distanza & percorso'})})"
+)
+src = replace_once(
+    src,
+    "children:[F,P,W,H]}",
+    "children:[F,P,W,H," + pk_btn + "]}",
+    "pulsante percorso su SpotPreviewCard",
+)
+
 path.write_text(src, encoding="utf8")
 print(f"Bundle aggiornato: {path}")
+
+# --- 4c. pk-route.js accanto al bundle + script tag in index.html ----------
+app_root = path.parents[3].parent  # .../_expo/static/js/web/entry.js -> radice app
+index_html = app_root / "index.html"
+if index_html.is_file():
+    import shutil
+
+    shutil.copy(Path(__file__).parent / "web" / "pk-route.js", app_root / "pk-route.js")
+    html = index_html.read_text(encoding="utf8")
+    if "pk-route.js" not in html:
+        html = html.replace("</body>", '<script src="./pk-route.js" defer></script>\n</body>')
+        index_html.write_text(html, encoding="utf8")
+    print(f"ok: pk-route.js copiato e collegato in {index_html}")
+else:
+    sys.exit(f"ERRORE: index.html non trovato in {app_root}")

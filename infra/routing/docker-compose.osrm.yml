@@ -1,0 +1,21 @@
+# OSRM per i percorsi PK — vedi README.md in questa cartella.
+services:
+  osrm-prepare:
+    image: ghcr.io/project-osrm/osrm-backend:latest
+    volumes:
+      - ./:/data
+    working_dir: /data
+    entrypoint: >
+      sh -c "osrm-extract -p /data/pk_foot.lua /data/centro-latest.osm.pbf
+      && osrm-partition /data/centro-latest.osrm
+      && osrm-customize /data/centro-latest.osrm"
+    profiles: ["prepare"]
+
+  osrm-pk:
+    image: ghcr.io/project-osrm/osrm-backend:latest
+    command: osrm-routed --algorithm mld /data/centro-latest.osrm
+    volumes:
+      - ./:/data
+    ports:
+      - "5000:5000"
+    restart: unless-stopped

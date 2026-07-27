@@ -36,6 +36,10 @@ find "$WORK/ghp/t/$TOKEN" -name '*.html' | while read -r f; do
   sed -i 's|<head>|<head><meta name="robots" content="noindex, nofollow">|' "$f"
 done
 
+# patch modalità test (satellite, spot fissi, gratis, pk-route.js)
+python3 "$REPO_ROOT/scripts/patch-gh-pages-test-free.py" \
+  "$WORK/ghp/t/$TOKEN"/_expo/static/js/web/entry-*.js
+
 printf 'User-agent: *\nDisallow: /\n' > "$WORK/ghp/robots.txt"
 cat > "$WORK/ghp/index.html" <<'EOF'
 <!doctype html>
