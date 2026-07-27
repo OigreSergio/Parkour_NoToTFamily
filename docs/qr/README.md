@@ -1,14 +1,15 @@
-# QR code — verifica web app
+# QR code — web app
 
-Scansiona il QR code per aprire la web app pubblicata su GitHub Pages e verificarla da mobile:
+La web app è in **anteprima privata** (vedi `docs/WEB_TEST_SPACE.md`): l'URL
+base mostra solo un placeholder e l'app vera è su un percorso riservato,
+raggiungibile con il QR di test.
 
-**URL:** <https://oigresergio.github.io/Parkour_NoToTFamily/>
+| File | Punta a | Uso |
+| --- | --- | --- |
+| `webapp-test-qr.png` / `.svg` | percorso riservato `/t/<token>/` | **QR attuale di accesso** all'anteprima |
+| `webapp-qr.png` / `.svg` | URL base (oggi placeholder) | da rigenerare al lancio pubblico |
 
-| File | Uso |
-| --- | --- |
-| `webapp-qr.png` | Da stampare o condividere in chat |
-| `webapp-qr.svg` | Vettoriale, per documenti e siti |
+![QR code di accesso all'anteprima](./webapp-test-qr.png)
 
-![QR code della web app](./webapp-qr.png)
-
-Il QR è generato con correzione d'errore di livello M e punta alla build web (export Expo) servita dal branch `gh-pages`.
+I QR sono generati con correzione d'errore di livello M; la build web (export
+Expo) è servita dal branch `gh-pages`.
