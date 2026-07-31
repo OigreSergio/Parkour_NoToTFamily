@@ -1,0 +1,362 @@
+#!/usr/bin/env python3
+"""Genera pk-scheda.js: il contesto visivo dentro la scheda dell'app PkFAMILY.
+
+Segue il pattern di pk-route.js (gh-pages): un file JS autonomo caricato da
+index.html accanto al bundle Expo. Quando la family apre la scheda di uno
+spot (rotta /spot/{id}) lo script aggiunge in fondo alla scheda la sezione
+"Contesto visivo": miniatura Street View puntata sullo spot, panorama 360°
+apribile inline, foto della zona (Wikimedia/Flickr, con licenza) oppure
+vista aerea, e il link per aprire Street View in Google Maps.
+
+Dati: docs/demo/spots-streetview.json (generato da fetch_streetview.py,
+UUID reali del DB) + le foto curate qui sotto + i due spot presenti solo
+nell'app (Cipro, Trastevere) di cui recupera il panorama al volo.
+
+Uso:
+    python3 docs/demo/tools/build_pk_scheda.py [output]
+    # default output: docs/demo/pk-scheda.js
+"""
+
+import json
+import sys
+from pathlib import Path
+
+from fetch_streetview import bearing, distance_m, find_pano
+
+REPO = Path(__file__).resolve().parents[3]
+STREETVIEW = REPO / "docs" / "demo" / "spots-streetview.json"
+DEFAULT_OUT = REPO / "docs" / "demo" / "pk-scheda.js"
+
+# Foto di contesto curate a mano (le stesse della pagina demo e del seed),
+# verificate una a una: solo dove mostrano davvero la zona dello spot.
+CURATED = {
+    "Foro Italico — Stadio dei Marmi": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Stadio_dei_marmi_009.jpg/960px-Stadio_dei_marmi_009.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Stadio_dei_marmi_009.jpg",
+        "credit": "Wikimedia Commons · Pubblico dominio",
+    },
+    "EUR Laghetto": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Roma_EUR_Laghetto_vista_dal_basso.jpg/960px-Roma_EUR_Laghetto_vista_dal_basso.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Roma_EUR_Laghetto_vista_dal_basso.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 3.0 IT",
+    },
+    "Colle Oppio Park": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Parco_Del_Colle_Oppio_-_panoramio.jpg/960px-Parco_Del_Colle_Oppio_-_panoramio.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Parco_Del_Colle_Oppio_-_panoramio.jpg",
+        "credit": "Wikimedia Commons · CC BY 3.0",
+    },
+    "Villa Borghese — Piazza di Siena": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg/960px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Plaza_de_Siena,_Villa_Borghese,_Roma,_Italia,_2022-09-14,_DD_14.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+    },
+    "Spot Colonne Colosseo": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg/960px-Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 3.0",
+    },
+    "Garbatella — Scalinate": {
+        "src": "https://live.staticflickr.com/34/72998499_c2311608eb_b.jpg",
+        "page": "https://www.flickr.com/photos/93226994@N00/72998499",
+        "credit": "antmoose (Flickr) · CC BY 2.0",
+    },
+    "Spot Metro Colosseo": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Colosseo_-_panoramio_%2810%29.jpg/960px-Colosseo_-_panoramio_%2810%29.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Colosseo_-_panoramio_(10).jpg",
+        "credit": "Wikimedia Commons · CC BY 3.0",
+    },
+    "Spot EUR": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/2024-05-06-Palazzo-dello-Sport-2.jpg/960px-2024-05-06-Palazzo-dello-Sport-2.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:2024-05-06-Palazzo-dello-Sport-2.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+    },
+    "Spot Corviale 1": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Corviale_%285582072620%29.jpg/960px-Corviale_%285582072620%29.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Corviale_(5582072620).jpg",
+        "credit": "Wikimedia Commons · Pubblico dominio",
+    },
+    "Spot Corviale 2": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Municipio_XI_%28Roma%29_in_2020.03.jpg/960px-Municipio_XI_%28Roma%29_in_2020.03.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.03.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+    },
+    "Spot Corviale 3": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Municipio_XI_%28Roma%29_in_2020.02.jpg/960px-Municipio_XI_%28Roma%29_in_2020.02.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.02.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+    },
+    "Spot Primavalle": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Largo_borromeo_primavalle_roma.jpg/960px-Largo_borromeo_primavalle_roma.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Largo_borromeo_primavalle_roma.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+    },
+    "Spot Villa Carpegna": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg/960px-Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg",
+        "credit": "Wikimedia Commons · CC BY 3.0",
+    },
+    "Spot Colosseo — Monte Oppio": {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/960px-Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
+        "page": "https://commons.wikimedia.org/wiki/File:Parc_Colle_Oppio_-_Rome_(IT62)_-_2021-08-29_-_1.jpg",
+        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+    },
+}
+
+# Spot presenti solo nell'app (dati mock del bundle), non nel backup.
+EXTRA_SPOTS = [
+    {"id": "spot-metro-cipro", "name": "Spot verso la metro Cipro", "lat": 41.907192, "lng": 12.449997},
+    {
+        "id": "spot-fontanella-trastevere-gianicolo",
+        "name": "Spot con fontanella - Trastevere/Gianicolo",
+        "lat": 41.894056,
+        "lng": 12.433333,
+    },
+]
+
+TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
+ *
+ * Generato da docs/demo/tools/build_pk_scheda.py — NON modificare a mano.
+ * Caricato da index.html accanto al bundle Expo (stesso pattern di
+ * pk-route.js). Interviene SOLO sulla rotta /spot/{id}: quando la family
+ * apre la scheda, in fondo compaiono la miniatura Street View puntata
+ * sullo spot, il panorama 360° apribile inline, una foto della zona
+ * (con licenza) o la vista aerea, e il link a Google Street View.
+ * Nessuna API key: stessi endpoint pubblici della pagina demo.
+ */
+(function () {
+  'use strict';
+
+  var SPOTS = __DATA__;
+
+  var MONTHS = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
+  var current = null; // id spot attualmente iniettato
+  var tries = 0;
+
+  function svThumb(sv) {
+    return 'https://streetviewpixels-pa.googleapis.com/v1/thumbnail' +
+      '?panoid=' + encodeURIComponent(sv.pano_id) + '&cb_client=maps_sv.tactile.gps' +
+      '&w=640&h=360&yaw=' + sv.yaw + '&pitch=0&thumbfov=100';
+  }
+  function svEmbed(sv) {
+    return 'https://www.google.com/maps/embed?pb=' +
+      '!4v1!6m8!1m7!1s' + sv.pano_id + '!2m2!1d' + sv.pano_lat + '!2d' + sv.pano_lng +
+      '!3f' + sv.yaw + '!4f0!5f0.7820865974627469';
+  }
+  function svOpen(spot) {
+    return 'https://www.google.com/maps/@?api=1&map_action=pano' +
+      '&pano=' + encodeURIComponent(spot.sv.pano_id) +
+      '&viewpoint=' + spot.lat + ',' + spot.lng + '&heading=' + spot.sv.yaw;
+  }
+  function aerial(spot) {
+    var dlng = 0.0015, dlat = 0.0006;
+    return 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export' +
+      '?bbox=' + (spot.lng - dlng) + ',' + (spot.lat - dlat) + ',' +
+      (spot.lng + dlng) + ',' + (spot.lat + dlat) +
+      '&bboxSR=4326&size=640,360&imageSR=3857&format=jpg&f=image';
+  }
+  function svDate(sv) {
+    if (!sv.date) return '';
+    var p = sv.date.split('-');
+    return MONTHS[parseInt(p[1], 10) - 1] + ' ' + p[0];
+  }
+
+  function el(tag, css, text) {
+    var e = document.createElement(tag);
+    if (css) e.style.cssText = css;
+    if (text) e.textContent = text;
+    return e;
+  }
+
+  function media(src, tagText, tagHref) {
+    var wrap = el('div', 'position:relative;border-radius:12px;overflow:hidden;background:#222;margin:0 0 10px');
+    var img = el('img', 'width:100%;aspect-ratio:16/9;object-fit:cover;display:block');
+    img.loading = 'lazy';
+    img.src = src;
+    img.onerror = function () { wrap.remove(); };
+    wrap.appendChild(img);
+    var tag;
+    if (tagHref) {
+      tag = el('a', '', tagText);
+      tag.href = tagHref;
+      tag.target = '_blank';
+      tag.rel = 'noopener';
+    } else {
+      tag = el('span', '', tagText);
+    }
+    tag.style.cssText += 'position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.62);' +
+      'color:#fff;font:11px system-ui,sans-serif;padding:3px 8px;border-radius:6px;text-decoration:none';
+    wrap.appendChild(tag);
+    return wrap;
+  }
+
+  function buildSection(spot) {
+    var box = el('div',
+      'margin:14px 16px calc(28px + env(safe-area-inset-bottom));padding:14px;border-radius:14px;' +
+      'background:#1c1c1e;color:#eee;font:14px system-ui,sans-serif;' +
+      'box-shadow:0 2px 10px rgba(0,0,0,.35)');
+    box.id = 'pk-scheda-context';
+
+    box.appendChild(el('div', 'font:800 15px system-ui,sans-serif;margin-bottom:10px',
+      '\\uD83D\\uDCF8 Contesto visivo'));
+
+    if (spot.sv) {
+      var svTag = 'Street View \\u00B7 ' + svDate(spot.sv) +
+        ' \\u00B7 ripresa a ~' + spot.sv.distance_m + ' m dallo spot';
+      box.appendChild(media(svThumb(spot.sv), svTag));
+    }
+    if (spot.photo) {
+      box.appendChild(media(spot.photo.src, 'Foto: ' + spot.photo.credit, spot.photo.page));
+    } else {
+      box.appendChild(media(aerial(spot), 'Vista aerea \\u00B7 \\u00A9 Esri, Maxar'));
+    }
+
+    var row = el('div', 'display:flex;gap:8px;flex-wrap:wrap');
+    function btn(label, primary) {
+      return el('button',
+        'flex:1;min-width:120px;padding:10px 8px;border:0;border-radius:10px;cursor:pointer;' +
+        'font:600 13px system-ui,sans-serif;' +
+        (primary ? 'background:#ffd166;color:#1a1a1a' : 'background:#333;color:#eee'), label);
+    }
+    if (spot.sv) {
+      var pano = el('div', 'display:none;margin-top:10px;border-radius:12px;overflow:hidden');
+      var b360 = btn('\\uD83C\\uDF10 Esplora a 360\\u00B0', true);
+      b360.onclick = function () {
+        if (!pano.firstChild) {
+          var f = document.createElement('iframe');
+          f.src = svEmbed(spot.sv);
+          f.style.cssText = 'width:100%;height:300px;border:0;display:block';
+          f.allowFullscreen = true;
+          pano.appendChild(f);
+        }
+        var open = pano.style.display !== 'none';
+        pano.style.display = open ? 'none' : 'block';
+        b360.textContent = open ? '\\uD83C\\uDF10 Esplora a 360\\u00B0' : '\\u2715 Chiudi il 360\\u00B0';
+      };
+      var bOpen = btn('\\uD83D\\uDEB6 Apri in Street View', false);
+      bOpen.onclick = function () { window.open(svOpen(spot), '_blank'); };
+      row.appendChild(b360);
+      row.appendChild(bOpen);
+      box.appendChild(row);
+      box.appendChild(pano);
+    }
+
+    box.appendChild(el('div', 'color:#777;font-size:10px;margin-top:10px',
+      'Immagini \\u00A9 Google Street View \\u00B7 foto Wikimedia/Flickr con licenza \\u00B7 aeree \\u00A9 Esri'));
+    return box;
+  }
+
+  function findScrollHost(name) {
+    // La scheda \\u00E8 una ScrollView (div con overflow-y auto) che contiene
+    // il nome dello spot: agganciamo quella, in fondo al contenuto.
+    var root = document.getElementById('root');
+    if (!root) return null;
+    var divs = root.querySelectorAll('div');
+    var best = null;
+    for (var i = 0; i < divs.length; i++) {
+      var s = getComputedStyle(divs[i]);
+      if (s.overflowY !== 'auto' && s.overflowY !== 'scroll') continue;
+      if (name && divs[i].textContent.indexOf(name) === -1) continue;
+      best = divs[i];
+    }
+    return best;
+  }
+
+  function inject(spot) {
+    if (document.getElementById('pk-scheda-context')) return true;
+    var host = findScrollHost(spot.name) || findScrollHost(null);
+    var section = buildSection(spot);
+    if (host) {
+      (host.firstElementChild || host).appendChild(section);
+    } else {
+      // fallback: pannello fisso sopra la tab bar, come pk-route
+      section.style.cssText += ';position:fixed;left:10px;right:10px;' +
+        'bottom:calc(84px + env(safe-area-inset-bottom));z-index:9999;max-height:55vh;overflow:auto';
+      document.body.appendChild(section);
+    }
+    return true;
+  }
+
+  function currentSpotId() {
+    var m = location.pathname.match(/\\/spot\\/([^\\/?#]+)/);
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+
+  function tick() {
+    var id = currentSpotId();
+    if (!id) {
+      current = null;
+      var old = document.getElementById('pk-scheda-context');
+      if (old) old.remove();
+      return;
+    }
+    if (id === current && document.getElementById('pk-scheda-context')) return;
+    if (id !== current) {
+      // cambiato spot: via la sezione della scheda precedente
+      var prev = document.getElementById('pk-scheda-context');
+      if (prev) prev.remove();
+    }
+    var spot = SPOTS[id];
+    if (!spot) { current = id; return; }
+    current = id;
+    inject(spot); // se la scheda non \\u00E8 ancora montata, riprova il polling
+  }
+
+  // route-change: pushState/replaceState + popstate + polling di sicurezza
+  ['pushState', 'replaceState'].forEach(function (fn) {
+    var orig = history[fn];
+    history[fn] = function () {
+      var r = orig.apply(this, arguments);
+      setTimeout(tick, 120);
+      return r;
+    };
+  });
+  window.addEventListener('popstate', function () { setTimeout(tick, 120); });
+  setInterval(tick, 700);
+})();
+"""
+
+
+def main() -> int:
+    data = json.loads(STREETVIEW.read_text())
+    spots: dict[str, dict] = {}
+    for s in data["spots"]:
+        spots[s["id"]] = {
+            "name": s["name"],
+            "lat": s["lat"],
+            "lng": s["lng"],
+            "sv": s["streetview"],
+            "photo": CURATED.get(s["name"]),
+        }
+    for extra in EXTRA_SPOTS:
+        found = find_pano(extra["lat"], extra["lng"])
+        sv = None
+        if found:
+            pano_id, plat, plng, date = found
+            sv = {
+                "pano_id": pano_id,
+                "pano_lat": plat,
+                "pano_lng": plng,
+                "yaw": round(bearing(plat, plng, extra["lat"], extra["lng"]), 1),
+                "date": date,
+                "distance_m": round(distance_m(plat, plng, extra["lat"], extra["lng"])),
+            }
+            print(f"✓ {extra['name']}: pano {pano_id}")
+        else:
+            print(f"✗ {extra['name']}: nessun panorama")
+        spots[extra["id"]] = {
+            "name": extra["name"],
+            "lat": extra["lat"],
+            "lng": extra["lng"],
+            "sv": sv,
+            "photo": None,
+        }
+
+    out = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_OUT
+    js = TEMPLATE.replace("__DATA__", json.dumps(spots, ensure_ascii=False))
+    out.write_text(js)
+    print(f"Scritto {out} ({len(spots)} spot)")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

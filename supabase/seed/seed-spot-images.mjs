@@ -119,7 +119,7 @@ async function main() {
     const cols = schema.columnsOf("spot_photos");
     const urlCol = URL_COLUMNS.find((c) => cols.includes(c));
     if (urlCol && cols.includes("spot_id")) {
-      return seedSpotPhotos(urlCol);
+      return seedSpotPhotos(urlCol, cols.includes("position"));
     }
     console.error(
       `spot_photos esiste ma non ho riconosciuto le colonne (${cols.join(", ")}); mi fermo.`,
@@ -138,7 +138,7 @@ async function main() {
   process.exit(1);
 }
 
-async function seedSpotPhotos(urlCol) {
+async function seedSpotPhotos(urlCol, hasPosition) {
   for (const spot of streetview.spots) {
     const imgs = imagesFor(spot);
     if (!imgs.length) continue;
@@ -146,6 +146,8 @@ async function seedSpotPhotos(urlCol) {
       `/rest/v1/spot_photos?spot_id=eq.${spot.id}&select=${urlCol}`,
     );
     const have = new Set(existing.map((r) => r[urlCol]));
+    // la scheda dell'app ordina per position: le seed partono dopo le esistenti
+    let position = existing.length;
     for (const img of imgs) {
       if (have.has(img)) {
         console.log(`= ${spot.name}: già presente (${img.slice(0, 60)}…)`);
@@ -155,10 +157,12 @@ async function seedSpotPhotos(urlCol) {
         console.log(`~ ${spot.name}: inserirei ${img.slice(0, 80)}`);
         continue;
       }
+      const row = { spot_id: spot.id, [urlCol]: img };
+      if (hasPosition) row.position = position++;
       await api("/rest/v1/spot_photos", {
         method: "POST",
         headers: { Prefer: "return=minimal" },
-        body: JSON.stringify({ spot_id: spot.id, [urlCol]: img }),
+        body: JSON.stringify(row),
       });
       console.log(`+ ${spot.name}: foto aggiunta (${img.slice(0, 60)}…)`);
     }
