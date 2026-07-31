@@ -9,7 +9,12 @@ from app.db.base import Base, TimestampMixin, UUIDPKMixin
 
 
 class UserRole(str, enum.Enum):
+    # Every new account starts as `user` — all members are peers. `instructor`
+    # is a qualification an admin grants later; it is never self-assigned.
+    # `admin` is reserved: it is the only role that can operate the web admin,
+    # and there is deliberately no API path that assigns it.
     user = "user"
+    instructor = "instructor"
     admin = "admin"
 
 

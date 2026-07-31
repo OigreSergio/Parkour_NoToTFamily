@@ -27,6 +27,9 @@ class SpotOut(BaseModel):
     description: str
     location: Point
     photo_urls: list[str]
+    # First photo, ready to use as list/map thumbnail without unpacking the
+    # whole array client-side. None when the spot has no photos yet.
+    preview_url: str | None = None
     difficulty: int
     status: SpotStatus
     submitted_by: UUID | None
@@ -36,6 +39,21 @@ class SpotOut(BaseModel):
 
 class SpotRejectRequest(BaseModel):
     reason: str = Field(min_length=3, max_length=500)
+
+
+class SpotCommentCreate(BaseModel):
+    body: str = Field(min_length=1, max_length=1000)
+
+
+class SpotCommentOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    spot_id: UUID
+    author_id: UUID | None
+    author_name: str | None = None
+    body: str
+    created_at: datetime
 
 
 class SpotSearchQuery(BaseModel):

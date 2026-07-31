@@ -54,6 +54,18 @@ before they go public.
   (30 days, DB-stored so it's revocable). Admin endpoints check
   `user.role == "admin"`.
 
+### Membership levels (`user` → `instructor`, `admin` reserved)
+- **Every account starts equal**: sign-up always creates a plain `user` — the
+  community is made of peers, with no tiers at the door.
+- **`instructor` is a qualification, not a tier**: an admin grants it later
+  (`POST /api/v1/admin/users/{id}/role`) to members who qualify to teach, and
+  can revoke it the same way. It adds recognition, not extra write privileges.
+- **`admin` is reserved**: it is the only role that operates the web admin
+  (moderation queue, verify/reject, instructor grants — the basic interaction
+  surface with the web app). No API call can assign or remove it; the first
+  admin is seeded server-side and any other is promoted manually at the
+  database level.
+
 ### Mobile — Flutter 3.22+ (Dart)
 - Lints: `flutter_lints`. State: **Riverpod**. HTTP via a single configurable
   base URL (`http://10.0.2.2:8000` for the Android emulator by default).

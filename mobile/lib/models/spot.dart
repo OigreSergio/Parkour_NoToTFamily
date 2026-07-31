@@ -32,6 +32,7 @@ class Spot {
     required this.description,
     required this.location,
     required this.photoUrls,
+    String? previewUrl,
     required this.difficulty,
     required this.status,
     this.water = false,
@@ -40,13 +41,21 @@ class Spot {
     this.liked = false,
     required this.verifiedAt,
     required this.createdAt,
-  });
+  }) : _previewUrl = previewUrl;
 
   final String id;
   final String name;
   final String description;
   final GeoPoint location;
   final List<String> photoUrls;
+
+  /// First photo of the spot, ready to use as a list/map thumbnail.
+  ///
+  /// Mirrors `preview_url` in `SpotOut`; falls back to the first entry of
+  /// [photoUrls] when the backend does not send it (tolerant by design).
+  String? get previewUrl =>
+      _previewUrl ?? (photoUrls.isNotEmpty ? photoUrls.first : null);
+  final String? _previewUrl;
 
   /// 1–5, where 5 is the hardest.
   final int difficulty;
@@ -87,6 +96,7 @@ class Spot {
         description: description,
         location: location,
         photoUrls: photoUrls,
+        previewUrl: _previewUrl,
         difficulty: difficulty,
         status: status,
         water: water ?? this.water,
@@ -105,6 +115,7 @@ class Spot {
         photoUrls: (json['photo_urls'] as List<dynamic>? ?? const [])
             .map((e) => e as String)
             .toList(growable: false),
+        previewUrl: json['preview_url'] as String?,
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
         status: (json['status'] as String?) ?? 'verified',
         water: (json['water'] as bool?) ?? false,
@@ -123,6 +134,7 @@ class Spot {
         'description': description,
         'location': location.toJson(),
         'photo_urls': photoUrls,
+        'preview_url': previewUrl,
         'difficulty': difficulty,
         'status': status,
         'water': water,

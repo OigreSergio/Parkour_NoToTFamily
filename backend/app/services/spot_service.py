@@ -2,10 +2,19 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import Conflict, NotFound
-from app.models.spot import Spot, SpotStatus
+from app.core.exceptions import Conflict, Forbidden, NotFound
+from app.models.spot import Spot, SpotComment, SpotStatus
 from app.repositories import spots as spots_repo
 from app.schemas.spot import SpotCreate
+
+
+def can_discuss(spot: Spot) -> bool:
+    """Comments are readable/writable only on verified spots.
+
+    Pending and rejected spots are not public, so opening them to comments
+    would leak their existence.
+    """
+    return spot.status == SpotStatus.verified
 
 
 async def submit(session: AsyncSession, *, data: SpotCreate, submitted_by: UUID) -> Spot:
@@ -45,3 +54,27 @@ async def reject(
     )
     await session.commit()
     return spot
+
+
+async def list_comments(session: AsyncSession, *, spot_id: UUID) -> list[SpotComment]:
+    spot = await spots_repo.get(session, spot_id)
+    if spot is None:
+        raise NotFound("spot not found")
+    if not can_discuss(spot):
+        raise NotFound("spot not found")  # do not reveal non-public spots
+    return await spots_repo.list_comments(session, spot_id)
+
+
+async def add_comment(
+    session: AsyncSession, *, spot_id: UUID, author_id: UUID, body: str
+) -> SpotComment:
+    spot = await spots_repo.get(session, spot_id)
+    if spot is None:
+        raise NotFound("spot not found")
+    if not can_discuss(spot):
+        raise Forbidden("comments are allowed on verified spots only")
+    comment = await spots_repo.add_comment(
+        session, spot_id=spot_id, author_id=author_id, body=body
+    )
+    await session.commit()
+    return comment

@@ -86,9 +86,40 @@ def find_pano(lat: float, lng: float):
     return None
 
 
+def comments_by_spot(tables: dict) -> dict[str, list[dict]]:
+    """Group the real community comments by spot id.
+
+    The page is (at most) a place to *read* real comments — nothing is ever
+    written from here. Tolerant to schema drift: a comment may reference the
+    spot directly (`spot_id`) or through its post (`post_id` → posts.spot_id),
+    and the text may live in `body`, `content` or `text`.
+    """
+    profiles = {p.get("id"): p.get("username") or "membro" for p in tables.get("profiles", [])}
+    posts = {p.get("id"): p for p in tables.get("posts", [])}
+    grouped: dict[str, list[dict]] = {}
+    for c in tables.get("comments", []):
+        spot_id = c.get("spot_id")
+        if not spot_id and c.get("post_id") in posts:
+            spot_id = posts[c["post_id"]].get("spot_id")
+        if not spot_id:
+            continue
+        body = c.get("body") or c.get("content") or c.get("text") or ""
+        if not body:
+            continue
+        grouped.setdefault(spot_id, []).append(
+            {
+                "author": profiles.get(c.get("author_id") or c.get("user_id"), "membro"),
+                "body": body,
+                "created_at": c.get("created_at"),
+            }
+        )
+    return grouped
+
+
 def main() -> int:
     backup = json.loads(BACKUP.read_text())
     spots = backup["tabelle"]["spots"]
+    spot_comments = comments_by_spot(backup["tabelle"])
     out = []
     for s in spots:
         lat, lng = s["lat"], s["lng"]
@@ -102,6 +133,7 @@ def main() -> int:
             "skill_level": s["skill_level"],
             "crowd_level": s["crowd_level"],
             "has_fountain": s["has_fountain"],
+            "comments": spot_comments.get(s["id"], []),
             "streetview": None,
         }
         if found:

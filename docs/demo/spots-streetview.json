@@ -10,6 +10,7 @@
       "skill_level": "intermedio",
       "crowd_level": "tranquillo",
       "has_fountain": true,
+      "comments": [],
       "streetview": {
         "pano_id": "TPBKfMbblYg9aX2p7xH_Nw",
         "pano_lat": 41.83052208708717,
@@ -28,6 +29,7 @@
       "skill_level": "principiante",
       "crowd_level": "affollato",
       "has_fountain": true,
+      "comments": [],
       "streetview": {
         "pano_id": "Rx8AqZz-p7uLjUJyZlIpJQ",
         "pano_lat": 41.91385317860745,
@@ -46,6 +48,7 @@
       "skill_level": "avanzato",
       "crowd_level": "tranquillo",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "cGJf698SxV9_NS00EjjKjg",
         "pano_lat": 41.93148089713848,
@@ -64,6 +67,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": true,
+      "comments": [],
       "streetview": {
         "pano_id": "qNRSxLQakVwGqy2FLcEQSg",
         "pano_lat": 41.86216744602794,
@@ -82,6 +86,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "GxknKtEM3aMz5ZKsK0agVA",
         "pano_lat": 41.85793768195444,
@@ -100,6 +105,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "DtoulutpPZxIRrfX-6A5vw",
         "pano_lat": 41.89184691512483,
@@ -118,6 +124,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "7ASDd0jbZ1llpPynE7_StA",
         "pano_lat": 41.96075536956421,
@@ -136,6 +143,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "51CGqz-wF7GOkxQc4Herpg",
         "pano_lat": 41.82958154467747,
@@ -154,6 +162,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "QVW0A2SHgY6KGxagnXYkvQ",
         "pano_lat": 41.86339265162889,
@@ -172,6 +181,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "EMjz0OVSkt-f31-1sNp99g",
         "pano_lat": 41.87780538429979,
@@ -190,6 +200,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "lX4dCfIvkq-IE5E7uMjdfw",
         "pano_lat": 41.8828742384333,
@@ -208,6 +219,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "7ElPP3PlCeaDw2W-NBogRg",
         "pano_lat": 41.8800533139586,
@@ -226,6 +238,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "HT_1ExiBdITjyPjRrfCQaw",
         "pano_lat": 41.86954065320352,
@@ -244,6 +257,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "oxz0piHxD7QaqM6zLgdIMg",
         "pano_lat": 41.85100398130709,
@@ -262,6 +276,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "o0G1TNJUZ_ZeI94i66c5EA",
         "pano_lat": 41.85089248839245,
@@ -280,6 +295,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "SvJ-2_r2bpn8yJS_WuWkjQ",
         "pano_lat": 41.85136123714386,
@@ -298,6 +314,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "hJbExIhWQe51VSWJ3syH7A",
         "pano_lat": 41.95488971325576,
@@ -316,6 +333,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "nNpVBrMm5KfbZokabELPjA",
         "pano_lat": 41.87383431073942,
@@ -334,6 +352,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "2MLVf2fPPWcmCHlWWb7b4A",
         "pano_lat": 41.90619794309863,
@@ -352,6 +371,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "Wc_e2LbJnPMdCIYMbqKW4Q",
         "pano_lat": 41.89600563075266,
@@ -370,6 +390,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "yujmpiLuOOjWCD-VLTBNVQ",
         "pano_lat": 41.89079510080654,
@@ -388,6 +409,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "h6Nw_NfQR_-dU9U5ykH7wA",
         "pano_lat": 41.86499062261667,
@@ -406,6 +428,7 @@
       "skill_level": "intermedio",
       "crowd_level": "medio",
       "has_fountain": false,
+      "comments": [],
       "streetview": {
         "pano_id": "_q4apootAkm9znhoPDkIgQ",
         "pano_lat": 41.89065674169301,
@@ -424,6 +447,7 @@
       "skill_level": "principiante",
       "crowd_level": "medio",
       "has_fountain": true,
+      "comments": [],
       "streetview": {
         "pano_id": "0EO69nnDIQr50WKa-hKa4g",
         "pano_lat": 41.89247800037813,

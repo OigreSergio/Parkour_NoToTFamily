@@ -57,3 +57,22 @@ class SpotModerationEvent(UUIDPKMixin, TimestampMixin, Base):
     note: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     spot: Mapped[Spot] = relationship(back_populates="events")
+
+
+class SpotComment(UUIDPKMixin, TimestampMixin, Base):
+    """A real comment left by a member on a verified spot.
+
+    Read access is public (the street-view demo page renders them); writing
+    requires an authenticated account. Comments are only accepted on verified
+    spots — pending/rejected spots are not publicly discussable.
+    """
+
+    __tablename__ = "spot_comments"
+
+    spot_id: Mapped[UUID] = mapped_column(
+        ForeignKey("spots.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    author_id: Mapped[UUID | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    body: Mapped[str] = mapped_column(Text, nullable=False)

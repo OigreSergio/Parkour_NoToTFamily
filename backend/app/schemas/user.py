@@ -17,3 +17,13 @@ class UserOut(BaseModel):
     is_guest: bool = False
     is_subscribed: bool = False
     created_at: datetime
+
+
+class RoleChangeRequest(BaseModel):
+    """Admin request to change a member's qualification.
+
+    Only `user` and `instructor` are accepted here; `admin` is reserved and
+    rejected by the service layer as well (defence in depth).
+    """
+
+    role: UserRole

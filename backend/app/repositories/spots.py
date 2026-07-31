@@ -5,7 +5,7 @@ from geoalchemy2.functions import ST_DWithin, ST_GeogFromText
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.spot import Spot, SpotModerationEvent, SpotStatus
+from app.models.spot import Spot, SpotComment, SpotModerationEvent, SpotStatus
 from app.schemas.spot import Point, SpotCreate
 
 
@@ -77,3 +77,24 @@ async def record_event(
     session.add(event)
     await session.flush()
     return event
+
+
+async def list_comments(
+    session: AsyncSession, spot_id: UUID, *, limit: int = 200
+) -> list[SpotComment]:
+    stmt = (
+        select(SpotComment)
+        .where(SpotComment.spot_id == spot_id)
+        .order_by(SpotComment.created_at)
+        .limit(limit)
+    )
+    return list((await session.execute(stmt)).scalars())
+
+
+async def add_comment(
+    session: AsyncSession, *, spot_id: UUID, author_id: UUID, body: str
+) -> SpotComment:
+    comment = SpotComment(spot_id=spot_id, author_id=author_id, body=body)
+    session.add(comment)
+    await session.flush()
+    return comment

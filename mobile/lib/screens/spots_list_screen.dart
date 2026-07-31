@@ -32,7 +32,7 @@ class SpotsListScreen extends ConsumerWidget {
             itemBuilder: (context, i) {
               final spot = spots[i];
               return ListTile(
-                leading: const Icon(Icons.place_outlined),
+                leading: _SpotThumbnail(url: spot.previewUrl),
                 title: Text(spot.name),
                 subtitle: Text(
                   spot.description.isEmpty
@@ -52,6 +52,37 @@ class SpotsListScreen extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class _SpotThumbnail extends StatelessWidget {
+  const _SpotThumbnail({required this.url});
+
+  final String? url;
+
+  @override
+  Widget build(BuildContext context) {
+    if (url == null) {
+      return const SizedBox(
+        width: 56,
+        height: 56,
+        child: Icon(Icons.place_outlined),
+      );
+    }
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(8),
+      child: Image.network(
+        url!,
+        width: 56,
+        height: 56,
+        fit: BoxFit.cover,
+        errorBuilder: (_, __, ___) => const SizedBox(
+          width: 56,
+          height: 56,
+          child: Icon(Icons.place_outlined),
+        ),
+      ),
     );
   }
 }
