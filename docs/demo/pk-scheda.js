@@ -4,9 +4,11 @@
  * Caricato da index.html accanto al bundle Expo (stesso pattern di
  * pk-route.js). Interviene SOLO sulla rotta /spot/{id}: quando la family
  * apre la scheda, in fondo compaiono la miniatura Street View puntata
- * sullo spot, il panorama 360° apribile inline, una foto della zona
- * (con licenza) o la vista aerea, e il link a Google Street View.
- * Nessuna API key: stessi endpoint pubblici della pagina demo.
+ * sullo spot come COPERTINA al posto di \u201CAncora nessuna foto\u201D, il
+ * panorama 360\u00B0 apribile inline, una foto della zona (con licenza) o la
+ * vista aerea come immagine di contesto, e il link a Google Street View.
+ * Se lo spot ha gi\u00E0 foto proprie nella galleria, la copertina non viene
+ * toccata. Nessuna API key: stessi endpoint pubblici della pagina demo.
  */
 (function () {
   'use strict';
@@ -84,11 +86,8 @@
     box.appendChild(el('div', 'font:800 15px system-ui,sans-serif;margin-bottom:10px',
       '\uD83D\uDCF8 Contesto visivo'));
 
-    if (spot.sv) {
-      var svTag = 'Street View \u00B7 ' + svDate(spot.sv) +
-        ' \u00B7 ripresa a ~' + spot.sv.distance_m + ' m dallo spot';
-      box.appendChild(media(svThumb(spot.sv), svTag));
-    }
+    // La miniatura Street View fa da copertina in testa alla scheda (vedi
+    // ensureCover): qui resta la seconda immagine — foto della zona o aerea.
     if (spot.photo) {
       box.appendChild(media(spot.photo.src, 'Foto: ' + spot.photo.credit, spot.photo.page));
     } else {
@@ -130,6 +129,39 @@
     return box;
   }
 
+  function ensureCover(spot) {
+    // Copertina: se la galleria nativa \u00E8 vuota (placeholder \u201CAncora
+    // nessuna foto\u201D), la prima immagine \u2014 la Street View puntata sullo
+    // spot \u2014 prende il suo posto. Con foto vere gi\u00E0 presenti non tocca nulla.
+    if (!spot.sv) return;
+    if (document.getElementById('pk-scheda-cover')) return;
+    var root = document.getElementById('root');
+    if (!root) return;
+    var nodes = root.querySelectorAll('div,span');
+    var textEl = null;
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].children.length === 0 &&
+          nodes[i].textContent.trim() === 'Ancora nessuna foto') { textEl = nodes[i]; break; }
+    }
+    if (!textEl) return;
+    var boxEl = textEl.parentElement; // il placeholder con emoji + testo
+    if (!boxEl) return;
+    boxEl.style.position = 'relative';
+    var img = el('img', 'position:absolute;inset:0;width:100%;height:100%;' +
+      'object-fit:cover;display:block;z-index:1');
+    img.id = 'pk-scheda-cover';
+    img.alt = 'Street View: ' + spot.name;
+    img.src = svThumb(spot.sv);
+    img.onerror = function () { img.remove(); };
+    var tag = el('span',
+      'position:absolute;left:10px;bottom:10px;z-index:2;background:rgba(0,0,0,.62);' +
+      'color:#fff;font:11px system-ui,sans-serif;padding:3px 8px;border-radius:6px',
+      'Street View \u00B7 ' + svDate(spot.sv) + ' \u00B7 ~' + spot.sv.distance_m + ' m dallo spot');
+    tag.id = 'pk-scheda-cover-tag';
+    boxEl.appendChild(img);
+    boxEl.appendChild(tag);
+  }
+
   function findScrollHost(name) {
     // La scheda \u00E8 una ScrollView (div con overflow-y auto) che contiene
     // il nome dello spot: agganciamo quella, in fondo al contenuto.
@@ -166,24 +198,28 @@
     return m ? decodeURIComponent(m[1]) : null;
   }
 
+  function removeInjected() {
+    ['pk-scheda-context', 'pk-scheda-cover', 'pk-scheda-cover-tag'].forEach(function (id) {
+      var n = document.getElementById(id);
+      if (n) n.remove();
+    });
+  }
+
   function tick() {
     var id = currentSpotId();
     if (!id) {
       current = null;
-      var old = document.getElementById('pk-scheda-context');
-      if (old) old.remove();
+      removeInjected();
       return;
     }
-    if (id === current && document.getElementById('pk-scheda-context')) return;
-    if (id !== current) {
-      // cambiato spot: via la sezione della scheda precedente
-      var prev = document.getElementById('pk-scheda-context');
-      if (prev) prev.remove();
-    }
+    if (id !== current) removeInjected(); // cambiato spot: via i pezzi vecchi
     var spot = SPOTS[id];
     if (!spot) { current = id; return; }
     current = id;
-    inject(spot); // se la scheda non \u00E8 ancora montata, riprova il polling
+    ensureCover(spot); // copertina: pu\u00F2 comparire dopo il caricamento dati
+    if (!document.getElementById('pk-scheda-context')) {
+      inject(spot); // se la scheda non \u00E8 ancora montata, riprova il polling
+    }
   }
 
   // route-change: pushState/replaceState + popstate + polling di sicurezza
