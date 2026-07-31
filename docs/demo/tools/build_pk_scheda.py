@@ -132,7 +132,10 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
 
   var MONTHS = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic'];
   var current = null; // id spot attualmente iniettato
-  var tries = 0;
+  var COVER_TRIES = 20;   // ~14 s di ricerca del placeholder, poi stop
+  var INJECT_TRIES = 8;   // ~5.6 s per l'aggancio inline prima del fallback
+  var FALLBACK_TRIES = 4; // ulteriori tentativi col pannello flottante
+  var attempts = { cover: 0, inject: 0 };
 
   function svThumb(sv) {
     return 'https://streetviewpixels-pa.googleapis.com/v1/thumbnail' +
@@ -248,8 +251,13 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
     // Copertina: se la galleria nativa \\u00E8 vuota (placeholder \\u201CAncora
     // nessuna foto\\u201D), la prima immagine \\u2014 la Street View puntata sullo
     // spot \\u2014 prende il suo posto. Con foto vere gi\\u00E0 presenti non tocca nulla.
+    // Le scansioni del DOM sono LIMITATE (attempts): senza placeholder \\u2014
+    // galleria piena o scheda lenta \\u2014 dopo un po' si smette, niente lavoro
+    // inutile a ogni tick su telefoni lenti.
     if (!spot.sv) return;
+    if (attempts.cover >= COVER_TRIES) return;
     if (document.getElementById('pk-scheda-cover')) return;
+    attempts.cover++;
     var root = document.getElementById('root');
     if (!root) return;
     var nodes = root.querySelectorAll('div,span');
@@ -295,12 +303,19 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
 
   function inject(spot) {
     if (document.getElementById('pk-scheda-context')) return true;
+    if (attempts.inject >= INJECT_TRIES + FALLBACK_TRIES) return true; // basta
+    attempts.inject++;
     var host = findScrollHost(spot.name) || findScrollHost(null);
+    if (!host && attempts.inject <= INJECT_TRIES) {
+      // scheda non ancora montata (dispositivo lento): riprova al prossimo
+      // tick invece di ripiegare subito sul pannello flottante
+      return false;
+    }
     var section = buildSection(spot);
     if (host) {
       (host.firstElementChild || host).appendChild(section);
     } else {
-      // fallback: pannello fisso sopra la tab bar, come pk-route
+      // fallback dopo INJECT_TRIES tentativi: pannello fisso sopra la tab bar
       section.style.cssText += ';position:fixed;left:10px;right:10px;' +
         'bottom:calc(84px + env(safe-area-inset-bottom));z-index:9999;max-height:55vh;overflow:auto';
       document.body.appendChild(section);
@@ -321,20 +336,22 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
   }
 
   function tick() {
+    if (document.hidden) return; // tab in background: zero lavoro
     var id = currentSpotId();
     if (!id) {
       current = null;
       removeInjected();
       return;
     }
-    if (id !== current) removeInjected(); // cambiato spot: via i pezzi vecchi
+    if (id !== current) {
+      removeInjected(); // cambiato spot: via i pezzi vecchi
+      attempts = { cover: 0, inject: 0 };
+    }
     var spot = SPOTS[id];
     if (!spot) { current = id; return; }
     current = id;
     ensureCover(spot); // copertina: pu\\u00F2 comparire dopo il caricamento dati
-    if (!document.getElementById('pk-scheda-context')) {
-      inject(spot); // se la scheda non \\u00E8 ancora montata, riprova il polling
-    }
+    inject(spot); // se la scheda non \\u00E8 ancora montata, riprova il polling
   }
 
   // route-change: pushState/replaceState + popstate + polling di sicurezza
