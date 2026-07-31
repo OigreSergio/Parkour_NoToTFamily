@@ -184,13 +184,14 @@
 <div class="page">
   <header class="app">
     <h1>Parkour NoToT · Spot di Roma</h1>
-    <p>Contesto visivo degli spot verificati: miniatura Street View inquadrata verso lo spot, panorama a 360° esplorabile e, dove esistono, foto della zona trovate online.</p>
+    <p>Contesto visivo degli spot verificati: miniatura Street View inquadrata verso lo spot, panorama a 360° esplorabile e una seconda immagine — foto della zona trovata online oppure, dove non ne esistono, vista aerea satellitare.</p>
   </header>
 
   <p class="note">
     Dati: <code>📲/backup-quotidiano.json</code> (spot verificati) ·
     inquadrature generate da <code>docs/demo/tools/fetch_streetview.py</code>.
-    Immagini stradali © Google Street View; foto aggiuntive da Wikimedia Commons (licenza indicata sulla foto).
+    Immagini stradali © Google Street View; foto aggiuntive da Wikimedia Commons e Flickr (licenza
+    indicata sulla foto); viste aeree © Esri, Maxar, Earthstar Geographics.
   </p>
 
   <div class="toolbar">
@@ -243,6 +244,51 @@ const PHOTOS = {
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg/960px-Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg",
     page: "https://commons.wikimedia.org/wiki/File:Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg",
     credit: "Wikimedia Commons · CC BY-SA 3.0"
+  },
+  "Garbatella — Scalinate": {
+    src: "https://live.staticflickr.com/34/72998499_c2311608eb_b.jpg",
+    page: "https://www.flickr.com/photos/93226994@N00/72998499",
+    credit: "antmoose (Flickr) · CC BY 2.0"
+  },
+  "Spot Metro Colosseo": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Colosseo_-_panoramio_%2810%29.jpg/960px-Colosseo_-_panoramio_%2810%29.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Colosseo_-_panoramio_(10).jpg",
+    credit: "Wikimedia Commons · CC BY 3.0"
+  },
+  "Spot EUR": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/2024-05-06-Palazzo-dello-Sport-2.jpg/960px-2024-05-06-Palazzo-dello-Sport-2.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:2024-05-06-Palazzo-dello-Sport-2.jpg",
+    credit: "Wikimedia Commons · CC BY-SA 4.0"
+  },
+  "Spot Corviale 1": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Corviale_%285582072620%29.jpg/960px-Corviale_%285582072620%29.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Corviale_(5582072620).jpg",
+    credit: "Wikimedia Commons · Pubblico dominio"
+  },
+  "Spot Corviale 2": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Municipio_XI_%28Roma%29_in_2020.03.jpg/960px-Municipio_XI_%28Roma%29_in_2020.03.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.03.jpg",
+    credit: "Wikimedia Commons · CC BY-SA 4.0"
+  },
+  "Spot Corviale 3": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Municipio_XI_%28Roma%29_in_2020.02.jpg/960px-Municipio_XI_%28Roma%29_in_2020.02.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.02.jpg",
+    credit: "Wikimedia Commons · CC BY-SA 4.0"
+  },
+  "Spot Primavalle": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Largo_borromeo_primavalle_roma.jpg/960px-Largo_borromeo_primavalle_roma.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Largo_borromeo_primavalle_roma.jpg",
+    credit: "Wikimedia Commons · CC BY-SA 4.0"
+  },
+  "Spot Villa Carpegna": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg/960px-Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg",
+    credit: "Wikimedia Commons · CC BY 3.0"
+  },
+  "Spot Colosseo — Monte Oppio": {
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/960px-Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
+    page: "https://commons.wikimedia.org/wiki/File:Parc_Colle_Oppio_-_Rome_(IT62)_-_2021-08-29_-_1.jpg",
+    credit: "Wikimedia Commons · CC BY-SA 4.0"
   }
 };
 
@@ -276,6 +322,13 @@ function svOpenLink(spot) {
 function mapsLink(spot) {
   return `https://www.google.com/maps/search/?api=1&query=${spot.lat},${spot.lng}`;
 }
+function aerialUrl(spot) {
+  // Vista aerea keyless (Esri World Imagery export). Bbox ~250×135 m, 16:9.
+  const dlng = 0.0015, dlat = 0.0006;
+  return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export" +
+    `?bbox=${spot.lng - dlng},${spot.lat - dlat},${spot.lng + dlng},${spot.lat + dlat}` +
+    "&bboxSR=4326&size=640,360&imageSR=3857&format=jpg&f=image";
+}
 function svDate(sv) {
   if (!sv.date) return "";
   const [y, m] = sv.date.split("-");
@@ -307,7 +360,9 @@ function card(spot) {
     ? `<div class="media"><img loading="lazy" alt="Foto: ${esc(spot.name)}" src="${esc(photo.src)}"
          onerror="this.parentNode.classList.add('err'); this.remove()">
          <span class="tag"><a style="color:#fff" href="${esc(photo.page)}" target="_blank" rel="noopener">Foto: ${esc(photo.credit)}</a></span></div>`
-    : "";
+    : `<div class="media"><img loading="lazy" alt="Vista aerea: ${esc(spot.name)}" src="${esc(aerialUrl(spot))}"
+         onerror="this.parentNode.classList.add('err'); this.remove()">
+         <span class="tag">Vista aerea · © Esri, Maxar</span></div>`;
 
   const actions = sv
     ? `<div class="actions">
