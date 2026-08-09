@@ -1,32 +1,36 @@
 # Foto degli spot
 
-Le foto degli spot del seed (`backend/seeds/spots.json`) vivono qui, una
-cartella per spot (nome = slug dello spot), e vengono servite come URL raw di
-GitHub dal branch `main`:
+Ogni cartella `<slug>/` (slug = nome dello spot) contiene un `manifest.json`
+con le foto dello spot trovate sul web e verificate visivamente una a una:
 
+```json
+[{"file": "01.jpg", "source_page": "…", "image_url": "…",
+  "author": "…", "license": "CC BY-SA 4.0"}]
 ```
-https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/<slug>/01.jpg
+
+Le immagini **non** vengono copiate nel repo: l'app le carica in hotlink
+dalle fonti (per Wikimedia Commons si usa il thumb da 1280px). Il
+collegamento avviene con:
+
+```sh
+python3 scripts/wire_spot_photos.py
 ```
 
-Si è scelto `main` + raw URL (e non `gh-pages`) perché il branch `gh-pages`
-viene sovrascritto dai deploy dell'export web: le foto lì non
-sopravviverebbero.
+che riempie `photos`/`photosCount` in `scripts/data/webapp_fixed_spots.json`
+e `photo_urls` in `backend/seeds/spots.json`. I manifest restano la
+documentazione di fonte, autore e licenza di ogni scatto (quasi tutte le
+foto vengono da Wikimedia Commons con licenza aperta; le poche eccezioni —
+stampa locale, siti di community — sono segnate nel manifest e da citare o
+sostituire prima di un uso pubblico).
 
-## Come aggiungere le foto di uno spot
+## Foto proprie (upload manuale)
 
-1. Carica le foto originali nella cartella dello spot (va bene il drag & drop
-   dall'interfaccia web di GitHub, in qualunque formato e risoluzione).
-2. Da locale, normalizza e collega tutto con:
+Per caricare scatti propri di uno spot resta valido il flusso classico:
+foto nella cartella dello spot e
 
-   ```sh
-   python scripts/add_spot_photos.py "Nome esatto dello spot" docs/spots/photos/<slug>/*.jpeg
-   ```
+```sh
+python scripts/add_spot_photos.py "Nome esatto dello spot" docs/spots/photos/<slug>/*.jpeg
+```
 
-   Lo script converte in JPEG max 1600px (~150-400 KB l'una), le rinomina
-   `01.jpg`, `02.jpg`, … e aggiorna `photo_urls` nel seed con gli URL raw.
-3. Commit di foto + seed. Gli URL diventano attivi al merge su `main`; a quel
-   punto rilancia `make seed-spots` per aggiornare il database.
-
-## Spot in attesa di foto
-
-- `spot-verso-la-metro-cipro/` — creata, in attesa delle foto.
+che le normalizza (JPEG max 1600px) e aggiorna il seed con gli URL raw di
+GitHub (attivi dopo il merge su `main`).
