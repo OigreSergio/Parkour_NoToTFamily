@@ -33,9 +33,16 @@ Sul bundle pubblicato sono applicate le patch di
 `scripts/patch-gh-pages-test-free.py`:
 
 - **mappa satellitare** (tile raster Esri World Imagery);
-- **spot fissi**: i 26 spot di `scripts/data/webapp_fixed_spots.json` sono
+- **spot fissi**: gli spot di `scripts/data/webapp_fixed_spots.json` sono
   incorporati nel bundle e fusi con quelli di Supabase (la mappa è popolata
-  anche se il backend è irraggiungibile);
+  anche se il backend è irraggiungibile). Oltre ai 26 spot della famiglia ci
+  sono ~1700 spot con status `community`, importati dalla lista Google Maps
+  condivisa "Parkour spot" (vedi `scripts/import_gmaps_list_spots.py`): pin
+  blu, etichetta "📍 Community". Con così tanti spot i marker vengono creati
+  solo per il viewport corrente (e sfoltiti su griglia a zoom bassi);
+- **foto degli spot fissi**: il campo `photos` (URL) di uno spot fisso viene
+  mostrato nella scheda di dettaglio; per aggiornare spot/foto sul bundle già
+  pubblicato senza rifare l'export c'è `scripts/update_deployed_spots.py`;
 - **tutto gratuito**: `useEntitlements` ritorna sempre `hasBase/hasChat/
   hasVideo/hasAny = true` e il banner "Iscriviti" è disattivato. Nota: le
   RLS lato Supabase restano attive, quindi le *scritture* riservate (es.

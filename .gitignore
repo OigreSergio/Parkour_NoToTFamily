@@ -264,3 +264,4 @@ mobile/pubspec.lock
 *.log
 logs/
 tmp/
+scripts/data/cities1000.zip
