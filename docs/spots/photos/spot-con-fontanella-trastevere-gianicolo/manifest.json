@@ -1,0 +1,23 @@
+[
+  {
+    "file": "01.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Gianicolo_(Rome)_in_2018.14.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Gianicolo_%28Rome%29_in_2018.14.jpg",
+    "author": "CAPTAIN RAJU (Wikimedia Commons)",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "file": "02.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a2/Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg",
+    "author": "Rabanus Flavus (Wikimedia Commons)",
+    "license": "Public domain"
+  },
+  {
+    "file": "03.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Gianicolo_(Rome)_in_2018.03.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Gianicolo_%28Rome%29_in_2018.03.jpg",
+    "author": "CAPTAIN RAJU (Wikimedia Commons)",
+    "license": "CC BY-SA 4.0"
+  }
+]

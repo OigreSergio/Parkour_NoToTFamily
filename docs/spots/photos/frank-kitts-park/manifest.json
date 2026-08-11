@@ -1,0 +1,23 @@
+[
+  {
+    "file": "01.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Amphitheatre_at_Frank_Kitts_Park.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/87/Amphitheatre_at_Frank_Kitts_Park.jpg",
+    "author": "Wainuiomartian",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "file": "02.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Promenade_at_Frank_Kitts_Park.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/79/Promenade_at_Frank_Kitts_Park.jpg",
+    "author": "Wainuiomartian",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "file": "03.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Frank_Kitts_Park_and_Jervois_Quay.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Frank_Kitts_Park_and_Jervois_Quay.jpg",
+    "author": "Frozen-Coke-Rocks (English Wikipedia)",
+    "license": "Public domain"
+  }
+]
