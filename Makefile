@@ -1,4 +1,4 @@
-.PHONY: help up down logs api-shell db-shell migrate test lint format
+.PHONY: help up down logs api-shell db-shell migrate seed-spots test lint format
 
 help:
 	@echo "Common targets:"
@@ -6,6 +6,7 @@ help:
 	@echo "  down       Stop the stack"
 	@echo "  logs       Tail logs"
 	@echo "  migrate    Apply DB migrations"
+	@echo "  seed-spots Load backend/seeds/spots.json as verified spots"
 	@echo "  test       Run backend tests"
 	@echo "  lint       Run linters across the repo"
 	@echo "  format     Auto-format Python + JS/TS"
@@ -27,6 +28,9 @@ db-shell:
 
 migrate:
 	docker compose exec api alembic upgrade head
+
+seed-spots:
+	docker compose exec api python -m app.db.seed_spots
 
 test:
 	cd backend && pytest

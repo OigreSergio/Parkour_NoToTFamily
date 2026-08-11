@@ -267,3 +267,4 @@ tmp/
 
 # Backup completo: contiene dati personali, resta locale
 📲/backup-completo.json
+scripts/data/cities1000.zip

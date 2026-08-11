@@ -1,0 +1,23 @@
+[
+  {
+    "file": "01.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:CORVIALE10a.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/78/CORVIALE10a.jpg",
+    "author": "indeciso42",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "file": "02.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:CORVIALE6.jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/CORVIALE6.jpg",
+    "author": "indeciso42",
+    "license": "CC BY-SA 4.0"
+  },
+  {
+    "file": "03.jpg",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Corviale_(5582066704).jpg",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Corviale_%285582066704%29.jpg",
+    "author": "Umberto Rotundo",
+    "license": "CC BY 2.0"
+  }
+]

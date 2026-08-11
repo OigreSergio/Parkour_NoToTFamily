@@ -1,0 +1,19 @@
+# Mappa ricamo self-hosted — vedi README.md in questa cartella.
+services:
+  tiles:
+    image: protomaps/go-pmtiles:latest
+    command: serve /data --cors=* --port=8080 --public-url=http://0.0.0.0:8080
+    volumes:
+      - ./data:/data
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+
+  web:
+    image: nginx:alpine
+    volumes:
+      - ./app:/usr/share/nginx/html:ro
+      - ./data/fonts:/usr/share/nginx/html/fonts:ro
+    ports:
+      - "8081:80"
+    restart: unless-stopped
