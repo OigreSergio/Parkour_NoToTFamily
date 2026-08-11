@@ -136,7 +136,9 @@ def main():
         if it["note"]:
             desc += f" {it['note']}"
         desc += " Dalla lista community Google Maps “Parkour spot”"
-        desc += f" (segnalato da {it['author']})." if it["author"] else "."
+        # "italiano medio" è il curatore della lista: niente attribuzione per lui
+        desc += (f" (segnalato da {it['author']})."
+                 if it["author"] and it["author"] != "italiano medio" else ".")
 
         spots.append({
             "id": spot_id(lat, lng), "name": name,
