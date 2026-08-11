@@ -37,6 +37,13 @@ SEARCH_URL = (
 
 RADII = [50, 120, 300, 600]  # metri: allarga la ricerca se lo spot è dentro un parco
 
+# Correzioni manuali all'inquadratura alternativa (feedback della community):
+# nome spot → pano_id da usare come seconda angolazione. Serve quando la
+# scelta automatica becca un'inquadratura sfortunata (es. furgone davanti).
+ALT_OVERRIDES = {
+    "Spot NoToT Game": "CbFPxk2sJSbkDUQ4Zr24gw",  # piazzetta coi muretti, senza furgone
+}
+
 
 def http_get(url: str) -> str:
     req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
@@ -62,8 +69,15 @@ def distance_m(lat1, lng1, lat2, lng2) -> float:
     return 2 * r * math.asin(math.sqrt(a))
 
 
-def find_pano(lat: float, lng: float):
-    """Ritorna (pano_id, pano_lat, pano_lng, data 'YYYY-MM' | None) o None."""
+def find_pano(lat: float, lng: float, with_alt: bool = False, preferred_alt: str | None = None):
+    """Trova il panorama più vicino allo spot.
+
+    Ritorna (pano_id, pano_lat, pano_lng, data 'YYYY-MM' | None) o None.
+    Con with_alt=True ritorna (primario, alternativo | None): l'alternativo è
+    un secondo panorama ad almeno 8 m dal primario — una vera seconda
+    inquadratura dello stesso posto, usata come "foto" per gli spot senza
+    immagini trovate online.
+    """
     for radius in RADII:
         raw = http_get(SEARCH_URL.format(lat=lat, lng=lng, radius=radius))
         m = re.search(r"cb\(\s*(.*)\s*\)\s*$", raw, re.S)
@@ -82,8 +96,25 @@ def find_pano(lat: float, lng: float):
             continue
         dates = re.findall(r"\[(20\d\d),(\d{1,2})\]", blob)
         date = f"{dates[-1][0]}-{int(dates[-1][1]):02d}" if dates else None
-        return pano.group(1), float(coords.group(1)), float(coords.group(2)), date
-    return None
+        primary = (pano.group(1), float(coords.group(1)), float(coords.group(2)), date)
+        if not with_alt:
+            return primary
+        alts = re.findall(
+            r'\[\[2,"([A-Za-z0-9_-]{20,24})"\],null,\[\[null,null,(4\d\.\d+),(1\d\.\d+)\]', blob
+        )
+        best = None
+        for aid, alat, alng in alts:
+            alat, alng = float(alat), float(alng)
+            if preferred_alt and aid == preferred_alt:
+                best = (0, (aid, alat, alng, None))
+                break
+            if aid == primary[0] or distance_m(primary[1], primary[2], alat, alng) < 8:
+                continue  # stesso pano o troppo vicino: stessa inquadratura
+            d = distance_m(alat, alng, lat, lng)
+            if best is None or d < best[0]:
+                best = (d, (aid, alat, alng, None))
+        return primary, (best[1] if best else None)
+    return (None, None) if with_alt else None
 
 
 def comments_by_spot(tables: dict) -> dict[str, list[dict]]:
@@ -121,9 +152,20 @@ def main() -> int:
     spots = backup["tabelle"]["spots"]
     spot_comments = comments_by_spot(backup["tabelle"])
     out = []
+    def to_sv(pano, lat, lng):
+        pano_id, plat, plng, date = pano
+        return {
+            "pano_id": pano_id,
+            "pano_lat": plat,
+            "pano_lng": plng,
+            "yaw": round(bearing(plat, plng, lat, lng), 1),
+            "date": date,
+            "distance_m": round(distance_m(plat, plng, lat, lng)),
+        }
+
     for s in spots:
         lat, lng = s["lat"], s["lng"]
-        found = find_pano(lat, lng)
+        found, alt = find_pano(lat, lng, with_alt=True, preferred_alt=ALT_OVERRIDES.get(s["name"]))
         entry = {
             "id": s["id"],
             "name": s["name"],
@@ -135,19 +177,19 @@ def main() -> int:
             "has_fountain": s["has_fountain"],
             "comments": spot_comments.get(s["id"], []),
             "streetview": None,
+            "streetview_alt": None,
         }
         if found:
-            pano_id, plat, plng, date = found
-            yaw = round(bearing(plat, plng, lat, lng), 1)
-            entry["streetview"] = {
-                "pano_id": pano_id,
-                "pano_lat": plat,
-                "pano_lng": plng,
-                "yaw": yaw,
-                "date": date,
-                "distance_m": round(distance_m(plat, plng, lat, lng)),
-            }
-            print(f"✓ {s['name']}: pano {pano_id} a {entry['streetview']['distance_m']} m, yaw {yaw}°, {date}")
+            entry["streetview"] = to_sv(found, lat, lng)
+            if alt:
+                entry["streetview_alt"] = to_sv(alt, lat, lng)
+            sv = entry["streetview"]
+            alt_txt = (
+                f" + alt a {entry['streetview_alt']['distance_m']} m"
+                if entry["streetview_alt"]
+                else ""
+            )
+            print(f"✓ {s['name']}: pano {sv['pano_id']} a {sv['distance_m']} m, yaw {sv['yaw']}°{alt_txt}")
         else:
             print(f"✗ {s['name']}: nessun panorama trovato entro {RADII[-1]} m")
         out.append(entry)

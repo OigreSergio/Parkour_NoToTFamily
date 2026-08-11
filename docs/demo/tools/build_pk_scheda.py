@@ -205,12 +205,16 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
       '\\uD83D\\uDCF8 Contesto visivo'));
 
     // La miniatura Street View fa da copertina in testa alla scheda (vedi
-    // ensureCover): qui resta la seconda immagine — foto della zona o aerea.
+    // ensureCover): qui le altre foto del posto — quella trovata online se
+    // esiste, altrimenti una seconda Street View da un'angolazione diversa —
+    // più la vista aerea.
     if (spot.photo) {
       box.appendChild(media(spot.photo.src, 'Foto: ' + spot.photo.credit, spot.photo.page));
-    } else {
-      box.appendChild(media(aerial(spot), 'Vista aerea \\u00B7 \\u00A9 Esri, Maxar'));
+    } else if (spot.sv2) {
+      box.appendChild(media(svThumb(spot.sv2),
+        'Street View \\u00B7 altra angolazione \\u00B7 ~' + spot.sv2.distance_m + ' m dallo spot'));
     }
+    box.appendChild(media(aerial(spot), 'Vista aerea \\u00B7 \\u00A9 Esri, Maxar'));
 
     var row = el('div', 'display:flex;gap:8px;flex-wrap:wrap');
     function btn(label, primary) {
@@ -241,6 +245,25 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
       box.appendChild(row);
       box.appendChild(pano);
     }
+
+    // Contenuti della community: foto e video degli spot vivono su Instagram
+    // e YouTube ma non sono incorporabili (URL firmati/scadenza) — questi
+    // pulsanti aprono la ricerca gi\\u00E0 compilata per QUESTO spot.
+    var q = spot.name.replace(/^Spot /, '') + ' parkour Roma';
+    var row2 = el('div', 'display:flex;gap:8px;flex-wrap:wrap;margin-top:8px');
+    var bIg = btn('\\uD83D\\uDCF7 Su Instagram', false);
+    bIg.onclick = function () {
+      window.open('https://www.instagram.com/explore/search/keyword/?q=' +
+        encodeURIComponent(q), '_blank');
+    };
+    var bYt = btn('\\uD83C\\uDFAC Video community', false);
+    bYt.onclick = function () {
+      window.open('https://www.youtube.com/results?search_query=' +
+        encodeURIComponent(q), '_blank');
+    };
+    row2.appendChild(bIg);
+    row2.appendChild(bYt);
+    box.appendChild(row2);
 
     box.appendChild(el('div', 'color:#777;font-size:10px;margin-top:10px',
       'Immagini \\u00A9 Google Street View \\u00B7 foto Wikimedia/Flickr con licenza \\u00B7 aeree \\u00A9 Esri'));
@@ -378,29 +401,33 @@ def main() -> int:
             "lat": s["lat"],
             "lng": s["lng"],
             "sv": s["streetview"],
+            "sv2": s.get("streetview_alt"),
             "photo": CURATED.get(s["name"]),
         }
+
+    def to_sv(pano, lat, lng):
+        pano_id, plat, plng, date = pano
+        return {
+            "pano_id": pano_id,
+            "pano_lat": plat,
+            "pano_lng": plng,
+            "yaw": round(bearing(plat, plng, lat, lng), 1),
+            "date": date,
+            "distance_m": round(distance_m(plat, plng, lat, lng)),
+        }
+
     for extra in EXTRA_SPOTS:
-        found = find_pano(extra["lat"], extra["lng"])
-        sv = None
-        if found:
-            pano_id, plat, plng, date = found
-            sv = {
-                "pano_id": pano_id,
-                "pano_lat": plat,
-                "pano_lng": plng,
-                "yaw": round(bearing(plat, plng, extra["lat"], extra["lng"]), 1),
-                "date": date,
-                "distance_m": round(distance_m(plat, plng, extra["lat"], extra["lng"])),
-            }
-            print(f"✓ {extra['name']}: pano {pano_id}")
-        else:
-            print(f"✗ {extra['name']}: nessun panorama")
+        found, alt = find_pano(extra["lat"], extra["lng"], with_alt=True)
+        sv = to_sv(found, extra["lat"], extra["lng"]) if found else None
+        sv2 = to_sv(alt, extra["lat"], extra["lng"]) if alt else None
+        print(f"{'✓' if sv else '✗'} {extra['name']}: pano {sv['pano_id'] if sv else '—'}"
+              + (" + alt" if sv2 else ""))
         spots[extra["id"]] = {
             "name": extra["name"],
             "lat": extra["lat"],
             "lng": extra["lng"],
             "sv": sv,
+            "sv2": sv2,
             "photo": None,
         }
 

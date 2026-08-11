@@ -18,6 +18,14 @@
         "yaw": 214.6,
         "date": "2024-06",
         "distance_m": 3
+      },
+      "streetview_alt": {
+        "pano_id": "T5CotV_FKhGyLn8XuC0BOg",
+        "pano_lat": 41.83045863838245,
+        "pano_lng": 12.47025551338506,
+        "yaw": 38.7,
+        "date": null,
+        "distance_m": 6
       }
     },
     {
@@ -37,6 +45,14 @@
         "yaw": 42.6,
         "date": "2015-09",
         "distance_m": 52
+      },
+      "streetview_alt": {
+        "pano_id": "mijtSXkHn_siG3EUUvwhFw",
+        "pano_lat": 41.91379446191918,
+        "pano_lng": 12.48456321689805,
+        "yaw": 31.7,
+        "date": null,
+        "distance_m": 53
       }
     },
     {
@@ -56,6 +72,14 @@
         "yaw": 57.1,
         "date": "2017-06",
         "distance_m": 45
+      },
+      "streetview_alt": {
+        "pano_id": "kFsenh15kXNLWOPL3qHCAg",
+        "pano_lat": 41.93135859292831,
+        "pano_lng": 12.45434754982032,
+        "yaw": 37.5,
+        "date": null,
+        "distance_m": 48
       }
     },
     {
@@ -75,6 +99,14 @@
         "yaw": 324.2,
         "date": "2022-02",
         "distance_m": 4
+      },
+      "streetview_alt": {
+        "pano_id": "-Ew1rItnCjoX3hyLEZk-1Q",
+        "pano_lat": 41.86225458982317,
+        "pano_lng": 12.48236308582817,
+        "yaw": 220.7,
+        "date": null,
+        "distance_m": 8
       }
     },
     {
@@ -88,12 +120,20 @@
       "has_fountain": false,
       "comments": [],
       "streetview": {
-        "pano_id": "GxknKtEM3aMz5ZKsK0agVA",
-        "pano_lat": 41.85793768195444,
-        "pano_lng": 12.45533957282683,
-        "yaw": 60.5,
+        "pano_id": "qKZ4gqWC8RooDH4PWWAziQ",
+        "pano_lat": 41.8580151467124,
+        "pano_lng": 12.455315342905,
+        "yaw": 89.3,
         "date": "2015-07",
         "distance_m": 18
+      },
+      "streetview_alt": {
+        "pano_id": "H1ODSF9-jF8qV5BMxVWY6w",
+        "pano_lat": 41.85789193263358,
+        "pano_lng": 12.45534692052979,
+        "yaw": 47.2,
+        "date": null,
+        "distance_m": 20
       }
     },
     {
@@ -113,6 +153,14 @@
         "yaw": 166.3,
         "date": "2018-06",
         "distance_m": 5
+      },
+      "streetview_alt": {
+        "pano_id": "hzCHfzFuePfL1dmwKJdzHw",
+        "pano_lat": 41.89178474052124,
+        "pano_lng": 12.49143502828026,
+        "yaw": 75.4,
+        "date": null,
+        "distance_m": 9
       }
     },
     {
@@ -131,6 +179,14 @@
         "pano_lng": 12.53971779209702,
         "yaw": 67.2,
         "date": "2026-04",
+        "distance_m": 17
+      },
+      "streetview_alt": {
+        "pano_id": "6SUpHnRLC3fVD7tUKdJfOw",
+        "pano_lat": 41.96084161591976,
+        "pano_lng": 12.53970116000582,
+        "yaw": 100.8,
+        "date": null,
         "distance_m": 17
       }
     },
@@ -151,6 +207,14 @@
         "yaw": 42.2,
         "date": "2022-07",
         "distance_m": 9
+      },
+      "streetview_alt": {
+        "pano_id": "Xu5ieckQKLNlkI10ZCVlxw",
+        "pano_lat": 41.82953959440798,
+        "pano_lng": 12.46689389790778,
+        "yaw": 343.3,
+        "date": null,
+        "distance_m": 12
       }
     },
     {
@@ -169,6 +233,14 @@
         "pano_lng": 12.36283098028132,
         "yaw": 140.0,
         "date": "2025-07",
+        "distance_m": 83
+      },
+      "streetview_alt": {
+        "pano_id": "YGRSPqyWPKArCuq9-TusbA",
+        "pano_lat": 41.86333150602263,
+        "pano_lng": 12.36274183125475,
+        "yaw": 133.1,
+        "date": null,
         "distance_m": 83
       }
     },
@@ -189,6 +261,14 @@
         "yaw": 117.3,
         "date": "2025-07",
         "distance_m": 4
+      },
+      "streetview_alt": {
+        "pano_id": "6uvUPFe-j2gpLYZhl8g2MQ",
+        "pano_lat": 41.87779985111844,
+        "pano_lng": 12.3497485932567,
+        "yaw": 258.4,
+        "date": null,
+        "distance_m": 7
       }
     },
     {
@@ -208,6 +288,14 @@
         "yaw": 250.3,
         "date": "2025-07",
         "distance_m": 46
+      },
+      "streetview_alt": {
+        "pano_id": "7FxCo2Dhf53bnAEm1daW5g",
+        "pano_lat": 41.88278530433528,
+        "pano_lng": 12.36067796366923,
+        "yaw": 263.0,
+        "date": null,
+        "distance_m": 47
       }
     },
     {
@@ -227,6 +315,14 @@
         "yaw": 252.1,
         "date": "2025-07",
         "distance_m": 37
+      },
+      "streetview_alt": {
+        "pano_id": "wsA9WM119W32o_Fs26hIBQ",
+        "pano_lat": 41.87997295446806,
+        "pano_lng": 12.3602527665598,
+        "yaw": 266.2,
+        "date": null,
+        "distance_m": 38
       }
     },
     {
@@ -245,6 +341,14 @@
         "pano_lng": 12.35716220442339,
         "yaw": 268.7,
         "date": "2025-07",
+        "distance_m": 18
+      },
+      "streetview_alt": {
+        "pano_id": "UKep72L9OZpu37zFkggcEg",
+        "pano_lat": 41.86962925965248,
+        "pano_lng": 12.35712803234661,
+        "yaw": 235.6,
+        "date": null,
         "distance_m": 18
       }
     },
@@ -265,6 +369,14 @@
         "yaw": 291.8,
         "date": "2025-10",
         "distance_m": 48
+      },
+      "streetview_alt": {
+        "pano_id": "e7l5gUeF3jpydJh7L1xyRQ",
+        "pano_lat": 41.85109160637583,
+        "pano_lng": 12.41371005842785,
+        "yaw": 279.6,
+        "date": null,
+        "distance_m": 48
       }
     },
     {
@@ -284,6 +396,14 @@
         "yaw": 89.7,
         "date": "2022-08",
         "distance_m": 11
+      },
+      "streetview_alt": {
+        "pano_id": "EqNq-5HpYUqPYaftuM3uWw",
+        "pano_lat": 41.85098207007761,
+        "pano_lng": 12.41150972667951,
+        "yaw": 140.0,
+        "date": null,
+        "distance_m": 13
       }
     },
     {
@@ -303,6 +423,14 @@
         "yaw": 101.1,
         "date": "2024-06",
         "distance_m": 29
+      },
+      "streetview_alt": {
+        "pano_id": "sEPJP8k7juYvZAxkKyo1PQ",
+        "pano_lat": 41.85145125950879,
+        "pano_lng": 12.41258138187073,
+        "yaw": 121.6,
+        "date": null,
+        "distance_m": 30
       }
     },
     {
@@ -322,6 +450,14 @@
         "yaw": 134.5,
         "date": "2026-04",
         "distance_m": 16
+      },
+      "streetview_alt": {
+        "pano_id": "_QyJfA9huQ_xXtJVUq5FBA",
+        "pano_lat": 41.95482077863186,
+        "pano_lng": 12.53188460665088,
+        "yaw": 100.9,
+        "date": null,
+        "distance_m": 18
       }
     },
     {
@@ -335,12 +471,20 @@
       "has_fountain": false,
       "comments": [],
       "streetview": {
-        "pano_id": "nNpVBrMm5KfbZokabELPjA",
-        "pano_lat": 41.87383431073942,
-        "pano_lng": 12.46272722830311,
-        "yaw": 119.1,
-        "date": "2023-05",
-        "distance_m": 6
+        "pano_id": "YXWICva6q0YqjX8Oh-KVNg",
+        "pano_lat": 41.87381404656958,
+        "pano_lng": 12.46273641352902,
+        "yaw": 96.3,
+        "date": "2026-05",
+        "distance_m": 4
+      },
+      "streetview_alt": {
+        "pano_id": "WrVi8HwmYWQeAucg9Ia73w",
+        "pano_lat": 41.87372465402817,
+        "pano_lng": 12.46276886799984,
+        "yaw": 8.5,
+        "date": null,
+        "distance_m": 10
       }
     },
     {
@@ -360,6 +504,14 @@
         "yaw": 230.7,
         "date": "2025-07",
         "distance_m": 21
+      },
+      "streetview_alt": {
+        "pano_id": "qLJLkXQyDDQyogzOOZYOJg",
+        "pano_lat": 41.90624519657181,
+        "pano_lng": 12.41513001390302,
+        "yaw": 205.3,
+        "date": null,
+        "distance_m": 20
       }
     },
     {
@@ -373,11 +525,19 @@
       "has_fountain": false,
       "comments": [],
       "streetview": {
-        "pano_id": "Wc_e2LbJnPMdCIYMbqKW4Q",
-        "pano_lat": 41.89600563075266,
-        "pano_lng": 12.4288038235655,
-        "yaw": 249.1,
+        "pano_id": "8KHkrvhVREoaRoP1A5MjXg",
+        "pano_lat": 41.8959892363694,
+        "pano_lng": 12.42881318094971,
+        "yaw": 250.0,
         "date": "2025-07",
+        "distance_m": 122
+      },
+      "streetview_alt": {
+        "pano_id": "NWZPhc3KB3dPTJTKqYEekA",
+        "pano_lat": 41.89607592422767,
+        "pano_lng": 12.42876420773253,
+        "yaw": 245.1,
+        "date": null,
         "distance_m": 122
       }
     },
@@ -398,6 +558,14 @@
         "yaw": 174.5,
         "date": "2019-08",
         "distance_m": 16
+      },
+      "streetview_alt": {
+        "pano_id": "5-joAYW41U-lRPGzzb27dw",
+        "pano_lat": 41.89068795583224,
+        "pano_lng": 12.49764641278424,
+        "yaw": 209.3,
+        "date": null,
+        "distance_m": 5
       }
     },
     {
@@ -417,6 +585,14 @@
         "yaw": 77.0,
         "date": "2024-06",
         "distance_m": 11
+      },
+      "streetview_alt": {
+        "pano_id": "CbFPxk2sJSbkDUQ4Zr24gw",
+        "pano_lat": 41.86499942089901,
+        "pano_lng": 12.44632106328837,
+        "yaw": 81.2,
+        "date": null,
+        "distance_m": 9
       }
     },
     {
@@ -436,6 +612,14 @@
         "yaw": 349.9,
         "date": "2019-08",
         "distance_m": 21
+      },
+      "streetview_alt": {
+        "pano_id": "yRv5OANbRsVw7tOaDrL5LQ",
+        "pano_lat": 41.890666102889,
+        "pano_lng": 12.4948209937575,
+        "yaw": 28.9,
+        "date": null,
+        "distance_m": 22
       }
     },
     {
@@ -455,6 +639,14 @@
         "yaw": 277.2,
         "date": "2016-10",
         "distance_m": 20
+      },
+      "streetview_alt": {
+        "pano_id": "H_f7p6RyCUycXVltm6Ll-A",
+        "pano_lat": 41.89240519691482,
+        "pano_lng": 12.49682316724135,
+        "yaw": 299.7,
+        "date": null,
+        "distance_m": 21
       }
     }
   ]
