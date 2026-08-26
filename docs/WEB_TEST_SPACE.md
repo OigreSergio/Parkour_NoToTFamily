@@ -65,6 +65,11 @@ riservato. Il token attuale è in cima allo script.
 
 ## Passaggio al pubblico (quando sarà il momento)
 
+> ⚠️ Questa checklist non è sufficiente per il lancio pubblico: il sorgente della web app
+> non è nel repo, mancano informativa/termini/age gate, e la pagina `invito/` incassa denaro
+> su un IBAN personale. Il piano completo è in [LAUNCH_PLAN.md](LAUNCH_PLAN.md); il prompt
+> operativo in [LAUNCH_PROMPT.md](LAUNCH_PROMPT.md). Quanto segue resta come storico.
+
 1. Spostare l'app da `/t/<token>/` alla root di `gh-pages` (o rideploy senza
    riscrittura della base).
 2. Rimuovere `robots.txt` restrittivo e i meta `noindex`.

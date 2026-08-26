@@ -59,6 +59,10 @@ docker compose up --build
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
 
+## Going public
+
+The app is currently a private preview. The plan for the public launch on `pkfamily.app` — hosting, domain, access levels, and EU legal/privacy compliance — is in [docs/LAUNCH_PLAN.md](docs/LAUNCH_PLAN.md), with the executable prompt in [docs/LAUNCH_PROMPT.md](docs/LAUNCH_PROMPT.md).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Security reports: [SECURITY.md](SECURITY.md).
