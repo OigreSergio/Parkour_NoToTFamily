@@ -5,206 +5,433 @@
     "lng": 12.449997,
     "difficulty": 2,
     "description": "Piazzetta pedonale sulla salita verso la metro Cipro. Fioriere rialzate in mattoni con bordi in travertino, muretti e panchine in pietra: perfette per precision jump, stride e vault a varie distanze. Dalla piazza parte una lunga scalinata con muretti laterali inclinati in mattoni e travertino, corrimano in ferro e diverse rampe: ottima per salti in discesa, precision sui muretti, rail e linee in dislivello. Zona pubblica, fondo in sampietrini e lastre di pietra.",
-    "photo_urls": []
+    "photo_urls": [],
+    "surveyed": true
   },
   {
     "name": "EUR Laghetto",
     "lat": 41.8305,
     "lng": 12.4703,
     "difficulty": 3,
-    "description": "Piazzali larghi, panche in marmo e dislivelli intorno al laghetto. Superfici lisce, ottime per flow.",
-    "photo_urls": []
+    "description": "Parco Centrale del Lago, all'EUR: prati aperti, vialetti e il perimetro del laghetto in muratura, con le cascate a gradoni del Giardino delle Cascate di Raffaele De Vico sul lato del Palazzo dello Sport. Spot da flow: linee lunghe sul piano, gradoni per stride e drop misurati, prato per gli atterraggi sbagliati. Le superfici in pietra vicino all'acqua restano bagnate a lungo e diventano una saponetta. Parco pubblico con fontanelle, molto frequentato nei weekend.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/eur-laghetto/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/eur-laghetto/01.jpg",
+        "kind": "area",
+        "caption": "Le cascate a gradoni del laghetto e, sullo sfondo, il Palazzo dello Sport",
+        "author": "Blackcat",
+        "license": "CC BY-SA 3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg",
+        "date": "2011-05-03"
+      }
+    ]
   },
   {
     "name": "Villa Borghese — Piazza di Siena",
     "lat": 41.9142,
     "lng": 12.4849,
     "difficulty": 1,
-    "description": "Tronchi, muretti bassi e prati per allenare atterraggi e capriole in sicurezza.",
-    "photo_urls": []
+    "description": "L'ellisse erbosa dell'ippodromo ottocentesco dentro Villa Borghese, chiusa da una staccionata bassa in legno e circondata da un anello di ghiaia battuta; sul lato lungo corrono gradinate e terrazzamenti in pietra, e tutt'intorno ci sono panchine, pini e prati. Fondo morbido e ostacoli bassi: il posto giusto per prendere confidenza con atterraggi, rullate e i primi vault senza rischiare. Fontanelle nel parco. Villa storica sotto tutela: nessun segno su pietre e statue, e profilo basso quando c'è pubblico.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/villa-borghese-piazza-di-siena/01.jpg",
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/villa-borghese-piazza-di-siena/02.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/villa-borghese-piazza-di-siena/01.jpg",
+        "kind": "spot",
+        "caption": "L'ellisse erbosa, la staccionata in legno e l'anello di ghiaia, con le gradinate in pietra sul fondo",
+        "author": "Chabe01",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Piazza_Sienna_-_Rome_(IT62)_-_2021-08-30_-_3.jpg",
+        "date": "2021-08-30"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/villa-borghese-piazza-di-siena/02.jpg",
+        "kind": "area",
+        "caption": "La fontana in pietra e i paracarri all'ingresso della piazza",
+        "author": "Lalupa",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:V_Borghese_-_piazza_di_Siena_e_fontana_P1030673.JPG",
+        "date": "2014-08-03"
+      }
+    ]
   },
   {
     "name": "Foro Italico — Stadio dei Marmi",
     "lat": 41.9317,
     "lng": 12.4547,
     "difficulty": 4,
-    "description": "Gradonate in marmo e muri alti: spot tecnico per salti di precisione e passamuro. Attenzione ai custodi.",
-    "photo_urls": []
+    "description": "Lo stadio disegnato da Enrico Del Debbio nel 1932: gradonate in marmo, sessanta statue sul coronamento e piazzali in travertino con muretti e parapetti alti tutt'intorno. Spot tecnico — precision sugli spigoli in marmo, passamuro sui muri alti, drop dalle gradonate — e insieme il più esposto della mappa: è un monumento vincolato, con custodi e telecamere, e il marmo lucido perde aderenza appena si bagna. Meglio la mattina presto, senza lasciare un segno.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/foro-italico-stadio-dei-marmi/01.jpg",
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/foro-italico-stadio-dei-marmi/02.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/foro-italico-stadio-dei-marmi/01.jpg",
+        "kind": "spot",
+        "caption": "Le gradonate in marmo e i basamenti delle statue",
+        "author": "giorgio minga",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
+        "date": "Taken on 2"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/foro-italico-stadio-dei-marmi/02.jpg",
+        "kind": "area",
+        "caption": "Lo stadio dall'alto: l'anello di gradonate e i piazzali intorno",
+        "author": "Original: Messapi / Derivative work: Danyele",
+        "license": "CC BY 4.0",
+        "license_url": "https://creativecommons.org/licenses/by/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Stadio_dei_Marmi_(cropped).jpg",
+        "date": "Taken on 1"
+      }
+    ]
   },
   {
     "name": "Garbatella — Scalinate",
     "lat": 41.8622,
     "lng": 12.4823,
     "difficulty": 3,
-    "description": "Scalinate strette, ringhiere e cortili del quartiere storico. Rail session e cat leap tra i lotti.",
-    "photo_urls": []
+    "description": "La città-giardino degli anni Venti, costruita a lotti attorno a cortili aperti: scalinate strette, corrimano in ferro, muretti di contenimento e terrazzamenti che collegano quote diverse a pochi metri l'una dall'altra. Terreno naturale per rail session, cat leap tra i muretti e linee in dislivello lungo le scale. Non è un parco ma un quartiere abitato: orari civili e poco rumore sotto le finestre. Nasoni in piazza Brin e nelle vie intorno.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/garbatella-scalinate/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/garbatella-scalinate/01.jpg",
+        "kind": "spot",
+        "caption": "La scalinata degli Innamorati: gradoni larghi, muretti laterali e corrimano in ferro",
+        "author": "it:indeciso42",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
+        "date": "30 agosto "
+      }
+    ]
   },
   {
     "name": "MA Spot — Largo Emanuele Ruspoli",
     "lat": 41.858017,
     "lng": 12.455528,
     "difficulty": 3,
-    "description": "Largo Emanuele Ruspoli 16, Roma.",
-    "photo_urls": []
+    "description": "Largo Emanuele Ruspoli 16, quartiere Portuense: piazzetta residenziale fuori dai giri turistici, segnalata dalla crew come spot di quartiere — si sta tranquilli e non c'è nessuno a guardare. L'inventario preciso degli ostacoli è ancora da rilevare sul posto.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Metro Colosseo",
     "lat": 41.891806,
     "lng": 12.491545,
     "difficulty": 3,
-    "description": "Rione I Monti, vicino alla fermata Metro Colosseo.",
-    "photo_urls": []
+    "description": "Rione Monti, all'uscita della metro B Colosseo: cordoli e muretti bassi in travertino, gradinate d'accesso alla stazione, ringhiere e ampi tratti di sampietrini. Buono per vault veloci, rail e precision sui cordoli, con il Colosseo a due passi. È uno dei punti più battuti di Roma — folla di turisti tutto il giorno, presenza fissa delle forze dell'ordine e superfici antiche da non toccare: da usare presto la mattina.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-metro-colosseo/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-metro-colosseo/01.jpg",
+        "kind": "spot",
+        "caption": "L'uscita della metro B: muro in mattoni con ringhiera, gradini e piazzale in lastre",
+        "author": "Chabe01",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_(IT62)_-_2021-08-29_-_1.jpg",
+        "date": "2021-08-29"
+      }
+    ]
   },
   {
     "name": "Parkour Park Municipio Roma III",
     "lat": 41.960813,
     "lng": 12.539902,
-    "difficulty": 3,
-    "description": "Piazzale Ennio Flaiano, 00139 Roma. Parkour park attrezzato.",
-    "photo_urls": []
+    "difficulty": 2,
+    "description": "Piazzale Ennio Flaiano, Vigne Nuove (via Filoteo Alberini): strutture costruite apposta per il parkour, inaugurate a febbraio 2026 dentro la riqualificazione del piazzale e presentate come la prima area pubblica permanente dedicata alla disciplina nel centro Italia. Insieme al parkour park ci sono un playground da basket, un'area fitness e un campo da bocce, su 14.000 m² ripavimentati e alberati. È l'unico spot della mappa dove ci si allena di diritto: nessun custode da evitare, superfici pensate per l'impatto, adatto a tutti i livelli.",
+    "photo_urls": [],
+    "surveyed": true
   },
   {
     "name": "Spot EUR",
     "lat": 41.829641,
     "lng": 12.466853,
     "difficulty": 3,
-    "description": "Quartiere EUR, 00144 Roma.",
-    "photo_urls": []
+    "description": "EUR sud, nella zona del Palazzo dello Sport di Pier Luigi Nervi: piazzali enormi in travertino, gradonate larghe, rampe e muri bassi lineari — l'architettura razionalista che ripete lo stesso modulo per centinaia di metri. Superfici regolari e prevedibili, ideali per misurare le precision e lavorare sulle linee lunghe. Quasi nessuna ombra: d'estate il travertino scotta.",
+    "photo_urls": [],
+    "surveyed": true
   },
   {
     "name": "Spot Rooftop Casal Lumbroso",
     "lat": 41.862819,
     "lng": 12.363478,
-    "difficulty": 3,
-    "description": "Rooftop a Casal Lumbroso.",
-    "photo_urls": []
+    "difficulty": 5,
+    "description": "Rooftop a Casal Lumbroso. Spot in quota segnalato dalla crew: si lavora su copertura, quindi vale solo per chi ha già esperienza di allenamento in alto — nessun margine d'errore sull'atterraggio e nessuna via di uscita facile. L'accesso ai tetti è quasi sempre su proprietà privata: verificare prima di salire. Ostacoli e foto ancora da documentare.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Pizzeria Massimina",
     "lat": 41.877788,
     "lng": 12.349671,
     "difficulty": 3,
-    "description": "Vicino alla pizzeria, La Massimina.",
-    "photo_urls": []
+    "description": "La Massimina, negli spazi pavimentati davanti alla pizzeria. Periferia residenziale a ovest del Raccordo: poco passaggio, nessuna sorveglianza, ci si allena senza essere disturbati. Gli ostacoli precisi sono ancora da rilevare sul posto.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Scuola Massimina",
     "lat": 41.882734,
     "lng": 12.360117,
     "difficulty": 3,
-    "description": "Via Giuseppe Sano, 00166 La Massimina-Casal Lumbroso.",
-    "photo_urls": []
+    "description": "Via Giuseppe Sano, La Massimina-Casal Lumbroso: il piazzale e la recinzione della scuola, da usare fuori dagli orari di lezione quando lo spazio è libero. Quel che c'è — cordoli, muretti, gradini d'ingresso, ringhiere — è ancora da confermare con un rilievo sul posto.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Massimina Parco Nord",
     "lat": 41.87995,
     "lng": 12.359791,
-    "difficulty": 3,
-    "description": "Parco, La Massimina-Casal Lumbroso, 00166 Roma.",
-    "photo_urls": []
+    "difficulty": 2,
+    "description": "Parco pubblico a La Massimina-Casal Lumbroso, lato nord: verde di quartiere con prati, vialetti e arredo da parco. Il fondo erboso lo rende utile per provare atterraggi e rullate in sicurezza. Ostacoli ancora da censire.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Massimina Parco Sud",
     "lat": 41.869537,
     "lng": 12.356947,
-    "difficulty": 3,
-    "description": "Parco, La Massimina-Casal Lumbroso, 00166 Roma.",
-    "photo_urls": []
+    "difficulty": 2,
+    "description": "Parco pubblico a La Massimina-Casal Lumbroso, lato sud: prati, vialetti e arredo da parco, con il fondo morbido che perdona gli errori sugli atterraggi. Ostacoli ancora da censire.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Corviale 1",
     "lat": 41.851164,
     "lng": 12.413137,
     "difficulty": 3,
-    "description": "Corviale, Roma.",
-    "photo_urls": []
+    "description": "Primo dei tre punti sul fronte del Nuovo Corviale, il «Serpentone»: 958 metri di edificio in cemento armato su nove piani, progettato dal gruppo di Mario Fiorentino e costruito dal 1975. Cemento a vista ovunque — parapetti, rampe, scale esterne, pilastri — con la stessa geometria che si ripete per un chilometro: linee lunghe, precision su spigoli netti, wall run e cat leap. Nasone a poca distanza. Sotto ci abita gente: rispetto per i residenti e per gli spazi comuni.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-corviale-1/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-corviale-1/01.jpg",
+        "kind": "area",
+        "caption": "Il fronte del Serpentone visto dal largo: parapetti in cemento e cordoli lungo il marciapiede",
+        "author": "Umberto Rotundo from Roma, Italy",
+        "license": "CC BY 2.0",
+        "license_url": "https://creativecommons.org/licenses/by/2.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Corviale_(5581474085).jpg",
+        "date": "2011-03-30"
+      }
+    ]
   },
   {
     "name": "Spot Corviale 2",
     "lat": 41.850893,
     "lng": 12.41161,
     "difficulty": 3,
-    "description": "Corviale, Roma.",
-    "photo_urls": []
+    "description": "Secondo punto sul fronte del Corviale, un centinaio di metri a ovest del primo. Stesso vocabolario di cemento armato — parapetti, rampe e pilastri modulari del progetto di Mario Fiorentino — ma con distanze e altezze diverse: buono per ripetere lo stesso salto cambiando misura. Nasone a poca distanza. Edificio residenziale: rispetto per chi ci vive.",
+    "photo_urls": [],
+    "surveyed": true
   },
   {
     "name": "Spot Corviale 3",
     "lat": 41.851311,
     "lng": 12.412888,
     "difficulty": 3,
-    "description": "Corviale, Roma.",
-    "photo_urls": []
+    "description": "Terzo punto sul fronte del Corviale, tra gli altri due. Cemento a vista, scale esterne e piani liberi del «Serpentone» di Mario Fiorentino: la ripetizione modulare permette di incatenare più ostacoli uguali in una linea sola. Nasone a poca distanza. Edificio abitato: niente rumore sotto le finestre.",
+    "photo_urls": [],
+    "surveyed": true
   },
   {
     "name": "Spot Tufello",
     "lat": 41.95479,
     "lng": 12.532099,
     "difficulty": 3,
-    "description": "Tufello, Roma.",
-    "photo_urls": []
+    "description": "Il Tufello, borgata razionalista del 1939-40: edifici lineari di quattro-cinque piani senza cortili chiusi, case «a pettine» lungo via delle Isole Curzolane, volumi essenziali e nessuna decorazione. Da quell'impianto vengono muretti bassi, gradini, rampe e scale esterne su cui costruire linee semplici e pulite. Quartiere molto vissuto e pieno di murales. Il punto esatto è da rilevare.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-tufello/01.jpg"
+    ],
+    "surveyed": false,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-tufello/01.jpg",
+        "kind": "area",
+        "caption": "I blocchi lineari della borgata e la strada tra i lotti",
+        "author": "Giorgio Pietrocola",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:TufelloconVisureAcatastali2018dic_32.jpg",
+        "date": "2018-12-13"
+      }
+    ]
   },
   {
     "name": "Spot Via Giovanni Prati",
     "lat": 41.87381,
     "lng": 12.462786,
     "difficulty": 3,
-    "description": "Via Giovanni Prati 12, 00152 Roma (Monteverde).",
-    "photo_urls": []
+    "description": "Via Giovanni Prati 12, Monteverde: strada residenziale in pendenza, poco passaggio pedonale. Cordoli, muretti di recinzione dei condomini e gradinate d'accesso sono ancora da confermare con un rilievo sul posto.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Primavalle",
     "lat": 41.90608,
     "lng": 12.415025,
     "difficulty": 3,
-    "description": "Quartiere XXVII Primavalle, Roma.",
-    "photo_urls": []
+    "description": "Primavalle, la borgata progettata da Giorgio Guidi negli anni Trenta: trenta «lotti» di case basse e squadrate con portici, raccolti attorno ad ampi cortili aperti. Portici, cordoli, muretti e gradini si ripetono con la stessa misura da un lotto all'altro — un buon posto per lavorare la ripetizione dello stesso salto e le linee tra cortile e cortile. Quartiere residenziale: rispetto per chi ci abita.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-primavalle/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-primavalle/01.jpg",
+        "kind": "area",
+        "caption": "Un cortile tra i lotti: cordoli, muretti bassi e pini",
+        "author": "Laci30",
+        "license": "CC BY 3.0",
+        "license_url": "https://creativecommons.org/licenses/by/3.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Quartiere_XXVII_Primavalle,_Roma,_Italy_-_panoramio.jpg",
+        "date": "Taken on 2"
+      }
+    ]
   },
   {
     "name": "Spot Villa Carpegna",
     "lat": 41.895616,
     "lng": 12.427432,
-    "difficulty": 3,
-    "description": "Villa Carpegna, Municipio Roma XIII, 00165 Roma.",
-    "photo_urls": []
+    "difficulty": 2,
+    "description": "Il parco della villa del cardinal Gaspare Carpegna (fine Seicento), pubblico dal 1981, nel quartiere Aurelio. L'asse centrale porta dall'ingresso al ninfeo monumentale attraverso un sistema scenografico di fontane; ai lati della Grotta dell'Asino salgono due scalinate barocche, e intorno ci sono prati, viali di lecci, muretti bassi e panchine. Scale e muretti a quote diverse per precision e linee in dislivello, prato per gli atterraggi. Parco storico: fontane e statue non si toccano.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-villa-carpegna/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-villa-carpegna/01.jpg",
+        "kind": "area",
+        "caption": "I prati e i pini del parco, con i vialetti in terra battuta",
+        "author": "Lalupa",
+        "license": "CC BY-SA 3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_P1000738.JPG",
+        "date": "2014-04-11"
+      }
+    ]
   },
   {
     "name": "Spot Colosseo — Monte Oppio",
     "lat": 41.890649,
     "lng": 12.497617,
     "difficulty": 3,
-    "description": "Viale del Monte Oppio, 00184 Roma.",
-    "photo_urls": []
+    "description": "Viale del Monte Oppio, sul fianco del parco di Colle Oppio: muretti e cordoli in travertino lungo il viale, gradinate, panchine in pietra e i resti delle Terme di Traiano poco più su. Vault, precision sui muretti e linee lungo il viale, con il Colosseo in vista. Molto passaggio di turisti nelle ore centrali; area archeologica: dalle rovine si sta alla larga.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-colosseo-monte-oppio/01.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/spot-colosseo-monte-oppio/01.jpg",
+        "kind": "area",
+        "caption": "Un muro delle Terme di Traiano lungo il viale del Monte Oppio",
+        "author": "Chabe01",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Thermes_Trajan_-_Rome_(IT62)_-_2021-08-29_-_2.jpg",
+        "date": "2021-08-29"
+      }
+    ]
   },
   {
     "name": "Spot NoToT Game",
     "lat": 41.865012,
     "lng": 12.44643,
     "difficulty": 3,
-    "description": "Via Giulio Tarra 34, 00151 Roma. Lo spot del NoToT game.",
-    "photo_urls": []
+    "description": "Via Giulio Tarra 34, Bravetta: lo spot dove la crew gioca il NoToT game. Strada residenziale tranquilla, lontana dal centro e dagli sguardi. Set di ostacoli e regole della partita ancora da documentare.",
+    "photo_urls": [],
+    "surveyed": false
   },
   {
     "name": "Spot Colonne Colosseo",
     "lat": 41.890839,
     "lng": 12.494949,
     "difficulty": 3,
-    "description": "Le colonne vicino al Colosseo.",
-    "photo_urls": []
+    "description": "I blocchi e i basamenti in travertino allineati sul perimetro esterno del Colosseo: distanze regolari da basamento a basamento, ideali per allenare la misura delle precision e le linee lunghe che seguono la curva dell'anfiteatro. È il punto più turistico di Roma — folla continua, vigilanza costante e superfici antiche assolutamente da non toccare. Da usare per la precisione, non per fare numeri.",
+    "photo_urls": [],
+    "surveyed": true
   },
   {
     "name": "Colle Oppio Park",
     "lat": 41.8925,
     "lng": 12.4966,
     "difficulty": 1,
-    "description": "Muretti, scalinate e rail nel parco sopra il Colosseo. Ottimo per precision e vault di base.",
-    "photo_urls": []
+    "description": "Il parco sopra il Colosseo, tra via Labicana e le Terme di Traiano: muretti bassi in travertino, scalinate larghe, ringhiere, panchine e vialetti in terra battuta, con dislivelli dolci su tutta l'area. È lo spot base per chi comincia — precision corte, vault semplici e rullate sull'erba — ed è comodo: fontanelle nel parco e metro Colosseo a due passi. Nelle ore centrali gira parecchia gente.",
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/colle-oppio-park/01.jpg",
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/colle-oppio-park/02.jpg"
+    ],
+    "surveyed": true,
+    "photos": [
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/colle-oppio-park/01.jpg",
+        "kind": "area",
+        "caption": "Il prato del parco e i resti delle Terme di Traiano, recintati",
+        "author": "Manciniart",
+        "license": "CC BY-SA 4.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Roma_-_Parco_di_Colle_Oppio_-_2025-10-29_16-47-10_001.jpg",
+        "date": "2025-10-29"
+      },
+      {
+        "url": "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/colle-oppio-park/02.jpg",
+        "kind": "area",
+        "caption": "Il Colosseo visto dal parco",
+        "author": "Shardan",
+        "license": "CC BY-SA 3.0",
+        "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+        "source": "Wikimedia Commons",
+        "source_url": "https://commons.wikimedia.org/wiki/File:Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
+        "date": "Giugno 200"
+      }
+    ]
   },
   {
     "name": "Spot con fontanella - Trastevere/Gianicolo",
     "lat": 41.894056,
     "lng": 12.433333,
     "difficulty": 1,
-    "description": "Spot con fontanella nella zona Trastevere/Gianicolo: acqua sempre disponibile durante gli allenamenti.",
-    "photo_urls": []
+    "description": "Zona Trastevere/Gianicolo, sulla salita verso il belvedere: muretti di contenimento, gradinate e parapetti lungo la passeggiata, fondo tra sampietrini e lastre di pietra, dislivello costante per lavorare in salita e in discesa. Il motivo per cui lo spot sta in mappa è il nasone che scorre tutto l'anno: acqua sempre disponibile a metà sessione.",
+    "photo_urls": [],
+    "surveyed": true
   }
 ]

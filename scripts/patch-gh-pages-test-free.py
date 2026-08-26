@@ -13,6 +13,8 @@
 4. App gratuita: entitlements sempre veri e banner "Iscriviti" disattivato.
 5. Distanza & percorso: espone l'istanza MapLibre e aggiunge il pulsante
    sulla scheda spot (logica in scripts/web/pk-route.js).
+6. Foto degli spot: espone la mappa id → foto (con autore e licenza) e
+   aggiunge il pulsante galleria sulla scheda spot (scripts/web/pk-photos.js).
 
 Uso: python3 scripts/patch-gh-pages-test-free.py <path-al-bundle-entry.js>
 Non idempotente: applicare a un bundle appena esportato.
@@ -193,6 +195,13 @@ fixed = json.loads(
     (Path(__file__).parent / "data" / "webapp_fixed_spots.json").read_text(encoding="utf8")
 )
 fixed_js = json.dumps(fixed, ensure_ascii=False, separators=(",", ":"))
+# pk-photos.js legge le foto da qui: nel bundle la scheda spot conosce solo
+# l'id, e le credits (autore/licenza) devono restare attaccate alla foto.
+photos_js = json.dumps(
+    {s["id"]: s.get("photos", []) for s in fixed if s.get("photos")},
+    ensure_ascii=False,
+    separators=(",", ":"),
+)
 src = replace_span(
     src,
     "const t=[{id:'colle-oppio'",
@@ -200,6 +209,9 @@ src = replace_span(
     f"const t={fixed_js},n=[12.4823,41.8905]",
     f"spot fissi in MOCK_SPOTS ({len(fixed)} spot)",
 )
+n_photos = sum(len(s.get("photos", [])) for s in fixed)
+src = f"globalThis.__PK_PHOTOS__={photos_js};\n" + src
+print(f"ok: foto degli spot esposte ({n_photos} foto)")
 
 # --- 3b. fetchSpots: fonde sempre gli spot fissi con quelli Supabase -------
 merge = (
@@ -251,11 +263,22 @@ pk_btn = (
     "{id:p.id,name:p.name,lat:p.lat,lng:p.lng})},hitSlop:8,"
     "children:(0,h.jsx)(l.default,{style:j.openLink,children:'🧭 Distanza & percorso'})})"
 )
+# --- 5b-bis. Pulsante "Foto" sulla scheda spot ----------------------------
+# L'etichetta si costruisce a ogni render, così mostra il numero reale di foto
+# e resta onesta sugli spot che non ne hanno ancora.
+photo_btn = (
+    "(0,h.jsx)(n.default,{onPress:()=>{globalThis.__pkPhotos&&globalThis.__pkPhotos("
+    "{id:p.id,name:p.name})},hitSlop:8,"
+    "children:(0,h.jsx)(l.default,{style:j.openLink,children:"
+    "(((globalThis.__PK_PHOTOS__||{})[p.id]||[]).length"
+    "?'\\u{1F4F7} Foto ('+((globalThis.__PK_PHOTOS__||{})[p.id]||[]).length+')'"
+    ":'\\u{1F4F7} Nessuna foto \\u2014 mandaci la tua')})})"
+)
 src = replace_once(
     src,
     "children:[F,P,W,H]}",
-    "children:[F,P,W,H," + pk_btn + "]}",
-    "pulsante percorso su SpotPreviewCard",
+    "children:[F,P,W,H," + pk_btn + "," + photo_btn + "]}",
+    "pulsanti percorso e foto su SpotPreviewCard",
 )
 
 path.write_text(src, encoding="utf8")
@@ -265,11 +288,14 @@ print(f"Bundle aggiornato: {path}")
 app_root = path.parents[4]
 index_html = app_root / "index.html"
 if index_html.is_file():
-    shutil.copy(Path(__file__).parent / "web" / "pk-route.js", app_root / "pk-route.js")
     html = index_html.read_text(encoding="utf8")
-    if "pk-route.js" not in html:
-        html = html.replace("</body>", '<script src="./pk-route.js" defer></script>\n</body>')
-        index_html.write_text(html, encoding="utf8")
-    print(f"ok: pk-route.js copiato e collegato in {index_html}")
+    for sidecar in ("pk-route.js", "pk-photos.js"):
+        shutil.copy(Path(__file__).parent / "web" / sidecar, app_root / sidecar)
+        if sidecar not in html:
+            html = html.replace(
+                "</body>", f'<script src="./{sidecar}" defer></script>\n</body>'
+            )
+    index_html.write_text(html, encoding="utf8")
+    print(f"ok: pk-route.js e pk-photos.js copiati e collegati in {index_html}")
 else:
     sys.exit(f"ERRORE: index.html non trovato in {app_root}")

@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -11,11 +12,32 @@ class Point(BaseModel):
     lng: float = Field(ge=-180, le=180)
 
 
+class SpotPhoto(BaseModel):
+    """Una foto con l'attribuzione che va mostrata insieme a lei.
+
+    Le foto scattate dalla crew hanno ``source = "PkFAMILY"`` e nessuna
+    licenza da citare; quelle riusate da archivi liberi (Wikimedia Commons)
+    portano autore, licenza e link all'originale, che CC BY / CC BY-SA
+    obbligano a mostrare ovunque compaia l'immagine.
+    """
+
+    url: str
+    kind: Literal["spot", "area"] = "area"
+    caption: str = ""
+    author: str = ""
+    license: str = ""
+    license_url: str = ""
+    source: str = ""
+    source_url: str = ""
+    date: str = ""
+
+
 class SpotCreate(BaseModel):
     name: str = Field(min_length=2, max_length=120)
     description: str = Field(default="", max_length=2000)
     location: Point
     photo_urls: list[str] = Field(default_factory=list, max_length=10)
+    photos: list[SpotPhoto] = Field(default_factory=list, max_length=10)
     difficulty: int = Field(default=1, ge=1, le=5)
 
 
@@ -27,7 +49,9 @@ class SpotOut(BaseModel):
     description: str
     location: Point
     photo_urls: list[str]
+    photos: list[SpotPhoto]
     difficulty: int
+    surveyed: bool
     status: SpotStatus
     submitted_by: UUID | None
     verified_at: datetime | None

@@ -19,6 +19,7 @@ async def create(session: AsyncSession, *, data: SpotCreate, submitted_by: UUID)
         description=data.description,
         location=_point_wkt(data.location),
         photo_urls=data.photo_urls,
+        photos=[p.model_dump() for p in data.photos],
         difficulty=data.difficulty,
         status=SpotStatus.pending,
         submitted_by=submitted_by,

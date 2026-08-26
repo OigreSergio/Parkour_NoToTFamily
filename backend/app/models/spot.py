@@ -3,7 +3,8 @@ from datetime import datetime
 from uuid import UUID
 
 from geoalchemy2 import Geography
-from sqlalchemy import ARRAY, DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import ARRAY, Boolean, DateTime, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, TimestampMixin, UUIDPKMixin
@@ -24,7 +25,18 @@ class Spot(UUIDPKMixin, TimestampMixin, Base):
         Geography(geometry_type="POINT", srid=4326), nullable=False, index=True
     )
     photo_urls: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False, default=list)
+    # Una voce per foto: stessi URL di photo_urls più autore, licenza e link
+    # alla pagina originale. CC BY / CC BY-SA vogliono l'attribuzione ovunque
+    # la foto venga mostrata, quindi viaggia insieme alla foto.
+    photos: Mapped[list[dict]] = mapped_column(
+        JSONB, nullable=False, default=list, server_default="[]"
+    )
     difficulty: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
+    # False quando lo spot è in mappa ma nessuno ne ha ancora censito gli
+    # ostacoli sul posto: l'app lo segnala e invita a completarlo.
+    surveyed: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=False, server_default="false"
+    )
 
     status: Mapped[SpotStatus] = mapped_column(
         Enum(SpotStatus, name="spot_status"),

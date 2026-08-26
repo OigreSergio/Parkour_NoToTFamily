@@ -34,13 +34,20 @@ PostgreSQL 16 with the **PostGIS** extension for geospatial queries.
 | description   | text                       |                                    |
 | location      | geography(Point, 4326)     | indexed with GIST                  |
 | photo_urls    | text[]                     | S3-backed                          |
+| photos        | jsonb                      | una voce per foto: URL + `kind` (`spot` = mostra gli ostacoli, `area` = solo il luogo), didascalia, autore, licenza e link all'originale |
 | difficulty    | int                        | 1–5                                |
+| surveyed      | bool                       | `false` finché nessuno ha censito gli ostacoli sul posto |
 | status        | text                       | `pending` \| `verified` \| `rejected` |
 | submitted_by  | uuid FK users              |                                    |
 | verified_by   | uuid FK users              | nullable                           |
 | verified_at   | timestamptz                | nullable                           |
 | rejection_reason | text                    | nullable                           |
 | created_at    | timestamptz                |                                    |
+
+`photos` duplica gli URL di `photo_urls` perché l'attribuzione deve viaggiare
+con la foto: CC BY e CC BY-SA obbligano a mostrare autore e licenza ovunque
+compaia l'immagine. `photo_urls` resta la lista piatta per chi vuole solo
+mostrarle. Vedi [`docs/spots/photos/README.md`](spots/photos/README.md).
 
 ### `spot_moderation_events`
 Audit log of every admin action on a spot.

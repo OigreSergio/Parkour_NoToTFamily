@@ -1,0 +1,106 @@
+{
+  "_README": "Foto riusate da Wikimedia Commons, scelte a mano dopo averle guardate una per una. kind: 'spot' = si vedono gli ostacoli, 'area' = si vede solo il luogo intorno. Importa con: python scripts/import_commons_photos.py. Vedi README.md.",
+
+  "Villa Borghese — Piazza di Siena": [
+    {
+      "file": "File:Piazza Sienna - Rome (IT62) - 2021-08-30 - 3.jpg",
+      "kind": "spot",
+      "caption": "L'ellisse erbosa, la staccionata in legno e l'anello di ghiaia, con le gradinate in pietra sul fondo"
+    },
+    {
+      "file": "File:V Borghese - piazza di Siena e fontana P1030673.JPG",
+      "kind": "area",
+      "caption": "La fontana in pietra e i paracarri all'ingresso della piazza"
+    }
+  ],
+
+  "Foro Italico — Stadio dei Marmi": [
+    {
+      "file": "File:Stadio Dei Marmi - Foro Italico - panoramio.jpg",
+      "kind": "spot",
+      "caption": "Le gradonate in marmo e i basamenti delle statue"
+    },
+    {
+      "file": "File:Stadio dei Marmi (cropped).jpg",
+      "kind": "area",
+      "caption": "Lo stadio dall'alto: l'anello di gradonate e i piazzali intorno"
+    }
+  ],
+
+  "Garbatella — Scalinate": [
+    {
+      "file": "File:Scala degli innamorati Garbatella 30082021 093A.jpg",
+      "kind": "spot",
+      "caption": "La scalinata degli Innamorati: gradoni larghi, muretti laterali e corrimano in ferro"
+    }
+  ],
+
+  "EUR Laghetto": [
+    {
+      "file": "File:Roma EUR Cascata del Laghetto e Palazzo dello Sport.jpg",
+      "kind": "area",
+      "caption": "Le cascate a gradoni del laghetto e, sullo sfondo, il Palazzo dello Sport"
+    }
+  ],
+
+  "Spot Metro Colosseo": [
+    {
+      "file": "File:Entrée Station Métro Colosseo Piazza Colosseo - Rome (IT62) - 2021-08-29 - 1.jpg",
+      "kind": "spot",
+      "caption": "L'uscita della metro B: muro in mattoni con ringhiera, gradini e piazzale in lastre"
+    }
+  ],
+
+  "Colle Oppio Park": [
+    {
+      "file": "File:Roma - Parco di Colle Oppio - 2025-10-29 16-47-10 001.jpg",
+      "kind": "area",
+      "caption": "Il prato del parco e i resti delle Terme di Traiano, recintati"
+    },
+    {
+      "file": "File:Il Colosseo dal parco di Colle Oppio.JPG",
+      "kind": "area",
+      "caption": "Il Colosseo visto dal parco"
+    }
+  ],
+
+  "Spot Colosseo — Monte Oppio": [
+    {
+      "file": "File:Thermes Trajan - Rome (IT62) - 2021-08-29 - 2.jpg",
+      "kind": "area",
+      "caption": "Un muro delle Terme di Traiano lungo il viale del Monte Oppio"
+    }
+  ],
+
+  "Spot Villa Carpegna": [
+    {
+      "file": "File:Villa Carpegna P1000738.JPG",
+      "kind": "area",
+      "caption": "I prati e i pini del parco, con i vialetti in terra battuta"
+    }
+  ],
+
+  "Spot Corviale 1": [
+    {
+      "file": "File:Corviale (5581474085).jpg",
+      "kind": "area",
+      "caption": "Il fronte del Serpentone visto dal largo: parapetti in cemento e cordoli lungo il marciapiede"
+    }
+  ],
+
+  "Spot Tufello": [
+    {
+      "file": "File:TufelloconVisureAcatastali2018dic 32.jpg",
+      "kind": "area",
+      "caption": "I blocchi lineari della borgata e la strada tra i lotti"
+    }
+  ],
+
+  "Spot Primavalle": [
+    {
+      "file": "File:Quartiere XXVII Primavalle, Roma, Italy - panoramio.jpg",
+      "kind": "area",
+      "caption": "Un cortile tra i lotti: cordoli, muretti bassi e pini"
+    }
+  ]
+}

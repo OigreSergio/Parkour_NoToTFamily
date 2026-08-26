@@ -20,6 +20,74 @@ class GeoPoint {
   LatLng toLatLng() => LatLng(lat, lng);
 }
 
+/// A spot photo together with the attribution that must be shown next to it.
+///
+/// Mirrors `SpotPhoto` in `backend/app/schemas/spot.py`. Photos shot by the
+/// crew carry no licence; photos reused from a free archive (Wikimedia
+/// Commons) carry author, licence and a link to the original, which CC BY /
+/// CC BY-SA require to be displayed wherever the image appears.
+class SpotPhoto {
+  const SpotPhoto({
+    required this.url,
+    this.kind = 'area',
+    this.caption = '',
+    this.author = '',
+    this.license = '',
+    this.licenseUrl = '',
+    this.source = '',
+    this.sourceUrl = '',
+    this.date = '',
+  });
+
+  final String url;
+
+  /// `spot` when the photo shows the obstacles themselves, `area` when it only
+  /// shows the surrounding place — the app labels the two differently so a
+  /// context shot is never mistaken for the spot.
+  final String kind;
+
+  final String caption;
+  final String author;
+  final String license;
+  final String licenseUrl;
+  final String source;
+  final String sourceUrl;
+  final String date;
+
+  /// One-line credit, empty when there is nothing to attribute.
+  String get credit {
+    if (author.isEmpty && license.isEmpty) return '';
+    return [
+      if (author.isNotEmpty) author,
+      if (license.isNotEmpty) license,
+    ].join(' · ');
+  }
+
+  factory SpotPhoto.fromJson(Map<String, dynamic> json) => SpotPhoto(
+        url: json['url'] as String,
+        kind: (json['kind'] as String?) ?? 'area',
+        caption: (json['caption'] as String?) ?? '',
+        author: (json['author'] as String?) ?? '',
+        license: (json['license'] as String?) ?? '',
+        licenseUrl: (json['license_url'] as String?) ?? '',
+        source: (json['source'] as String?) ?? '',
+        sourceUrl: (json['source_url'] as String?) ?? '',
+        date: (json['date'] as String?) ?? '',
+      );
+
+  Map<String, dynamic> toJson() => {
+        'url': url,
+        'kind': kind,
+        'caption': caption,
+        'author': author,
+        'license': license,
+        'license_url': licenseUrl,
+        'source': source,
+        'source_url': sourceUrl,
+        'date': date,
+      };
+}
+
 /// A parkour spot.
 ///
 /// Matches the backend `SpotOut` schema (see `docs/DATA_MODEL.md` and
@@ -32,7 +100,9 @@ class Spot {
     required this.description,
     required this.location,
     required this.photoUrls,
+    this.photos = const [],
     required this.difficulty,
+    this.surveyed = true,
     required this.status,
     this.water = false,
     required this.submittedBy,
@@ -48,11 +118,21 @@ class Spot {
   final GeoPoint location;
   final List<String> photoUrls;
 
+  /// Same photos as [photoUrls], with their credits. Empty on older
+  /// backends, which is why [photoUrls] is still the source of truth for
+  /// what to display.
+  final List<SpotPhoto> photos;
+
   /// 1–5, where 5 is the hardest.
   final int difficulty;
 
   /// `pending` | `verified` | `rejected`.
   final String status;
+
+  /// False when the spot is on the map but nobody has surveyed its
+  /// obstacles on site yet — the app says so instead of pretending the
+  /// description is complete.
+  final bool surveyed;
 
   /// Whether there is a drinking-water source (fountain, tap) at or near the
   /// spot. Client-side field; defaults to `false` until the backend exposes it.
@@ -87,7 +167,9 @@ class Spot {
         description: description,
         location: location,
         photoUrls: photoUrls,
+        photos: photos,
         difficulty: difficulty,
+        surveyed: surveyed,
         status: status,
         water: water ?? this.water,
         submittedBy: submittedBy,
@@ -105,7 +187,11 @@ class Spot {
         photoUrls: (json['photo_urls'] as List<dynamic>? ?? const [])
             .map((e) => e as String)
             .toList(growable: false),
+        photos: (json['photos'] as List<dynamic>? ?? const [])
+            .map((e) => SpotPhoto.fromJson(e as Map<String, dynamic>))
+            .toList(growable: false),
         difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
+        surveyed: (json['surveyed'] as bool?) ?? true,
         status: (json['status'] as String?) ?? 'verified',
         water: (json['water'] as bool?) ?? false,
         submittedBy: json['submitted_by'] as String?,
@@ -123,7 +209,9 @@ class Spot {
         'description': description,
         'location': location.toJson(),
         'photo_urls': photoUrls,
+        'photos': photos.map((p) => p.toJson()).toList(),
         'difficulty': difficulty,
+        'surveyed': surveyed,
         'status': status,
         'water': water,
         'submitted_by': submittedBy,
