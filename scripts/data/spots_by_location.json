@@ -1,0 +1,4386 @@
+{
+ "total": 1706,
+ "verified": 26,
+ "countries": [
+  {
+   "country": "Italia",
+   "cc": "IT",
+   "continent": "Europa",
+   "n": 587,
+   "verified": 26,
+   "regions": [
+    {
+     "region": "Piemonte",
+     "n": 125,
+     "cities": [
+      {
+       "city": "Torino",
+       "n": 81
+      },
+      {
+       "city": "Settimo Torinese",
+       "n": 6
+      },
+      {
+       "city": "Beinasco",
+       "n": 4
+      },
+      {
+       "city": "Pinerolo",
+       "n": 4
+      },
+      {
+       "city": "Trofarello",
+       "n": 4
+      },
+      {
+       "city": "Ivrea",
+       "n": 3
+      },
+      {
+       "city": "Biella",
+       "n": 2
+      },
+      {
+       "city": "Castiglione Torinese",
+       "n": 2
+      },
+      {
+       "city": "Novara",
+       "n": 2
+      },
+      {
+       "city": "Alba",
+       "n": 1
+      },
+      {
+       "city": "Auzate",
+       "n": 1
+      },
+      {
+       "city": "Brandizzo",
+       "n": 1
+      },
+      {
+       "city": "Carmagnola",
+       "n": 1
+      },
+      {
+       "city": "Chivasso",
+       "n": 1
+      },
+      {
+       "city": "Druento",
+       "n": 1
+      },
+      {
+       "city": "Ferriera",
+       "n": 1
+      },
+      {
+       "city": "Fossano",
+       "n": 1
+      },
+      {
+       "city": "Livorno Ferraris",
+       "n": 1
+      },
+      {
+       "city": "Moncalieri",
+       "n": 1
+      },
+      {
+       "city": "None",
+       "n": 1
+      },
+      {
+       "city": "Ovada",
+       "n": 1
+      },
+      {
+       "city": "San Mauro Torinese",
+       "n": 1
+      },
+      {
+       "city": "Sant'Albano Stura",
+       "n": 1
+      },
+      {
+       "city": "Venaria Reale",
+       "n": 1
+      },
+      {
+       "city": "Villar Pellice",
+       "n": 1
+      },
+      {
+       "city": "Villar Perosa",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Lazio",
+     "n": 75,
+     "cities": [
+      {
+       "city": "Roma",
+       "n": 66
+      },
+      {
+       "city": "Civitavecchia",
+       "n": 4
+      },
+      {
+       "city": "Anguillara Sabazia",
+       "n": 1
+      },
+      {
+       "city": "Canale Monterano",
+       "n": 1
+      },
+      {
+       "city": "Cecchina",
+       "n": 1
+      },
+      {
+       "city": "Fiumicino",
+       "n": 1
+      },
+      {
+       "city": "Frascati",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Lombardia",
+     "n": 74,
+     "cities": [
+      {
+       "city": "Milano",
+       "n": 31
+      },
+      {
+       "city": "Brescia",
+       "n": 6
+      },
+      {
+       "city": "Abbiategrasso",
+       "n": 3
+      },
+      {
+       "city": "Almè",
+       "n": 2
+      },
+      {
+       "city": "Bergamo",
+       "n": 2
+      },
+      {
+       "city": "Bollate",
+       "n": 2
+      },
+      {
+       "city": "Bruntino",
+       "n": 2
+      },
+      {
+       "city": "Gorla Maggiore",
+       "n": 2
+      },
+      {
+       "city": "Merate",
+       "n": 2
+      },
+      {
+       "city": "Ponte San Pietro",
+       "n": 2
+      },
+      {
+       "city": "Vimodrone",
+       "n": 2
+      },
+      {
+       "city": "Arese",
+       "n": 1
+      },
+      {
+       "city": "Cologno Monzese",
+       "n": 1
+      },
+      {
+       "city": "Como",
+       "n": 1
+      },
+      {
+       "city": "Cremona",
+       "n": 1
+      },
+      {
+       "city": "Cusano Milanino",
+       "n": 1
+      },
+      {
+       "city": "Dairago",
+       "n": 1
+      },
+      {
+       "city": "Legnano",
+       "n": 1
+      },
+      {
+       "city": "Maccagno con Pino e Veddasca",
+       "n": 1
+      },
+      {
+       "city": "Medole",
+       "n": 1
+      },
+      {
+       "city": "Monza",
+       "n": 1
+      },
+      {
+       "city": "Muggiò",
+       "n": 1
+      },
+      {
+       "city": "Pozzuolo Martesana",
+       "n": 1
+      },
+      {
+       "city": "San Donato Milanese",
+       "n": 1
+      },
+      {
+       "city": "Stezzano",
+       "n": 1
+      },
+      {
+       "city": "Trezzano sul Naviglio",
+       "n": 1
+      },
+      {
+       "city": "Vanzaghello",
+       "n": 1
+      },
+      {
+       "city": "Vignate",
+       "n": 1
+      },
+      {
+       "city": "Zingonia",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Emilia-Romagna",
+     "n": 55,
+     "cities": [
+      {
+       "city": "Bologna",
+       "n": 25
+      },
+      {
+       "city": "Rimini",
+       "n": 5
+      },
+      {
+       "city": "Faenza",
+       "n": 4
+      },
+      {
+       "city": "Casalecchio di Reno",
+       "n": 3
+      },
+      {
+       "city": "Cattolica",
+       "n": 3
+      },
+      {
+       "city": "Cesena",
+       "n": 3
+      },
+      {
+       "city": "Forlì",
+       "n": 3
+      },
+      {
+       "city": "San Lazzaro di Savena",
+       "n": 2
+      },
+      {
+       "city": "Cento",
+       "n": 1
+      },
+      {
+       "city": "Ferrara",
+       "n": 1
+      },
+      {
+       "city": "Imola",
+       "n": 1
+      },
+      {
+       "city": "Modena",
+       "n": 1
+      },
+      {
+       "city": "Pianoro",
+       "n": 1
+      },
+      {
+       "city": "Pànico",
+       "n": 1
+      },
+      {
+       "city": "Ravenna",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Veneto",
+     "n": 51,
+     "cities": [
+      {
+       "city": "Venezia",
+       "n": 8
+      },
+      {
+       "city": "Schio",
+       "n": 7
+      },
+      {
+       "city": "Thiene",
+       "n": 4
+      },
+      {
+       "city": "Conegliano",
+       "n": 3
+      },
+      {
+       "city": "Padova",
+       "n": 3
+      },
+      {
+       "city": "Castagnara",
+       "n": 2
+      },
+      {
+       "city": "Chioggia",
+       "n": 2
+      },
+      {
+       "city": "Curtarolo",
+       "n": 2
+      },
+      {
+       "city": "Malo",
+       "n": 2
+      },
+      {
+       "city": "Marano Vicentino",
+       "n": 2
+      },
+      {
+       "city": "Vicenza",
+       "n": 2
+      },
+      {
+       "city": "Zanè",
+       "n": 2
+      },
+      {
+       "city": "Abano Terme",
+       "n": 1
+      },
+      {
+       "city": "Alpago",
+       "n": 1
+      },
+      {
+       "city": "Caltrano",
+       "n": 1
+      },
+      {
+       "city": "Caorle",
+       "n": 1
+      },
+      {
+       "city": "Limena",
+       "n": 1
+      },
+      {
+       "city": "Mogliano Veneto",
+       "n": 1
+      },
+      {
+       "city": "Pastrengo",
+       "n": 1
+      },
+      {
+       "city": "Piovene Rocchette",
+       "n": 1
+      },
+      {
+       "city": "Riese Pio X",
+       "n": 1
+      },
+      {
+       "city": "San Michele al Tagliamento",
+       "n": 1
+      },
+      {
+       "city": "Sarcedo",
+       "n": 1
+      },
+      {
+       "city": "Vigodarzere",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Campania",
+     "n": 37,
+     "cities": [
+      {
+       "city": "Salerno",
+       "n": 16
+      },
+      {
+       "city": "Napoli",
+       "n": 8
+      },
+      {
+       "city": "Afragola",
+       "n": 3
+      },
+      {
+       "city": "Bracigliano",
+       "n": 2
+      },
+      {
+       "city": "Pozzuoli",
+       "n": 2
+      },
+      {
+       "city": "Baronissi",
+       "n": 1
+      },
+      {
+       "city": "Brusciano",
+       "n": 1
+      },
+      {
+       "city": "Buccino",
+       "n": 1
+      },
+      {
+       "city": "Caivano",
+       "n": 1
+      },
+      {
+       "city": "Mariglianella",
+       "n": 1
+      },
+      {
+       "city": "Pomigliano d'Arco",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Trentino-Alto Adige",
+     "n": 30,
+     "cities": [
+      {
+       "city": "Bolzano",
+       "n": 18
+      },
+      {
+       "city": "Campitello di Fassa",
+       "n": 3
+      },
+      {
+       "city": "Fiè allo Sciliar",
+       "n": 3
+      },
+      {
+       "city": "Canazei",
+       "n": 2
+      },
+      {
+       "city": "Appiano sulla Strada del Vino",
+       "n": 1
+      },
+      {
+       "city": "Funes",
+       "n": 1
+      },
+      {
+       "city": "Montagna sulla Strada del Vino",
+       "n": 1
+      },
+      {
+       "city": "Riva del Garda",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Liguria",
+     "n": 22,
+     "cities": [
+      {
+       "city": "Genova",
+       "n": 12
+      },
+      {
+       "city": "La Spezia",
+       "n": 2
+      },
+      {
+       "city": "Lavagna",
+       "n": 2
+      },
+      {
+       "city": "Albisola Superiore",
+       "n": 1
+      },
+      {
+       "city": "Imperia",
+       "n": 1
+      },
+      {
+       "city": "Le Grazie",
+       "n": 1
+      },
+      {
+       "city": "Santo Stefano al Mare",
+       "n": 1
+      },
+      {
+       "city": "Savona",
+       "n": 1
+      },
+      {
+       "city": "Sestri Levante",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Sardegna",
+     "n": 21,
+     "cities": [
+      {
+       "city": "Cagliari",
+       "n": 5
+      },
+      {
+       "city": "Oristano",
+       "n": 2
+      },
+      {
+       "city": "Quartu Sant'Elena",
+       "n": 2
+      },
+      {
+       "city": "Sassari",
+       "n": 2
+      },
+      {
+       "city": "Bari Sardo",
+       "n": 1
+      },
+      {
+       "city": "Escalaplano",
+       "n": 1
+      },
+      {
+       "city": "Genuri",
+       "n": 1
+      },
+      {
+       "city": "Lanusei",
+       "n": 1
+      },
+      {
+       "city": "Orgosolo",
+       "n": 1
+      },
+      {
+       "city": "Perdasdefogu",
+       "n": 1
+      },
+      {
+       "city": "Santa Giusta",
+       "n": 1
+      },
+      {
+       "city": "Tempio Pausania",
+       "n": 1
+      },
+      {
+       "city": "Tertenia",
+       "n": 1
+      },
+      {
+       "city": "Tortolì",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Calabria",
+     "n": 20,
+     "cities": [
+      {
+       "city": "Reggio Calabria",
+       "n": 6
+      },
+      {
+       "city": "Roghudi Nuovo",
+       "n": 4
+      },
+      {
+       "city": "Albidona",
+       "n": 1
+      },
+      {
+       "city": "Anoia",
+       "n": 1
+      },
+      {
+       "city": "Aprigliano",
+       "n": 1
+      },
+      {
+       "city": "Crotone",
+       "n": 1
+      },
+      {
+       "city": "Lazzàro",
+       "n": 1
+      },
+      {
+       "city": "Montepaone Lido",
+       "n": 1
+      },
+      {
+       "city": "Roccella Ionica",
+       "n": 1
+      },
+      {
+       "city": "Soverato",
+       "n": 1
+      },
+      {
+       "city": "Torre Melissa",
+       "n": 1
+      },
+      {
+       "city": "Vibo Valentia",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Sicilia",
+     "n": 18,
+     "cities": [
+      {
+       "city": "Catania",
+       "n": 5
+      },
+      {
+       "city": "Aci Catena",
+       "n": 2
+      },
+      {
+       "city": "Acquedolci",
+       "n": 2
+      },
+      {
+       "city": "Milazzo",
+       "n": 2
+      },
+      {
+       "city": "Alcara li Fusi",
+       "n": 1
+      },
+      {
+       "city": "Castel di Lucio",
+       "n": 1
+      },
+      {
+       "city": "Gibellina",
+       "n": 1
+      },
+      {
+       "city": "Montagnareale",
+       "n": 1
+      },
+      {
+       "city": "Palermo",
+       "n": 1
+      },
+      {
+       "city": "Pedara",
+       "n": 1
+      },
+      {
+       "city": "Sinagra",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Puglia",
+     "n": 16,
+     "cities": [
+      {
+       "city": "Bisceglie",
+       "n": 4
+      },
+      {
+       "city": "Brindisi",
+       "n": 3
+      },
+      {
+       "city": "Lecce",
+       "n": 2
+      },
+      {
+       "city": "Montesardo",
+       "n": 2
+      },
+      {
+       "city": "Alberobello",
+       "n": 1
+      },
+      {
+       "city": "Apricena",
+       "n": 1
+      },
+      {
+       "city": "Aradeo",
+       "n": 1
+      },
+      {
+       "city": "Avetrana",
+       "n": 1
+      },
+      {
+       "city": "Trepuzzi",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Toscana",
+     "n": 11,
+     "cities": [
+      {
+       "city": "Firenze",
+       "n": 4
+      },
+      {
+       "city": "Livorno",
+       "n": 2
+      },
+      {
+       "city": "Fiesole",
+       "n": 1
+      },
+      {
+       "city": "Pisa",
+       "n": 1
+      },
+      {
+       "city": "Prato",
+       "n": 1
+      },
+      {
+       "city": "San Casciano in Val di Pesa",
+       "n": 1
+      },
+      {
+       "city": "San Vincenzo",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Marche",
+     "n": 10,
+     "cities": [
+      {
+       "city": "Pesaro",
+       "n": 5
+      },
+      {
+       "city": "Ancona",
+       "n": 4
+      },
+      {
+       "city": "Macerata",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Abruzzo",
+     "n": 7,
+     "cities": [
+      {
+       "city": "Tortoreto",
+       "n": 3
+      },
+      {
+       "city": "Lanciano",
+       "n": 1
+      },
+      {
+       "city": "Pineto",
+       "n": 1
+      },
+      {
+       "city": "Pratola Peligna",
+       "n": 1
+      },
+      {
+       "city": "Roccaraso",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Umbria",
+     "n": 6,
+     "cities": [
+      {
+       "city": "Assisi",
+       "n": 2
+      },
+      {
+       "city": "Orvieto",
+       "n": 2
+      },
+      {
+       "city": "Perugia",
+       "n": 1
+      },
+      {
+       "city": "Terni",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Valle d'Aosta",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Aosta",
+       "n": 2
+      },
+      {
+       "city": "Saint-Vincent",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Friuli-Venezia Giulia",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Maniago",
+       "n": 1
+      },
+      {
+       "city": "Plaino",
+       "n": 1
+      },
+      {
+       "city": "Trieste",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Basilicata",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Accettura",
+       "n": 1
+      },
+      {
+       "city": "Bernalda",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Stati Uniti d'America",
+   "cc": "US",
+   "continent": "Nord America",
+   "n": 263,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Florida",
+     "n": 64,
+     "cities": [
+      {
+       "city": "Contea di Miami-Dade",
+       "n": 12
+      },
+      {
+       "city": "Fort Lauderdale",
+       "n": 9
+      },
+      {
+       "city": "Gainesville",
+       "n": 7
+      },
+      {
+       "city": "Tampa",
+       "n": 7
+      },
+      {
+       "city": "Miami",
+       "n": 4
+      },
+      {
+       "city": "Coral Gables",
+       "n": 3
+      },
+      {
+       "city": "Hollywood",
+       "n": 3
+      },
+      {
+       "city": "Boca Raton",
+       "n": 2
+      },
+      {
+       "city": "Kendall",
+       "n": 2
+      },
+      {
+       "city": "North Miami Beach",
+       "n": 2
+      },
+      {
+       "city": "Orlando",
+       "n": 2
+      },
+      {
+       "city": "Brooksville",
+       "n": 1
+      },
+      {
+       "city": "Contea di Orange",
+       "n": 1
+      },
+      {
+       "city": "Davie",
+       "n": 1
+      },
+      {
+       "city": "Daytona Beach",
+       "n": 1
+      },
+      {
+       "city": "Jacksonville",
+       "n": 1
+      },
+      {
+       "city": "Kissimmee",
+       "n": 1
+      },
+      {
+       "city": "Oakland Park",
+       "n": 1
+      },
+      {
+       "city": "Sarasota",
+       "n": 1
+      },
+      {
+       "city": "Sunrise",
+       "n": 1
+      },
+      {
+       "city": "Sweetwater",
+       "n": 1
+      },
+      {
+       "city": "Wekiwa Springs",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "California",
+     "n": 62,
+     "cities": [
+      {
+       "city": "Los Angeles",
+       "n": 15
+      },
+      {
+       "city": "San Diego",
+       "n": 14
+      },
+      {
+       "city": "San Francisco",
+       "n": 5
+      },
+      {
+       "city": "Berkeley",
+       "n": 3
+      },
+      {
+       "city": "Coronado",
+       "n": 3
+      },
+      {
+       "city": "Culver City",
+       "n": 2
+      },
+      {
+       "city": "Escondido",
+       "n": 2
+      },
+      {
+       "city": "Oceanside",
+       "n": 2
+      },
+      {
+       "city": "Bellflower",
+       "n": 1
+      },
+      {
+       "city": "Carlsbad",
+       "n": 1
+      },
+      {
+       "city": "Chula Vista",
+       "n": 1
+      },
+      {
+       "city": "Claremont",
+       "n": 1
+      },
+      {
+       "city": "El Cajon",
+       "n": 1
+      },
+      {
+       "city": "Encinitas",
+       "n": 1
+      },
+      {
+       "city": "La Mesa",
+       "n": 1
+      },
+      {
+       "city": "Marin County",
+       "n": 1
+      },
+      {
+       "city": "Monterey Park",
+       "n": 1
+      },
+      {
+       "city": "National City",
+       "n": 1
+      },
+      {
+       "city": "Orange",
+       "n": 1
+      },
+      {
+       "city": "Poway",
+       "n": 1
+      },
+      {
+       "city": "Sacramento",
+       "n": 1
+      },
+      {
+       "city": "San Jose",
+       "n": 1
+      },
+      {
+       "city": "Santa Monica",
+       "n": 1
+      },
+      {
+       "city": "Vista",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Colorado",
+     "n": 36,
+     "cities": [
+      {
+       "city": "Denver",
+       "n": 15
+      },
+      {
+       "city": "Boulder",
+       "n": 6
+      },
+      {
+       "city": "Castle Rock",
+       "n": 2
+      },
+      {
+       "city": "Fort Collins",
+       "n": 2
+      },
+      {
+       "city": "Golden",
+       "n": 2
+      },
+      {
+       "city": "Littleton",
+       "n": 2
+      },
+      {
+       "city": "Westminster",
+       "n": 2
+      },
+      {
+       "city": "Broomfield",
+       "n": 1
+      },
+      {
+       "city": "Colorado Springs",
+       "n": 1
+      },
+      {
+       "city": "Greenwood Village",
+       "n": 1
+      },
+      {
+       "city": "Jefferson County",
+       "n": 1
+      },
+      {
+       "city": "Thornton",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Texas",
+     "n": 19,
+     "cities": [
+      {
+       "city": "Austin",
+       "n": 5
+      },
+      {
+       "city": "Houston",
+       "n": 5
+      },
+      {
+       "city": "San Antonio",
+       "n": 3
+      },
+      {
+       "city": "Arlington",
+       "n": 1
+      },
+      {
+       "city": "Fort Worth",
+       "n": 1
+      },
+      {
+       "city": "Lubbock",
+       "n": 1
+      },
+      {
+       "city": "San Marcos",
+       "n": 1
+      },
+      {
+       "city": "Southlake",
+       "n": 1
+      },
+      {
+       "city": "The Woodlands",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Massachusetts",
+     "n": 15,
+     "cities": [
+      {
+       "city": "Boston",
+       "n": 9
+      },
+      {
+       "city": "Brookline",
+       "n": 2
+      },
+      {
+       "city": "Fall River",
+       "n": 1
+      },
+      {
+       "city": "Medford",
+       "n": 1
+      },
+      {
+       "city": "Norfolk",
+       "n": 1
+      },
+      {
+       "city": "Somerville",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "New York",
+     "n": 13,
+     "cities": [
+      {
+       "city": "New York",
+       "n": 12
+      },
+      {
+       "city": "City of Rochester",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Oregon",
+     "n": 9,
+     "cities": [
+      {
+       "city": "Portland",
+       "n": 7
+      },
+      {
+       "city": "Beaverton",
+       "n": 1
+      },
+      {
+       "city": "Lake Oswego",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Arizona",
+     "n": 8,
+     "cities": [
+      {
+       "city": "Phoenix",
+       "n": 4
+      },
+      {
+       "city": "Page",
+       "n": 1
+      },
+      {
+       "city": "Peoria",
+       "n": 1
+      },
+      {
+       "city": "Scottsdale",
+       "n": 1
+      },
+      {
+       "city": "Tucson",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Georgia",
+     "n": 8,
+     "cities": [
+      {
+       "city": "Atlanta",
+       "n": 7
+      },
+      {
+       "city": "Cobb County",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Washington",
+     "n": 6,
+     "cities": [
+      {
+       "city": "Mercer Island",
+       "n": 2
+      },
+      {
+       "city": "Seattle",
+       "n": 2
+      },
+      {
+       "city": "Bellingham",
+       "n": 1
+      },
+      {
+       "city": "Olympia",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Pennsylvania",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Filadelfia",
+       "n": 2
+      },
+      {
+       "city": "Haines Township",
+       "n": 1
+      },
+      {
+       "city": "Pittsburgh",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Hawaii",
+     "n": 3,
+     "cities": [
+      {
+       "city": "East Honolulu",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Missouri",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Kansas City",
+       "n": 1
+      },
+      {
+       "city": "Lemay",
+       "n": 1
+      },
+      {
+       "city": "Springfield",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Ohio",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Cincinnati",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Kentucky",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Bath County",
+       "n": 1
+      },
+      {
+       "city": "Highland Heights",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Oklahoma",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Tulsa",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Dakota del Sud",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Rapid City",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Illinois",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Chicago",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Michigan",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Flint",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Minnesota",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Minneapolis",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Nevada",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Winchester",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Wisconsin",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Sheboygan",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Spagna",
+   "cc": "ES",
+   "continent": "Europa",
+   "n": 201,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Andalusia",
+     "n": 52,
+     "cities": [
+      {
+       "city": "Algeciras",
+       "n": 8
+      },
+      {
+       "city": "Aguadulce",
+       "n": 4
+      },
+      {
+       "city": "San Fernando",
+       "n": 4
+      },
+      {
+       "city": "Granada",
+       "n": 3
+      },
+      {
+       "city": "Málaga",
+       "n": 3
+      },
+      {
+       "city": "San Roque",
+       "n": 3
+      },
+      {
+       "city": "Siviglia",
+       "n": 3
+      },
+      {
+       "city": "Chiclana de la Frontera",
+       "n": 2
+      },
+      {
+       "city": "Huércal de Almería",
+       "n": 2
+      },
+      {
+       "city": "Jaén",
+       "n": 2
+      },
+      {
+       "city": "La Gangosa",
+       "n": 2
+      },
+      {
+       "city": "Albolote",
+       "n": 1
+      },
+      {
+       "city": "Alcalá de Guadaíra",
+       "n": 1
+      },
+      {
+       "city": "Almería",
+       "n": 1
+      },
+      {
+       "city": "Almuñécar",
+       "n": 1
+      },
+      {
+       "city": "Bailén",
+       "n": 1
+      },
+      {
+       "city": "Conil de la Frontera",
+       "n": 1
+      },
+      {
+       "city": "Cádiz",
+       "n": 1
+      },
+      {
+       "city": "El Parador de las Hortichuelas",
+       "n": 1
+      },
+      {
+       "city": "Enix",
+       "n": 1
+      },
+      {
+       "city": "Huelva",
+       "n": 1
+      },
+      {
+       "city": "Isla Cristina",
+       "n": 1
+      },
+      {
+       "city": "La Línea de la Concepción",
+       "n": 1
+      },
+      {
+       "city": "Lepe",
+       "n": 1
+      },
+      {
+       "city": "Roquetas de Mar",
+       "n": 1
+      },
+      {
+       "city": "Torredonjimeno",
+       "n": 1
+      },
+      {
+       "city": "Úbeda",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Comunidad de Madrid",
+     "n": 30,
+     "cities": [
+      {
+       "city": "Madrid",
+       "n": 17
+      },
+      {
+       "city": "Getafe",
+       "n": 4
+      },
+      {
+       "city": "Rivas-Vaciamadrid",
+       "n": 4
+      },
+      {
+       "city": "Tres Cantos",
+       "n": 2
+      },
+      {
+       "city": "Alcorcón",
+       "n": 1
+      },
+      {
+       "city": "Colmenar Viejo",
+       "n": 1
+      },
+      {
+       "city": "San Martín de la Vega",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Catalogna",
+     "n": 22,
+     "cities": [
+      {
+       "city": "Barcellona",
+       "n": 10
+      },
+      {
+       "city": "Badalona",
+       "n": 2
+      },
+      {
+       "city": "Barberà del Vallès",
+       "n": 1
+      },
+      {
+       "city": "Fornells de la Selva",
+       "n": 1
+      },
+      {
+       "city": "Masquefa",
+       "n": 1
+      },
+      {
+       "city": "Olot",
+       "n": 1
+      },
+      {
+       "city": "Rubí",
+       "n": 1
+      },
+      {
+       "city": "Sabadell",
+       "n": 1
+      },
+      {
+       "city": "Sant Pol de Mar",
+       "n": 1
+      },
+      {
+       "city": "Vila-seca",
+       "n": 1
+      },
+      {
+       "city": "el Prat de Llobregat",
+       "n": 1
+      },
+      {
+       "city": "la Ràpita",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Canarie",
+     "n": 19,
+     "cities": [
+      {
+       "city": "Las Palmas de Gran Canaria",
+       "n": 12
+      },
+      {
+       "city": "Arrecife",
+       "n": 1
+      },
+      {
+       "city": "Granadilla de Abona",
+       "n": 1
+      },
+      {
+       "city": "Mogán",
+       "n": 1
+      },
+      {
+       "city": "San Bartolomé de Tirajana",
+       "n": 1
+      },
+      {
+       "city": "San Miguel de Abona",
+       "n": 1
+      },
+      {
+       "city": "Telde",
+       "n": 1
+      },
+      {
+       "city": "Tuineje",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Comunità Valenzana",
+     "n": 19,
+     "cities": [
+      {
+       "city": "Valencia",
+       "n": 5
+      },
+      {
+       "city": "Dénia",
+       "n": 4
+      },
+      {
+       "city": "Guardamar del Segura",
+       "n": 3
+      },
+      {
+       "city": "Alicante",
+       "n": 2
+      },
+      {
+       "city": "Alcoi / Alcoy",
+       "n": 1
+      },
+      {
+       "city": "Alfafar",
+       "n": 1
+      },
+      {
+       "city": "Calp",
+       "n": 1
+      },
+      {
+       "city": "Sant Vicent del Raspeig / San Vicente del Raspeig",
+       "n": 1
+      },
+      {
+       "city": "la Vila Joiosa / Villajoyosa",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Galizia",
+     "n": 16,
+     "cities": [
+      {
+       "city": "Vigo",
+       "n": 6
+      },
+      {
+       "city": "A Bagunda",
+       "n": 4
+      },
+      {
+       "city": "A Coruña",
+       "n": 4
+      },
+      {
+       "city": "Ribadeo",
+       "n": 1
+      },
+      {
+       "city": "Santiago di Compostela",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Isole Baleari",
+     "n": 13,
+     "cities": [
+      {
+       "city": "Palma di Maiorca",
+       "n": 10
+      },
+      {
+       "city": "Calvià",
+       "n": 2
+      },
+      {
+       "city": "Sóller",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Paese basco",
+     "n": 10,
+     "cities": [
+      {
+       "city": "Bilbao",
+       "n": 6
+      },
+      {
+       "city": "Portugalete",
+       "n": 2
+      },
+      {
+       "city": "Basauri",
+       "n": 1
+      },
+      {
+       "city": "Getxo",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Navarra",
+     "n": 5,
+     "cities": [
+      {
+       "city": "Pamplona / Iruña",
+       "n": 2
+      },
+      {
+       "city": "Estella-Lizarra",
+       "n": 1
+      },
+      {
+       "city": "Pamplona",
+       "n": 1
+      },
+      {
+       "city": "Valle de Elorz / Elortzibar",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Asturie",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Oviedo",
+       "n": 2
+      },
+      {
+       "city": "Avilés",
+       "n": 1
+      },
+      {
+       "city": "Carreño",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Cantabria",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Camargo",
+       "n": 1
+      },
+      {
+       "city": "Cartes",
+       "n": 1
+      },
+      {
+       "city": "Santander",
+       "n": 1
+      },
+      {
+       "city": "Torrelavega",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Región de Murcia",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Cartagena",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Aragona",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Saragozza",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Castiglia-La Mancia",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Albacete",
+       "n": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Regno Unito",
+   "cc": "GB",
+   "continent": "Europa",
+   "n": 141,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Inghilterra",
+     "n": 136,
+     "cities": [
+      {
+       "city": "Newcastle upon Tyne",
+       "n": 45
+      },
+      {
+       "city": "Horsham",
+       "n": 24
+      },
+      {
+       "city": "Londra",
+       "n": 19
+      },
+      {
+       "city": "South Tyneside",
+       "n": 13
+      },
+      {
+       "city": "Gateshead",
+       "n": 5
+      },
+      {
+       "city": "Brighton",
+       "n": 4
+      },
+      {
+       "city": "Bristol",
+       "n": 3
+      },
+      {
+       "city": "Portslade by Sea",
+       "n": 3
+      },
+      {
+       "city": "City of London",
+       "n": 2
+      },
+      {
+       "city": "Maidstone",
+       "n": 2
+      },
+      {
+       "city": "Birmingham",
+       "n": 1
+      },
+      {
+       "city": "Cambridge",
+       "n": 1
+      },
+      {
+       "city": "Cheltenham",
+       "n": 1
+      },
+      {
+       "city": "City of Westminster",
+       "n": 1
+      },
+      {
+       "city": "Crawley",
+       "n": 1
+      },
+      {
+       "city": "Derby",
+       "n": 1
+      },
+      {
+       "city": "Eastleigh",
+       "n": 1
+      },
+      {
+       "city": "Grimsby",
+       "n": 1
+      },
+      {
+       "city": "Manchester",
+       "n": 1
+      },
+      {
+       "city": "Porthcurno",
+       "n": 1
+      },
+      {
+       "city": "Portishead",
+       "n": 1
+      },
+      {
+       "city": "Reading",
+       "n": 1
+      },
+      {
+       "city": "Reigate and Banstead",
+       "n": 1
+      },
+      {
+       "city": "Rotherham",
+       "n": 1
+      },
+      {
+       "city": "Rottingdean",
+       "n": 1
+      },
+      {
+       "city": "Slough",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Scozia",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Coatbridge",
+       "n": 1
+      },
+      {
+       "city": "Edimburgo",
+       "n": 1
+      },
+      {
+       "city": "Hamilton",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Irlanda del Nord",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Belfast",
+       "n": 1
+      },
+      {
+       "city": "Trooperslane",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Germania",
+   "cc": "DE",
+   "continent": "Europa",
+   "n": 59,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Baviera",
+     "n": 21,
+     "cities": [
+      {
+       "city": "Monaco di Baviera",
+       "n": 19
+      },
+      {
+       "city": "Erlangen",
+       "n": 1
+      },
+      {
+       "city": "Norimberga",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Renania Settentrionale-Vestfalia",
+     "n": 14,
+     "cities": [
+      {
+       "city": "Colonia",
+       "n": 7
+      },
+      {
+       "city": "Düsseldorf",
+       "n": 3
+      },
+      {
+       "city": "Essen",
+       "n": 2
+      },
+      {
+       "city": "Bochum",
+       "n": 1
+      },
+      {
+       "city": "Dortmund",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Berlino",
+     "n": 11,
+     "cities": [
+      {
+       "city": "Berlino",
+       "n": 11
+      }
+     ]
+    },
+    {
+     "region": "Assia",
+     "n": 5,
+     "cities": [
+      {
+       "city": "Francoforte sul Meno",
+       "n": 1
+      },
+      {
+       "city": "Klein-Karben",
+       "n": 1
+      },
+      {
+       "city": "Oberursel (Taunus)",
+       "n": 1
+      },
+      {
+       "city": "Offenbach am Main",
+       "n": 1
+      },
+      {
+       "city": "Sprendlingen",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Amburgo",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Amburgo",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Bassa Sassonia",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Garbsen",
+       "n": 1
+      },
+      {
+       "city": "Gehrden",
+       "n": 1
+      },
+      {
+       "city": "Wolfsburg",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Baden-Württemberg",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Mannheim",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Schleswig-Holstein",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Itzehoe",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Francia",
+   "cc": "FR",
+   "continent": "Europa",
+   "n": 40,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Isola di Francia",
+     "n": 17,
+     "cities": [
+      {
+       "city": "Parigi",
+       "n": 6
+      },
+      {
+       "city": "Noisy-le-Grand",
+       "n": 4
+      },
+      {
+       "city": "Lisses",
+       "n": 2
+      },
+      {
+       "city": "Évry",
+       "n": 2
+      },
+      {
+       "city": "Courbevoie",
+       "n": 1
+      },
+      {
+       "city": "Puteaux",
+       "n": 1
+      },
+      {
+       "city": "Évry-Courcouronnes",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Provenza-Alpi-Costa Azzurra",
+     "n": 11,
+     "cities": [
+      {
+       "city": "Marsiglia",
+       "n": 10
+      },
+      {
+       "city": "Briançon",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Occitania",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Auch",
+       "n": 1
+      },
+      {
+       "city": "Canet-en-Roussillon",
+       "n": 1
+      },
+      {
+       "city": "Montpellier",
+       "n": 1
+      },
+      {
+       "city": "Muret",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Bretagna",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Lannion",
+       "n": 2
+      },
+      {
+       "city": "Guingamp",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Auvergne-Rhône-Alpes",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Chambéry",
+       "n": 1
+      },
+      {
+       "city": "Lione",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Paesi della Loira",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Nante",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Alta Francia",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Maubeuge",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Portogallo",
+   "cc": "PT",
+   "continent": "Europa",
+   "n": 40,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Lisbona",
+     "n": 26,
+     "cities": [
+      {
+       "city": "Lisbona",
+       "n": 14
+      },
+      {
+       "city": "Oeiras",
+       "n": 8
+      },
+      {
+       "city": "Paço de Arcos",
+       "n": 2
+      },
+      {
+       "city": "Carnaxide",
+       "n": 1
+      },
+      {
+       "city": "Cascais",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Setúbal",
+     "n": 11,
+     "cities": [
+      {
+       "city": "Almada",
+       "n": 11
+      }
+     ]
+    },
+    {
+     "region": "Faro",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Albufeira",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Funchal",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Funchal",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Porto",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Vila Nova de Gaia",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Svizzera",
+   "cc": "CH",
+   "continent": "Europa",
+   "n": 30,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Zurigo",
+     "n": 14,
+     "cities": [
+      {
+       "city": "Zurigo",
+       "n": 10
+      },
+      {
+       "city": "Winterthur",
+       "n": 4
+      }
+     ]
+    },
+    {
+     "region": "Ticino",
+     "n": 6,
+     "cities": [
+      {
+       "city": "Mendrisio",
+       "n": 2
+      },
+      {
+       "city": "Lugano",
+       "n": 1
+      },
+      {
+       "city": "Serravalle",
+       "n": 1
+      },
+      {
+       "city": "Stabio",
+       "n": 1
+      },
+      {
+       "city": "Tenero",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Sciaffusa",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Sciaffusa",
+       "n": 2
+      },
+      {
+       "city": "Neuhausen am Rheinfall",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Basilea Città",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Basilea",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "San Gallo",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Buchs (SG)",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Friburgo",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Bulle",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Ginevra",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Ginevra",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Lucerna",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Lucerna",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Paesi Bassi",
+   "cc": "NL",
+   "continent": "Europa",
+   "n": 29,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Noord-Brabant",
+     "n": 13,
+     "cities": [
+      {
+       "city": "Eindhoven",
+       "n": 13
+      }
+     ]
+    },
+    {
+     "region": "Zuid-Holland",
+     "n": 9,
+     "cities": [
+      {
+       "city": "Capelle aan den IJssel",
+       "n": 7
+      },
+      {
+       "city": "L'Aia",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Noord-Holland",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Amsterdam",
+       "n": 4
+      }
+     ]
+    },
+    {
+     "region": "Gheldria",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Arnhem",
+       "n": 1
+      },
+      {
+       "city": "Wageningen",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Utrecht",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Utrecht",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Austria",
+   "cc": "AT",
+   "continent": "Europa",
+   "n": 28,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Vienna",
+     "n": 24,
+     "cities": [
+      {
+       "city": "Vienna",
+       "n": 24
+      }
+     ]
+    },
+    {
+     "region": "Stiria",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Graz",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Oberösterreich",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Schlößl",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Salisburgo",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Salisburgo",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Grecia",
+   "cc": "GR",
+   "continent": "Europa",
+   "n": 25,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Περιφέρεια Αττικής",
+     "n": 9,
+     "cities": [
+      {
+       "city": "Atene",
+       "n": 7
+      },
+      {
+       "city": "Δήμος Ηρακλείου Αττικής",
+       "n": 1
+      },
+      {
+       "city": "Δήμος Περιστερίου",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Περιφέρεια Νοτίου Αιγαίου",
+     "n": 9,
+     "cities": [
+      {
+       "city": "Δημοτική Ενότητα Θήρας",
+       "n": 7
+      },
+      {
+       "city": "Stampalia",
+       "n": 1
+      },
+      {
+       "city": "Κτικάδος",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Περιφέρεια Κρήτης",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Δημοτική Ενότητα Αγίου Νικολάου",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Περιφέρεια Πελοποννήσου",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Δημοτική Ενότητα Ναυπλιέων",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Περιφέρεια Δυτικής Ελλάδας",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Δημοτική Ενότητα Πατρέων",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Περιφέρεια Θεσσαλίας",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Δημοτική Ενότητα Λαρισαίων",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Περιφέρεια Ιονίων Νήσων",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Δημοτική Ενότητα Λευκάδος",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Canada",
+   "cc": "CA",
+   "continent": "Nord America",
+   "n": 20,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Ontario",
+     "n": 9,
+     "cities": [
+      {
+       "city": "Toronto",
+       "n": 9
+      }
+     ]
+    },
+    {
+     "region": "Columbia Britannica",
+     "n": 7,
+     "cities": [
+      {
+       "city": "Vancouver",
+       "n": 5
+      },
+      {
+       "city": "Coquitlam",
+       "n": 1
+      },
+      {
+       "city": "Electoral Area A",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Isola del Principe Edoardo",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Charlottetown",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Nuovo Brunswick",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Paroisse de Saint Quentin",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Saskatchewan",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Saskatoon",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Svezia",
+   "cc": "SE",
+   "continent": "Europa",
+   "n": 20,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Stockholms län",
+     "n": 12,
+     "cities": [
+      {
+       "city": "Stockholms kommun",
+       "n": 6
+      },
+      {
+       "city": "Stoccolma",
+       "n": 4
+      },
+      {
+       "city": "Solna",
+       "n": 1
+      },
+      {
+       "city": "Södertälje",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Contea della Scania",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Malmö",
+       "n": 2
+      },
+      {
+       "city": "Trelleborg",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Contea di Jönköping",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Jönköping",
+       "n": 1
+      },
+      {
+       "city": "Mariannelund",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Contea di Västra Götaland",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Alingsås",
+       "n": 1
+      },
+      {
+       "city": "Göteborg",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Contea di Kalmar",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Kalmar",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Danimarca",
+   "cc": "DK",
+   "continent": "Europa",
+   "n": 17,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Region Hovedstaden",
+     "n": 10,
+     "cities": [
+      {
+       "city": "Copenaghen",
+       "n": 6
+      },
+      {
+       "city": "Sundbyerne",
+       "n": 3
+      },
+      {
+       "city": "Frederiksberg",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Danimarca meridionale",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Odense",
+       "n": 1
+      },
+      {
+       "city": "Starup",
+       "n": 1
+      },
+      {
+       "city": "Thorøhuse",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Jutland centrale",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Aarhus",
+       "n": 1
+      },
+      {
+       "city": "Hinnerup",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Region Sjælland",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Næstved",
+       "n": 1
+      },
+      {
+       "city": "Slagelse Kommune",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Repubblica Ceca",
+   "cc": "CZ",
+   "continent": "Europa",
+   "n": 17,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Praga",
+     "n": 11,
+     "cities": [
+      {
+       "city": "Praga",
+       "n": 11
+      }
+     ]
+    },
+    {
+     "region": "Jihomoravský kraj",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Brno",
+       "n": 4
+      }
+     ]
+    },
+    {
+     "region": "Královéhradecký kraj",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Hradec Kralovė",
+       "n": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Norvegia",
+   "cc": "NO",
+   "continent": "Europa",
+   "n": 14,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Oslo",
+     "n": 14,
+     "cities": [
+      {
+       "city": "Oslo",
+       "n": 14
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Marocco",
+   "cc": "MA",
+   "continent": "Africa",
+   "n": 13,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Marrakech-Safi ⵎⵕⵕⴰⴽⵛ-ⴰⵙⴼⵉ مراكش-أسفي",
+     "n": 10,
+     "cities": [
+      {
+       "city": "Marrakech",
+       "n": 7
+      },
+      {
+       "city": "Essaouira الصويرة",
+       "n": 2
+      },
+      {
+       "city": "Mechouar Kasbah المشور القصبة",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Casablanca-Settat ⵜⴰⴷⴷⴰⵔⵜ ⵜⵓⵎⵍⵉⵍⵜ-ⵙⵟⵟⴰⵜ الدار البيضاء-سطات",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Casablanca",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Fès-Meknès ⴼⴰⵙ-ⵎⴽⵏⴰⵙ فاس-مكناس",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Fes",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Tanger-Tétouan-Al Hoceïma ⵟⴰⵏⵊ-ⵟⵉⵜⴰⵡⵉⵏ-ⵍⵃⵓⵙⵉⵎⴰ طنجة تطوان الحسيمة",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Chefchaouen ⴰⵛⵛⴰⵡⵏ شفشاون",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Polonia",
+   "cc": "PL",
+   "continent": "Europa",
+   "n": 13,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Voivodato della Masovia",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Varsavia",
+       "n": 4
+      }
+     ]
+    },
+    {
+     "region": "Voivodato della Piccola Polonia",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Cracovia",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Voivodato di Varmia-Masuria",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Ełk",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "voivodato della Bassa Slesia",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Głogów",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "voivodato della Cuiavia-Pomerania",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Toruń",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "voivodato della Podlachia",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Suwałki",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Singapore",
+   "cc": "SG",
+   "continent": "Asia",
+   "n": 13,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Singapore",
+     "n": 13,
+     "cities": [
+      {
+       "city": "Singapore",
+       "n": 13
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Belgio",
+   "cc": "BE",
+   "continent": "Europa",
+   "n": 12,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Vlaams-Brabant",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Lovanio",
+       "n": 4
+      }
+     ]
+    },
+    {
+     "region": "Région de Bruxelles-Capitale - Brussels Hoofdstedelijk Gewest",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Bruxelles",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Liegi",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Liegi",
+       "n": 1
+      },
+      {
+       "city": "Malmedy",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Luxembourg",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Arlon",
+       "n": 1
+      },
+      {
+       "city": "Bertrix",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Brabant wallon",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Louvain-la-Neuve",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Bulgaria",
+   "cc": "BG",
+   "continent": "Europa",
+   "n": 10,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Пловдив",
+     "n": 8,
+     "cities": [
+      {
+       "city": "Plovdiv",
+       "n": 7
+      },
+      {
+       "city": "Йоаким Груево",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Варна",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Varna",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "София-град",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Sofia",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Corea del Sud",
+   "cc": "KR",
+   "continent": "Asia",
+   "n": 10,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Seul",
+     "n": 6,
+     "cities": [
+      {
+       "city": "Seul",
+       "n": 6
+      }
+     ]
+    },
+    {
+     "region": "Incheon",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Incheon",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Gyeonggi",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Uijeongbu",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "전남광주통합특별시",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Gwangju",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Bielorussia",
+   "cc": "BY",
+   "continent": "Europa",
+   "n": 9,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Minsk",
+     "n": 8,
+     "cities": [
+      {
+       "city": "Minsk",
+       "n": 8
+      }
+     ]
+    },
+    {
+     "region": "Гомельская вобласць",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Homel'",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Australia",
+   "cc": "AU",
+   "continent": "Oceania",
+   "n": 8,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Queensland",
+     "n": 5,
+     "cities": [
+      {
+       "city": "Brisbane",
+       "n": 5
+      }
+     ]
+    },
+    {
+     "region": "Australia Meridionale",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Adelaide",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Nuovo Galles del Sud",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Sydney",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Victoria",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Melbourne",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Cile",
+   "cc": "CL",
+   "continent": "Sud America",
+   "n": 7,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Regione di Antofagasta",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Antofagasta",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Regione di Los Lagos",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Ancud",
+       "n": 1
+      },
+      {
+       "city": "San Pablo",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Región Metropolitana de Santiago",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Providencia",
+       "n": 1
+      },
+      {
+       "city": "Quinta Normal",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Messico",
+   "cc": "MX",
+   "continent": "Nord America",
+   "n": 7,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Quintana Roo",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Cancún",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Ciudad de México",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Città del Messico",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Baja California Sur",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Cabo San Lucas",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "San Luis Potosí",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Municipio de San Luis Potosí",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Giappone",
+   "cc": "JP",
+   "continent": "Asia",
+   "n": 6,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Edogawa",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Edogawa",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Hokkaidō",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Sapporo",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Prefettura di Aichi",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Nagoya",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Prefettura di Gifu",
+     "n": 1,
+     "cities": [
+      {
+       "city": "養老町",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Prefettura di Hyōgo",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Kobe",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Setagaya",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Setagaya",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Nuova Zelanda",
+   "cc": "NZ",
+   "continent": "Oceania",
+   "n": 6,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Wellington",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Wellington",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Waikato",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Hamilton City",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Auckland",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Upper Harbour",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Romania",
+   "cc": "RO",
+   "continent": "Europa",
+   "n": 6,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Alba",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Alba Iulia",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Cluj",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Cluj-Napoca",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Iași",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Iași",
+       "n": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Irlanda",
+   "cc": "IE",
+   "continent": "Europa",
+   "n": 5,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "County Dublin",
+     "n": 3,
+     "cities": [
+      {
+       "city": "Dublino",
+       "n": 3
+      }
+     ]
+    },
+    {
+     "region": "Contea di Limerick",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Limerick",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "The Municipal District of Navan",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Navan Urban ED",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "India",
+   "cc": "IN",
+   "continent": "Asia",
+   "n": 4,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Delhi",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Delhi",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Haryana",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Gurugram",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Telangana",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Hyderabad",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Malta",
+   "cc": "MT",
+   "continent": "Europa",
+   "n": 4,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "La Valletta",
+     "n": 1,
+     "cities": [
+      {
+       "city": "La Valletta",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Marsascala",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Marsascala",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Musta",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Musta",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Sliema",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Sliema",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Ungheria",
+   "cc": "HU",
+   "continent": "Europa",
+   "n": 4,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Ungheria Centrale",
+     "n": 4,
+     "cities": [
+      {
+       "city": "Budapest",
+       "n": 4
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Argentina",
+   "cc": "AR",
+   "continent": "Sud America",
+   "n": 3,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Terra del Fuoco",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Ushuaia",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Provincia di Buenos Aires",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Punta Alta",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Emirati Arabi Uniti",
+   "cc": "AE",
+   "continent": "Asia",
+   "n": 3,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Emirato di Dubai",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Dubai",
+       "n": 2
+      }
+     ]
+    },
+    {
+     "region": "Emirato di Abu Dhabi",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Abu Dhabi",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Taiwan",
+   "cc": "TW",
+   "continent": "Asia",
+   "n": 3,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Kaohsiung",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Kaohsiung",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Taichung",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Taichung",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Tainan",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Tainan",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Brasile",
+   "cc": "BR",
+   "continent": "Sud America",
+   "n": 2,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Rio de Janeiro",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Rio de Janeiro",
+       "n": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Finlandia",
+   "cc": "FI",
+   "continent": "Europa",
+   "n": 2,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Pirkanmaa",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Tampere",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Uusimaa",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Helsinki",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Lituania",
+   "cc": "LT",
+   "continent": "Europa",
+   "n": 2,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Contea di Vilnius",
+     "n": 2,
+     "cities": [
+      {
+       "city": "Vilnius",
+       "n": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Lussemburgo",
+   "cc": "LU",
+   "continent": "Europa",
+   "n": 2,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Canton Luxembourg",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Lussemburgo",
+       "n": 1
+      }
+     ]
+    },
+    {
+     "region": "Canton Remich",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Remich",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Russia",
+   "cc": "RU",
+   "continent": "Europa",
+   "n": 2,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "San Pietroburgo",
+     "n": 2,
+     "cities": [
+      {
+       "city": "San Pietroburgo",
+       "n": 2
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Bosnia ed Erzegovina",
+   "cc": "BA",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Federazione di Bosnia ed Erzegovina",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Saraievo",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Cina",
+   "cc": "CN",
+   "continent": "Asia",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Kowloon",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Hong Kong",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Cipro",
+   "cc": "CY",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Cipro",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Δερύνεια",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Croazia",
+   "cc": "HR",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Regione istriana",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Città di Cittanova",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Estonia",
+   "cc": "EE",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Harju maakond",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Tallinn",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Indonesia",
+   "cc": "ID",
+   "continent": "Asia",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Jawa Barat",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Bekasi",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Islanda",
+   "cc": "IS",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Höfuðborgarsvæðið",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Reykjavík",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Kenya",
+   "cc": "KE",
+   "continent": "Africa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Contea di Mombasa",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Makadara/Mji Wa Kale ward",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Liechtenstein",
+   "cc": "LI",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Oberland",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Vaduz",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Madagascar",
+   "cc": "MG",
+   "continent": "Africa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Regione di Analamanga",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Antananarivo",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Malesia",
+   "cc": "MY",
+   "continent": "Asia",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Johor",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Johor Bahru",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Perù",
+   "cc": "PE",
+   "continent": "Sud America",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Lima",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Chorrillos",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "San Marino",
+   "cc": "SM",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Serravalle",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Serravalle",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Slovenia",
+   "cc": "SI",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Piedimelze",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Piedimelze",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Sudafrica",
+   "cc": "ZA",
+   "continent": "Africa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Provincia del Capo Occidentale",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Cape Town Ward 115",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Thailandia",
+   "cc": "TH",
+   "continent": "Asia",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Provincia di Chiang Mai",
+     "n": 1,
+     "cities": [
+      {
+       "city": "เทศบาลนครเชียงใหม่",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Tunisia",
+   "cc": "TN",
+   "continent": "Africa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Tunisi",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Tunisi",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Turchia",
+   "cc": "TR",
+   "continent": "Europa",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Marmara Bölgesi",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Istanbul",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "country": "Venezuela",
+   "cc": "VE",
+   "continent": "Sud America",
+   "n": 1,
+   "verified": 0,
+   "regions": [
+    {
+     "region": "Miranda",
+     "n": 1,
+     "cities": [
+      {
+       "city": "Parroquia Leoncio Martínez",
+       "n": 1
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
