@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/spot.dart';
+import '../widgets/spot_completeness.dart';
 import 'safety_gate_screen.dart' show SpotSafetyReminder;
 
 /// Read-only detail view for a single [Spot].
@@ -17,56 +18,82 @@ class SpotDetailScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          if (spot.photoUrls.isNotEmpty) ...[
+          if (spot.photos.isNotEmpty) ...[
             SizedBox(
-              height: 200,
+              height: 224,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: spot.photoUrls.length,
-                separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder:
-                    (context, i) => ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Image.network(
-                        spot.photoUrls[i],
-                        width: 280,
-                        fit: BoxFit.cover,
-                        errorBuilder:
-                            (_, __, ___) => Container(
-                              width: 280,
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              child: const Icon(Icons.broken_image_outlined),
-                            ),
+                itemCount: spot.photos.length,
+                separatorBuilder: (_, _) => const SizedBox(width: 8),
+                itemBuilder: (context, i) {
+                  final photo = spot.photos[i];
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.network(
+                          photo.url,
+                          width: 280,
+                          height: 200,
+                          fit: BoxFit.cover,
+                          errorBuilder:
+                              (_, _, _) => Container(
+                                width: 280,
+                                height: 200,
+                                color:
+                                    theme.colorScheme.surfaceContainerHighest,
+                                child: const Icon(Icons.broken_image_outlined),
+                              ),
+                        ),
                       ),
-                    ),
+                      SizedBox(width: 280, child: PhotoCredit(photo: photo)),
+                    ],
+                  );
+                },
               ),
             ),
             const SizedBox(height: 20),
           ],
           Text(spot.name, style: theme.textTheme.headlineSmall),
-          const SizedBox(height: 8),
+          if (spot.where != null) ...[
+            const SizedBox(height: 4),
+            Text(spot.where!, style: theme.textTheme.bodySmall),
+          ],
+          const SizedBox(height: 6),
+          SpotCompletenessBadge(completeness: spot.completeness),
+          const SizedBox(height: 10),
           _SkillLevel(spot: spot),
           const SizedBox(height: 16),
           // È qui che si decide davvero se andarci: un avviso visto una volta
           // all'avvio non accompagna quella decisione.
           const SpotSafetyReminder(),
           const SizedBox(height: 16),
-          Text(
-            spot.description.isEmpty ? 'No description yet.' : spot.description,
-            style: theme.textTheme.bodyLarge,
-          ),
+          if (spot.description.isNotEmpty) ...[
+            Text(spot.description, style: theme.textTheme.bodyLarge),
+            const SizedBox(height: 20),
+          ],
+          // Chiede esattamente ciò che manca. È l'unico canale da cui possono
+          // arrivare livello, affollamento e "cosa ci si allena": nessuna API
+          // li conosce.
+          ContributeToSpot(spot: spot),
           const SizedBox(height: 24),
           _InfoRow(
             icon: Icons.place_outlined,
-            label: 'Location',
+            label: 'Coordinate',
             value:
                 '${spot.location.lat.toStringAsFixed(5)}, '
                 '${spot.location.lng.toStringAsFixed(5)}',
           ),
           _InfoRow(
-            icon: Icons.verified_outlined,
-            label: 'Status',
-            value: spot.status,
+            icon: Icons.water_drop_outlined,
+            label: 'Acqua',
+            value: switch (spot.hasFountain) {
+              true => 'sì, nei pressi',
+              false => 'no',
+              // Null non è "no": è che nessuno ha guardato.
+              null => 'non lo sappiamo',
+            },
           ),
         ],
       ),

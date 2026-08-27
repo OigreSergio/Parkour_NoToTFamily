@@ -58,14 +58,22 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 3-bis — Spot fuori Roma (gate di lancio)
 
-- [ ] 3b.1 Attributi inventati → `NULL` (`skill_level`, `crowd_level`, `has_fountain` su 1.680)
-- [ ] 3b.2 Rimossi i nomi delle 23 persone dalle descrizioni, con test di regressione
-- [ ] 3b.3 Toponimo reale via Nominatim al posto di «Spot Athens 3»
-- [ ] 3b.4 Contesto OSM via Overpass, incluso `has_fountain` reale
-- [ ] 3b.5 Foto da Mapillary (CC-BY-SA) e Wikimedia, con autore e licenza in `spot_photos`
-- [ ] 3b.6 Stato di completezza: `da_completare` / `arricchito` / `verificato`
-- [ ] 3b.7 «Ci sei stato? Aggiungi una foto e raccontalo» → moderazione
-- [ ] 3b.8 `scripts/spot_coverage.mjs`: copertura per paese e città
+- [x] 3b.1 Attributi inventati → `null`: 5.040 valori rimossi (`skillLevel`, `crowdLevel`,
+      `hasFountain` erano identici su tutti e 1.680), più 1.706 rating fittizi
+- [x] 3b.2 154 attribuzioni a 23 persone reali rimosse, con test di regressione in CI
+- [~] 3b.3 Toponimo reale: `enrich_spots.py` pronto, **non ancora eseguito** — Overpass è
+      irraggiungibile da questo ambiente. Va lanciato dal PC dell'admin
+- [~] 3b.4 Contesto OSM e `has_fountain` reale: stesso script, stessa condizione
+- [~] 3b.5 Foto: **serve un `MAPILLARY_TOKEN`** (gratuito). Wikimedia da solo non basta —
+      provato, restituiva foto di cavi in fibra e chiese a 150 m dallo spot
+- [x] 3b.6 Stato di completezza (`da_completare` / `arricchito` / `verificato`) nel dataset,
+      nella migration `0006`, nel modello e nella scheda spot
+- [x] 3b.7 «Ci sei stato?» nella scheda, che chiede **esattamente ciò che manca**
+- [x] 3b.8 `scripts/spot_coverage.mjs`, in CI
+
+**Copertura oggi: 30 spot su 1.706 (1,8%) hanno qualcosa da mostrare.** In Italia 0 su 555.
+È il numero che il gate di lancio deve muovere, e lo muovono il token Mapillary e la community
+— non un'altra pipeline.
 
 ## BLOCCO 3 — Mappa e spot
 

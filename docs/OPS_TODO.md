@@ -133,6 +133,29 @@ Chiedi in particolare una lettura di:
 - Crea `privacy@pkfamily.app`, `abuse@pkfamily.app`, `security@pkfamily.app`. Non usare la tua
   email personale: finiscono in pagine pubbliche.
 
+### 7-bis. Token Mapillary — è il passo che sblocca le foto
+Registrati su [mapillary.com](https://www.mapillary.com/) e crea un token (gratuito), poi:
+
+```sh
+export MAPILLARY_TOKEN='MLY|...'
+python3 scripts/enrich_spots.py --limit 50   # prova
+python3 scripts/enrich_spots.py              # tutti, riprendibile
+node scripts/spot_coverage.mjs               # quanto è cambiato
+```
+
+Mapillary è **immagine stradale alle coordinate**: mostra davvero il posto, ed è sotto
+CC-BY-SA 4.0 con attribuzione — la sostituzione lecita degli hotlink a Street View.
+
+Perché serve a te e non posso farlo io: **Overpass è irraggiungibile da questo ambiente**
+(connessione resettata) e Nominatim risponde 429. Lo script gestisce rate limit e cache ed è
+riprendibile, ma va lanciato da una rete normale. Su 1.700 spot conta un paio d'ore, in
+background.
+
+Una cosa provata sul campo e poi scartata: cercare foto su Wikimedia **per sola vicinanza**
+restituiva una foto di cavi in fibra ottica e una chiesa bizantina, entrambe entro 150 m e
+nessuna delle due attinente. Ora Wikimedia scatta solo se il nome del luogo combacia — quindi
+di rado. Senza token Mapillary, le foto restano quelle che carica la community.
+
 ### 8. Provenienza dei 1.706 spot
 Il dataset in `scripts/data/webapp_fixed_spots.json` deriva da una lista Google Maps condivisa
 (`scripts/fetch_gmaps_list.py`). I ToS di Google vietano lo scraping, e sulla lista come

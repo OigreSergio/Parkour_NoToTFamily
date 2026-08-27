@@ -54,6 +54,31 @@ jobs:
             --dart-define=SUPABASE_PUBLISHABLE_KEY=ci-placeholder
         working-directory: mobile
 
+  dati:
+    name: Qualità dei dati degli spot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # Impedisce che tornino i dati che non sono dati: attributi di default
+      # mostrati come valutazioni, nomi di terzi scrapati, foto senza licenza.
+      - name: Il dataset è pulito
+        run: python3 scripts/clean_spots.py --check
+
+      - name: Test della pulizia
+        run: python3 scripts/test_clean_spots.py
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Copertura della mappa
+        run: node scripts/spot_coverage.mjs
+
   admin:
     name: Console di moderazione
     runs-on: ubuntu-latest

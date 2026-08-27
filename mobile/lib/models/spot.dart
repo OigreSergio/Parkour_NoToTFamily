@@ -74,6 +74,8 @@ class Spot {
     this.hasFountain,
     this.status = 'verified',
     this.completeness = SpotCompleteness.daCompletare,
+    this.locality,
+    this.country,
     this.authorId,
     this.likes = 0,
     this.liked = false,
@@ -103,6 +105,10 @@ class Spot {
   final String status;
 
   final SpotCompleteness completeness;
+
+  /// Località e paese: campi veri, non più sepolti nella descrizione.
+  final String? locality;
+  final String? country;
 
   final String? authorId;
   final int likes;
@@ -142,6 +148,24 @@ class Spot {
 
   bool get isRated => skillLevel != null;
 
+  /// Dove si trova, in forma leggibile.
+  String? get where {
+    final parts = [locality, country].where((p) => p != null && p.isNotEmpty);
+    return parts.isEmpty ? null : parts.join(', ');
+  }
+
+  /// Cosa manca perché questa scheda dica qualcosa a chi la legge.
+  ///
+  /// Vuota quando lo spot è completo. Serve a chiedere alla community
+  /// esattamente ciò che manca, invece di un generico "aggiungi informazioni".
+  List<String> get missing => [
+    if (description.trim().isEmpty) 'una descrizione',
+    if (photos.isEmpty) 'una foto',
+    if (skillLevel == null) 'il livello',
+    if (crowdLevel == null) 'quanto è affollato',
+    if (hasFountain == null) 'se c\'è acqua',
+  ];
+
   Spot copyWith({bool? liked, int? likes}) => Spot(
     id: id,
     name: name,
@@ -153,6 +177,8 @@ class Spot {
     hasFountain: hasFountain,
     status: status,
     completeness: completeness,
+    locality: locality,
+    country: country,
     authorId: authorId,
     likes: likes ?? this.likes,
     liked: liked ?? this.liked,
@@ -184,6 +210,8 @@ class Spot {
       hasFountain: json['has_fountain'] as bool?,
       status: (json['status'] as String?) ?? 'verified',
       completeness: SpotCompleteness.parse(json['completeness'] as String?),
+      locality: _nonEmpty(json['locality']),
+      country: _nonEmpty(json['country']),
       authorId: json['author_id'] as String?,
       likes: (json['likes'] as num?)?.toInt() ?? 0,
       liked: (json['liked'] as bool?) ?? false,
@@ -203,6 +231,8 @@ class Spot {
     'has_fountain': hasFountain,
     'status': status,
     'completeness': completeness.name,
+    'locality': locality,
+    'country': country,
     'author_id': authorId,
     'verified_at': verifiedAt?.toIso8601String(),
     'created_at': createdAt?.toIso8601String(),
