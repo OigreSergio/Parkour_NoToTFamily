@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/spot.dart';
+import 'safety_gate_screen.dart' show SpotSafetyReminder;
 
 /// Read-only detail view for a single [Spot].
 class SpotDetailScreen extends StatelessWidget {
@@ -45,6 +46,10 @@ class SpotDetailScreen extends StatelessWidget {
           Text(spot.name, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
           _SkillLevel(spot: spot),
+          const SizedBox(height: 16),
+          // È qui che si decide davvero se andarci: un avviso visto una volta
+          // all'avvio non accompagna quella decisione.
+          const SpotSafetyReminder(),
           const SizedBox(height: 16),
           Text(
             spot.description.isEmpty ? 'No description yet.' : spot.description,

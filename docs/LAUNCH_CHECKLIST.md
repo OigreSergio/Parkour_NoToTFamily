@@ -36,16 +36,25 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 2 — Accessi e account
 
-- [ ] 2.1 Auth Supabase con conferma email obbligatoria
-- [ ] 2.2 Age gate 16 anni
-- [ ] 2.2bis Accesso tramite genitore: account `supervised`, chat spenta di default
-- [ ] 2.3 Livelli anonimo / user / instructor / admin
-- [ ] 2.4 Profilo: export dati ed eliminazione account
-- [ ] 2.5 Gate PkPASS e registrazione dispositivo via `mailto` rimossi
-- [ ] 2.6 `admin-desktop` deprecato, secret key fuori dal browser
-- [ ] 2.7 Gate di sicurezza all'ingresso, con accettazione registrata (versione + hash)
-- [ ] 2.8 Modalità informativa senza spot per chi rifiuta, applicata **anche lato server**
-- [ ] 2.9 Avvertenza breve in ogni scheda spot
+- [x] 2.1 Auth Supabase: registrazione con conferma email, login, reset password, logout
+- [x] 2.2 Age gate 16 anni (`AgeCheck`, soglia art. 8 GDPR), `age_confirmed_at` sul profilo;
+      la data di nascita **non** viene conservata
+- [x] 2.2bis Accesso tramite genitore: `parent_access_requests` inaccessibile dal client,
+      invio via Edge Function con rate limit, scadenza 7 giorni; profilo `supervised` con
+      `chat_enabled = false` applicato **anche nelle RLS**
+- [x] 2.3 Livelli anonimo / user / instructor / admin; nessun percorso assegna `admin`
+- [x] 2.4 Profilo: "Scarica i miei dati" (JSON) ed "Elimina account" con 30 giorni di grazia
+- [x] 2.5 Gate PkPASS e registrazione dispositivo via `mailto` rimossi (BLOCCO 0)
+- [~] 2.6 `admin-desktop` da deprecare: `web-admin` è già senza secret key (1.5), resta da
+      spostare l'export completo in una Edge Function
+- [x] 2.7 Gate di sicurezza con accettazione registrata (versione + **hash del testo mostrato**,
+      calcolato a runtime dall'asset); testo in `mobile/assets/legal/safety_notice_v1.md`
+- [x] 2.8 Modalità senza spot per chi rifiuta, applicata **anche lato server** con una policy
+      RESTRICTIVE su `spots` + sessione anonima per dare un'identità a chi non si registra
+- [x] 2.9 Avvertenza breve in ogni scheda spot
+
+> Le migration `0004` e `0005` sono scritte ma **non applicate**: servono le credenziali
+> del progetto. Vedi [OPS_TODO](OPS_TODO.md).
 
 ## BLOCCO 3-bis — Spot fuori Roma (gate di lancio)
 

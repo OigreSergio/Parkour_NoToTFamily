@@ -49,6 +49,25 @@ L'output sostituisce quel file. Finché non lo fai, lo **Scenario B** di
 [`../📲/README.md`](../📲/README.md) resta **non eseguibile**, e i tipi TypeScript generati
 (`supabase gen types`) non sono producibili.
 
+### 1-quater. Impostazioni Supabase da attivare a mano
+Il codice del BLOCCO 2 le dà per presenti; senza, alcune parti restano inerti.
+
+- **Authentication → Sign In / Providers → Email**: conferma email **obbligatoria**.
+- **Authentication → Anonymous sign-ins: ON.** Senza, un visitatore non registrato non ha
+  `auth.uid()`, la sua presa d'atto non è registrabile e la policy RESTRICTIVE su `spots` gli
+  nega tutti gli spot. L'app resta usabile, ma la mappa è vuota finché non fa login.
+- **Authentication → Password**: lunghezza minima 12 e *leaked password protection* attiva.
+- **Authentication → URL Configuration**: Site URL e redirect su `pkfamily.app` e
+  `staging.pkfamily.app`, altrimenti i link di conferma email puntano altrove.
+- **Rate limits**: stringere quelli di signup e reset password.
+- **Edge Function `parent-access-request`**: da scrivere e deployare. Finché non c'è, la
+  schermata "chiedi a un genitore" mostra un errore leggibile invece di fallire in silenzio.
+- **pg_cron**: schedulare `purge_expired_parent_requests()` ogni giorno. Se non gira, le email
+  dei genitori restano oltre i 7 giorni dichiarati nell'informativa.
+- **Cancellazione account**: serve un processo server-side che, scaduti i 30 giorni, rimuova
+  profilo e contenuti e **pseudonimizzi** i messaggi. Il client segna solo la richiesta: non
+  può cancellare da `auth.users` senza la secret key.
+
 ### 2. Dominio `pkfamily.app`
 Registralo su **Cloudflare Registrar** (prezzo di costo, WHOIS privacy inclusa).
 

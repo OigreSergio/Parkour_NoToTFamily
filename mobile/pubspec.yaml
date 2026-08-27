@@ -31,6 +31,9 @@ dependencies:
   video_player: ^2.9.1
   cached_network_image: ^3.4.0
 
+  # Hash del testo del gate di sicurezza, calcolato dal file mostrato
+  crypto: ^3.0.5
+
   # Models
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
@@ -45,3 +48,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  assets:
+    # Testi legali versionati: l'hash del file è ciò che finisce nella
+    # registrazione della presa d'atto, quindi il file È la fonte di verità.
+    - assets/legal/
