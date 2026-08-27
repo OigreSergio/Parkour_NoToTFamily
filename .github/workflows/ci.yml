@@ -1,0 +1,76 @@
+name: CI
+
+# Fino a oggi il repo non aveva nessun workflow di qualità, nonostante README e
+# SECURITY.md ne dessero per scontata l'esistenza. Questo è il minimo che deve
+# restare verde prima di ogni merge.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: App Flutter (web)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.5"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+        working-directory: mobile
+
+      - name: Formattazione
+        run: dart format --set-exit-if-changed .
+        working-directory: mobile
+
+      - name: Analisi statica
+        run: flutter analyze
+        working-directory: mobile
+
+      - name: Test
+        run: flutter test
+        working-directory: mobile
+
+      # Il build usa valori segnaposto: serve a dimostrare che compila, non a
+      # produrre un artefatto pubblicabile. Le chiavi vere arrivano dai secret
+      # nei workflow di deploy.
+      - name: Build web
+        run: |
+          flutter build web --release \
+            --dart-define=SUPABASE_URL=https://example.supabase.co \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY=ci-placeholder
+        working-directory: mobile
+
+  admin:
+    name: Console di moderazione
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web-admin/package-lock.json
+
+      - run: npm ci
+        working-directory: web-admin
+
+      - run: npm run lint
+        working-directory: web-admin
+
+      - run: npm run build
+        working-directory: web-admin

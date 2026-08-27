@@ -1,6 +1,6 @@
 # QR code — web app
 
-La web app è in **anteprima privata** (vedi `docs/WEB_TEST_SPACE.md`): l'URL
+La web app è in **anteprima privata** (vedi `docs/DEPLOY.md`): l'URL
 base mostra solo un placeholder e l'app vera è su un percorso riservato,
 raggiungibile con il QR di test.
 

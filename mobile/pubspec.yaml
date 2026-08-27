@@ -1,5 +1,5 @@
 name: parkour_notot
-description: "Parkour NoToT Family — find spots, chat, train."
+description: "PkFAMILY — la mappa degli spot, la community e i video per chi inizia."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -17,12 +17,10 @@ dependencies:
   # State management
   flutter_riverpod: ^2.5.1
 
-  # HTTP
-  http: ^1.2.2
-  dio: ^5.5.0
-
-  # Secure token storage
-  flutter_secure_storage: ^9.2.2
+  # Backend: Supabase (Postgres + Auth + Realtime + RLS).
+  # `backend/` (FastAPI) resta nel repo come riferimento di dominio ma non è
+  # deployato: nessun percorso di codice ci arriva più.
+  supabase_flutter: ^2.8.0
 
   # Map
   flutter_map: ^7.0.2

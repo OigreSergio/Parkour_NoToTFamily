@@ -23,26 +23,28 @@ class SpotDetailScreen extends StatelessWidget {
                 scrollDirection: Axis.horizontal,
                 itemCount: spot.photoUrls.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
-                itemBuilder: (context, i) => ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    spot.photoUrls[i],
-                    width: 280,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 280,
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      child: const Icon(Icons.broken_image_outlined),
+                itemBuilder:
+                    (context, i) => ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        spot.photoUrls[i],
+                        width: 280,
+                        fit: BoxFit.cover,
+                        errorBuilder:
+                            (_, __, ___) => Container(
+                              width: 280,
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Icon(Icons.broken_image_outlined),
+                            ),
+                      ),
                     ),
-                  ),
-                ),
               ),
             ),
             const SizedBox(height: 20),
           ],
           Text(spot.name, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
-          _DifficultyStars(difficulty: spot.difficulty),
+          _SkillLevel(spot: spot),
           const SizedBox(height: 16),
           Text(
             spot.description.isEmpty ? 'No description yet.' : spot.description,
@@ -52,7 +54,8 @@ class SpotDetailScreen extends StatelessWidget {
           _InfoRow(
             icon: Icons.place_outlined,
             label: 'Location',
-            value: '${spot.location.lat.toStringAsFixed(5)}, '
+            value:
+                '${spot.location.lat.toStringAsFixed(5)}, '
                 '${spot.location.lng.toStringAsFixed(5)}',
           ),
           _InfoRow(
@@ -66,24 +69,49 @@ class SpotDetailScreen extends StatelessWidget {
   }
 }
 
-class _DifficultyStars extends StatelessWidget {
-  const _DifficultyStars({required this.difficulty});
+/// Livello dello spot, oppure la dichiarazione che nessuno l'ha valutato.
+///
+/// La maggior parte degli spot importati non ha una valutazione: dirlo è
+/// l'unica risposta onesta, e apre la porta al contributo della community.
+class _SkillLevel extends StatelessWidget {
+  const _SkillLevel({required this.spot});
 
-  final int difficulty;
+  final Spot spot;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 1; i <= 5; i++)
-          Icon(
-            i <= difficulty ? Icons.star : Icons.star_border,
-            size: 20,
-            color: Colors.amber,
+    final theme = Theme.of(context);
+    final label = spot.skillLabel;
+
+    if (label == null) {
+      return Row(
+        children: [
+          Icon(Icons.help_outline, size: 18, color: theme.colorScheme.outline),
+          const SizedBox(width: 6),
+          Text(
+            'Livello non ancora valutato',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.outline,
+            ),
           ),
-        const SizedBox(width: 8),
-        Text('Difficulty $difficulty/5',
-            style: Theme.of(context).textTheme.bodySmall),
+        ],
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      children: [
+        Chip(
+          visualDensity: VisualDensity.compact,
+          avatar: const Icon(Icons.trending_up, size: 16),
+          label: Text(label),
+        ),
+        if (spot.crowdLabel != null)
+          Chip(
+            visualDensity: VisualDensity.compact,
+            avatar: const Icon(Icons.groups_outlined, size: 16),
+            label: Text(spot.crowdLabel!),
+          ),
       ],
     );
   }

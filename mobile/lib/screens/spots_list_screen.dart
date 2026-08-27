@@ -15,10 +15,11 @@ class SpotsListScreen extends ConsumerWidget {
 
     return spotsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => ErrorView(
-        message: 'Could not load spots.\n$error',
-        onRetry: () => ref.invalidate(spotsProvider),
-      ),
+      error:
+          (error, _) => ErrorView(
+            message: 'Could not load spots.\n$error',
+            onRetry: () => ref.invalidate(spotsProvider),
+          ),
       data: (spots) {
         if (spots.isEmpty) {
           return const Center(child: Text('No spots nearby yet.'));
@@ -41,12 +42,13 @@ class SpotsListScreen extends ConsumerWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                trailing: _DifficultyBadge(difficulty: spot.difficulty),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => SpotDetailScreen(spot: spot),
-                  ),
-                ),
+                trailing: _SkillBadge(label: spot.skillLabel),
+                onTap:
+                    () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => SpotDetailScreen(spot: spot),
+                      ),
+                    ),
               );
             },
           ),
@@ -77,26 +79,36 @@ class _SpotThumbnail extends StatelessWidget {
         width: 56,
         height: 56,
         fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => const SizedBox(
-          width: 56,
-          height: 56,
-          child: Icon(Icons.place_outlined),
-        ),
+        errorBuilder:
+            (_, __, ___) => const SizedBox(
+              width: 56,
+              height: 56,
+              child: Icon(Icons.place_outlined),
+            ),
       ),
     );
   }
 }
 
-class _DifficultyBadge extends StatelessWidget {
-  const _DifficultyBadge({required this.difficulty});
+class _SkillBadge extends StatelessWidget {
+  const _SkillBadge({required this.label});
 
-  final int difficulty;
+  /// null quando lo spot non è ancora stato valutato da nessuno.
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
+    if (label == null) {
+      return Icon(
+        Icons.help_outline,
+        size: 18,
+        color: Theme.of(context).colorScheme.outline,
+        semanticLabel: 'Livello non ancora valutato',
+      );
+    }
     return Chip(
       visualDensity: VisualDensity.compact,
-      label: Text('$difficulty/5'),
+      label: Text(label!),
       avatar: const Icon(Icons.trending_up, size: 16),
     );
   }

@@ -16,46 +16,46 @@ class SpotsMapScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spotsAsync = ref.watch(spotsProvider);
-    final center = ref.watch(currentLocationProvider).valueOrNull ??
+    final center =
+        ref.watch(currentLocationProvider).valueOrNull ??
         LocationService.fallbackCenter;
 
     return spotsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => ErrorView(
-        message: 'Could not load spots.\n$error',
-        onRetry: () => ref.invalidate(spotsProvider),
-      ),
-      data: (spots) => FlutterMap(
-        options: MapOptions(
-          initialCenter: center,
-          initialZoom: 12,
-        ),
-        children: [
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'family.notot.parkour_notot',
+      error:
+          (error, _) => ErrorView(
+            message: 'Could not load spots.\n$error',
+            onRetry: () => ref.invalidate(spotsProvider),
           ),
-          MarkerLayer(
-            markers: [
-              for (final spot in spots)
-                Marker(
-                  point: spot.location.toLatLng(),
-                  width: 44,
-                  height: 44,
-                  alignment: Alignment.topCenter,
-                  child: GestureDetector(
-                    onTap: () => _showSpot(context, spot),
-                    child: const Icon(
-                      Icons.location_on,
-                      color: Colors.redAccent,
-                      size: 44,
+      data:
+          (spots) => FlutterMap(
+            options: MapOptions(initialCenter: center, initialZoom: 12),
+            children: [
+              TileLayer(
+                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                userAgentPackageName: 'family.notot.parkour_notot',
+              ),
+              MarkerLayer(
+                markers: [
+                  for (final spot in spots)
+                    Marker(
+                      point: spot.location.toLatLng(),
+                      width: 44,
+                      height: 44,
+                      alignment: Alignment.topCenter,
+                      child: GestureDetector(
+                        onTap: () => _showSpot(context, spot),
+                        child: const Icon(
+                          Icons.location_on,
+                          color: Colors.redAccent,
+                          size: 44,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
+                ],
+              ),
             ],
           ),
-        ],
-      ),
     );
   }
 
@@ -63,38 +63,42 @@ class SpotsMapScreen extends ConsumerWidget {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      builder: (sheetContext) => Padding(
-        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(spot.name, style: Theme.of(sheetContext).textTheme.titleLarge),
-            const SizedBox(height: 8),
-            Text(
-              spot.description.isEmpty
-                  ? 'No description yet.'
-                  : spot.description,
-              style: Theme.of(sheetContext).textTheme.bodyMedium,
+      builder:
+          (sheetContext) => Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  spot.name,
+                  style: Theme.of(sheetContext).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  spot.description.isEmpty
+                      ? 'No description yet.'
+                      : spot.description,
+                  style: Theme.of(sheetContext).textTheme.bodyMedium,
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: FilledButton(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => SpotDetailScreen(spot: spot),
+                        ),
+                      );
+                    },
+                    child: const Text('Details'),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => SpotDetailScreen(spot: spot),
-                    ),
-                  );
-                },
-                child: const Text('Details'),
-              ),
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }

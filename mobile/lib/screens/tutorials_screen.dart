@@ -21,9 +21,19 @@ const _categories = <_Category>[
   _Category('Basics', 'basics', Color(0xFFA6408F), Icons.directions_walk),
   _Category('Vaults', 'vaults', Color(0xFF2A6AA8), Icons.call_made),
   _Category('Wall Tricks', 'wall_tricks', Color(0xFFF5C231), Icons.stairs),
-  _Category('Bar Tricks', 'bar_tricks', Color(0xFFF0913A), Icons.fitness_center),
+  _Category(
+    'Bar Tricks',
+    'bar_tricks',
+    Color(0xFFF0913A),
+    Icons.fitness_center,
+  ),
   _Category('Other Tricks', 'other', Color(0xFF7B2FBE), Icons.auto_awesome),
-  _Category('Ground Tricks', 'ground_tricks', Color(0xFFE23B3B), Icons.sports_gymnastics),
+  _Category(
+    'Ground Tricks',
+    'ground_tricks',
+    Color(0xFFE23B3B),
+    Icons.sports_gymnastics,
+  ),
   _Category('All Tricks', null, Color(0xFF1FA88C), Icons.grid_view),
 ];
 
@@ -45,11 +55,12 @@ class TutorialsScreen extends StatelessWidget {
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.lightbulb_outline),
                   label: const Text('Suggestions'),
-                  onPressed: () => Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => const SuggestionScreen(),
-                    ),
-                  ),
+                  onPressed:
+                      () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const SuggestionScreen(),
+                        ),
+                      ),
                 ),
               ),
             ],
@@ -62,9 +73,7 @@ class TutorialsScreen extends StatelessWidget {
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
             childAspectRatio: 1.6,
-            children: [
-              for (final c in _categories) _CategoryTile(category: c),
-            ],
+            children: [for (final c in _categories) _CategoryTile(category: c)],
           ),
         ),
       ],
@@ -84,14 +93,16 @@ class _CategoryTile extends StatelessWidget {
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => TutorialListScreen(
-              title: category.label,
-              trickCategory: category.trickCategory,
+        onTap:
+            () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder:
+                    (_) => TutorialListScreen(
+                      title: category.label,
+                      trickCategory: category.trickCategory,
+                    ),
+              ),
             ),
-          ),
-        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

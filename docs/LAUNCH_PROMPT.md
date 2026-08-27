@@ -5,8 +5,9 @@ Prompt pronto da incollare in una sessione Claude Code su questo repo. Mette in 
 chat in gruppi e private, sezione video per chi inizia, gestione degli accessi, dominio,
 deploy e adempimenti legali/privacy UE.
 
-Dieci blocchi (0 → 9). **Lanciane uno alla volta**: ogni blocco chiude con codice
-verificabile, e l'esito di uno cambia il contesto del successivo.
+Undici blocchi (0 → 9, più il 3-bis). **Lanciane uno alla volta**: ogni blocco chiude con
+codice verificabile, e l'esito di uno cambia il contesto del successivo. Avanzamento in
+[`LAUNCH_CHECKLIST.md`](LAUNCH_CHECKLIST.md).
 
 ---
 
@@ -61,18 +62,44 @@ repo. Le migrazioni sono append-only.
     `index.html` senza tracker.
 1.2 Aggiungi `supabase_flutter` a `pubspec.yaml`. Crea `lib/services/supabase_client.dart`
     che legge URL e **publishable key** da `--dart-define` (mai hardcoded). Sostituisci
-    `lib/services/api_client.dart` (che punta a FastAPI) mantenendo le interfacce dei
-    repository esistenti, così screen e provider non cambiano.
-1.3 Esporta lo schema **reale** di produzione in `supabase/migrations/0003_production_schema.sql`.
-    Produzione ha 17 tabelle (elencate in `📲/backup.mjs:32` e `admin-desktop/index.html:133`),
-    le migration ne descrivono 8. Senza questo, lo "Scenario B" di `📲/README.md` non è
-    eseguibile. Documenta ogni tabella in `docs/DATA_MODEL.md`.
-1.4 Ripara `web-admin`: `src/app/login/page.tsx:6` e `src/app/spots/page.tsx:6` importano
+    `lib/services/api_client.dart` (che punta a FastAPI) mantenendo le firme di
+    `SpotRepository.fetchSpots()` e `VideoRepository.fetchTutorials()`, così
+    `providers.dart` e le screen non cambiano.
+    ⚠️ **I modelli non combaciano con la produzione.** `models/spot.dart` rispecchia lo schema
+    FastAPI (`location: GeoPoint`, `photoUrls`, `difficulty` 1-5, `water`, `submittedBy`).
+    La tabella `spots` reale ha invece: `id, name, lat, lng, description, skill_level,
+    crowd_level, has_fountain, status, rejection_reason, author_id, verified_by, created_at,
+    verified_at` — niente PostGIS, niente array di foto (stanno in `spot_photos`), e
+    `skill_level`/`crowd_level` sono testo (`principiante|intermedio|avanzato`,
+    `tranquillo|medio|affollato`), non numeri. Riscrivi `Spot.fromJson` sulla forma reale,
+    tenendola **tollerante** come impone `docs/PROJECT_RULES_AND_ROADMAP.md` §3.
+1.3 **Allinea le migration alla produzione, non viceversa.** `supabase/migrations/0001_initial.sql`
+    descrive uno schema che **non esiste**: nomi di tabella diversi (`conversations`/
+    `conversation_members` contro `chats`/`chat_members`) e colonne diverse su `spots`.
+    La produzione ha dati reali e l'app ci parla, quindi è il repo a dover essere corretto.
+    - Scrivi `scripts/dump_schema.sh` (wrapper su `supabase db dump --schema public`) e
+      documentalo: **richiede la secret key, lo lancia l'umano** — vedi `docs/OPS_TODO.md`.
+    - Nel frattempo scrivi `supabase/migrations/0003_production_schema.sql` come
+      ricostruzione **dichiarata tale in testa al file**, basata sulle colonne osservate via
+      REST e sull'elenco tabelle di `📲/backup.mjs`. Va sostituita dal dump reale appena
+      disponibile: non fidarti di una ricostruzione per il disaster recovery.
+    - Marca `0001_initial.sql` e `0002_instructor_role.sql` come **storici e mai applicati in
+      produzione**, così nessuno li esegue per sbaglio.
+    - Aggiorna `docs/DATA_MODEL.md` sulla forma reale.
+1.4 **Correggi la ricorsione infinita nelle policy della chat.** In produzione
+    `GET /rest/v1/chats` risponde **HTTP 500** con
+    `42P17: infinite recursion detected in policy for relation "chat_members"`: la policy su
+    `chats` interroga `chat_members` e viceversa. **La chat oggi è rotta a livello di
+    database**, non solo priva di client. Migration nuova che introduce una funzione
+    `SECURITY DEFINER` (`is_chat_member(chat_id)`) e riscrive le policy in termini di quella —
+    è esattamente il pattern già usato in `0001_initial.sql:226`
+    (`is_conversation_member()`), applicato però ai nomi di tabella reali.
+1.5 Ripara `web-admin`: `src/app/login/page.tsx:6` e `src/app/spots/page.tsx:6` importano
     `@/lib/api`, che **non esiste**. Riscrivilo su Supabase Auth + RLS (niente secret key nel
-    client), usando la funzione `is_admin()` già presente nella migration 0001.
-1.5 Crea `.github/workflows/ci.yml`: su ogni PR `flutter analyze`, `flutter test`,
+    client), usando `is_admin()`.
+1.6 Crea `.github/workflows/ci.yml`: su ogni PR `flutter analyze`, `flutter test`,
     `dart format --set-exit-if-changed`, e `npm run lint && npm run build` per `web-admin`.
-1.6 Elimina `scripts/patch-gh-pages-test-free.py`, `scripts/update_deployed_spots.py`,
+1.7 Elimina `scripts/patch-gh-pages-test-free.py`, `scripts/update_deployed_spots.py`,
     `scripts/deploy_test_web.sh`. Aggiorna `docs/WEB_TEST_SPACE.md` per riflettere il nuovo
     flusso (o sostituiscilo con `docs/DEPLOY.md`).
 
@@ -173,6 +200,73 @@ repo. Le migrazioni sono append-only.
     salvarla e non inviarla a Supabase. Gestisci il diniego senza rompere la mappa.
 3.6 "Proponi uno spot": form → insert con `status = 'pending'` (le RLS esistenti lo impongono
     già). L'autore vede il proprio spot in attesa; nessun altro.
+
+## BLOCCO 3-bis — Rendere utilizzabili gli spot fuori Roma (gate di lancio)
+
+**Il problema, misurato.** I 1.680 spot `community` non sono spot descritti male: sono
+**segnaposto**. Verificato su `scripts/data/webapp_fixed_spots.json`:
+
+- **nomi generati**: «Spot Athens 3», «Spot Náfplio 1» — non dicono nulla;
+- **descrizione = solo la città**: «Bologna, Italia. Dalla lista community Google Maps
+  "Parkour spot"», su tutti e 1.680;
+- **attributi identici e inventati**: `skillLevel = intermedio`, `crowdLevel = medio`,
+  `hasFountain = false`, `rating = 0` su **tutti e 1.680**. Non sono dati mancanti: sono
+  valori di default mostrati all'utente come se fossero valutazioni;
+- **foto: 5 su 1.680**;
+- **154 spot citano 23 persone reali** («segnalato da Davide Rizzi», «Andrea Valitutti»...),
+  scrapate dalla lista Google Maps. Il commit `031db8e` doveva rimuovere le attribuzioni e
+  il lavoro è rimasto a metà.
+
+Confronto con i 26 di Roma: «Gradonate in marmo e muri alti: spot tecnico per salti di
+precisione e passamuro. **Attenzione ai custodi.**» Quella è conoscenza di chi c'è stato.
+Nessuna API la produce, e generarla automaticamente significa **inventare fatti su luoghi
+fisici dove la gente si fa male** — l'esatto contrario della «mappa informativa» su cui si
+regge il gate di sicurezza (§3.4).
+
+Distribuzione: 555 Italia (283 località), 263 USA, 201 Spagna, 141 Regno Unito, 59 Germania,
+poi coda lunga su 61 paesi. In Italia: Bologna 20, Bolzano 18, Milano 10, Salerno 9, Genova 8.
+
+**La regola che governa tutto il blocco: ciò che non si sa si dichiara sconosciuto.**
+Mai un default travestito da valutazione.
+
+3b.1 **Togli i dati inventati.** `skill_level`, `crowd_level` e `has_fountain` diventano
+     **nullable** e vanno a `NULL` su tutti gli spot `community`. In UI: «non ancora
+     valutato», non «intermedio». Elimina `rating`/`ratingCount` fittizi: zero recensioni
+     non è un punteggio.
+3b.2 **Togli i nomi delle 23 persone** dalle descrizioni, e aggiungi un test che fa fallire
+     la pipeline se il pattern «segnalato da» ricompare.
+3b.3 **Toponimo reale al posto del nome generato.** Reverse geocoding via **Nominatim/OSM**
+     (rispettando la usage policy: 1 req/s, User-Agent identificabile, risultati messi in
+     cache nel repo) → «Spot Athens 3» diventa «Pedion tou Areos — Atene». Dove il reverse
+     geocoding non dà nulla di meglio, il nome resta generico ma la scheda lo dichiara.
+3b.4 **Contesto fattuale da OpenStreetMap** via Overpass, entro ~150 m: `leisure=pitch`,
+     `sport=parkour`, `leisure=fitness_station`, `surface=*`, e soprattutto
+     `amenity=drinking_water` → **`has_fountain` reale** al posto del `false` piatto su
+     tutti. Sono fatti verificabili con una fonte citabile, non prosa inventata.
+3b.5 **Foto legali e automatiche.** Nell'ordine:
+     - **Mapillary** (API ufficiale, immagini **CC-BY-SA 4.0**): è la sostituzione lecita
+       dello Street View in hotlink che il BLOCCO 3 rimuove. Cerca per coordinate, salva
+       l'id immagine + autore + licenza, mostra l'attribuzione nella scheda.
+     - **Wikimedia Commons** geosearch per i luoghi notevoli, con autore e licenza.
+     - Nient'altro. Nessun hotlink da siti terzi, nessuna immagine senza licenza nota.
+     Le foto vanno in `spot_photos` (oggi 0 righe) con `source`, `author`, `license`,
+     `source_url` — non in un array di URL nel bundle.
+3b.6 **Stato di completezza esplicito** su ogni spot: `da_completare` (solo coordinate),
+     `arricchito` (toponimo + contesto OSM + almeno una foto), `verificato` (un umano c'è
+     stato e l'ha descritto — oggi solo i 26 di Roma). Pin visivamente distinti sulla mappa,
+     e la scheda dice a che punto è.
+3b.7 **Il seme del crowdsourcing, non un contorno.** Su ogni spot incompleto, in evidenza:
+     «Ci sei stato? Aggiungi una foto e raccontalo» → form con foto, descrizione, skill,
+     affollamento, acqua. Va in moderazione come una proposta di spot (BLOCCO 6). È questo,
+     non la pipeline, che nel tempo porta gli spot da `arricchito` a `verificato`.
+3b.8 **Cruscotto di copertura**: `scripts/spot_coverage.mjs` stampa, per paese e città,
+     quanti spot sono in ciascuno stato. È la misura del gate di lancio, e va in
+     `docs/LAUNCH_CHECKLIST.md`.
+
+**Gate di lancio (deciso):** nessuno spot pubblicato con attributi inventati o nomi di terzi;
+tutti e 1.706 con toponimo reale e stato di completezza dichiarato; foto automatica dove
+Mapillary o Commons ce l'hanno; contributo della community aperto dal giorno uno. Le
+descrizioni «alla romana» arrivano dopo, dalle persone — non da una pipeline.
 
 ## BLOCCO 4 — Chat: gruppi e private
 

@@ -61,7 +61,9 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md]
 
 ## Going public
 
-The app is currently a private preview. The plan for the public launch on `pkfamily.app` — hosting, domain, access levels, and EU legal/privacy compliance — is in [docs/LAUNCH_PLAN.md](docs/LAUNCH_PLAN.md), with the executable prompt in [docs/LAUNCH_PROMPT.md](docs/LAUNCH_PROMPT.md).
+The app is currently a private preview. The plan for the public launch on `pkfamily.app` — hosting, domain, access levels, and EU legal/privacy compliance — is in [docs/LAUNCH_PLAN.md](docs/LAUNCH_PLAN.md), with the executable prompt in [docs/LAUNCH_PROMPT.md](docs/LAUNCH_PROMPT.md) and build/deploy steps in [docs/DEPLOY.md](docs/DEPLOY.md).
+
+**The web app now builds from Flutter** (`mobile/`), and Supabase is the production backend — `backend/` (FastAPI) stays in the repo as a domain reference but is not deployed, and no code path reaches it. Beware that `supabase/migrations/0001`–`0002` describe a schema that was never applied in production; the real one is reconstructed in `supabase/migrations/0003_production_baseline.sql`.
 
 ## Contributing
 

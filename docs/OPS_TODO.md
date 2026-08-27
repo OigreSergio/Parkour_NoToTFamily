@@ -7,12 +7,47 @@ tuo. Ordinate per urgenza.
 
 ## 🔴 Prima di scrivere altro codice
 
-### 1. Regione del progetto Supabase
+### 1. Regione del progetto Supabase → Francoforte
 Il progetto è `gkdzdtxqkftebrxhgway`. Verifica in **Dashboard → Settings → General** che la
-region sia **UE** (Frankfurt `eu-central-1` o Ireland `eu-west-1`).
+region sia **Frankfurt `eu-central-1`**.
 
-Se non lo è: crea un progetto nuovo in UE e migra **adesso**. Oggi ci sono 24 spot e 2 profili
-— la migrazione costa un pomeriggio. Dopo il lancio costa il lancio.
+Nota: **Supabase non offre una region in Italia.** `eu-south-1` (Milano) non è tra quelle
+disponibili, e Zurigo e Londra sono fuori SEE. Francoforte è la region europea più collaudata
+della piattaforma, e la differenza di latenza rispetto a Parigi è impercettibile per una web app.
+
+Se il progetto non è già lì: creane uno nuovo in UE e migra **adesso**. Oggi ci sono 24 spot e
+2 profili — la migrazione costa un pomeriggio. Dopo il lancio costa il lancio.
+
+### 1-bis. La chat è rotta in produzione, e serve la secret key per ripararla
+`GET /rest/v1/chats` risponde **HTTP 500**:
+
+```
+42P17: infinite recursion detected in policy for relation "chat_members"
+```
+
+Le policy di `chats` e `chat_members` si interrogano a vicenda. Non è «manca il client»: a
+livello di database la chat **non può funzionare**.
+
+La correzione è pronta in `supabase/migrations/0004_fix_chat_rls_recursion.sql` (funzione
+`SECURITY DEFINER` che spezza il ciclo). **Prima di applicarla**: esegui il punto 1-ter, così
+sai quali policy esistono davvero, e prova su un progetto di staging — la migration ricrea le
+policy delle tabelle di chat.
+
+Verifica dopo: le tre tabelle devono rispondere 200 con lista vuota, mai più 500.
+
+### 1-ter. Il dump vero dello schema
+`supabase/migrations/0003_production_baseline.sql` è una **ricostruzione**, non un dump: le
+colonne sono state dedotte dall'esterno con la sola publishable key. Tipi, default, vincoli,
+indici, foreign key e **tutte le policy RLS** non sono visibili così.
+
+```sh
+npm i -g supabase && supabase login
+scripts/dump_schema.sh gkdzdtxqkftebrxhgway
+```
+
+L'output sostituisce quel file. Finché non lo fai, lo **Scenario B** di
+[`../📲/README.md`](../📲/README.md) resta **non eseguibile**, e i tipi TypeScript generati
+(`supabase gen types`) non sono producibili.
 
 ### 2. Dominio `pkfamily.app`
 Registralo su **Cloudflare Registrar** (prezzo di costo, WHOIS privacy inclusa).
@@ -39,6 +74,17 @@ Se vuoi chiudere anche quella finestra, apri una richiesta a **GitHub Support** 
 garbage collection degli oggetti irraggiungibili sul repository. Considerato che si tratta di
 un IBAN già stampato su bonifici e non di una credenziale, la valutazione è tua — ma se il
 conto ti preoccupa, cambiare IBAN è più definitivo di qualsiasi pulizia della storia.
+
+### 4-bis. Lacune di schema che bloccano blocchi successivi
+Emerse sondando le tabelle vuote. Nessuna è urgente oggi, tutte servono prima del lancio, e
+tutte richiedono una migration da applicare con le tue credenziali:
+
+| Tabella | Manca | Blocca |
+| --- | --- | --- |
+| `spot_photos` | `source`, `author`, `license`, `source_url` | BLOCCO 3-bis: Mapillary è CC-BY-SA e Wikimedia richiede attribuzione. Senza questi campi le foto **non sono pubblicabili**. |
+| `videos` | `is_starter`, `order_index` | BLOCCO 5: il percorso "Inizia da qui" non è esprimibile. |
+| `reports` | `spot_id`, `status`, `resolved_at`, `resolved_by` | BLOCCO 6: uno **spot pericoloso non è segnalabile**, e non c'è modo di documentare che una segnalazione è stata trattata (obblighi DSA). |
+| `spots` | `completeness` | BLOCCO 3-bis: distinguere gli spot descritti dai segnaposto. |
 
 ### 5. Rollback del sito temporaneamente scoperto
 `gh-pages` è stato ricreato come branch orfano per togliere l'IBAN dalla storia pubblica.
@@ -89,6 +135,12 @@ garantirlo. Riscrivi l'SLA su qualcosa che puoi mantenere davvero e aggiorna l'i
 ---
 
 ## 🟡 Da decidere
+
+### 10-bis. `sync-map.yml` è stato rimosso
+Il workflow rigenerava i dati rifacendo lo **scraping della lista Google Maps** e poi patchava
+il bundle su `gh-pages`. Il secondo passo puntava a uno script che non esiste più; il primo è
+esattamente ciò che il BLOCCO 3-bis smette di fare. Se ti serviva per altro, dimmelo: va
+riscritto, non ripristinato.
 
 ### 11. Video del percorso "Inizia da qui"
 Il BLOCCO 5 popolerà il percorso con video liberamente embeddabili. Per quelli in cui vuoi

@@ -1,3 +1,15 @@
+-- ⚠️ STORICO — MAI APPLICATA IN PRODUZIONE. NON ESEGUIRE.
+--
+-- Questo file descrive uno schema che in produzione non esiste. Verificato
+-- dall'esterno: la tabella `spots` reale ha `lat`/`lng`, `skill_level`,
+-- `crowd_level`, `has_fountain`, `author_id` — non `location geography`,
+-- `difficulty`, `water`, `submitted_by`, `photo_urls[]`. Le tabelle di chat si
+-- chiamano `chats`/`chat_members`, non `conversations`/`conversation_members`.
+--
+-- Lo schema reale è in 0003_production_baseline.sql (ricostruzione, da
+-- sostituire con l'output di scripts/dump_schema.sh).
+-- Resta qui come storico del progetto.
+--
 -- ============================================================================
 -- Livelli di appartenenza — ruolo `instructor`
 --

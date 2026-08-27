@@ -258,7 +258,8 @@ mobile/android/.gradle/
 mobile/android/local.properties
 mobile/android/key.properties
 mobile/android/app/release/
-mobile/pubspec.lock
+# mobile/pubspec.lock — versionato apposta: `mobile/` è un'applicazione, non una
+# libreria. Senza lockfile, CI e sviluppo risolvono versioni diverse.
 
 # === Logs / temp ===
 *.log

@@ -5,24 +5,21 @@ import 'models/spot.dart';
 import 'models/video.dart';
 import 'repositories/spot_repository.dart';
 import 'repositories/video_repository.dart';
-import 'services/api_client.dart';
 import 'services/location_service.dart';
+import 'services/supabase_client.dart';
 
-/// Backend HTTP client (disposed with the [ProviderScope]).
-final apiClientProvider = Provider<ApiClient>((ref) {
-  final client = ApiClient();
-  ref.onDispose(client.close);
-  return client;
-});
+/// Il client Supabase, già inizializzato da `initSupabase()` in `main`.
+final supabaseClientProvider = Provider((ref) => supabase);
 
 /// Spot data source.
 final spotRepositoryProvider = Provider<SpotRepository>(
-  (ref) => SpotRepository(ref.watch(apiClientProvider)),
+  (ref) => SpotRepository(ref.watch(supabaseClientProvider)),
 );
 
 /// Device location helper.
-final locationServiceProvider =
-    Provider<LocationService>((ref) => const LocationService());
+final locationServiceProvider = Provider<LocationService>(
+  (ref) => const LocationService(),
+);
 
 /// The map / search centre — the user's GPS position, or a fallback.
 final currentLocationProvider = FutureProvider<LatLng>(
@@ -32,20 +29,18 @@ final currentLocationProvider = FutureProvider<LatLng>(
 /// Verified spots near the current location.
 final spotsProvider = FutureProvider<List<Spot>>((ref) async {
   final center = await ref.watch(currentLocationProvider.future);
-  return ref.watch(spotRepositoryProvider).fetchSpots(
-        lat: center.latitude,
-        lng: center.longitude,
-      );
+  return ref
+      .watch(spotRepositoryProvider)
+      .fetchSpots(lat: center.latitude, lng: center.longitude);
 });
 
 /// Tutorial video data source.
 final videoRepositoryProvider = Provider<VideoRepository>(
-  (ref) => VideoRepository(ref.watch(apiClientProvider)),
+  (ref) => VideoRepository(ref.watch(supabaseClientProvider)),
 );
 
-/// All tutorial videos. The backend marks premium ones as `locked` for
-/// viewers without a subscription; beginner tutorials are open to everyone,
-/// including guests signed in without an email.
+/// Tutti i video. Il servizio è gratuito: nessun video è bloccato, e la
+/// sezione è leggibile anche senza account.
 final tutorialsProvider = FutureProvider<List<TutorialVideo>>(
   (ref) => ref.watch(videoRepositoryProvider).fetchTutorials(),
 );
@@ -67,5 +62,5 @@ class LandedTricksNotifier extends StateNotifier<Set<String>> {
 
 final landedTricksProvider =
     StateNotifierProvider<LandedTricksNotifier, Set<String>>(
-  (ref) => LandedTricksNotifier(),
-);
+      (ref) => LandedTricksNotifier(),
+    );

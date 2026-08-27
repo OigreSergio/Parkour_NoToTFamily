@@ -29,9 +29,10 @@ class TutorialDetailScreen extends ConsumerWidget {
         children: [
           AspectRatio(
             aspectRatio: 16 / 9,
-            child: video.locked || video.url == null
-                ? _LockedBanner(thumbnailUrl: video.thumbnailUrl)
-                : _TutorialPlayer(url: video.url!),
+            child:
+                video.locked || video.url == null
+                    ? _LockedBanner(thumbnailUrl: video.thumbnailUrl)
+                    : _TutorialPlayer(url: video.url!),
           ),
           const SizedBox(height: 16),
           Row(
@@ -41,9 +42,10 @@ class TutorialDetailScreen extends ConsumerWidget {
               Chip(
                 visualDensity: VisualDensity.compact,
                 label: Text(video.level),
-                avatar: video.isPremium
-                    ? const Icon(Icons.workspace_premium, size: 16)
-                    : const Icon(Icons.lock_open, size: 16),
+                avatar:
+                    video.isPremium
+                        ? const Icon(Icons.workspace_premium, size: 16)
+                        : const Icon(Icons.lock_open, size: 16),
               ),
               const Spacer(),
               IconButton(
@@ -53,8 +55,10 @@ class TutorialDetailScreen extends ConsumerWidget {
                   size: 28,
                   color: landed ? Colors.red : Colors.grey.shade400,
                 ),
-                onPressed: () =>
-                    ref.read(landedTricksProvider.notifier).toggle(video.id),
+                onPressed:
+                    () => ref
+                        .read(landedTricksProvider.notifier)
+                        .toggle(video.id),
               ),
             ],
           ),
@@ -106,11 +110,12 @@ class _LockedBanner extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             FilledButton(
-              onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Subscriptions are coming soon!'),
-                ),
-              ),
+              onPressed:
+                  () => ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Subscriptions are coming soon!'),
+                    ),
+                  ),
               child: const Text('Subscribe'),
             ),
           ],
@@ -139,11 +144,14 @@ class _TutorialPlayerState extends State<_TutorialPlayer> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url));
-    _controller.initialize().then((_) {
-      if (mounted) setState(() => _ready = true);
-    }).catchError((Object _) {
-      if (mounted) setState(() => _failed = true);
-    });
+    _controller
+        .initialize()
+        .then((_) {
+          if (mounted) setState(() => _ready = true);
+        })
+        .catchError((Object _) {
+          if (mounted) setState(() => _failed = true);
+        });
   }
 
   @override
@@ -167,13 +175,14 @@ class _TutorialPlayerState extends State<_TutorialPlayer> {
       );
     }
     return GestureDetector(
-      onTap: () => setState(() {
-        if (_controller.value.isPlaying) {
-          _controller.pause();
-        } else {
-          _controller.play();
-        }
-      }),
+      onTap:
+          () => setState(() {
+            if (_controller.value.isPlaying) {
+              _controller.pause();
+            } else {
+              _controller.play();
+            }
+          }),
       child: Stack(
         alignment: Alignment.center,
         children: [

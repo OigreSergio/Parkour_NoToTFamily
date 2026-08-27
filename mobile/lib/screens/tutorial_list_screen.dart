@@ -35,13 +35,20 @@ class _TutorialListScreenState extends ConsumerState<TutorialListScreen> {
 
   List<TutorialVideo> _filter(List<TutorialVideo> all) {
     final query = _search.trim().toLowerCase();
-    final items = all
-        .where((v) =>
-            widget.trickCategory == null ||
-            v.trickCategory == widget.trickCategory)
-        .where((v) => query.isEmpty || v.title.toLowerCase().contains(query))
-        .toList();
-    items.sort((a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()));
+    final items =
+        all
+            .where(
+              (v) =>
+                  widget.trickCategory == null ||
+                  v.trickCategory == widget.trickCategory,
+            )
+            .where(
+              (v) => query.isEmpty || v.title.toLowerCase().contains(query),
+            )
+            .toList();
+    items.sort(
+      (a, b) => a.title.toLowerCase().compareTo(b.title.toLowerCase()),
+    );
     return items;
   }
 
@@ -52,32 +59,35 @@ class _TutorialListScreenState extends ConsumerState<TutorialListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _searching
-            ? TextField(
-                autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search tricks…',
-                  border: InputBorder.none,
-                ),
-                onChanged: (value) => setState(() => _search = value),
-              )
-            : Text(widget.title),
+        title:
+            _searching
+                ? TextField(
+                  autofocus: true,
+                  decoration: const InputDecoration(
+                    hintText: 'Search tricks…',
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) => setState(() => _search = value),
+                )
+                : Text(widget.title),
         actions: [
           IconButton(
             icon: Icon(_searching ? Icons.close : Icons.search),
-            onPressed: () => setState(() {
-              _searching = !_searching;
-              if (!_searching) _search = '';
-            }),
+            onPressed:
+                () => setState(() {
+                  _searching = !_searching;
+                  if (!_searching) _search = '';
+                }),
           ),
         ],
       ),
       body: tutorialsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => ErrorView(
-          message: 'Could not load tutorials.\n$error',
-          onRetry: () => ref.invalidate(tutorialsProvider),
-        ),
+        error:
+            (error, _) => ErrorView(
+              message: 'Could not load tutorials.\n$error',
+              onRetry: () => ref.invalidate(tutorialsProvider),
+            ),
         data: (all) {
           final tutorials = _filter(all);
           if (tutorials.isEmpty) {
@@ -113,9 +123,8 @@ class _TutorialRow extends ConsumerWidget {
     return ListTile(
       leading: _Thumbnail(url: video.thumbnailUrl),
       title: Text(video.title),
-      subtitle: video.locked
-          ? const Text('Premium — subscribe to watch')
-          : null,
+      subtitle:
+          video.locked ? const Text('Premium — subscribe to watch') : null,
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -131,16 +140,17 @@ class _TutorialRow extends ConsumerWidget {
               Icons.directions_run,
               color: video.landed ? Colors.red : Colors.grey.shade400,
             ),
-            onPressed: () =>
-                ref.read(landedTricksProvider.notifier).toggle(video.id),
+            onPressed:
+                () => ref.read(landedTricksProvider.notifier).toggle(video.id),
           ),
         ],
       ),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => TutorialDetailScreen(video: video),
-        ),
-      ),
+      onTap:
+          () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => TutorialDetailScreen(video: video),
+            ),
+          ),
     );
   }
 }

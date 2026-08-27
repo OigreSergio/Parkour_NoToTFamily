@@ -1,41 +1,70 @@
+import 'dart:math' as math;
+
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../models/spot.dart';
-import '../services/api_client.dart';
 
-/// Reads parkour spots from the backend.
+/// Legge gli spot da Supabase.
 ///
-/// `GET /api/v1/spots` only ever returns spots that have been verified by an
-/// admin — moderation is enforced server-side.
+/// Cosa è visibile lo decidono le policy RLS sulla tabella `spots`, non questo
+/// codice: un client non autenticato vede solo gli spot pubblici, e uno spot
+/// `pending` è visibile al suo autore e agli admin. Il filtro qui sotto serve
+/// a non scaricare l'inutile, non a proteggere niente — la protezione sta nel
+/// database (`scripts/audit_rls.mjs` la verifica).
 class SpotRepository {
-  SpotRepository(this._api);
+  const SpotRepository(this._db);
 
-  final ApiClient _api;
+  final SupabaseClient _db;
 
-  static const String _spotsPath = '/api/v1/spots';
+  static const String _table = 'spots';
 
-  /// Fetch verified spots near ([lat], [lng]) within [radiusMeters].
+  /// Colonne reali di `spots`, più le foto in join.
+  static const String _columns =
+      'id, name, lat, lng, description, skill_level, crowd_level, '
+      'has_fountain, status, author_id, verified_at, created_at, '
+      'spot_photos(url, author, license, source_url, source)';
+
+  /// Spot pubblici entro [radiusMeters] da ([lat], [lng]).
   ///
-  /// The backend requires a search centre, so callers pass the user's GPS
-  /// position (or a sensible fallback when location is unavailable). Defaults
-  /// use the widest radius the API allows so the list/map are populated even
-  /// without a precise fix.
+  /// Il filtro geografico è un **bounding box** su `lat`/`lng`: la tabella non
+  /// ha PostGIS, quindi non esiste una query per raggio. Il box è leggermente
+  /// più largo del cerchio richiesto — i risultati agli angoli sono un po' più
+  /// lontani di [radiusMeters]. Per la mappa va bene; se un giorno serve il
+  /// raggio esatto, la strada è aggiungere PostGIS con una migration dedicata.
   Future<List<Spot>> fetchSpots({
     required double lat,
     required double lng,
     int radiusMeters = 50000,
     int limit = 500,
   }) async {
-    final data = await _api.getJson(
-      _spotsPath,
-      query: {
-        'lat': lat,
-        'lng': lng,
-        'radius_m': radiusMeters,
-        'limit': limit,
-      },
-    );
-    final list = data as List<dynamic>;
-    return list
-        .map((e) => Spot.fromJson(e as Map<String, dynamic>))
-        .toList(growable: false);
+    final dLat = radiusMeters / 111320.0;
+    // I meridiani si stringono verso i poli: a latitudine φ un grado di
+    // longitudine vale cos(φ) volte un grado all'equatore. Il clamp evita la
+    // divisione per zero ai poli.
+    final cosLat = math.cos(lat * math.pi / 180).abs();
+    final dLng = radiusMeters / (111320.0 * math.max(cosLat, 0.01));
+
+    final rows = await _db
+        .from(_table)
+        .select(_columns)
+        .gte('lat', lat - dLat)
+        .lte('lat', lat + dLat)
+        .gte('lng', lng - dLng)
+        .lte('lng', lng + dLng)
+        .limit(limit);
+
+    return _parse(rows);
   }
+
+  /// Un singolo spot, o null se non esiste o le RLS non lo rendono visibile.
+  Future<Spot?> fetchSpot(String id) async {
+    final row =
+        await _db.from(_table).select(_columns).eq('id', id).maybeSingle();
+    return row == null ? null : Spot.fromJson(row);
+  }
+
+  List<Spot> _parse(List<dynamic> rows) => rows
+      .whereType<Map<String, dynamic>>()
+      .map(Spot.fromJson)
+      .toList(growable: false);
 }

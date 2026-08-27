@@ -1,0 +1,94 @@
+-- ============================================================================
+-- PkFAMILY — baseline dello schema DI PRODUZIONE
+--
+-- ⚠️ RICOSTRUZIONE, NON UN DUMP. Da sostituire appena possibile.
+--
+-- Le migration 0001 e 0002 descrivono uno schema che in produzione NON ESISTE:
+-- nomi di tabella diversi (`conversations`/`conversation_members` contro
+-- `chats`/`chat_members`) e colonne diverse su `spots` (`location geography`,
+-- `difficulty`, `water`, `submitted_by`, `photo_urls[]` — nessuna delle quali
+-- è presente). Restano nel repo come storico: NON vanno applicate.
+--
+-- Questo file ricostruisce lo schema reale a partire da ciò che è stato
+-- osservato dall'esterno, con la sola publishable key:
+--   * colonne lette dalle righe reali        → `spots`, `profiles`
+--   * colonne confermate una per una via PostgREST (`select=<colonna>`:
+--     200 = esiste, 400 = non esiste)        → `spot_photos`, `videos`, `reports`
+--   * elenco tabelle                          → 📲/backup.mjs, admin-desktop/index.html
+--
+-- Quello che da fuori NON si vede, e che qui è quindi assente o incerto:
+-- tipi esatti, default, vincoli CHECK, indici, foreign key, trigger, e le
+-- policy RLS. Per il disaster recovery (Scenario B di 📲/README.md) serve il
+-- dump vero:
+--
+--     scripts/dump_schema.sh            # richiede la secret key, lo lancia l'admin
+--
+-- Finché quel dump non sostituisce questo file, considera lo Scenario B
+-- **non eseguibile**.
+-- ============================================================================
+
+-- ----------------------------------------------------------------------------
+-- profiles — confermata dai dati reali (2 righe)
+-- ----------------------------------------------------------------------------
+-- id uuid PK → auth.users, username text, avatar_url text, role text,
+-- banned boolean, created_at timestamptz
+--
+-- Nota: `role` in produzione ammette almeno 'user' e 'admin'; la migration 0002
+-- introduceva 'instructor', ma non è verificabile dall'esterno se sia stata
+-- applicata.
+
+-- ----------------------------------------------------------------------------
+-- spots — confermata dai dati reali (24 righe, tutte status='verified')
+-- ----------------------------------------------------------------------------
+-- id uuid PK, name text, lat double precision, lng double precision,
+-- description text, skill_level text, crowd_level text, has_fountain boolean,
+-- status text, rejection_reason text, author_id uuid, verified_by uuid,
+-- created_at timestamptz, verified_at timestamptz
+--
+-- Valori osservati:
+--   skill_level ∈ {principiante, intermedio, avanzato}
+--   crowd_level ∈ {tranquillo, medio, affollato}
+--   status      ∈ {verified}  (in produzione ci sono solo spot verificati;
+--                              pending/rejected sono presunti dal flusso di
+--                              moderazione, non osservati)
+--
+-- ⚠️ Niente PostGIS: le coordinate sono due colonne numeriche. Ogni query
+-- geografica va scritta di conseguenza, o si introduce PostGIS con una
+-- migration dedicata.
+
+-- ----------------------------------------------------------------------------
+-- spot_photos — vuota; colonne confermate una per una
+-- ----------------------------------------------------------------------------
+-- id, spot_id, url, position
+--
+-- ⚠️ Mancano del tutto i campi di provenienza: autore, licenza, URL della
+-- fonte. Senza quelli non si possono pubblicare foto Mapillary (CC-BY-SA) né
+-- Wikimedia, che richiedono attribuzione. Li aggiunge il BLOCCO 3-bis.
+
+-- ----------------------------------------------------------------------------
+-- videos — vuota; colonne confermate una per una
+-- ----------------------------------------------------------------------------
+-- id, title, url, category, level, created_at
+--
+-- ⚠️ Mancano `is_starter` e `order_index`: il percorso "Inizia da qui" del
+-- BLOCCO 5 non è esprimibile con questo schema.
+
+-- ----------------------------------------------------------------------------
+-- reports — vuota; colonne confermate una per una
+-- ----------------------------------------------------------------------------
+-- id, reporter_id, post_id, comment_id, message_id, reason, created_at
+--
+-- ⚠️ Due lacune che bloccano gli obblighi DSA del BLOCCO 6:
+--   * niente `spot_id` → uno spot pericoloso non è segnalabile;
+--   * niente `status`/`resolved_at`/`resolved_by` → non c'è modo di sapere se
+--     una segnalazione è stata trattata, né di documentarlo.
+
+-- ----------------------------------------------------------------------------
+-- Altre tabelle presenti in produzione, tutte vuote e non ispezionabili
+-- dall'esterno: struttura da recuperare con il dump.
+-- ----------------------------------------------------------------------------
+--   fountains, posts, comments, post_likes, post_saves, ratings,
+--   video_progress, entitlements, blocked_users
+--
+--   chats, chat_members, messages  → vedi 0004: le policy sono in ricorsione
+--                                    infinita e la chat non risponde.

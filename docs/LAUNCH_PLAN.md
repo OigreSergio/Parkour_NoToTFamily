@@ -115,6 +115,9 @@ spunti "CodeQL + Dependabot enabled". Vanno creati:
 | Debito | Dove | Perché blocca il lancio |
 | --- | --- | --- |
 | `web-admin` non compila | `web-admin/src/app/login/page.tsx:6` e `spots/page.tsx:6` importano `@/lib/api` — **`src/lib/` non esiste** | Il giorno 1 di spot pubblici serve la coda di moderazione. Senza, ogni spot inviato resta invisibile. |
+| **Chat rotta a livello DB** | `GET /rest/v1/chats` → **HTTP 500**, `42P17: infinite recursion detected in policy for relation "chat_members"` | Le policy di `chats` e `chat_members` si interrogano a vicenda. Non è «la chat non ha ancora un client»: è che **non può funzionare** finché non si introduce una funzione `SECURITY DEFINER`, come già fatto in `0001_initial.sql:226` per le tabelle che però in produzione non esistono. |
+| **Le migration descrivono uno schema inesistente** | `spots` reale: `lat`, `lng`, `skill_level`, `crowd_level`, `has_fountain`, `author_id`. `0001_initial.sql`: `location geography`, `difficulty`, `water`, `submitted_by`, `photo_urls[]`. Tabelle chat con nomi diversi. | Chi legge il repo progetta contro uno schema che non esiste, e `models/spot.dart` è modellato su quello sbagliato. |
+| **1.680 spot con attributi inventati** | `webapp_fixed_spots.json`: `skillLevel=intermedio`, `crowdLevel=medio`, `hasFountain=false` su **tutti**; 5 foto in totale; 154 spot citano 23 persone reali | Fuori Roma la mappa mostra valutazioni che nessuno ha dato. Vedi BLOCCO 3-bis: è un gate di lancio. |
 | Schema di produzione non committato | `supabase/migrations/` ha 8 tabelle; produzione ne ha 17 (`📲/backup.mjs:32`, `admin-desktop/index.html:133`: `posts, comments, post_likes, post_saves, ratings, video_progress, reports, chats, chat_members, entitlements, blocked_users, fountains, spot_photos`) | Il piano di disaster recovery "Scenario B" in `📲/README.md` **non è eseguibile**. TODO già aperto lì. |
 | Console admin con secret key nel browser | `admin-desktop/index.html` — la secret key bypassa ogni RLS, salvata in `localStorage` | Una singola macchina compromessa = intero database esposto, inclusi i messaggi privati. |
 | Zero monitoraggio | nessun Sentry, nessun analytics, nessun alerting | Si lancerebbe alla cieca. |
@@ -387,10 +390,13 @@ e il fatto che **non c'è cifratura end-to-end** in chat.
 
 ### 5.4 Trasferimenti internazionali e responsabili del trattamento
 
-- **Supabase**: verificare che il progetto (`gkdzdtxqkftebrxhgway`) sia in **regione UE**
-  (Francoforte o Irlanda). Se è in US, **creare un nuovo progetto UE e migrare prima del
-  lancio** — a 24 spot e 2 profili la migrazione costa poco; dopo il lancio costa molto.
-  Firmare/accettare il **DPA** Supabase.
+- **Supabase**: il progetto va in **Francoforte (`eu-central-1`)**. Nota: Supabase **non ha
+  una region in Italia** — `eu-south-1`/Milano non è tra quelle offerte, e Zurigo e Londra
+  sono fuori SEE. Francoforte è la region europea più collaudata della piattaforma; la
+  differenza di latenza rispetto a Parigi è impercettibile per una web app.
+  Il progetto attuale è `gkdzdtxqkftebrxhgway`: se non è già lì, **creare il progetto UE e
+  migrare prima del lancio** — a 24 spot e 2 profili la migrazione costa poco; dopo il lancio
+  costa molto. Firmare/accettare il **DPA** Supabase.
 - **Cloudflare**: DPA + valutare la *Data Localisation Suite* se si vuole confinare
   l'elaborazione in UE.
 - **GitHub**: resta per il codice e la CI; se `gh-pages` non serve più, il repo non tratta
@@ -556,8 +562,10 @@ visibile e etichette dei form. Se un giorno si monetizza, l'obbligo diventa conc
 - CI: `ci.yml` con analyze/test/lint.
 
 **Fase 2 — Funzionalità**
-- Auth + age gate + profilo + eliminazione account ed export.
+- Auth + age gate + accesso genitore + profilo + eliminazione account ed export.
 - Mappa: import degli spot ripuliti in Supabase, clustering, scheda, percorso.
+- **Spot fuori Roma (BLOCCO 3-bis): gate di lancio.** Attributi inventati a `NULL`, nomi di
+  terzi rimossi, toponimo reale, contesto OSM, foto Mapillary/Commons, contributo community.
 - Chat: private e di gruppo su Realtime, blocco e segnalazione.
 - Video: percorso "Inizia da qui", gating premium rimosso lato server.
 - Moderazione: coda spot, segnalazioni, statement of reasons.
@@ -611,8 +619,9 @@ adempimenti legali/privacy — vive in un file a parte, pronto da incollare:
 
 **→ [`docs/LAUNCH_PROMPT.md`](LAUNCH_PROMPT.md)**
 
-È diviso in dieci blocchi eseguibili (BLOCCO 0 → 9). **Conviene lanciarli uno alla volta**,
-non tutti insieme: ogni blocco chiude con del codice verificabile.
+È diviso in undici blocchi eseguibili (BLOCCO 0 → 9, più il 3-bis sugli spot fuori Roma).
+**Conviene lanciarli uno alla volta**, non tutti insieme: ogni blocco chiude con del codice
+verificabile. Lo stato di avanzamento è in [`LAUNCH_CHECKLIST.md`](LAUNCH_CHECKLIST.md).
 
 ---
 

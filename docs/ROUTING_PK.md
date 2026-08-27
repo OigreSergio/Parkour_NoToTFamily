@@ -8,7 +8,7 @@ parchi — nello spirito degli street run alla Storror.
 ## Fase 1 — attiva ora (nessuna infrastruttura)
 
 Implementata in `scripts/web/pk-route.js` + patch del bundle
-(`scripts/patch-gh-pages-test-free.py`):
+(un tempo `scripts/patch-gh-pages-test-free.py`, rimosso col passaggio a Flutter — vedi [LAUNCH_PLAN.md](LAUNCH_PLAN.md)):
 
 - **Distanza live** dalla posizione GPS (haversine) con ETA a piedi
   (4,5 km/h) e di corsa (9 km/h).

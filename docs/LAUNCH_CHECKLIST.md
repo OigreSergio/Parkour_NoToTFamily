@@ -19,12 +19,20 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 1 — Fondamenta
 
-- [ ] 1.1 `flutter create --platforms web .` + manifest PWA
-- [ ] 1.2 `supabase_flutter` al posto di `api_client.dart`, chiavi da `--dart-define`
-- [ ] 1.3 Schema di produzione esportato in `supabase/migrations/` (17 tabelle, non 8)
-- [ ] 1.4 `web-admin` riparato (`@/lib/api` non esiste) e riscritto su Supabase Auth + RLS
-- [ ] 1.5 `ci.yml`: analyze, test, format, lint
-- [ ] 1.6 Script di patch del bundle Expo rimossi
+- [x] 1.1 Piattaforma web generata; manifest PWA e `index.html` PkFAMILY, senza tracker
+- [x] 1.2 `supabase_flutter` al posto di `api_client.dart` (rimosso), chiavi da `--dart-define`;
+      modelli riscritti sullo schema **reale** — `lat`/`lng`, `skill_level`, `crowd_level`,
+      `has_fountain`, foto da `spot_photos` con autore e licenza
+- [~] 1.3 `0003_production_baseline.sql` come **ricostruzione**, non un dump. `0001`/`0002`
+      marcate storiche e mai applicate. Il dump vero richiede la secret key:
+      `scripts/dump_schema.sh` → [OPS_TODO](OPS_TODO.md)
+- [x] 1.4 Migration `0004` che corregge la **ricorsione infinita** nelle policy della chat
+      (`42P17`, oggi HTTP 500 in produzione) — da applicare, vedi [OPS_TODO](OPS_TODO.md)
+- [x] 1.5 `web-admin` riparato: `src/lib/supabase.ts` al posto del mancante `@/lib/api`,
+      Supabase Auth + RLS, nessuna secret key nel client. Lint e build verdi
+- [x] 1.6 `ci.yml`: format, analyze, test e build web per Flutter; lint e build per web-admin
+- [x] 1.7 Script di patch del bundle Expo rimossi, con `sync-map.yml`;
+      `WEB_TEST_SPACE.md` → [`DEPLOY.md`](DEPLOY.md)
 
 ## BLOCCO 2 — Accessi e account
 
@@ -38,6 +46,17 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 - [ ] 2.7 Gate di sicurezza all'ingresso, con accettazione registrata (versione + hash)
 - [ ] 2.8 Modalità informativa senza spot per chi rifiuta, applicata **anche lato server**
 - [ ] 2.9 Avvertenza breve in ogni scheda spot
+
+## BLOCCO 3-bis — Spot fuori Roma (gate di lancio)
+
+- [ ] 3b.1 Attributi inventati → `NULL` (`skill_level`, `crowd_level`, `has_fountain` su 1.680)
+- [ ] 3b.2 Rimossi i nomi delle 23 persone dalle descrizioni, con test di regressione
+- [ ] 3b.3 Toponimo reale via Nominatim al posto di «Spot Athens 3»
+- [ ] 3b.4 Contesto OSM via Overpass, incluso `has_fountain` reale
+- [ ] 3b.5 Foto da Mapillary (CC-BY-SA) e Wikimedia, con autore e licenza in `spot_photos`
+- [ ] 3b.6 Stato di completezza: `da_completare` / `arricchito` / `verificato`
+- [ ] 3b.7 «Ci sei stato? Aggiungi una foto e raccontalo» → moderazione
+- [ ] 3b.8 `scripts/spot_coverage.mjs`: copertura per paese e città
 
 ## BLOCCO 3 — Mappa e spot
 

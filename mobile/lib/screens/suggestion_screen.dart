@@ -46,8 +46,9 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
 
   void _pickFrom(List<TutorialVideo> candidates, String emptyMessage) {
     if (candidates.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(emptyMessage)));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(emptyMessage)));
       return;
     }
     setState(
@@ -64,8 +65,8 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
       appBar: AppBar(title: const Text('Suggestion Generator')),
       body: tutorialsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) =>
-            Center(child: Text('Could not load tricks.\n$error')),
+        error:
+            (error, _) => Center(child: Text('Could not load tricks.\n$error')),
         data: (all) {
           final pool = _pool(all, landed);
           final current = _suggestion;
@@ -89,8 +90,8 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                           child: ChoiceChip(
                             label: Text(entry.value),
                             selected: _category == entry.key,
-                            onSelected: (_) =>
-                                setState(() => _category = entry.key),
+                            onSelected:
+                                (_) => setState(() => _category = entry.key),
                           ),
                         ),
                     ],
@@ -106,13 +107,15 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                         child: OutlinedButton.icon(
                           icon: const Icon(Icons.remove),
                           label: const Text('Easier'),
-                          onPressed: () => _pickFrom(
-                            pool
-                                .where(
-                                    (v) => v.difficulty < current.difficulty)
-                                .toList(),
-                            'No easier trick to suggest here.',
-                          ),
+                          onPressed:
+                              () => _pickFrom(
+                                pool
+                                    .where(
+                                      (v) => v.difficulty < current.difficulty,
+                                    )
+                                    .toList(),
+                                'No easier trick to suggest here.',
+                              ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -120,13 +123,15 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                         child: OutlinedButton.icon(
                           icon: const Icon(Icons.add),
                           label: const Text('Harder'),
-                          onPressed: () => _pickFrom(
-                            pool
-                                .where(
-                                    (v) => v.difficulty > current.difficulty)
-                                .toList(),
-                            'No harder trick to suggest here.',
-                          ),
+                          onPressed:
+                              () => _pickFrom(
+                                pool
+                                    .where(
+                                      (v) => v.difficulty > current.difficulty,
+                                    )
+                                    .toList(),
+                                'No harder trick to suggest here.',
+                              ),
                         ),
                       ),
                       const SizedBox(width: 8),
@@ -138,9 +143,11 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                             setState(() => _category = null);
                             _pickFrom(
                               _notLanded(all, landed)
-                                  .where((v) =>
-                                      v.trickCategory !=
-                                      current.trickCategory)
+                                  .where(
+                                    (v) =>
+                                        v.trickCategory !=
+                                        current.trickCategory,
+                                  )
                                   .toList(),
                               'No tricks left in other categories.',
                             );
@@ -152,32 +159,39 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                 ] else
                   const Expanded(
                     child: Center(
-                      child: Icon(Icons.lightbulb_outline,
-                          size: 64, color: Colors.grey),
+                      child: Icon(
+                        Icons.lightbulb_outline,
+                        size: 64,
+                        color: Colors.grey,
+                      ),
                     ),
                   ),
                 if (current != null) const Spacer(),
                 _BigButton(
                   label: 'New Trick',
-                  onPressed: pool.isEmpty
-                      ? null
-                      : () => _pickFrom(pool, 'Nothing left to suggest!'),
+                  onPressed:
+                      pool.isEmpty
+                          ? null
+                          : () => _pickFrom(pool, 'Nothing left to suggest!'),
                 ),
                 const SizedBox(height: 16),
                 _BigButton(
                   label: 'All Suggestions',
-                  onPressed: pool.isEmpty
-                      ? null
-                      : () {
-                          final sorted = [...pool]..sort((a, b) =>
-                              a.difficulty.compareTo(b.difficulty));
-                          showModalBottomSheet<void>(
-                            context: context,
-                            showDragHandle: true,
-                            builder: (_) =>
-                                _AllSuggestionsSheet(suggestions: sorted),
-                          );
-                        },
+                  onPressed:
+                      pool.isEmpty
+                          ? null
+                          : () {
+                            final sorted = [...pool]..sort(
+                              (a, b) => a.difficulty.compareTo(b.difficulty),
+                            );
+                            showModalBottomSheet<void>(
+                              context: context,
+                              showDragHandle: true,
+                              builder:
+                                  (_) =>
+                                      _AllSuggestionsSheet(suggestions: sorted),
+                            );
+                          },
                 ),
                 if (pool.isEmpty) ...[
                   const SizedBox(height: 12),
@@ -203,14 +217,16 @@ class _SuggestionCard extends StatelessWidget {
       child: ListTile(
         leading: DifficultyGauge(difficulty: video.difficulty),
         title: Text(video.title),
-        subtitle:
-            Text(video.locked ? 'Premium — subscribe to watch' : video.level),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => TutorialDetailScreen(video: video),
-          ),
+        subtitle: Text(
+          video.locked ? 'Premium — subscribe to watch' : video.level,
         ),
+        trailing: const Icon(Icons.chevron_right),
+        onTap:
+            () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => TutorialDetailScreen(video: video),
+              ),
+            ),
       ),
     );
   }
