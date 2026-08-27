@@ -24,8 +24,18 @@ dependencies:
 
   # Map
   flutter_map: ^7.0.2
+  # Tile vettoriali: OpenFreeMap è gratuito, senza chiave e senza limiti, ed è
+  # l'unica sorgente conforme che non costi niente. I tile raster pubblici di
+  # OSM (tile.openstreetmap.org) sono vietati dalla loro usage policy per
+  # un'app come questa.
+  # Resta su flutter_map 7: per flutter_map 8 vector_map_tiles è solo in beta,
+  # e la mappa è il cuore dell'app.
+  vector_map_tiles: ^8.0.0
   latlong2: ^0.9.1
   geolocator: ^12.0.0
+
+  # Link esterni (attribuzione OSM, indicazioni stradali)
+  url_launcher: ^6.3.0
 
   # Video player
   video_player: ^2.9.1

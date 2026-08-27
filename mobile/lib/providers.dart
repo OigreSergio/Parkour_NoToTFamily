@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'models/profile.dart';
@@ -11,6 +10,7 @@ import 'repositories/safety_repository.dart';
 import 'repositories/spot_repository.dart';
 import 'repositories/video_repository.dart';
 import 'services/location_service.dart';
+import 'services/spot_filter.dart';
 import 'services/safety_notice.dart';
 import 'services/supabase_client.dart';
 
@@ -76,29 +76,52 @@ final spotRepositoryProvider = Provider<SpotRepository>(
   (ref) => SpotRepository(ref.watch(supabaseClientProvider)),
 );
 
+final spotWriteRepositoryProvider = Provider<SpotWriteRepository>(
+  (ref) => SpotWriteRepository(ref.watch(supabaseClientProvider)),
+);
+
 final locationServiceProvider = Provider<LocationService>(
   (ref) => const LocationService(),
 );
 
-/// Il centro della mappa: la posizione GPS, o un ripiego.
-final currentLocationProvider = FutureProvider<LatLng>(
-  (ref) => ref.watch(locationServiceProvider).currentLatLng(),
+/// La posizione del dispositivo, **su richiesta esplicita**.
+///
+/// `autoDispose` di proposito: la posizione non resta in memoria dopo l'uso.
+/// Chiederla di nuovo significa una nuova lettura, non un valore riesumato da
+/// una cache — coerente con l'informativa, che dichiara conservazione «nessuna».
+///
+/// Nessun provider la osserva all'avvio: si legge solo quando l'utente tocca
+/// «dove sono» o «percorso».
+final locationRequestProvider = FutureProvider.autoDispose<LocationResult>(
+  (ref) => ref.watch(locationServiceProvider).request(),
 );
 
-/// Gli spot intorno alla posizione corrente.
+/// Filtri attivi sulla mappa e sulla lista.
+final spotFilterProvider = NotifierProvider<SpotFilterNotifier, SpotFilter>(
+  SpotFilterNotifier.new,
+);
+
+/// Gli spot da mostrare.
 ///
 /// Torna una lista vuota finché l'avviso di sicurezza non è accettato. Non è
 /// solo cortesia dell'interfaccia: la policy RESTRICTIVE sulla tabella `spots`
 /// li nega comunque lato server, e questo evita una chiamata che tornerebbe
 /// vuota per forza.
+///
+/// Il centro è Roma, non la posizione dell'utente: caricare gli spot non deve
+/// dipendere da un permesso GPS che nessuno ha ancora concesso.
 final spotsProvider = FutureProvider<List<Spot>>((ref) async {
   final accepted = await ref.watch(safetyAcceptedProvider.future);
   if (!accepted) return const [];
 
-  final center = await ref.watch(currentLocationProvider.future);
+  const center = LocationService.fallbackCenter;
   return ref
       .watch(spotRepositoryProvider)
-      .fetchSpots(lat: center.latitude, lng: center.longitude);
+      .fetchSpots(
+        lat: center.latitude,
+        lng: center.longitude,
+        radiusMeters: 2000000,
+      );
 });
 
 // ---------------------------------------------------------------------------

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/spot.dart';
 import '../widgets/spot_completeness.dart';
+import '../widgets/spot_distance.dart';
 import 'safety_gate_screen.dart' show SpotSafetyReminder;
 
 /// Read-only detail view for a single [Spot].
@@ -77,7 +78,9 @@ class SpotDetailScreen extends StatelessWidget {
           // arrivare livello, affollamento e "cosa ci si allena": nessuna API
           // li conosce.
           ContributeToSpot(spot: spot),
-          const SizedBox(height: 24),
+          const SizedBox(height: 12),
+          SpotDistance(spot: spot),
+          const SizedBox(height: 12),
           _InfoRow(
             icon: Icons.place_outlined,
             label: 'Coordinate',

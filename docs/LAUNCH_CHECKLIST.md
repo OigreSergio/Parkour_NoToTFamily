@@ -77,12 +77,19 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 3 — Mappa e spot
 
-- [ ] 3.1 Dataset ripulito: via gli hotlink non-Wikimedia e le immagini Street View
-- [ ] 3.2 Import degli spot in Supabase (non nel bundle)
-- [ ] 3.3 Mappa con clustering e rendering del viewport
-- [ ] 3.4 Scheda spot con crediti foto e `access_type`
-- [ ] 3.5 Geolocalizzazione solo su richiesta, mai salvata
-- [ ] 3.6 "Proponi uno spot" → `pending`
+- [x] 3.1 Dataset ripulito: hotlink verso siti terzi rimossi, e le foto Wikimedia
+      superstiti ora portano **autore, licenza e link alla fonte**, recuperati dall'API di
+      Commons (`scripts/resolve_photo_credits.py`, verificato in CI)
+- [x] 3.2 `scripts/import_spots_supabase.mjs`: idempotente su `external_id`, a blocchi,
+      con `--dry-run`. Gli spot escono dal bundle JS e vanno nel database
+- [x] 3.3 Mappa riscritta: **tile OpenFreeMap** al posto di `tile.openstreetmap.org`
+      (vietato dalla usage policy di OSM per un'app), clustering su griglia con rendering
+      del solo viewport, pin distinti per stato di completezza, filtri, attribuzione ODbL
+- [x] 3.4 Scheda spot: foto con crediti, località, distanza calcolata **sul dispositivo**,
+      indicazioni che portano solo le coordinate dello spot
+- [x] 3.5 Geolocalizzazione **solo al tocco**, preceduta da una schermata che dice a cosa
+      serve e che non viene conservata. Prima veniva chiesta all'avvio
+- [x] 3.6 «Proponi uno spot» → `status = 'pending'`, visibile solo all'autore
 
 ## BLOCCO 4 — Chat
 

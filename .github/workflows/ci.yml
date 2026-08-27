@@ -72,6 +72,12 @@ jobs:
       - name: Test della pulizia
         run: python3 scripts/test_clean_spots.py
 
+      # Mapillary è CC-BY-SA e Wikimedia richiede l'attribuzione: una foto di
+      # terzi senza autore e licenza non è pubblicabile, e il database la
+      # rifiuta comunque.
+      - name: Ogni foto ha i suoi crediti
+        run: python3 scripts/resolve_photo_credits.py --check
+
       - uses: actions/setup-node@v4
         with:
           node-version: "20"

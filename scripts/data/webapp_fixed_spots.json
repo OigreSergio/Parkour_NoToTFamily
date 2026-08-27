@@ -10,9 +10,27 @@
   "hasFountain": true,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg/1280px-Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Roma_Laghetto_EUR_e_Palazzo_ENI.jpg/1280px-Roma_Laghetto_EUR_e_Palazzo_ENI.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg/1280px-Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg/1280px-Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
+    "author": "Blackcat",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Roma_Laghetto_EUR_e_Palazzo_ENI.jpg/1280px-Roma_Laghetto_EUR_e_Palazzo_ENI.jpg",
+    "author": "Blackcat",
+    "license": "CC BY-SA 3.0 it",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Roma_Laghetto_EUR_e_Palazzo_ENI.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg/1280px-Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg",
+    "author": "Blackcat",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Piazzali larghi",
   "country": "panche in marmo e dislivelli intorno al laghetto",
@@ -29,9 +47,27 @@
   "hasFountain": true,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_13.jpg/1280px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_13.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg/1280px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Piazza_di_Siena.jpg/1280px-Piazza_di_Siena.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_13.jpg/1280px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_13.jpg",
+    "author": "Diego Delso",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Plaza_de_Siena,_Villa_Borghese,_Roma,_Italia,_2022-09-14,_DD_13.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg/1280px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg",
+    "author": "Diego Delso",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Plaza_de_Siena,_Villa_Borghese,_Roma,_Italia,_2022-09-14,_DD_14.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Piazza_di_Siena.jpg/1280px-Piazza_di_Siena.jpg",
+    "author": "Howardhudson at English Wikipedia",
+    "license": "CC BY 2.5",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Piazza_di_Siena.jpg",
+    "source": "wikimedia"
+   }
   ],
   "completeness": "verificato"
  },
@@ -46,9 +82,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Stadio_dei_Marmi.jpg/1280px-Stadio_dei_Marmi.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg/1280px-Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg/1280px-Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Stadio_dei_Marmi.jpg/1280px-Stadio_dei_Marmi.jpg",
+    "author": "Anthony Majanlahti from Rome, Italy",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Stadio_dei_Marmi.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg/1280px-Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
+    "author": "giorgio minga",
+    "license": "CC BY 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg/1280px-Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg",
+    "author": "Simone Ramella from Roma, Italy",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Stadio_dei_Marmi_e_Palazzo_della_Farnesina_(34393342414).jpg",
+    "source": "wikimedia"
+   }
   ],
   "completeness": "verificato"
  },
@@ -63,9 +117,27 @@
   "hasFountain": true,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Scala_degli_innamorati_Garbatella_30082021_093A.jpg/1280px-Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Garbatella_-_piazza_sant_Eurosia_01648.JPG/1280px-Garbatella_-_piazza_sant_Eurosia_01648.JPG",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Garbatella2018camminandoconVisureAcatastali_21.jpg/1280px-Garbatella2018camminandoconVisureAcatastali_21.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Scala_degli_innamorati_Garbatella_30082021_093A.jpg/1280px-Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
+    "author": "it:indeciso42",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Garbatella_-_piazza_sant_Eurosia_01648.JPG/1280px-Garbatella_-_piazza_sant_Eurosia_01648.JPG",
+    "author": "Lalupa",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Garbatella_-_piazza_sant_Eurosia_01648.JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Garbatella2018camminandoconVisureAcatastali_21.jpg/1280px-Garbatella2018camminandoconVisureAcatastali_21.jpg",
+    "author": "Giorgio Pietrocola",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Garbatella2018camminandoconVisureAcatastali_21.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Scalinate strette",
   "country": "ringhiere e cortili del quartiere storico",
@@ -96,9 +168,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Stazione_metro_Colosseo.jpg/1280px-Stazione_metro_Colosseo.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg/1280px-Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
+    "author": "Chabe01",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_(IT62)_-_2021-08-29_-_1.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Stazione_metro_Colosseo.jpg/1280px-Stazione_metro_Colosseo.jpg",
+    "author": "Simone Ramella",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Stazione_metro_Colosseo.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg/1280px-Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg",
+    "author": "Mint0ri",
+    "license": "CC0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Rione I Monti",
   "country": "vicino alla fermata Metro Colosseo",
@@ -114,11 +204,6 @@
   "crowdLevel": "medio",
   "hasFountain": false,
   "status": "verified",
-  "photos": [
-   "https://www.comune.roma.it/web-resources/cms/images/Parkour_Mun_III_d0.jpeg",
-   "https://www.vistanet.it/roma/wp-content/uploads/sites/4/2026/02/1Parkour_Mun_III_d0.jpg",
-   "https://abitarearoma.it/wp/wp-content/uploads/2026/02/nuovo_parcheggio_piazzale_Flaiano_d0.jpeg"
-  ],
   "locality": "Piazzale Ennio Flaiano",
   "country": "00139 Roma",
   "completeness": "verificato"
@@ -134,9 +219,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg/1280px-Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/L%27Obelisco_Marconi_-_panoramio.jpg/1280px-L%27Obelisco_Marconi_-_panoramio.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Laghetto_dell%27_EUR_-_panoramio.jpg/1280px-Laghetto_dell%27_EUR_-_panoramio.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg/1280px-Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg",
+    "author": "Blackcat",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/L%27Obelisco_Marconi_-_panoramio.jpg/1280px-L%27Obelisco_Marconi_-_panoramio.jpg",
+    "author": "trolvag",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:L%27Obelisco_Marconi_-_panoramio.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Laghetto_dell%27_EUR_-_panoramio.jpg/1280px-Laghetto_dell%27_EUR_-_panoramio.jpg",
+    "author": "trolvag",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Laghetto_dell%27_EUR_-_panoramio.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Quartiere EUR",
   "country": "00144 Roma",
@@ -221,9 +324,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/CORVIALE3.jpg/1280px-CORVIALE3.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/CORVIALE2.jpg/1280px-CORVIALE2.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Corviale_%285582065280%29.jpg/1280px-Corviale_%285582065280%29.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/CORVIALE3.jpg/1280px-CORVIALE3.jpg",
+    "author": "indeciso42",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:CORVIALE3.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/CORVIALE2.jpg/1280px-CORVIALE2.jpg",
+    "author": "indeciso42",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:CORVIALE2.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Corviale_%285582065280%29.jpg/1280px-Corviale_%285582065280%29.jpg",
+    "author": "Umberto Rotundo from Roma, Italy",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Corviale_(5582065280).jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Corviale",
   "country": "Roma",
@@ -240,9 +361,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/CORVIALE10a.jpg/1280px-CORVIALE10a.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/CORVIALE6.jpg/1280px-CORVIALE6.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Corviale_%285582066704%29.jpg/1280px-Corviale_%285582066704%29.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/CORVIALE10a.jpg/1280px-CORVIALE10a.jpg",
+    "author": "indeciso42",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:CORVIALE10a.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/CORVIALE6.jpg/1280px-CORVIALE6.jpg",
+    "author": "indeciso42",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:CORVIALE6.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Corviale_%285582066704%29.jpg/1280px-Corviale_%285582066704%29.jpg",
+    "author": "Umberto Rotundo from Roma, Italy",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Corviale_(5582066704).jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Corviale",
   "country": "Roma",
@@ -259,9 +398,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/CORVIALEARENA12.jpg/1280px-CORVIALEARENA12.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Corviale_%285581474085%29.jpg/1280px-Corviale_%285581474085%29.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Municipio_XI_%28Roma%29_in_2020.01.jpg/1280px-Municipio_XI_%28Roma%29_in_2020.01.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/CORVIALEARENA12.jpg/1280px-CORVIALEARENA12.jpg",
+    "author": "Indeciso42",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:CORVIALEARENA12.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Corviale_%285581474085%29.jpg/1280px-Corviale_%285581474085%29.jpg",
+    "author": "Umberto Rotundo from Roma, Italy",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Corviale_(5581474085).jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Municipio_XI_%28Roma%29_in_2020.01.jpg/1280px-Municipio_XI_%28Roma%29_in_2020.01.jpg",
+    "author": "CAPTAIN RAJU",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.01.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Corviale",
   "country": "Roma",
@@ -278,9 +435,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/TUFELLOCERVIALTO3200812.jpg/1280px-TUFELLOCERVIALTO3200812.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/TUFELLOMELAINA5200812.jpg/1280px-TUFELLOMELAINA5200812.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/TufelloconVisureAcatastali2018dic_25.jpg/1280px-TufelloconVisureAcatastali2018dic_25.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/TUFELLOCERVIALTO3200812.jpg/1280px-TUFELLOCERVIALTO3200812.jpg",
+    "author": "indeciso42",
+    "license": "CC BY 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:TUFELLOCERVIALTO3200812.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/TUFELLOMELAINA5200812.jpg/1280px-TUFELLOMELAINA5200812.jpg",
+    "author": "indeciso42",
+    "license": "CC BY 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:TUFELLOMELAINA5200812.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/TufelloconVisureAcatastali2018dic_25.jpg/1280px-TufelloconVisureAcatastali2018dic_25.jpg",
+    "author": "Giorgio Pietrocola",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:TufelloconVisureAcatastali2018dic_25.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Tufello",
   "country": "Roma",
@@ -311,9 +486,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Roma_Primavalle_cortile_casa_popolare.jpg/1280px-Roma_Primavalle_cortile_casa_popolare.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Largo_borromeo_primavalle_roma.jpg/1280px-Largo_borromeo_primavalle_roma.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Piazza_clemente_xi_primavalle_roma.jpg/1280px-Piazza_clemente_xi_primavalle_roma.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Roma_Primavalle_cortile_casa_popolare.jpg/1280px-Roma_Primavalle_cortile_casa_popolare.jpg",
+    "author": "Blackcat",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Roma_Primavalle_cortile_casa_popolare.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Largo_borromeo_primavalle_roma.jpg/1280px-Largo_borromeo_primavalle_roma.jpg",
+    "author": "Jaspar74",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Largo_borromeo_primavalle_roma.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Piazza_clemente_xi_primavalle_roma.jpg/1280px-Piazza_clemente_xi_primavalle_roma.jpg",
+    "author": "Jaspar74",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Piazza_clemente_xi_primavalle_roma.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Quartiere XXVII Primavalle",
   "country": "Roma",
@@ -330,9 +523,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Villa_Carpegna_-_la_villa_P1000740.JPG/1280px-Villa_Carpegna_-_la_villa_P1000740.JPG",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Villa_Carpegna_-_la_vasca_P1000747.JPG/1280px-Villa_Carpegna_-_la_vasca_P1000747.JPG",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Villa_Carpegna_P1000749.JPG/1280px-Villa_Carpegna_P1000749.JPG"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Villa_Carpegna_-_la_villa_P1000740.JPG/1280px-Villa_Carpegna_-_la_villa_P1000740.JPG",
+    "author": "Lalupa",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_-_la_villa_P1000740.JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Villa_Carpegna_-_la_vasca_P1000747.JPG/1280px-Villa_Carpegna_-_la_vasca_P1000747.JPG",
+    "author": "Lalupa",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_-_la_vasca_P1000747.JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Villa_Carpegna_P1000749.JPG/1280px-Villa_Carpegna_P1000749.JPG",
+    "author": "Lalupa",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_P1000749.JPG",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Villa Carpegna",
   "country": "Municipio Roma XIII, 00165 Roma",
@@ -349,9 +560,27 @@
   "hasFountain": false,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Parco_di_Traiano_-_panoramio.jpg/1280px-Parco_di_Traiano_-_panoramio.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_3.jpg/1280px-Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_3.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_3.jpg/1280px-Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_3.jpg",
+    "author": "Chabe01",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Parc_Colle_Oppio_-_Rome_(IT62)_-_2021-08-29_-_3.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
+    "author": "Chabe01",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_(IT62)_-_2021-08-29_-_1.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Parco_di_Traiano_-_panoramio.jpg/1280px-Parco_di_Traiano_-_panoramio.jpg",
+    "author": "trolvag",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Parco_di_Traiano_-_panoramio.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Viale del Monte Oppio",
   "country": "00184 Roma",
@@ -381,12 +610,30 @@
   "crowdLevel": "medio",
   "hasFountain": false,
   "status": "verified",
+  "completeness": "verificato",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG/1280px-Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Rome_%282596093629%29.jpg/1280px-Rome_%282596093629%29.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg/1280px-%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg"
-  ],
-  "completeness": "verificato"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG/1280px-Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG",
+    "author": "Dguendel",
+    "license": "CC BY 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rom,_der_Platz_Largo_Gaetana_Agnesi.JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Rome_%282596093629%29.jpg/1280px-Rome_%282596093629%29.jpg",
+    "author": "Joe Shlabotnik from Forest Hills, Queens, USA",
+    "license": "CC BY 2.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Rome_(2596093629).jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg/1280px-%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg",
+    "author": "Nikolai Karaneschev",
+    "license": "CC BY 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg",
+    "source": "wikimedia"
+   }
+  ]
  },
  {
   "id": "2f8b8f1d-bb9f-4eca-9bc2-0d10dc5100a2",
@@ -399,9 +646,27 @@
   "hasFountain": true,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Il_Colosseo_dal_parco_di_Colle_Oppio.JPG/1280px-Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg/1280px-Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Terme_di_traiano_01.JPG/1280px-Terme_di_traiano_01.JPG"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Terme_di_traiano_01.JPG/1280px-Terme_di_traiano_01.JPG",
+    "author": "sailko",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Terme_di_traiano_01.JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Il_Colosseo_dal_parco_di_Colle_Oppio.JPG/1280px-Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
+    "author": "Shardan",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg/1280px-Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg",
+    "author": "Dieterdreist",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Fontana_delle_Anfore,_Parco_del_Colle_Oppio,_Roma,_Italia_Oct_03,_2025_10-58-42_AM.jpeg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Muretti",
   "country": "scalinate e rail nel parco sopra il Colosseo",
@@ -417,12 +682,30 @@
   "crowdLevel": "medio",
   "hasFountain": false,
   "status": "verified",
+  "completeness": "verificato",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Roma_Metro_A_Cipro_piano_strada.jpg/1280px-Roma_Metro_A_Cipro_piano_strada.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Cipro_Metro_A_Station_in_2020.03.jpg/1280px-Cipro_Metro_A_Station_in_2020.03.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Cipro_Metro_A_Station_in_2020.01.jpg/1280px-Cipro_Metro_A_Station_in_2020.01.jpg"
-  ],
-  "completeness": "verificato"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Roma_Metro_A_Cipro_piano_strada.jpg/1280px-Roma_Metro_A_Cipro_piano_strada.jpg",
+    "author": "Blackcat",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Roma_Metro_A_Cipro_piano_strada.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Cipro_Metro_A_Station_in_2020.03.jpg/1280px-Cipro_Metro_A_Station_in_2020.03.jpg",
+    "author": "CAPTAIN RAJU",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cipro_Metro_A_Station_in_2020.03.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Cipro_Metro_A_Station_in_2020.01.jpg/1280px-Cipro_Metro_A_Station_in_2020.01.jpg",
+    "author": "CAPTAIN RAJU",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Cipro_Metro_A_Station_in_2020.01.jpg",
+    "source": "wikimedia"
+   }
+  ]
  },
  {
   "id": "spot-fontanella-trastevere-gianicolo",
@@ -435,9 +718,27 @@
   "hasFountain": true,
   "status": "verified",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Gianicolo_%28Rome%29_in_2018.14.jpg/1280px-Gianicolo_%28Rome%29_in_2018.14.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg/1280px-Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Gianicolo_%28Rome%29_in_2018.03.jpg/1280px-Gianicolo_%28Rome%29_in_2018.03.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg/1280px-Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg",
+    "author": "Rabanus Flavus",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Gianicolo_%28Rome%29_in_2018.14.jpg/1280px-Gianicolo_%28Rome%29_in_2018.14.jpg",
+    "author": "CAPTAIN RAJU",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Gianicolo_(Rome)_in_2018.14.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Gianicolo_%28Rome%29_in_2018.03.jpg/1280px-Gianicolo_%28Rome%29_in_2018.03.jpg",
+    "author": "CAPTAIN RAJU",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Gianicolo_(Rome)_in_2018.03.jpg",
+    "source": "wikimedia"
+   }
   ],
   "completeness": "verificato"
  },
@@ -718,9 +1019,27 @@
   "hasFountain": null,
   "status": "community",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/049_Tur%C3%B3_de_la_Rovira%2C_antiga_bateria_antia%C3%A8ria.jpg/1280px-049_Tur%C3%B3_de_la_Rovira%2C_antiga_bateria_antia%C3%A8ria.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Bunkers_del_Carmel_Barcelona.jpg/1280px-Bunkers_del_Carmel_Barcelona.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg/1280px-Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/049_Tur%C3%B3_de_la_Rovira%2C_antiga_bateria_antia%C3%A8ria.jpg/1280px-049_Tur%C3%B3_de_la_Rovira%2C_antiga_bateria_antia%C3%A8ria.jpg",
+    "author": "Enric",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:049_Tur%C3%B3_de_la_Rovira,_antiga_bateria_antia%C3%A8ria.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg/1280px-Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg",
+    "author": "Thingstodoinbarcelona",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Bunkers_del_Carmel_Barcelona.jpg/1280px-Bunkers_del_Carmel_Barcelona.jpg",
+    "author": "Barcelonatips",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Bunkers_del_Carmel_Barcelona.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Can Baró",
   "country": "Spagna",
@@ -3186,14 +3505,32 @@
   "crowdLevel": null,
   "hasFountain": null,
   "status": "community",
-  "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Critical_Resemblance_House_%28Main_Pavilion%29.JPG/1280px-Critical_Resemblance_House_%28Main_Pavilion%29.JPG",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/%E9%A4%8A%E8%80%81%E5%A4%A9%E5%91%BD%E5%8F%8D%E8%BB%A2%E5%9C%B001.jpg/1280px-%E9%A4%8A%E8%80%81%E5%A4%A9%E5%91%BD%E5%8F%8D%E8%BB%A2%E5%9C%B001.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Yourou-distiny-panorama.jpg/1280px-Yourou-distiny-panorama.jpg"
-  ],
   "locality": "Takada",
   "country": "Giappone",
-  "completeness": "arricchito"
+  "completeness": "arricchito",
+  "photos": [
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Critical_Resemblance_House_%28Main_Pavilion%29.JPG/1280px-Critical_Resemblance_House_%28Main_Pavilion%29.JPG",
+    "author": "Kikuhiko Mizusaki",
+    "license": "CC BY 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Critical_Resemblance_House_(Main_Pavilion).JPG",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/%E9%A4%8A%E8%80%81%E5%A4%A9%E5%91%BD%E5%8F%8D%E8%BB%A2%E5%9C%B001.jpg/1280px-%E9%A4%8A%E8%80%81%E5%A4%A9%E5%91%BD%E5%8F%8D%E8%BB%A2%E5%9C%B001.jpg",
+    "author": "おはぐろ蜻蛉",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:%E9%A4%8A%E8%80%81%E5%A4%A9%E5%91%BD%E5%8F%8D%E8%BB%A2%E5%9C%B001.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Yourou-distiny-panorama.jpg/1280px-Yourou-distiny-panorama.jpg",
+    "author": "Takasunrise0921",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Yourou-distiny-panorama.jpg",
+    "source": "wikimedia"
+   }
+  ]
  },
  {
   "id": "gmaps-d3155b185242",
@@ -9380,9 +9717,27 @@
   "hasFountain": null,
   "status": "community",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Amphitheatre_at_Frank_Kitts_Park.jpg/1280px-Amphitheatre_at_Frank_Kitts_Park.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Promenade_at_Frank_Kitts_Park.jpg/1280px-Promenade_at_Frank_Kitts_Park.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Frank_Kitts_Park_and_Jervois_Quay.jpg/1280px-Frank_Kitts_Park_and_Jervois_Quay.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Amphitheatre_at_Frank_Kitts_Park.jpg/1280px-Amphitheatre_at_Frank_Kitts_Park.jpg",
+    "author": "Wainuiomartian",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Amphitheatre_at_Frank_Kitts_Park.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Promenade_at_Frank_Kitts_Park.jpg/1280px-Promenade_at_Frank_Kitts_Park.jpg",
+    "author": "Wainuiomartian",
+    "license": "CC BY-SA 4.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Promenade_at_Frank_Kitts_Park.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Frank_Kitts_Park_and_Jervois_Quay.jpg/1280px-Frank_Kitts_Park_and_Jervois_Quay.jpg",
+    "author": "Frozen-Coke-Rocks at English Wikipedia",
+    "license": "Public domain",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Frank_Kitts_Park_and_Jervois_Quay.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Wellington",
   "country": "Nuova Zelanda",
@@ -19941,9 +20296,27 @@
   "hasFountain": null,
   "status": "community",
   "photos": [
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Seattle_Freeway_Park_03.jpg/1280px-Seattle_Freeway_Park_03.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Seattle_Freeway_Park_05.jpg/1280px-Seattle_Freeway_Park_05.jpg",
-   "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Seattle_Freeway_Park_09.jpg/1280px-Seattle_Freeway_Park_09.jpg"
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Seattle_Freeway_Park_03.jpg/1280px-Seattle_Freeway_Park_03.jpg",
+    "author": "Joe Mabel",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_03.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Seattle_Freeway_Park_05.jpg/1280px-Seattle_Freeway_Park_05.jpg",
+    "author": "Joe Mabel",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_05.jpg",
+    "source": "wikimedia"
+   },
+   {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Seattle_Freeway_Park_09.jpg/1280px-Seattle_Freeway_Park_09.jpg",
+    "author": "Joe Mabel",
+    "license": "CC BY-SA 3.0",
+    "source_url": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_09.jpg",
+    "source": "wikimedia"
+   }
   ],
   "locality": "Seattle",
   "country": "USA",
@@ -23963,13 +24336,9 @@
   "crowdLevel": null,
   "hasFountain": null,
   "status": "community",
-  "photos": [
-   "https://www.parkourbilbao.com/wp-content/uploads/2021/06/Uribarri-1.jpg",
-   "https://www.parkourbilbao.com/wp-content/uploads/2021/06/Uribarri-4.jpg"
-  ],
   "locality": "Bilbao",
   "country": "Spagna",
-  "completeness": "arricchito"
+  "completeness": "da_completare"
  },
  {
   "id": "gmaps-086b7d6a2e49",

@@ -156,6 +156,23 @@ restituiva una foto di cavi in fibra ottica e una chiesa bizantina, entrambe ent
 nessuna delle due attinente. Ora Wikimedia scatta solo se il nome del luogo combacia — quindi
 di rado. Senza token Mapillary, le foto restano quelle che carica la community.
 
+### 7-ter. Portare gli spot dentro Supabase
+Oggi vivono in un file JSON nel repo. Il loro posto è il database: finché sono lì, nessun
+utente può contribuire e ogni correzione richiede un deploy.
+
+```sh
+node scripts/import_spots_supabase.mjs --dry-run   # vedi cosa scriverebbe
+SUPABASE_URL=https://<ref>.supabase.co \
+SUPABASE_SECRET_KEY=sb_secret_... \
+node scripts/import_spots_supabase.mjs
+```
+
+Serve la **secret key**: l'import scrive spot `community` che nessun client potrebbe
+inserire, ed è giusto così. Da lanciare dal tuo PC, mai da una CI. È idempotente su
+`external_id`: rilanciarlo aggiorna, non duplica. Applica prima le migration `0005` e `0006`,
+che aggiungono le colonne che l'import scrive (`completeness`, `locality`, `country`,
+provenienza delle foto).
+
 ### 8. Provenienza dei 1.706 spot
 Il dataset in `scripts/data/webapp_fixed_spots.json` deriva da una lista Google Maps condivisa
 (`scripts/fetch_gmaps_list.py`). I ToS di Google vietano lo scraping, e sulla lista come

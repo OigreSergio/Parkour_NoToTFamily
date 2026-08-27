@@ -68,3 +68,80 @@ class SpotRepository {
       .map(Spot.fromJson)
       .toList(growable: false);
 }
+
+/// Scritture sugli spot: proposte e contributi.
+///
+/// Separato da [SpotRepository] perché richiede un account, mentre la lettura
+/// no. Quello che passa lo decidono comunque le policy RLS: qui non c'è nessun
+/// controllo di sicurezza.
+class SpotWriteRepository {
+  const SpotWriteRepository(this._db);
+
+  final SupabaseClient _db;
+
+  /// Propone un nuovo spot. Nasce `pending` e non è visibile a nessuno tranne
+  /// l'autore e i moderatori, finché non viene verificato.
+  ///
+  /// `status` è imposto anche dalla policy di insert: passarlo qui serve a
+  /// essere espliciti, non a decidere.
+  Future<void> propose({
+    required String name,
+    required double lat,
+    required double lng,
+    String description = '',
+    String? skillLevel,
+    String? crowdLevel,
+    bool? hasFountain,
+  }) async {
+    final userId = _db.auth.currentUser?.id;
+    if (userId == null) {
+      throw StateError('Serve un account per proporre uno spot.');
+    }
+
+    await _db.from('spots').insert({
+      'name': name.trim(),
+      'lat': lat,
+      'lng': lng,
+      'description': description.trim(),
+      // Null quando chi propone non se la sente di valutare: è meglio di un
+      // default. Vale per una proposta quanto per uno spot importato.
+      'skill_level': skillLevel,
+      'crowd_level': crowdLevel,
+      'has_fountain': hasFountain,
+      'status': 'pending',
+      'author_id': userId,
+      // Mai 'verificato' da qui: quello stato dice «una persona c'è stata e
+      // l'ha descritto» ed è la moderazione ad accertarlo. Lasciarlo scegliere
+      // a chi propone significherebbe autocertificarsi verificati.
+      'completeness':
+          description.trim().isEmpty ? 'da_completare' : 'arricchito',
+    });
+  }
+
+  /// Aggiunge quello che si sa di uno spot già sulla mappa.
+  ///
+  /// Va in moderazione come una proposta: è l'unico canale da cui possono
+  /// arrivare livello, affollamento e descrizione dei 1.680 spot importati.
+  Future<void> contribute({
+    required String spotId,
+    String? description,
+    String? skillLevel,
+    String? crowdLevel,
+    bool? hasFountain,
+  }) async {
+    final userId = _db.auth.currentUser?.id;
+    if (userId == null) {
+      throw StateError('Serve un account per contribuire.');
+    }
+
+    await _db.from('spot_contributions').insert({
+      'spot_id': spotId,
+      'author_id': userId,
+      'description': description?.trim(),
+      'skill_level': skillLevel,
+      'crowd_level': crowdLevel,
+      'has_fountain': hasFountain,
+      'status': 'pending',
+    });
+  }
+}
