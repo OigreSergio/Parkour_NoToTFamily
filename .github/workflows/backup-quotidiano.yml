@@ -1,7 +1,11 @@
 name: "📲 Backup quotidiano"
 
 # Ogni 24 ore rigenera da zero la branch `backup`: la versione precedente
-# viene distrutta e sostituita dal backup più recente (dati pubblici, RLS).
+# viene distrutta e sostituita dal backup più recente.
+#
+# La branch `backup` è PUBBLICA su un repo pubblico: ci finiscono solo i
+# contenuti della community (spot, foto, fontanelle, video). Nessuna tabella
+# con dati personali — vedi la lista in 📲/backup.mjs.
 on:
   schedule:
     - cron: "17 3 * * *" # 03:17 UTC ogni notte

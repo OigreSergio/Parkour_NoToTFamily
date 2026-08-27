@@ -1,9 +1,9 @@
 # Prompt operativo — dal privato al pubblico
 
 Prompt pronto da incollare in una sessione Claude Code su questo repo. Mette in pratica
-[`docs/LAUNCH_PLAN.md`](LAUNCH_PLAN.md): mappa con gli spot, chat in gruppi e private,
-sezione video per chi inizia, gestione degli accessi, dominio, deploy e adempimenti
-legali/privacy UE.
+[`docs/LAUNCH_PLAN.md`](LAUNCH_PLAN.md): mappa con gli spot, gate di sicurezza all'ingresso,
+chat in gruppi e private, sezione video per chi inizia, gestione degli accessi, dominio,
+deploy e adempimenti legali/privacy UE.
 
 Dieci blocchi (0 → 9). **Lanciane uno alla volta**: ogni blocco chiude con codice
 verificabile, e l'esito di uno cambia il contesto del successivo.
@@ -34,8 +34,14 @@ repo. Le migrazioni sono append-only.
 
 ## BLOCCO 0 — Messa in sicurezza immediata
 
-0.1 Sul branch `gh-pages`: elimina `invito/index.html`. Espone un IBAN personale e il nome
-    del titolare su una pagina pubblica, ed è incompatibile con il servizio gratuito.
+0.1 **`gh-pages`: ricrea il branch come orfano, senza `invito/index.html`.** Quella pagina
+    espone un IBAN personale e il nome del titolare, ed è incompatibile con il servizio
+    gratuito. Cancellarla con un commit normale non basta: la storia del branch è pubblica e
+    l'IBAN resterebbe recuperabile. Quindi: prendi l'albero attuale, togli `invito/`, togli il
+    link "Richiedi un invito" da `index.html`, e ricrea `gh-pages` come branch **orfano** con
+    un solo commit, force-push. L'anteprima sotto `/t/<token>/` resta accessibile a chi ha il
+    QR. Avvisa in `docs/OPS_TODO.md` che lo "Scenario C" di `📲/README.md` (rollback del sito
+    via `git revert` su gh-pages) è temporaneamente senza storia su cui tornare.
 0.2 Modifica `📲/backup.mjs` e `.github/workflows/backup-quotidiano.yml`: **escludi `profiles`
     e ogni tabella con dati personali** dal backup pubblicato sul branch pubblico `backup`.
     Restano solo `spots`, `videos`, `fountains`, `spot_photos`. Aggiorna `📲/README.md`, che
@@ -76,8 +82,25 @@ repo. Le migrazioni sono append-only.
     reset password, logout. Password minimo 12 caratteri, con il controllo nativo Supabase
     contro password compromesse. Rate limit su login e registrazione.
 2.2 **Age gate**: in registrazione, data di nascita o dichiarazione "ho almeno 16 anni".
-    Sotto i 16 → registrazione bloccata con un messaggio che spiega il motivo (art. 8 GDPR)
-    e come contattare `privacy@pkfamily.app`. Salva `age_confirmed_at` sul profilo.
+    Sotto i 16 → registrazione bloccata con un messaggio che spiega il motivo (art. 8 GDPR).
+    Salva `age_confirmed_at` sul profilo.
+2.2.bis **Accesso tramite genitore.** Chi viene bloccato dall'age gate deve trovare una strada,
+    non un muro: pulsante "Chiedi a un genitore di aprire l'accesso".
+    - Il minore inserisce l'email di un adulto → tabella `parent_access_requests`
+      (`email`, `token`, `created_at`, `expires_at`), **una sola** email inviata,
+      cancellazione automatica dopo 7 giorni se non completata. Rate limit stretto: è un
+      canale di invio email guidato da un input utente, va protetto dall'abuso.
+    - L'adulto apre il link e crea **il proprio** account: dichiara ≥18 anni e di esercitare
+      la responsabilità genitoriale sul minore che userà il servizio sotto supervisione,
+      accetta Termini e gate di sicurezza anche per suo conto.
+    - Profilo con `supervised = true` e `supervisor_confirmed_at`. Il minore **non ha un
+      account proprio**: nessuna email di minore viene trattata.
+    - **La chat nasce disattivata** (`chat_enabled = false`) su questi account. Il genitore
+      può attivarla dalle impostazioni, dopo un avviso esplicito sul rischio di contatto con
+      adulti sconosciuti. Applica il vincolo **anche nelle RLS**, non solo in UI: un profilo
+      con `supervised = true` e `chat_enabled = false` non deve poter inserire in `messages`
+      né in `conversation_members`.
+    - Il flag `supervised` è visibile alla moderazione.
 2.3 Livelli: **anonimo** (mappa spot `verified`, video, pagine legali — sola lettura),
     **user** (propone spot, commenta, chat), **instructor** (badge, concesso da admin — non è
     un tier a pagamento), **admin** (solo a livello DB). Non introdurre percorsi API che
@@ -91,6 +114,34 @@ repo. Le migrazioni sono append-only.
     era fingerprinting senza base giuridica.
 2.6 Deprecare `admin-desktop/index.html`: la secret key non deve stare in un browser. Sposta
     l'export completo in una Supabase Edge Function che verifica il ruolo server-side.
+2.7 **Gate di sicurezza all'ingresso.** Schermata bloccante alla prima apertura, per
+    **chiunque** — registrato o anonimo — prima che la mappa mostri un solo spot, e di nuovo a
+    ogni cambio di versione del testo. Contenuto: la mappa è **informativa** e raccoglie in un
+    posto solo ciò che già circola nella community; PkFAMILY **non organizza, non supervisiona
+    e non promuove** attività sportiva; gli spot **non sono ispezionati né certificati** e le
+    condizioni cambiano; alcuni possono essere su **proprietà privata**; chi pratica **si
+    assume consapevolmente il rischio** e valuta da sé livello e condizioni.
+    - Scrivi il testo come **presa d'atto e assunzione del rischio**. **Non** scrivere mai
+      «l'utente esonera PkFAMILY da ogni responsabilità»: verso un consumatore una clausola
+      che limita la responsabilità per danni alla persona è nulla (artt. 33 e 36 Cod. Consumo;
+      art. 1229 c.c. per dolo e colpa grave), e una clausola nulla non protegge.
+    - Il testo di ogni versione vive in `assets/legal/safety_notice_<versione>.md`, versionato
+      nel repo.
+    - **Registra l'accettazione**, altrimenti il gate in giudizio vale zero: nuova tabella
+      `safety_acknowledgements` (`user_id` o id anonimo di sessione, `version`,
+      `text_sha256` del testo esattamente mostrato, `accepted_at`). Per gli anonimi tieni il
+      flag in `localStorage` e consolidalo sul profilo al primo login.
+    - Non è un banner cookie e non va costruito come tale: è presa d'atto contrattuale, non
+      consenso al trattamento. Dichiara il flag `localStorage` come storage tecnico.
+    - Revocabile in entrambe le direzioni dalle impostazioni.
+2.8 **Modalità informativa senza spot** per chi rifiuta. Non buttarlo fuori: l'app resta
+    utilizzabile con **mappa vuota** — nessun pin, nessuna coordinata, nessuna scheda spot —
+    più sezione video e pagine legali. Un pulsante sempre visibile permette di accettare
+    dopo. Applica il filtro **anche lato server**: senza acknowledgement valido le query sugli
+    spot non devono restituire coordinate. Un rifiuto aggirabile disattivando JavaScript non
+    è un rifiuto.
+2.9 In ogni **scheda spot**, la versione breve della stessa avvertenza: è lì che si decide
+    davvero se andarci.
 
 ## BLOCCO 3 — Mappa e spot
 
@@ -183,7 +234,9 @@ Marca chiaramente i testi come **bozza da far validare a un legale** (nota in
     backup (6.1.f, 30 gg). Più: destinatari e responsabili (Supabase, Cloudflare, GitHub,
     YouTube), trasferimenti extra-UE e garanzie, diritti artt. 15-22 con istruzioni concrete,
     reclamo al Garante, assenza di cifratura end-to-end, contatto `privacy@pkfamily.app`.
-7.2 `/legale/termini` — gratuità, età minima 16, regole di condotta, licenza non esclusiva sui
+7.2 `/legale/termini` — gratuità, età minima 16 **e account supervisionato da un genitore**
+    (il titolare dell'account risponde dell'uso che ne viene fatto), natura **informativa e non
+    organizzativa** del servizio in coerenza col gate 2.7, regole di condotta, licenza non esclusiva sui
     contenuti caricati (con dichiarazione dell'utente di averne il diritto e che non ci sono
     volti riconoscibili di terzi senza consenso), moderazione e sanzioni con possibilità di
     contestare, **disclaimer di sicurezza** (la pratica è a proprio rischio, gli spot non sono
@@ -231,9 +284,10 @@ Marca chiaramente i testi come **bozza da far validare a un legale** (nota in
 
 9.1 **Audit RLS** — scrivi `scripts/audit_rls.mjs` che, usando la sola publishable key da
     client **non autenticato**, verifica che: `spots?status=eq.pending` torni vuoto,
-    `messages` torni vuoto o 401, l'update di un `profiles` altrui fallisca, e nessuna policy
-    consenta di scrivere `role = 'admin'`. Deve uscire con exit code ≠ 0 al primo fallimento,
-    e girare in CI.
+    `messages` torni vuoto o 401, l'update di un `profiles` altrui fallisca, nessuna policy
+    consenta di scrivere `role = 'admin'`, un profilo `supervised` con `chat_enabled = false`
+    non possa inserire in `messages`, e senza acknowledgement valido gli spot non restituiscano
+    coordinate. Deve uscire con exit code ≠ 0 al primo fallimento, e girare in CI.
 9.2 Prova a mano su staging i percorsi: anonimo (mappa → scheda → video → pagine legali);
     registrazione con età < 16 → bloccata, ≥ 16 → conferma email → login; spot proposto →
     invisibile in pubblico → verificato dall'admin → compare; chat di gruppo e privata con

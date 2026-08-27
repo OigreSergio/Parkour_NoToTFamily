@@ -183,8 +183,28 @@ con facoltà per gli Stati di abbassarla — l'Italia l'ha portata a 14. Sotto l
 il consenso verificabile di chi esercita la responsabilità genitoriale, e **non c'è modo
 realistico di verificarlo** per un servizio gratuito gestito da una persona. Fissando 16 si
 evita del tutto il problema. Va detto chiaramente nei Termini e nell'informativa, con una
-procedura di rimozione se emerge un account sotto età. *(Se in futuro si vuole aprire ai
-14-15enni, serve un flusso di consenso genitoriale reale, non una checkbox.)*
+procedura di rimozione se emerge un account sotto età.
+
+**Accesso tramite genitore (account supervisionato).** Chi dichiara meno di 16 anni non viene
+solo respinto: gli si offre di **chiedere a un genitore o tutore di aprire l'accesso**.
+
+- Il minore inserisce l'email di un adulto → parte **una sola** email di richiesta. Se entro
+  7 giorni non viene completata, la richiesta e l'email si cancellano (nessuna raccolta di
+  contatti di terzi che resti a bagno).
+- L'adulto crea **il proprio** account: è lui il titolare, dichiara di avere almeno 18 anni e
+  di esercitare la responsabilità genitoriale sul minore che userà il servizio sotto la sua
+  supervisione, e accetta Termini e gate di sicurezza (§3.4) **anche per suo conto**.
+- Il profilo è marcato `supervised = true`. Il minore **non ha un account proprio**: non c'è
+  un'email di minore da trattare, quindi non scatta l'art. 8 GDPR.
+- **La chat nasce disattivata** su questi account. Il genitore può accenderla dalle
+  impostazioni, dopo un avviso esplicito sul rischio di contatto con adulti sconosciuti.
+  Mappa e video restano completi. La moderazione vede il flag `supervised`.
+- Va detto chiaro nei Termini: il titolare dell'account risponde dell'uso che ne viene fatto.
+
+*Nota onesta sul limite:* nulla impedisce a un quindicenne di dichiarare 16 anni, e nessun
+servizio gratuito può verificarlo davvero. Il flusso genitoriale serve a dare una strada
+corretta a chi la vuole percorrere e a dimostrare diligenza, non a costruire una barriera
+tecnica che non esiste.
 
 **Sicurezza dell'accesso amministrativo**: la secret key esce dal browser. Due opzioni,
 in ordine di preferenza:
@@ -214,6 +234,41 @@ Nota di proporzionalità: come micro-impresa, l'art. 19 DSA esonera dalla Sezion
 reclami interna, ODR, trusted flagger, report di trasparenza). Restano dovuti gli obblighi
 base: punto di contatto, T&C che spiegano la moderazione, meccanismo di notice-and-action,
 statement of reasons.
+
+### 3.4 Gate di sicurezza all'ingresso
+
+Prima che la mappa mostri anche un solo spot, l'utente — **registrato o anonimo, alla prima
+visita e a ogni cambio di versione del testo** — vede una schermata bloccante che spiega:
+
+- la mappa è **informativa**: raccoglie e rende accessibile in un posto solo un'informazione
+  che circola già nella community, e che altrimenti andrebbe cercata per vie traverse;
+- PkFAMILY **non organizza, non supervisiona e non promuove** alcuna attività sportiva;
+- gli spot **non sono ispezionati né certificati**: sono luoghi pubblici o segnalati da altri
+  praticanti, le condizioni cambiano nel tempo e nessuno ne garantisce la sicurezza;
+- alcuni spot possono trovarsi su **proprietà privata**: verificare prima di accedere è
+  responsabilità di chi si muove;
+- chi pratica **si assume consapevolmente il rischio** di infortunio, valuta da sé il proprio
+  livello e le condizioni del luogo.
+
+**Chi accetta** entra normalmente. **Chi rifiuta** non viene buttato fuori: resta nell'app in
+**modalità informativa senza spot** — mappa vuota (nessun pin, nessuna coordinata, nessuna
+scheda), sezione video e pagine legali accessibili, e un pulsante sempre presente per
+accettare più tardi. Il rifiuto è revocabile in entrambe le direzioni dalle impostazioni.
+
+**L'accettazione va registrata**, altrimenti non serve a niente in giudizio: tabella
+`safety_acknowledgements` con `user_id` (o id anonimo di sessione), `versione` del testo,
+**hash del testo esatto** mostrato, `accepted_at`. Ogni revisione del testo alza la versione e
+il gate ricompare. Il testo di ogni versione resta versionato nel repo.
+
+Il gate **non è un banner cookie** e non va confuso con esso: non è consenso al trattamento
+dati, è una presa d'atto contrattuale. Il flag di accettazione in `localStorage` è quindi
+storage tecnico.
+
+Rinforzo puntuale: la stessa avvertenza, in forma breve, compare **nella scheda di ogni
+spot** — è lì che la decisione di andarci viene presa davvero.
+
+*Su cosa questo gate ottiene e cosa no, vedi §5.7: la valutazione onesta conta più della
+schermata.*
 
 ---
 
@@ -374,6 +429,46 @@ video e fountains.
 Il parkour comporta rischio di infortunio, e la mappa indica luoghi fisici reali. Come persona
 fisica, la responsabilità è illimitata sul patrimonio personale.
 
+#### Cosa il gate di sicurezza (§3.4) può e non può fare
+
+L'obiettivo dichiarato — «fare in modo che non esistano appigli legali per cause future» —
+**non è raggiungibile da nessuna schermata**, e vale la pena essere espliciti sul perché,
+perché la differenza cambia come va scritto il testo.
+
+**Non può**, per legge:
+- **escludere la responsabilità per dolo o colpa grave**: l'art. 1229 c.c. rende **nullo**
+  qualunque patto in questo senso;
+- **limitare la responsabilità per danni alla persona** verso un consumatore: è clausola
+  vessatoria e inefficace (artt. 33 e 36 Cod. Consumo), anche se accettata con un click;
+- **vincolare chi non ha accettato**: un passante travolto, il proprietario di un muro, i
+  familiari di un infortunato in caso di danno iure proprio non sono parti di quel contratto;
+- **impedire a qualcuno di citarti in giudizio.** Nessun testo lo impedisce. Il punto è come
+  finisce la causa, non se viene aperta.
+
+**Può**, ed è molto:
+- **qualificare il servizio come informativo e non organizzativo.** È la distinzione che pesa
+  di più: chi *organizza* un'attività sportiva ha un dovere di protezione dei partecipanti;
+  chi *rende accessibile un'informazione* no. Il gate, i Termini e — soprattutto — **il modo in
+  cui l'app parla** devono dire la stessa cosa. Un solo "prova questo salto!" da qualche parte
+  nella UI vale più, contro di te, di dieci schermate di disclaimer;
+- **documentare che l'utente era informato**: con versione, hash del testo e timestamp, si
+  prova *cosa esattamente* è stato mostrato e quando. Senza registrazione, il gate in giudizio
+  vale zero;
+- **far pesare l'assunzione del rischio e il concorso del danneggiato** (art. 1227 c.c.):
+  a fronte di un rischio noto, accettato per iscritto e volontariamente affrontato, il
+  risarcimento si riduce o si azzera.
+
+**Conseguenza pratica sulla stesura:** il testo va scritto come **presa d'atto e assunzione
+consapevole del rischio**, mai come «l'utente esonera PkFAMILY da ogni responsabilità».
+La seconda formula è nulla, e una clausola nulla non protegge — segnala solo che chi l'ha
+scritta pensava di essere coperto. Chiedere di più al testo di quanto la legge gli concede
+peggiora la posizione, non la migliora.
+
+Le difese che spostano davvero l'ago, oltre al gate: **non comportarsi da organizzatore**,
+rimuovere in fretta gli spot segnalati come pericolosi, non pubblicare spot su proprietà
+privata, e — quando la community cresce — la **separazione patrimoniale** di un'ASD con
+copertura assicurativa. Quest'ultima protegge più di qualsiasi popup.
+
 - **Disclaimer chiaro** nei Termini e nelle schede spot: la pratica è a proprio rischio, gli
   spot non sono ispezionati né certificati, le condizioni cambiano nel tempo.
 - **Nessuna clausola di esonero totale**: l'art. 1229 c.c. rende **nulla** la limitazione di
@@ -448,7 +543,8 @@ visibile e etichette dei form. Se un giorno si monetizza, l'obbligo diventa conc
 ## 6. Sequenza di esecuzione
 
 **Fase 0 — Messa in sicurezza (subito, prima di ogni altra cosa)**
-- Rimuovere `gh-pages:invito/index.html` (IBAN personale pubblico).
+- Ricreare `gh-pages` come branch orfano senza `invito/` — l'IBAN sparisce anche dalla storia
+  pubblica, l'anteprima sotto `/t/<token>/` resta accessibile.
 - Escludere `profiles` dal backup pubblico (§5.6).
 - Verificare la regione Supabase; se non è UE, pianificare la migrazione ora.
 - Registrare `pkfamily.app`; verifica di anteriorità sul nome.
@@ -497,8 +593,10 @@ curl -sI https://pkfamily.app | grep -iE 'content-security-policy|strict-transpo
 #  - PATCH /rest/v1/profiles?id=eq.<altro>  → deve fallire
 
 # Percorsi utente da provare a mano su staging
-#  anonimo: mappa → scheda spot → video "Inizia da qui" → pagine legali
-#  registrazione: age gate <16 → blocco; ≥16 → conferma email → login
+#  anonimo: gate sicurezza → accetta → mappa → scheda spot → video → pagine legali
+#  gate rifiutato: mappa vuota, zero coordinate anche nelle risposte API; accetta dopo → spot
+#  registrazione: age gate <16 → blocco + "chiedi a un genitore"; ≥16 → conferma email → login
+#  genitore: richiesta via email → account supervised, chat spenta; attivala dalle impostazioni
 #  spot: proponi → pending invisibile in pubblico → admin verifica → compare
 #  chat: crea gruppo, invita, scrivi; blocca un utente; segnala un messaggio
 #  diritti: esporta i miei dati → JSON completo; elimina account → dati via, messaggi pseudonimizzati
@@ -507,9 +605,9 @@ curl -sI https://pkfamily.app | grep -iE 'content-security-policy|strict-transpo
 ---
 ## 7. Il prompt operativo
 
-Il prompt che mette in pratica tutti i punti di questo piano — mappa con gli spot, chat in
-gruppi e private, sezione video per chi inizia, accessi, dominio, deploy e adempimenti
-legali/privacy — vive in un file a parte, pronto da incollare:
+Il prompt che mette in pratica tutti i punti di questo piano — mappa con gli spot, gate di
+sicurezza, chat in gruppi e private, sezione video per chi inizia, accessi, dominio, deploy e
+adempimenti legali/privacy — vive in un file a parte, pronto da incollare:
 
 **→ [`docs/LAUNCH_PROMPT.md`](LAUNCH_PROMPT.md)**
 

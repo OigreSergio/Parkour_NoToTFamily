@@ -20,7 +20,7 @@ recente. I link sopra non cambiano mai.
 | Copia | Contenuto | Dove | Frequenza |
 | ----- | --------- | ---- | --------- |
 | 1. Database primario | tutto | Supabase (progetto PkFAMILY) | live |
-| 2. Backup pubblico | ciò che le policy RLS rendono pubblico: spot, profili (username/ruolo), video, ecc. **Nessuna email, nessun dato privato.** | branch `backup` di questo repo | ogni 24 h, automatico |
+| 2. Backup pubblico | **solo contenuti della community**: spot, foto, fontanelle, video. Nessuna tabella con dati personali. | branch `backup` di questo repo (pubblico) | ogni 24 h, automatico |
 | 3. Backup completo | tutto, inclusi utenti auth (email) | **solo sul PC dell'admin** — mai nel repo | manuale, consigliato 1×/settimana |
 
 Comandi:
@@ -64,8 +64,13 @@ e push → il sito torna com'era in pochi minuti. I dati non sono toccati.
 - La **secret key** non entra mai nel repo, nelle chat pubbliche o nell'app:
   vive solo sul PC dell'admin (console) e nei secret di GitHub se serviranno.
 - Se una chiave viene esposta: Dashboard Supabase → Settings → API → rigenera.
-- Il backup pubblico è pensato per essere pubblico: se una tabella diventa
-  sensibile, va tolta dalle policy RLS pubbliche e sparirà da sola dal backup.
+- Il backup pubblico finisce su un branch pubblico di un repo pubblico, con
+  storia git permanente: **ciò che entra lì è diffuso a destinatari
+  indeterminati, per sempre.** La leggibilità via RLS non è il criterio giusto —
+  `profiles` è leggibile da chiunque nell'app, ma pubblicarla in un file su
+  GitHub è un'altra cosa. L'elenco delle tabelle ammesse è esplicito in
+  `backup.mjs` (`TABLES_PUBBLICHE`), con un controllo che fa fallire lo script se
+  ci finisce una tabella con dati personali.
 
 ## TODO
 - [ ] Esportare lo schema di produzione in `supabase/migrations/` (serve per lo scenario B).

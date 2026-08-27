@@ -391,33 +391,6 @@
   ],
   "spot_photos": [],
   "fountains": [],
-  "profiles": [
-   {
-    "id": "94091e39-e414-42ec-bb15-43446a36a85a",
-    "username": "admin",
-    "avatar_url": null,
-    "role": "admin",
-    "banned": false,
-    "created_at": "2026-07-19T13:05:29.823809+00:00"
-   },
-   {
-    "id": "15662e40-a487-47b1-b3cf-505ac11bbbb1",
-    "username": "sergiollaxoctopus",
-    "avatar_url": null,
-    "role": "user",
-    "banned": false,
-    "created_at": "2026-07-19T14:29:34.297685+00:00"
-   }
-  ],
-  "posts": [],
-  "comments": [],
-  "post_likes": [],
-  "post_saves": [],
-  "ratings": [],
-  "videos": [],
-  "video_progress": [],
-  "reports": [],
-  "entitlements": [],
-  "blocked_users": []
+  "videos": []
  }
 }

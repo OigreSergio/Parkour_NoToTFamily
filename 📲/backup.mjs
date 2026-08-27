@@ -3,9 +3,11 @@
 // PkFAMILY — backup del database Supabase
 //
 // Due modalità:
-//   * PUBBLICA (default): usa la publishable key → salva solo i dati che le
-//     policy RLS rendono pubblici (spot verificati, profili, video, ecc.).
-//     Output: 📲/backup-quotidiano.json (committabile, nessun dato privato).
+//   * PUBBLICA (default): usa la publishable key e salva SOLO i contenuti della
+//     community (spot, foto, fontanelle, video). Output:
+//     📲/backup-quotidiano.json, che finisce su un branch pubblico di un repo
+//     pubblico → tutto ciò che entra qui è diffuso a destinatari indeterminati,
+//     per sempre. Nessuna tabella con dati personali, RLS o non RLS.
 //   * COMPLETA: se è impostata SUPABASE_SECRET_KEY salva TUTTO, inclusi gli
 //     utenti auth (email). Output: 📲/backup-completo.json — è nel .gitignore,
 //     NON va mai committato né condiviso: contiene dati personali.
@@ -26,11 +28,31 @@ const key = SECRET_KEY ?? PUBLISHABLE_KEY;
 const mode = SECRET_KEY ? "completo" : "pubblico";
 const outFile = SECRET_KEY ? "📲/backup-completo.json" : "📲/backup-quotidiano.json";
 
-const TABLES = [
-  "spots", "spot_photos", "fountains", "profiles", "posts", "comments",
-  "post_likes", "post_saves", "ratings", "videos", "video_progress",
-  "reports", "chats", "chat_members", "messages", "entitlements", "blocked_users",
+// Nel backup PUBBLICO entrano solo i contenuti della community. Le RLS non bastano
+// come criterio: `profiles` è leggibile da chiunque via RLS, ma pubblicarla su un
+// branch pubblico è tutt'altra cosa dall'esporla nell'app.
+const TABLES_PUBBLICHE = ["spots", "spot_photos", "fountains", "videos"];
+
+// Tabelle che contengono dati personali: non possono MAI finire nel backup pubblico.
+// La verifica sotto è una rete di sicurezza per il futuro, non una formalità.
+const TABLES_DATI_PERSONALI = [
+  "profiles", "posts", "comments", "post_likes", "post_saves", "ratings",
+  "video_progress", "reports", "chats", "chat_members", "messages",
+  "entitlements", "blocked_users",
 ];
+
+// Backup COMPLETO (solo locale, con secret key): tutto.
+const TABLES_COMPLETE = [...TABLES_PUBBLICHE, ...TABLES_DATI_PERSONALI];
+
+const contaminate = TABLES_PUBBLICHE.filter((t) => TABLES_DATI_PERSONALI.includes(t));
+if (contaminate.length) {
+  console.error(
+    `ERRORE: ${contaminate.join(", ")} contiene dati personali e non può stare nel backup pubblico.`
+  );
+  process.exit(1);
+}
+
+const TABLES = SECRET_KEY ? TABLES_COMPLETE : TABLES_PUBBLICHE;
 
 const headers = { apikey: key, Authorization: `Bearer ${key}` };
 const PAGE = 1000;
