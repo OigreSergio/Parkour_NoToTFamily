@@ -93,11 +93,19 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 4 — Chat
 
-- [ ] 4.1 Conversazioni private e di gruppo su Realtime
-- [ ] 4.2 Solo utenti con email confermata, rate limit
-- [ ] 4.3 Blocco utente e segnalazione messaggio
-- [ ] 4.4 Assenza di cifratura end-to-end dichiarata
-- [ ] 4.5 Pseudonimizzazione dei messaggi alla cancellazione dell'account
+- [x] 4.1 Conversazioni private e di gruppo su Supabase Realtime, elenco con anteprima,
+      creazione, ricerca persone, uscita
+- [x] 4.2 Email confermata e rate limit **imposti dal database** (policy RESTRICTIVE +
+      trigger a 20 messaggi/minuto), non solo dal client
+- [x] 4.3 Blocco utente applicato **anche lato server** (`can_write_to_chat()`) e
+      segnalazione messaggio con categorie DSA → `reports`
+- [x] 4.4 Assenza di cifratura end-to-end dichiarata in cima all'elenco chat, non solo
+      nell'informativa
+- [x] 4.5 `pseudonymise_deleted_accounts()`: alla scadenza dei 30 giorni `sender_id`
+      diventa NULL e il messaggio resta nella conversazione degli altri
+
+> Le migration `0004` e `0007` **non sono applicate**. Finché non lo sono, la chat risponde
+> HTTP 500 (`42P17`) e l'app lo dice esplicitamente invece di sembrare rotta.
 
 ## BLOCCO 5 — Video
 

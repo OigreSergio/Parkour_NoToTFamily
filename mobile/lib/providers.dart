@@ -1,10 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'models/chat.dart';
 import 'models/profile.dart';
 import 'models/spot.dart';
 import 'models/video.dart';
 import 'repositories/account_repository.dart';
+import 'repositories/chat_repository.dart';
 import 'repositories/parent_access_repository.dart';
 import 'repositories/safety_repository.dart';
 import 'repositories/spot_repository.dart';
@@ -36,6 +38,22 @@ final parentAccessRepositoryProvider = Provider<ParentAccessRepository>(
 final authStateProvider = StreamProvider<AuthState>(
   (ref) => ref.watch(accountRepositoryProvider).authChanges,
 );
+
+/// C'è una sessione con un account vero (non anonima)?
+///
+/// I widget guardano questo, non il repository: così lo stato si aggiorna da
+/// solo a ogni login o logout, e nei test si sostituisce senza costruire un
+/// client Supabase — che avvia timer di refresh e non muore con il test.
+final isSignedInProvider = Provider<bool>((ref) {
+  ref.watch(authStateProvider);
+  return ref.watch(accountRepositoryProvider).isSignedIn;
+});
+
+/// L'id dell'utente corrente, o null.
+final currentUserIdProvider = Provider<String?>((ref) {
+  ref.watch(authStateProvider);
+  return ref.watch(accountRepositoryProvider).currentUser?.id;
+});
 
 final currentProfileProvider = FutureProvider<Profile?>((ref) async {
   ref.watch(authStateProvider);
@@ -123,6 +141,61 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         radiusMeters: 2000000,
       );
 });
+
+// ---------------------------------------------------------------------------
+// Chat
+// ---------------------------------------------------------------------------
+
+final chatRepositoryProvider = Provider<ChatRepository>(
+  (ref) => ChatRepository(ref.watch(supabaseClientProvider)),
+);
+
+/// Le mie conversazioni, con l'ultimo messaggio di ciascuna.
+final myChatsProvider = FutureProvider<List<Chat>>((ref) async {
+  ref.watch(authStateProvider);
+  return ref.watch(chatRepositoryProvider).myChats();
+});
+
+/// I messaggi di una conversazione, in tempo reale.
+///
+/// `autoDispose`: chiusa la stanza, la sottoscrizione Realtime si chiude con
+/// lei. Lasciarla aperta terrebbe un websocket per ogni chat mai visitata.
+final chatMessagesProvider = StreamProvider.autoDispose
+    .family<List<ChatMessage>, String>(
+      (ref, chatId) => ref.watch(chatRepositoryProvider).watch(chatId),
+    );
+
+/// Chi ho bloccato.
+final blockedIdsProvider = FutureProvider<Set<String>>((ref) async {
+  ref.watch(authStateProvider);
+  return ref.watch(chatRepositoryProvider).blockedIds();
+});
+
+/// Ricerca di persone per nome, per aprire una conversazione.
+///
+/// Sotto i due caratteri non cerca: una query su una lettera sola restituirebbe
+/// mezza community, che è un elenco di iscritti che nessuno ha chiesto.
+final userSearchProvider = FutureProvider.autoDispose
+    .family<List<Profile>, String>((ref, query) async {
+      final q = query.trim();
+      if (q.length < 2) return const [];
+
+      final rows = await ref
+          .watch(supabaseClientProvider)
+          .from('profiles')
+          .select('id, username, avatar_url, role')
+          .ilike('username', '%$q%')
+          .limit(20);
+
+      final me = ref.watch(accountRepositoryProvider).currentUser?.id;
+      final blocked = await ref.watch(blockedIdsProvider.future);
+
+      return rows
+          .whereType<Map<String, dynamic>>()
+          .map(Profile.fromJson)
+          .where((p) => p.id != me && !blocked.contains(p.id))
+          .toList(growable: false);
+    });
 
 // ---------------------------------------------------------------------------
 // Video

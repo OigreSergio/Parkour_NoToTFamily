@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'providers.dart';
+import 'screens/chat/chat_list_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/safety_gate_screen.dart';
 import 'screens/spots_list_screen.dart';
@@ -108,10 +109,11 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _index = 0;
 
-  static const _titles = ['Mappa', 'Lista', 'Video', 'Profilo'];
+  static const _titles = ['Mappa', 'Lista', 'Chat', 'Video', 'Profilo'];
   static const _screens = [
     SpotsMapScreen(),
     SpotsListScreen(),
+    ChatListScreen(),
     TutorialsScreen(),
     ProfileScreen(),
   ];
@@ -139,6 +141,11 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(Icons.list_outlined),
             selectedIcon: Icon(Icons.list),
             label: 'Lista',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.forum_outlined),
+            selectedIcon: Icon(Icons.forum),
+            label: 'Chat',
           ),
           NavigationDestination(
             icon: Icon(Icons.menu_book_outlined),

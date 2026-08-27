@@ -68,6 +68,19 @@ Il codice del BLOCCO 2 le dà per presenti; senza, alcune parti restano inerti.
   profilo e contenuti e **pseudonimizzi** i messaggi. Il client segna solo la richiesta: non
   può cancellare da `auth.users` senza la secret key.
 
+### 1-quinquies. Perché la chat funzioni
+Oltre ad applicare `0004` (ricorsione) e `0007` (limiti, blocco, cancellazione):
+
+- **Database → Replication**: abilita Realtime sulla tabella `messages`. Senza, i messaggi
+  arrivano solo ricaricando.
+- **pg_cron**: schedula `pseudonymise_deleted_accounts()` ogni giorno. Se non gira, il
+  pulsante «elimina account» segna solo una data e non cancella niente — il diritto
+  dell'art. 17 resta sulla carta.
+- **La riga in `auth.users`** va rimossa a parte con l'Admin API: da SQL non è raggiungibile.
+  La funzione pseudonimizza i messaggi e cancella il profilo, ma l'utente auth resta.
+- Il trigger di rate limit sta a **20 messaggi al minuto**. Se in beta risultasse stretto, si
+  cambia in un punto solo (`enforce_message_rate_limit`).
+
 ### 2. Dominio `pkfamily.app`
 Registralo su **Cloudflare Registrar** (prezzo di costo, WHOIS privacy inclusa).
 

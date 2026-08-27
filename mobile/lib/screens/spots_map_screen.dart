@@ -275,7 +275,7 @@ class _SpotsMapScreenState extends ConsumerState<SpotsMapScreen> {
   /// Proporre uno spot richiede un account: la proposta ha un autore, e senza
   /// non c'è nessuno a cui comunicare l'esito della moderazione.
   void _proposeSpot() {
-    final signedIn = ref.read(accountRepositoryProvider).isSignedIn;
+    final signedIn = ref.read(isSignedInProvider);
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder:

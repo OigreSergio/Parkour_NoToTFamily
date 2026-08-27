@@ -144,7 +144,7 @@ class AccountRepository {
     await add('profiles', 'id');
     await add('spots', 'author_id');
     await add('comments', 'author_id');
-    await add('messages', 'author_id');
+    await add('messages', 'sender_id');
     await add('ratings', 'user_id');
     await add('safety_acknowledgements', 'user_id');
 

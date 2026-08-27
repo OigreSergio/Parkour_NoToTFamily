@@ -23,6 +23,13 @@
 -- tabelle — `conversations`/`conversation_members` — che in produzione non
 -- esistono: qui è applicato ai nomi reali.
 --
+-- Colonne reali, confermate sondando la produzione una per una:
+--   chats         (id, created_by, created_at, name, is_group)
+--   chat_members  (chat_id, user_id, joined_at)
+--   messages      (id, chat_id, body, created_at, sender_id)
+-- Nota: `is_group` è un booleano, non un `kind` testuale, e i messaggi hanno
+-- `sender_id`, non `author_id`.
+--
 -- ⚠️ PRIMA DI APPLICARLA: questa migration ricrea le policy delle tabelle di
 -- chat, e le policy attuali non sono ispezionabili dall'esterno. Esegui prima
 -- scripts/dump_schema.sh per avere lo stato reale, e verifica che i nomi delle
@@ -117,11 +124,13 @@ create policy "members read messages"
   to authenticated
   using (public.is_chat_member(chat_id));
 
+-- `sender_id`, non `author_id`: verificato sondando la produzione. Le colonne
+-- reali di `messages` sono (id, chat_id, body, created_at, sender_id).
 create policy "members write messages as themselves"
   on public.messages for insert
   to authenticated
   with check (
-    author_id = auth.uid()
+    sender_id = auth.uid()
     and public.is_chat_member(chat_id)
   );
 

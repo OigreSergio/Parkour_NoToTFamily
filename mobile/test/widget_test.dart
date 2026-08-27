@@ -7,10 +7,15 @@ import 'package:parkour_notot/models/profile.dart';
 import 'package:parkour_notot/providers.dart';
 import 'package:parkour_notot/services/supabase_client.dart';
 
-/// La shell tocca Supabase attraverso profilo e gate. Nei test non c'è nessun
-/// backend: si sostituiscono i due provider di ingresso, così si verifica la
-/// navigazione senza inventare un finto client.
+/// La shell tocca Supabase attraverso profilo, gate e chat. Nei test non c'è
+/// nessun backend: si sostituiscono i provider di ingresso, e nessuno arriva
+/// mai al client.
+///
+/// Costruire un vero `SupabaseClient` non funzionerebbe: avvia timer di
+/// refresh che sopravvivono al test e lo fanno fallire su `!timersPending`.
 List<Override> _shellOverrides({bool safetyAccepted = true}) => [
+  isSignedInProvider.overrideWithValue(false),
+  currentUserIdProvider.overrideWithValue(null),
   safetyAcceptedProvider.overrideWith((ref) async => safetyAccepted),
   currentProfileProvider.overrideWith((ref) async => null),
 ];
@@ -33,7 +38,7 @@ void main() {
     );
   });
 
-  testWidgets('la shell espone le quattro sezioni', (tester) async {
+  testWidgets('la shell espone le cinque sezioni', (tester) async {
     await tester.pumpWidget(
       ProviderScope(
         overrides: _shellOverrides(),
@@ -44,6 +49,7 @@ void main() {
 
     expect(find.text('Mappa'), findsWidgets);
     expect(find.text('Lista'), findsWidgets);
+    expect(find.text('Chat'), findsWidgets);
     expect(find.text('Video'), findsWidgets);
     expect(find.text('Profilo'), findsWidgets);
   });
