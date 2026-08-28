@@ -68,6 +68,33 @@ della piattaforma, e la differenza di latenza rispetto a Parigi è impercettibil
 Se il progetto non è già lì: creane uno nuovo in UE e migra **adesso**. Oggi ci sono 24 spot e
 2 profili — la migrazione costa un pomeriggio. Dopo il lancio costa il lancio.
 
+### 0-bis. Le otto migration, in un colpo solo
+Applicarle una alla volta dal SQL Editor è otto occasioni di saltarne una o invertirne
+l'ordine. Il file si genera così:
+
+```sh
+./scripts/migrazioni_da_applicare.sh > /tmp/pkfamily.sql
+```
+
+Dentro ci sono `0004` → `0011` nell'ordine giusto, avvolte in una transazione: o passano
+tutte, o non passa niente. Si incolla in **Dashboard → SQL Editor → New query** e si preme
+Run.
+
+Due cose prima:
+
+1. **Un backup** (`📲/backup.mjs`, o lo snapshot dalla dashboard). Le migration sono scritte
+   per essere rieseguibili, ma un backup prima di toccare uno schema non si discute.
+2. **Le sessioni anonime attive**, perché la `0010` nega gli spot a chi non ha una sessione.
+
+Dopo, non fidarti del «Success» verde — chiedilo da fuori:
+
+```sh
+SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=… node scripts/audit_rls.mjs --sessione
+```
+
+Deve sparire la ricorsione della chat (niente più HTTP 500) e deve comparire «il gate è
+applicato dal database».
+
 ### 1-bis. La chat è rotta in produzione, e serve la secret key per ripararla
 `GET /rest/v1/chats` risponde **HTTP 500**:
 
