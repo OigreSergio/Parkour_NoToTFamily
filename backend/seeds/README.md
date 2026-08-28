@@ -29,3 +29,34 @@ make seed-spots
 # oppure, dentro il container api:
 python -m app.db.seed_spots
 ```
+
+# Seed video / tutorial
+
+`videos.json` contiene la selezione curata di tutorial di parkour presi dai canali
+YouTube di riferimento. La selezione, i criteri di inclusione/esclusione e la
+valutazione della qualità didattica sono documentati in
+[`docs/TUTORIAL_CATALOG.md`](../../docs/TUTORIAL_CATALOG.md).
+
+## Formato
+
+```json
+{
+  "title": "Titolo esatto del video su YouTube",
+  "description": "Canale — argomento. Cosa si impara.",
+  "url": "https://www.youtube.com/watch?v=...",
+  "thumbnail_url": "https://i.ytimg.com/vi/.../hqdefault.jpg",
+  "category": "practice | conditioning | recovery",
+  "level": "beginner | intermediate | advanced",
+  "trick_category": "basics | vaults | wall_tricks | bar_tricks | ground_tricks | flips | other",
+  "difficulty": 3,
+  "duration_seconds": 310,
+  "source_channel": "Nome del canale",
+  "quality": "Alta | Media"
+}
+```
+
+I campi da `title` a `duration_seconds` corrispondono a `VideoCreate`
+(`backend/app/schemas/video.py`). `source_channel` e `quality` sono metadati
+editoriali del catalogo e vanno ignorati in fase di caricamento.
+
+`url` fa da chiave: un caricamento ripetuto deve saltare i video già presenti.
