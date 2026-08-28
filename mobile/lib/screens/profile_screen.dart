@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/profile.dart';
 import '../providers.dart';
+import '../widgets/moderation_notices.dart';
 import 'auth/sign_in_screen.dart';
 
 /// Profilo, impostazioni e diritti dell'interessato.
@@ -151,6 +152,7 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
+        const ModerationNotices(),
         ListTile(
           leading: const CircleAvatar(child: Icon(Icons.person)),
           title: Text(p.username.isEmpty ? 'Senza nome' : p.username),

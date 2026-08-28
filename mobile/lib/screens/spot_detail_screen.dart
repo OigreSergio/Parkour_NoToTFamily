@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../models/spot.dart';
+import '../repositories/moderation_repository.dart';
+import '../widgets/report_button.dart';
 import '../widgets/spot_completeness.dart';
 import '../widgets/spot_distance.dart';
 import 'safety_gate_screen.dart' show SpotSafetyReminder;
@@ -15,7 +17,10 @@ class SpotDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      appBar: AppBar(title: Text(spot.name)),
+      appBar: AppBar(
+        title: Text(spot.name),
+        actions: [ReportButton(kind: ReportKind.spot, targetId: spot.id)],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [

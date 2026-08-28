@@ -85,6 +85,21 @@ jobs:
       - name: Copertura della mappa
         run: node scripts/spot_coverage.mjs
 
+      # Le policy RLS sono l'unica difesa del database: la publishable key
+      # finisce nel bundle e ce l'hanno tutti. Questo controlla da fuori cosa
+      # vede un estraneo. Gira solo se i secret ci sono — senza, salta con un
+      # avviso invece di far fallire il build a chi clona il repo.
+      - name: Cosa vede un estraneo (RLS)
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "::warning::Secret Supabase assenti: audit RLS saltato."
+            exit 0
+          fi
+          node scripts/audit_rls.mjs
+
   admin:
     name: Console di moderazione
     runs-on: ubuntu-latest

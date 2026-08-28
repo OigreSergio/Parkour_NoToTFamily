@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/chat.dart';
 import '../../providers.dart';
+import '../../repositories/moderation_repository.dart';
 
 /// Una conversazione aperta.
 class ChatRoomScreen extends ConsumerStatefulWidget {
@@ -124,6 +125,61 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
     }
   }
 
+  /// Segnala la persona, non il singolo messaggio.
+  ///
+  /// Serve quando il problema è il comportamento nel suo insieme e non una
+  /// frase: senza, l'unico modo di segnalare qualcuno sarebbe scegliere
+  /// arbitrariamente uno dei suoi messaggi.
+  Future<void> _reportPerson() async {
+    final me = ref.read(currentUserIdProvider);
+    final other = widget.chat.members.where((m) => m.userId != me).toList();
+    if (other.isEmpty) return;
+
+    final reason = await showDialog<String>(
+      context: context,
+      builder:
+          (ctx) => AlertDialog(
+            title: Text('Segnalare ${other.first.displayName}?'),
+            content: const Text(
+              'Un moderatore guarderà il comportamento di questa persona. '
+              'Non saprà che sei statə tu.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('Annulla'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.pop(ctx, 'Comportamento in chat'),
+                child: const Text('Segnala'),
+              ),
+            ],
+          ),
+    );
+    if (reason == null || !mounted) return;
+
+    try {
+      await ref
+          .read(moderationRepositoryProvider)
+          .report(
+            kind: ReportKind.profile,
+            targetId: other.first.userId,
+            reason: reason,
+          );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Segnalato.')));
+      }
+    } catch (err) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$err')));
+      }
+    }
+  }
+
   Future<void> _report(ChatMessage message) async {
     final reason = await showDialog<String>(
       context: context,
@@ -165,12 +221,18 @@ class _ChatRoomScreenState extends ConsumerState<ChatRoomScreen> {
                 (value) => switch (value) {
                   'esci' => _leave(),
                   'blocca' => _blockOther(),
+                  'segnala' => _reportPerson(),
                   _ => null,
                 },
             itemBuilder:
                 (_) => [
-                  if (!widget.chat.isGroup)
+                  if (!widget.chat.isGroup) ...[
                     const PopupMenuItem(value: 'blocca', child: Text('Blocca')),
+                    const PopupMenuItem(
+                      value: 'segnala',
+                      child: Text('Segnala la persona'),
+                    ),
+                  ],
                   const PopupMenuItem(value: 'esci', child: Text('Esci')),
                 ],
           ),

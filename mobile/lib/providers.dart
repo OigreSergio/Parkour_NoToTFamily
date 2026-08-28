@@ -7,6 +7,7 @@ import 'models/spot.dart';
 import 'models/video.dart';
 import 'repositories/account_repository.dart';
 import 'repositories/chat_repository.dart';
+import 'repositories/moderation_repository.dart';
 import 'repositories/parent_access_repository.dart';
 import 'repositories/safety_repository.dart';
 import 'repositories/spot_repository.dart';
@@ -140,6 +141,26 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         lng: center.longitude,
         radiusMeters: 2000000,
       );
+});
+
+// ---------------------------------------------------------------------------
+// Moderazione
+// ---------------------------------------------------------------------------
+
+final moderationRepositoryProvider = Provider<ModerationRepository>(
+  (ref) => ModerationRepository(ref.watch(supabaseClientProvider)),
+);
+
+/// Le motivazioni di moderazione che mi riguardano.
+///
+/// L'art. 17 DSA non chiede solo di motivare una decisione: chiede che la
+/// motivazione arrivi a chi la subisce. Sta nel profilo perché è lì che uno
+/// guarda quando si chiede perché la sua proposta è sparita.
+final myModerationNoticesProvider = FutureProvider<List<ModerationNotice>>((
+  ref,
+) async {
+  ref.watch(authStateProvider);
+  return ref.watch(moderationRepositoryProvider).myNotices();
 });
 
 // ---------------------------------------------------------------------------

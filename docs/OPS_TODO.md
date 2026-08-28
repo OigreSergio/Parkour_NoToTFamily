@@ -244,3 +244,39 @@ senza. Lanciare alla cieca è una decisione legittima, ma va presa, non subita.
 ### 13. Backup completo settimanale
 `📲/README.md` lo raccomanda 1×/settimana sul tuo PC, e non è automatizzabile (richiede la
 secret key, che non deve stare in nessun CI). Mettilo in calendario.
+
+---
+
+## 🔴 Da chiudere per prima: le segnalazioni sono leggibili da chiunque
+
+Emerso sondando la produzione durante il BLOCCO 6, con la sola chiave pubblica:
+
+```
+GET  /rest/v1/reports?select=*   → HTTP 200
+POST /rest/v1/reports            → 42501, la RLS rifiuta
+```
+
+La RLS è attiva, ma la policy di **lettura** è permissiva verso tutti. Oggi la tabella è
+vuota e non è successo niente. Alla prima segnalazione di molestie, però, chi l'ha scritta e
+cosa ha scritto sarebbero leggibili da chiunque abbia la chiave — **compresa la persona
+segnalata**. Se segnalare espone chi segnala, nessuno segnala più, e il meccanismo di
+notice-and-action dell'art. 16 DSA diventa una casella vuota.
+
+Stessa lettura aperta su `post_saves` (cosa una persona ha salvato) ed `entitlements`.
+
+La migration `0009` le chiude con policy RESTRICTIVE, che si combinano in AND con quelle
+esistenti senza doverle conoscere. **Applicala prima di aprire le iscrizioni**, e poi verifica:
+
+```sh
+SUPABASE_URL=… SUPABASE_PUBLISHABLE_KEY=… node scripts/audit_rls.mjs
+```
+
+Una nota sull'audit: su una tabella vuota dichiara «non concludente», non «passato». È
+esattamente per questo che il buco era passato inosservato — vuota, quindi apparentemente a
+posto. Rilancialo quando ci saranno dati veri.
+
+## Moderazione: due cose da schedulare
+
+- `purge_old_moderation_events()` — il registro si conserva 12 mesi, poi va ripulito.
+- Il ruolo `admin` resta assegnabile **solo a livello di database**: nessun percorso
+  dell'applicazione lo concede, e la console lo esclude esplicitamente.

@@ -127,11 +127,24 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 6 — Moderazione e DSA
 
-- [ ] 6.1 Segnalazioni su spot, messaggi, commenti, profili
-- [ ] 6.2 Code di moderazione in `web-admin`
-- [ ] 6.3 Statement of reasons (art. 17 DSA)
-- [ ] 6.4 Log di moderazione, 12 mesi
-- [ ] 6.5 Punto di contatto `abuse@pkfamily.app`
+- [x] 6.1 Segnalazione su spot, messaggi, commenti, post e **profili** (`profile_id` mancava:
+      un utente molesto si poteva segnalare solo attraverso un suo messaggio). Vincolo che
+      impone un solo bersaglio, e nessuno segnala sé stesso
+- [x] 6.2 Console: code segnalazioni, contributi, spot, utenti — con sospensione a tempo
+      (3/7/30 giorni) oltre al ban, perché fra «niente» e «per sempre» ci vuole qualcosa
+- [x] 6.3 Statement of reasons: `record_moderation()` scrive registro e motivazione
+      **insieme**, e la motivazione arriva all'utente nel profilo. Una decisione senza
+      motivazione viene rifiutata dal database
+- [x] 6.4 `moderation_events` — non esisteva affatto in produzione (404): il registro della
+      migration 0001 non era mai stato creato. 12 mesi, con funzione di pulizia
+- [x] 6.5 `abuse@pkfamily.app` citato dove serve; le pagine legali sono il BLOCCO 7
+- [x] **`scripts/audit_rls.mjs`**, in CI: verifica da fuori cosa vede un estraneo, e
+      dichiara «non concludente» invece di «passato» quando la tabella è vuota
+
+> 🔴 **Trovato sondando la produzione: `reports` era leggibile da chiunque.** La tabella è
+> vuota, ma alla prima segnalazione di molestie chi l'aveva scritta sarebbe stato leggibile
+> dalla persona segnalata — e nessuno segnala più, se segnalare espone. Stessa lettura aperta
+> su `post_saves` ed `entitlements`. Chiuse dalla migration `0009` con policy RESTRICTIVE.
 
 ## BLOCCO 7 — Legale e privacy
 

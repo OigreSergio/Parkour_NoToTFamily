@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
+import { AdminNav } from '@/components/AdminNav';
 import {
   getSupabase,
   pendingSpots,
@@ -71,6 +72,7 @@ export default function SpotsQueuePage() {
 
   return (
     <div className="container">
+      <AdminNav />
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h1>Spot in attesa</h1>
         <button className="secondary" onClick={() => void logout()}>
