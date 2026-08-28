@@ -62,11 +62,12 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
     final landed = ref.watch(landedTricksProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Suggestion Generator')),
+      appBar: AppBar(title: const Text('Dammi un\'idea')),
       body: tutorialsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error:
-            (error, _) => Center(child: Text('Could not load tricks.\n$error')),
+            (error, _) =>
+                Center(child: Text('Non riesco a caricare i video.\n$error')),
         data: (all) {
           final pool = _pool(all, landed);
           final current = _suggestion;
@@ -106,7 +107,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           icon: const Icon(Icons.remove),
-                          label: const Text('Easier'),
+                          label: const Text('Più facile'),
                           onPressed:
                               () => _pickFrom(
                                 pool
@@ -122,7 +123,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           icon: const Icon(Icons.add),
-                          label: const Text('Harder'),
+                          label: const Text('Più difficile'),
                           onPressed:
                               () => _pickFrom(
                                 pool
@@ -138,7 +139,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                       Expanded(
                         child: OutlinedButton.icon(
                           icon: const Icon(Icons.shuffle),
-                          label: const Text('Switch type'),
+                          label: const Text('Cambia tipo'),
                           onPressed: () {
                             setState(() => _category = null);
                             _pickFrom(
@@ -168,7 +169,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                   ),
                 if (current != null) const Spacer(),
                 _BigButton(
-                  label: 'New Trick',
+                  label: 'Un altro',
                   onPressed:
                       pool.isEmpty
                           ? null
@@ -176,7 +177,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                 ),
                 const SizedBox(height: 16),
                 _BigButton(
-                  label: 'All Suggestions',
+                  label: 'Da tutti',
                   onPressed:
                       pool.isEmpty
                           ? null
@@ -195,7 +196,7 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
                 ),
                 if (pool.isEmpty) ...[
                   const SizedBox(height: 12),
-                  const Text('You landed everything here — nice!'),
+                  const Text('Li hai fatti tutti. Bravo.'),
                 ],
               ],
             ),

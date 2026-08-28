@@ -121,9 +121,23 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
       dopo una spiegazione mostrata una volta sola
 - [x] 5.5 Riga di sicurezza **per tappa**, non un banner generico: quello che serve sapere
       prima di una rullata non è quello che serve prima di un salto di precisione
-- [~] 5.6 Struttura del percorso pronta; **i 7 id YouTube restano da riempire**.
-      `seed_starter_path.mjs` li verifica via oEmbed e rifiuta tutto ciò che non esiste o
-      che l'autore non consente di incorporare
+- [x] 5.6 **Le sette tappe hanno i loro video**, dal catalogo `docs/TUTORIAL_CATALOG.md`
+      che ha portato l'utente. Scelti sul contenuto, non sul titolo: la tappa «Quadrupedia»
+      prende *10 Parkour Moves on Flat Ground*, che nella sua scheda è descritto come
+      «movimento quadrupedale, base spesso saltata dai principianti»
+- [x] 5.7 **Il catalogo completo**: 117 video oltre ai 7 del percorso, in
+      `scripts/data/tutorial_catalog.json`, caricabili con `scripts/seed_videos.mjs`.
+      **Tutti e 124 verificati via oEmbed**: esistono e i loro autori consentono
+      l'incorporamento — che è la loro autorizzazione esplicita, non una nostra
+      interpretazione. Nessuno scartato
+- [x] 5.8 Migration `0011`: `url` diventa chiave unica, così rilanciare il caricamento
+      aggiorna invece di duplicare 117 righe
+- [x] 5.9 **Le anteprime restano vuote di proposito.** Il catalogo porta i
+      `thumbnail_url` di `i.ytimg.com`: caricarli significherebbe una richiesta a Google
+      appena si apre la lista, mentre l'informativa dice che non ne parte nessuna. Il
+      segnaposto è disegnato in locale
+- [x] 5.10 Tradotte le stringhe inglesi rimaste nella sezione video: «Search tricks»,
+      «Mark as landed», «Suggestion Generator», «Easier»/«Harder»
 
 ## BLOCCO 6 — Moderazione e DSA
 

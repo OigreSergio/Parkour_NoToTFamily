@@ -64,7 +64,7 @@ class _TutorialListScreenState extends ConsumerState<TutorialListScreen> {
                 ? TextField(
                   autofocus: true,
                   decoration: const InputDecoration(
-                    hintText: 'Search tricks…',
+                    hintText: 'Cerca un movimento…',
                     border: InputBorder.none,
                   ),
                   onChanged: (value) => setState(() => _search = value),
@@ -91,7 +91,7 @@ class _TutorialListScreenState extends ConsumerState<TutorialListScreen> {
         data: (all) {
           final tutorials = _filter(all);
           if (tutorials.isEmpty) {
-            return const Center(child: Text('No tutorials here yet.'));
+            return const Center(child: Text('Qui non c\'è ancora niente.'));
           }
           return RefreshIndicator(
             onRefresh: () => ref.refresh(tutorialsProvider.future),
@@ -129,7 +129,10 @@ class _TutorialRow extends ConsumerWidget {
         children: [
           DifficultyGauge(difficulty: video.difficulty),
           IconButton(
-            tooltip: video.landed ? 'Landed! Tap to unset' : 'Mark as landed',
+            tooltip:
+                video.landed
+                    ? 'Fatto — tocca per togliere'
+                    : 'Segna come fatto',
             icon: Icon(
               Icons.directions_run,
               color: video.landed ? Colors.red : Colors.grey.shade400,

@@ -44,6 +44,19 @@ strada — il gate che c'è nell'interfaccia e non nel database — non è una s
 
 `scripts/audit_rls.mjs` controlla adesso entrambe le cose insieme e dice quale manca.
 
+**Come verificare che l'impostazione sia davvero presa.** Il pannello a volte sembra
+salvato senza esserlo, e il modo di saperlo non è riguardare l'interruttore ma chiedere al
+server:
+
+```sh
+curl -s 'https://gkdzdtxqkftebrxhgway.supabase.co/auth/v1/settings' \
+  -H 'apikey: sb_publishable_Xi0aGU8lnV182kEKpsmU3w__uAkFVXg' | grep -o '"anonymous_users":[a-z]*'
+```
+
+Deve rispondere `"anonymous_users":true`. Se risponde `false`, l'impostazione non è passata
+su **questo** progetto — controlla di essere in `gkdzdtxqkftebrxhgway` e non in un altro, e
+che dopo l'interruttore ci sia stato un *Save*.
+
 ### 1. Regione del progetto Supabase → Francoforte
 Il progetto è `gkdzdtxqkftebrxhgway`. Verifica in **Dashboard → Settings → General** che la
 region sia **Frankfurt `eu-central-1`**.
@@ -370,28 +383,42 @@ il bundle su `gh-pages`. Il secondo passo puntava a uno script che non esiste pi
 esattamente ciò che il BLOCCO 3-bis smette di fare. Se ti serviva per altro, dimmelo: va
 riscritto, non ripristinato.
 
-### 11. Video del percorso "Inizia da qui"
-Le sette tappe sono scritte: titolo, descrizione e nota di sicurezza sono pronte e valgono
-già da sole. **Mancano i video**, e li scegli tu:
+### 11. ~~Video del percorso "Inizia da qui"~~ — fatto, con il tuo catalogo
+`docs/TUTORIAL_CATALOG.md` ha chiuso il punto rimasto aperto da tre blocchi. Le sette tappe
+hanno i loro video, scelti dal catalogo e **verificati uno per uno via oEmbed**:
+
+| Tappa | Video | Canale |
+|---|---|---|
+| 1 · Riscaldamento e mobilità | How to Warm Up | Jesse La Flair |
+| 2 · Atterrare e rullare | Parkour Roll Tutorial — Beginner & Advanced | Jesse La Flair |
+| 3 · Quadrupedia | 10 Parkour Moves on Flat Ground | Ronnie Street Stunts |
+| 4 · Salto di precisione | BEST PARKOUR PRECISION TUTORIAL | Jesse La Flair |
+| 5 · I passamuro di base | 10 PARKOUR VAULTS FOR BEGINNERS | Ronnie Street Stunts |
+| 6 · Progressione e paura | How To OVERCOME FEAR In 6 Steps | Ronnie Street Stunts |
+| 7 · Infortuni e recupero | Avoid Parkour Injuries: 5 Rules | Ronnie Street Stunts |
+
+Gli altri **117** del catalogo sono pronti in `scripts/data/tutorial_catalog.json`. Tutti e
+124 passano la verifica: esistono, e i loro autori consentono l'incorporamento — che è la
+loro autorizzazione esplicita, non una nostra interpretazione.
+
+Restano due comandi, entrambi con la secret key e dal tuo PC:
 
 ```sh
-# 1. apri scripts/data/starter_path.json
-# 2. per ogni tappa incolla in `youtube_id` gli 11 caratteri dopo v= nell'URL
-node scripts/seed_starter_path.mjs --check            # verifica
+node scripts/seed_videos.mjs --check           # riverifica tutti e 117, non scrive
 SUPABASE_URL=… SUPABASE_SECRET_KEY=… node scripts/seed_starter_path.mjs
+SUPABASE_URL=… SUPABASE_SECRET_KEY=… node scripts/seed_videos.mjs
 ```
 
-Non li ho scelti io di proposito: non conosco id YouTube reali per queste tappe, e
-inventarli avrebbe prodotto link morti o video che parlano d'altro — lo stesso dato finto
-che abbiamo tolto dagli spot. Lo script verifica ogni id via oEmbed (esiste? come si chiama
-davvero? chi l'ha fatto?) e **si rifiuta di caricare** ciò che non riesce a verificare.
+Applica prima la migration `0011`, che rende `url` una chiave unica: senza, rilanciare il
+secondo comando duplicherebbe 117 righe.
 
-Una nota che semplifica la scelta: oEmbed risponde solo per i video con l'incorporamento
-abilitato, e quella impostazione è dell'autore. Se passa la verifica, l'autore ha già detto
-di sì. In più noi non incorporiamo affatto: apriamo un link, che non richiede permesso.
+**Perché le anteprime restano vuote.** Il catalogo porta anche i `thumbnail_url` di YouTube,
+e non li carico: stanno su `i.ytimg.com`, quindi l'app li scaricherebbe appena si apre la
+lista — una richiesta a Google prima che l'utente tocchi qualcosa, mentre l'informativa dice
+che non ne parte nessuna. La CSP la bloccherebbe comunque, e si vedrebbe un riquadro rotto
+invece del segnaposto disegnato in locale. Se un giorno le vuoi: si scaricano una volta e si
+mettono in Supabase Storage, servite dal nostro dominio.
 
-Le tappe senza video restano visibili con «video in arrivo»: un percorso dichiaratamente
-incompleto è più utile di uno che finge di esserlo.
 
 ### 12. Error tracking — si lancia senza, e questo è il perché
 **Decisione presa nel BLOCCO 8, da confermare o ribaltare.** Nessun Sentry, nessuna

@@ -105,7 +105,7 @@ class _TutorialPlayerState extends State<_TutorialPlayer> {
     if (_failed) {
       return const ColoredBox(
         color: Colors.black12,
-        child: Center(child: Text('Could not load this video.')),
+        child: Center(child: Text('Non riesco a caricare questo video.')),
       );
     }
     if (!_ready) {
