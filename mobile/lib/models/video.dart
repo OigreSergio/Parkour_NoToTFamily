@@ -47,6 +47,20 @@ class TutorialVideo {
   /// `beginner` | `intermediate` | `advanced`.
   final String level;
 
+  /// Il livello come lo legge una persona.
+  ///
+  /// `level` resta il valore del database (`beginner|intermediate|advanced`):
+  /// è un dato, e tradurlo alla fonte romperebbe i filtri. Quello che si
+  /// mostra però è italiano, come tutto il resto dell'app.
+  String get livelloLeggibile => switch (level) {
+    'beginner' => 'Principiante',
+    'intermediate' => 'Intermedio',
+    'advanced' => 'Avanzato',
+    // Un valore che non conosciamo si mostra com'è: meglio una parola strana
+    // che una etichetta sbagliata messa lì per non lasciare un buco.
+    _ => level,
+  };
+
   /// Tutorial grid grouping: `flips` | `basics` | `vaults` | `wall_tricks` |
   /// `bar_tricks` | `ground_tricks` | `other`. `null` for non-tutorial videos.
   final String? trickCategory;

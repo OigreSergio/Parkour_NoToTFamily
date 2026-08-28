@@ -35,7 +35,7 @@ class TutorialDetailScreen extends ConsumerWidget {
               const SizedBox(width: 12),
               Chip(
                 visualDensity: VisualDensity.compact,
-                label: Text(video.level),
+                label: Text(video.livelloLeggibile),
               ),
               const Spacer(),
               IconButton(

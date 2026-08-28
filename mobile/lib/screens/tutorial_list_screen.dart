@@ -159,12 +159,17 @@ class _Thumbnail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const placeholder = SizedBox(
+    // Il segnaposto è quello che si vede **sempre**: le anteprime di YouTube
+    // stanno su i.ytimg.com e non le carichiamo (nessuna richiesta a Google
+    // prima che l'utente tocchi). Quindi deve stare nel tema, non essere un
+    // grigio chiaro fisso che su fondo scuro sembra un errore di caricamento.
+    final schema = Theme.of(context).colorScheme;
+    final placeholder = SizedBox(
       width: 56,
       height: 42,
       child: ColoredBox(
-        color: Color(0xFFE0E0E0),
-        child: Icon(Icons.ondemand_video, color: Colors.grey),
+        color: schema.surfaceContainerHighest,
+        child: Icon(Icons.ondemand_video, color: schema.onSurfaceVariant),
       ),
     );
     if (url == null || url!.isEmpty) return placeholder;
