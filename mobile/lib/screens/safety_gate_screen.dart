@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers.dart';
+import '../widgets/markdown_text.dart';
+import 'legal_screen.dart';
 import '../services/safety_notice.dart';
 
 /// L'avviso di sicurezza, prima che la mappa mostri un solo spot.
@@ -61,7 +63,7 @@ class _SafetyGateScreenState extends ConsumerState<SafetyGateScreen> {
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                      child: _NoticeBody(markdown: notice.text),
+                      child: MarkdownText(source: notice.text),
                     ),
                   ),
                   if (_error != null)
@@ -95,6 +97,10 @@ class _SafetyGateScreenState extends ConsumerState<SafetyGateScreen> {
                             child: const Text('Continua senza spot'),
                           ),
                         ),
+                        const SizedBox(height: 4),
+                        // Prima di decidere qualsiasi cosa si deve poter
+                        // leggere cosa facciamo con i dati.
+                        const Center(child: LegalLinks(dense: true)),
                       ],
                     ),
                   ),
@@ -103,64 +109,6 @@ class _SafetyGateScreenState extends ConsumerState<SafetyGateScreen> {
         ),
       ),
     );
-  }
-}
-
-/// Rende il markdown dell'avviso senza tirarsi dietro una dipendenza.
-///
-/// Il testo usa solo titoli, paragrafi, `**grassetto**` e una riga
-/// orizzontale: gestirli a mano costa meno di un package, e tiene il bundle
-/// leggero.
-class _NoticeBody extends StatelessWidget {
-  const _NoticeBody({required this.markdown});
-
-  final String markdown;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final blocks = markdown.split(RegExp(r'\n\s*\n'));
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        for (final raw in blocks) ...[
-          if (raw.trim() == '---')
-            const Divider(height: 32)
-          else if (raw.startsWith('# '))
-            Text(raw.substring(2).trim(), style: theme.textTheme.headlineSmall)
-          else
-            _RichParagraph(
-              text: raw.replaceAll('\n', ' ').trim(),
-              style: theme.textTheme.bodyMedium,
-            ),
-          const SizedBox(height: 12),
-        ],
-      ],
-    );
-  }
-}
-
-/// Un paragrafo con `**grassetto**`.
-class _RichParagraph extends StatelessWidget {
-  const _RichParagraph({required this.text, this.style});
-
-  final String text;
-  final TextStyle? style;
-
-  @override
-  Widget build(BuildContext context) {
-    final bold = style?.copyWith(fontWeight: FontWeight.w700);
-    final spans = <TextSpan>[];
-
-    // Split su `**`: gli indici dispari sono le porzioni in grassetto.
-    final parts = text.split('**');
-    for (var i = 0; i < parts.length; i++) {
-      if (parts[i].isEmpty) continue;
-      spans.add(TextSpan(text: parts[i], style: i.isOdd ? bold : style));
-    }
-
-    return Text.rich(TextSpan(children: spans), style: style);
   }
 }
 

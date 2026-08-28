@@ -141,10 +141,58 @@ Chiedi in particolare una lettura di:
 - la qualificazione del servizio come **informativo e non organizzativo**;
 - il flusso di accesso tramite genitore.
 
+I testi da far leggere, ora che esistono — cinque pubblici e quattro interni:
+
+| File | Cosa è |
+|---|---|
+| `mobile/assets/legal/privacy.md` | Informativa artt. 13-14 |
+| `mobile/assets/legal/termini.md` | Termini di servizio |
+| `mobile/assets/legal/cookie.md` | Cookie e archiviazione locale |
+| `mobile/assets/legal/note-legali.md` | Imprint, art. 7 d.lgs. 70/2003 |
+| `mobile/assets/legal/sub-responsabili.md` | Elenco dei responsabili esterni |
+| `docs/privacy/registro-trattamenti.md` | Registro art. 30 |
+| `docs/privacy/dpia.md` | Valutazione d'impatto art. 35 |
+| `docs/privacy/procedura-data-breach.md` | Procedura artt. 33-34 |
+| `docs/privacy/lia-legittimo-interesse.md` | Test di bilanciamento per l'art. 6.1.f |
+
+I quattro in `docs/privacy/` **non vanno pubblicati**: sono documentazione da tenere e
+mostrare al Garante se la chiede, non pagine per gli utenti.
+
+#### 6-bis. Il nome del titolare manca ancora
+`note-legali.md` contiene il segnaposto `[nome e cognome — da completare prima della
+pubblicazione]`. L'art. 7 del d.lgs. 70/2003 chiede che il prestatore sia identificabile:
+**con quella parentesi quadra il sito non è a norma.** Non l'ho scritto io di proposito —
+mettere un nome per conto tuo in una pagina di identificazione legale non è una cosa che
+posso decidere.
+
+`mobile/test/legal_texts_test.dart` lo segnala a ogni esecuzione dei test, senza fallire.
+Quando lo completi, valuta se far diventare quel controllo un `expect`: da lì in poi un
+ritorno al segnaposto sarebbe un errore, non un promemoria.
+
+#### 6-ter. I testi sono solo in italiano — deviazione dal piano
+Il piano (§5.2 e BLOCCO 7) chiedeva le pagine legali **in italiano e inglese**. Ne ho scritte
+solo la versione italiana, e la scelta va confermata o ribaltata da te.
+
+Il motivo: tutta l'interfaccia è in italiano, quindi oggi una versione inglese non
+raggiungerebbe nessuno che non legga già l'italiano. Ma raddoppierebbe il costo della
+revisione legale, e soprattutto **due versioni divergono**: una traduzione non revisionata
+dell'informativa è un testo che afferma cose leggermente diverse dall'originale, in un
+documento su cui l'utente ha diritto di fare affidamento. Peggio di non averlo.
+
+Quando tradurre diventa dovuto: l'art. 12.1 chiede che l'informativa sia comprensibile
+all'interessato, e la mappa ha 1.151 spot fuori dall'Italia. **Nel momento in cui l'app
+prende una lingua in più, le pagine legali la prendono insieme a lei** — e la revisione
+legale copre entrambe le versioni, non solo l'originale.
+
 ### 7. DPA e caselle email
 - Accetta il **DPA di Supabase** (Dashboard → Settings → Legal) e quello di **Cloudflare**.
-- Crea `privacy@pkfamily.app`, `abuse@pkfamily.app`, `security@pkfamily.app`. Non usare la tua
-  email personale: finiscono in pagine pubbliche.
+- Crea `privacy@pkfamily.app`, `abuse@pkfamily.app`, `security@pkfamily.app` e
+  `info@pkfamily.app` (quest'ultima è il recapito dell'imprint in `note-legali.md`). Non usare
+  la tua email personale: finiscono in pagine pubbliche.
+- **Verifica adesso di poter accedere al portale del Garante con SPID o CIE.** Serve per
+  notificare una violazione entro 72 ore, e scoprire che l'identità digitale è scaduta mentre
+  il cronometro corre è il modo più stupido di arrivare tardi. La procedura è in
+  `docs/privacy/procedura-data-breach.md`.
 
 ### 7-bis. Token Mapillary — è il passo che sblocca le foto
 Registrati su [mapillary.com](https://www.mapillary.com/) e crea un token (gratuito), poi:

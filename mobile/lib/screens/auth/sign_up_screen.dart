@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../models/profile.dart';
 import '../../providers.dart';
+import '../legal_screen.dart';
 import 'parent_access_screen.dart';
 
 /// Registrazione, con il controllo di età davanti a tutto.
@@ -163,6 +164,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               value: _acceptedTerms,
               onChanged: (v) => setState(() => _acceptedTerms = v ?? false),
               title: const Text('Accetto i Termini di servizio'),
+              subtitle: _OpenDoc(doc: LegalDocument.termini),
             ),
             CheckboxListTile(
               contentPadding: EdgeInsets.zero,
@@ -170,6 +172,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               value: _readPrivacy,
               onChanged: (v) => setState(() => _readPrivacy = v ?? false),
               title: const Text('Ho letto l\'informativa privacy'),
+              subtitle: _OpenDoc(doc: LegalDocument.privacy),
             ),
 
             if (_error != null) ...[
@@ -229,6 +232,37 @@ class _CheckYourInbox extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Il link per aprire davvero il documento che si sta accettando.
+///
+/// Una casella che dice «accetto i Termini» senza un modo per leggerli non è un
+/// consenso informato: è una formalità.
+class _OpenDoc extends StatelessWidget {
+  const _OpenDoc({required this.doc});
+
+  final LegalDocument doc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.zero,
+          visualDensity: VisualDensity.compact,
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
+        onPressed:
+            () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => LegalScreen(document: doc),
+              ),
+            ),
+        child: const Text('Leggi'),
       ),
     );
   }

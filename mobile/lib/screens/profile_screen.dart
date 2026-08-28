@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/profile.dart';
 import '../providers.dart';
 import '../widgets/moderation_notices.dart';
+import 'legal_screen.dart';
 import 'auth/sign_in_screen.dart';
 
 /// Profilo, impostazioni e diritti dell'interessato.
@@ -282,6 +283,10 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
         ),
 
         const Divider(height: 32),
+        const Divider(height: 32),
+        const LegalLinks(),
+
+        const SizedBox(height: 16),
         ListTile(
           contentPadding: EdgeInsets.zero,
           leading: const Icon(Icons.logout),

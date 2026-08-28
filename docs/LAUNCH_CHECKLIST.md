@@ -148,14 +148,39 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 7 — Legale e privacy
 
-- [ ] 7.1 `/legale/privacy` (IT + EN)
-- [ ] 7.2 `/legale/termini`
-- [ ] 7.3 `/legale/cookie`
-- [ ] 7.4 `/legale/note-legali`
-- [ ] 7.5 `/legale/sub-responsabili`
-- [ ] 7.6 Documenti interni: registro, DPIA, procedura breach, LIA
-- [ ] 7.7 Checkbox separate e non pre-spuntate in registrazione
+- [~] 7.1 Informativa artt. 13-14, **solo in italiano**: la versione inglese del piano non
+      c'è, e la scelta è motivata in `docs/OPS_TODO.md` §6-ter. Descrive quello che il codice
+      fa davvero — la sessione anonima crea una riga in `auth.users`, la chat non è cifrata
+      end-to-end, la posizione non arriva mai al server
+- [x] 7.2 Termini: gratuità, 16 anni e account del genitore, servizio **informativo e non
+      organizzativo**, foro del consumatore. Il paragrafo sul rischio dice che il disclaimer
+      **non è una rinuncia ai tuoi diritti** e cita art. 1229 c.c. e artt. 33/36 Cod. Consumo:
+      una clausola nulla non protegge, e fingere il contrario peggiora la posizione
+- [x] 7.3 Cookie: nessun banner perché non c'è nulla da consentire, con l'elenco di cosa
+      finisce in `localStorage` e perché è tecnico
+- [~] 7.4 Note legali: recapiti, provenienza dei dati della mappa, licenze.
+      **Manca il nome del titolare** — segnaposto deliberato, vedi `docs/OPS_TODO.md` §6-bis
+- [x] 7.5 Sub-responsabili: Supabase (Francoforte, con le clausole contrattuali standard),
+      Cloudflare, GitHub. E YouTube dichiarato **non responsabile**, perché non incorporiamo
+- [x] 7.6 Documenti interni in `docs/privacy/`, non pubblicati: `registro-trattamenti.md`
+      (11 trattamenti), `dpia.md` (7 rischi con mitigazione e residuo),
+      `procedura-data-breach.md` (le prime due ore, quando notificare, il registro),
+      `lia-legittimo-interesse.md` (il test in tre passi per i quattro trattamenti su
+      art. 6.1.f, con **cosa lo farebbe cadere** per ciascuno)
+- [x] 7.7 Checkbox separate e non pre-spuntate, ciascuna con «Leggi» che apre il documento
+      prima di spuntarla
+- [x] `LegalLinks` raggiungibile **prima di qualsiasi decisione**: sta sul gate di sicurezza
+      sotto il pulsante di rifiuto, e nel profilo anche da non registrati
+- [x] `mobile/test/legal_texts_test.dart` — 10 controlli: i documenti esistono, sono datati e
+      versionati, coprono quello che l'art. 13 richiede, e **non contengono formule d'esonero**
+      («manleva», «declina ogni responsabilità», «in nessun caso saremo responsabili»…)
 - [→] Revisione legale professionale di informativa, Termini e DPIA
+
+> **Deviazione dal piano, dichiarata.** Il piano chiedeva le pagine legali in italiano *e
+> inglese*. Ci sono solo in italiano. Una traduzione non revisionata di un'informativa afferma
+> cose leggermente diverse dall'originale in un documento su cui l'utente fa affidamento:
+> peggio di non averla. Quando l'app prende una seconda lingua, le pagine legali la prendono
+> con lei — e la revisione legale copre entrambe.
 
 ## BLOCCO 8 — Infrastruttura e deploy
 
