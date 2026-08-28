@@ -66,3 +66,24 @@ flutter:
     # Testi legali versionati: l'hash del file è ciò che finisce nella
     # registrazione della presa d'atto, quindi il file È la fonte di verità.
     - assets/legal/
+
+  # Roboto, servito da noi.
+  #
+  # Non è una scelta estetica: è lo stesso font che Flutter web userebbe
+  # comunque, ma **scaricandolo da `fonts.gstatic.com` all'avvio**. Due
+  # problemi in uno. Primo, è una richiesta verso Google prima che l'utente
+  # tocchi qualcosa, mentre l'informativa dichiara che non ne parte nessuna.
+  # Secondo, la CSP che serviamo ha `font-src 'self'` e quella richiesta la
+  # blocca: senza font, CanvasKit non disegna il testo e **l'app va online
+  # muta** — pulsanti al posto giusto e nessuna parola sopra. Verificato con
+  # uno screenshot prima di accorgersene in produzione.
+  #
+  # Licenza Apache 2.0, vedi assets/fonts/LICENSE.txt.
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: assets/fonts/Roboto-Regular.ttf
+        - asset: assets/fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Roboto-Bold.ttf
+          weight: 700

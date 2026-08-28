@@ -63,6 +63,12 @@ class _SignedOut extends StatelessWidget {
                   ),
               child: const Text('Entra o registrati'),
             ),
+
+            // Anche da qui, non solo dal gate. Chi arriva al profilo senza
+            // account è esattamente chi sta decidendo se aprirne uno: è il
+            // momento in cui l'informativa serve, non dopo averla data.
+            const SizedBox(height: 28),
+            const LegalLinks(),
           ],
         ),
       ),
@@ -282,7 +288,6 @@ class _ProfileBodyState extends ConsumerState<_ProfileBody> {
           onTap: _busy || p.isPendingDeletion ? null : _confirmDeletion,
         ),
 
-        const Divider(height: 32),
         const Divider(height: 32),
         const LegalLinks(),
 

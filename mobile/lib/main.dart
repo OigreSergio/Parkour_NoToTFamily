@@ -104,6 +104,11 @@ class ParkourApp extends StatelessWidget {
         colorSchemeSeed: Colors.teal,
         brightness: Brightness.dark,
         useMaterial3: true,
+        // Il Roboto che ci portiamo dietro (`assets/fonts/`), non quello che
+        // Flutter web scaricherebbe da fonts.gstatic.com. Senza questa riga la
+        // famiglia resta quella predefinita e il motore va a cercarla fuori:
+        // la CSP la blocca, e l'app resta senza testo.
+        fontFamily: 'Roboto',
       ),
       home:
           SupabaseConfig.isConfigured

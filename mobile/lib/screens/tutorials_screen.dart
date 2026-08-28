@@ -10,7 +10,10 @@ class _Category {
 
   final String label;
 
-  /// Backend `trick_category` value; `null` means "All Tricks" (no filter).
+  /// Il valore `trick_category` nel database. `null` = nessun filtro.
+  ///
+  /// Resta in inglese perché è un dato, non un'etichetta: tradurlo qui
+  /// romperebbe i filtri sulle righe già caricate.
   final String? trickCategory;
 
   final Color color;
@@ -18,24 +21,24 @@ class _Category {
 }
 
 const _categories = <_Category>[
-  _Category('Flips', 'flips', Color(0xFF34A853), Icons.flip_camera_android),
-  _Category('Basics', 'basics', Color(0xFFA6408F), Icons.directions_walk),
-  _Category('Vaults', 'vaults', Color(0xFF2A6AA8), Icons.call_made),
-  _Category('Wall Tricks', 'wall_tricks', Color(0xFFF5C231), Icons.stairs),
+  _Category('Flip', 'flips', Color(0xFF34A853), Icons.flip_camera_android),
+  _Category('Basi', 'basics', Color(0xFFA6408F), Icons.directions_walk),
+  _Category('Vault', 'vaults', Color(0xFF2A6AA8), Icons.call_made),
+  _Category('Sui muri', 'wall_tricks', Color(0xFFF5C231), Icons.stairs),
   _Category(
-    'Bar Tricks',
+    'Alle sbarre',
     'bar_tricks',
     Color(0xFFF0913A),
     Icons.fitness_center,
   ),
-  _Category('Other Tricks', 'other', Color(0xFF7B2FBE), Icons.auto_awesome),
+  _Category('Altro', 'other', Color(0xFF7B2FBE), Icons.auto_awesome),
   _Category(
-    'Ground Tricks',
+    'A terra',
     'ground_tricks',
     Color(0xFFE23B3B),
     Icons.sports_gymnastics,
   ),
-  _Category('All Tricks', null, Color(0xFF1FA88C), Icons.grid_view),
+  _Category('Tutti', null, Color(0xFF1FA88C), Icons.grid_view),
 ];
 
 /// La sezione video.
@@ -76,7 +79,7 @@ class TutorialsScreen extends StatelessWidget {
               Expanded(
                 child: OutlinedButton.icon(
                   icon: const Icon(Icons.lightbulb_outline),
-                  label: const Text('Suggestions'),
+                  label: const Text('Dammi un\'idea'),
                   onPressed:
                       () => Navigator.of(context).push(
                         MaterialPageRoute<void>(

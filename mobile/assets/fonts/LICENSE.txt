@@ -1,0 +1,10 @@
+Roboto
+Copyright 2011 The Roboto Project Authors (https://github.com/googlefonts/roboto)
+
+Distribuito con licenza Apache License, Version 2.0.
+Testo completo: https://www.apache.org/licenses/LICENSE-2.0
+
+I tre file .ttf in questa cartella (Regular, Medium, Bold) sono Roboto non
+modificato. Stanno qui e non su un CDN per due ragioni scritte in
+`pubspec.yaml`: nessuna richiesta verso Google all'avvio, e la CSP che serviamo
+ha `font-src 'self'`.
