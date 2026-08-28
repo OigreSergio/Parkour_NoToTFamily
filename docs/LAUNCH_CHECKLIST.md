@@ -184,14 +184,45 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 8 — Infrastruttura e deploy
 
-- [ ] 8.1 `_headers` con CSP, HSTS, Permissions-Policy
-- [ ] 8.2 `_redirects` per il routing SPA
-- [ ] 8.3 Workflow di deploy staging e produzione
-- [ ] 8.4 Redirect 301 da `gh-pages` a `pkfamily.app`
-- [ ] 8.5 `security.txt` e `SECURITY.md` allineato
-- [ ] 8.6 Error tracking (o rinuncia documentata)
-- [ ] 8.7 `robots.txt` permissivo, sitemap, meta OG
-- [→] Dominio registrato, DNS, DPA accettati, caselle email
+- [x] 8.1 `deploy/_headers.template` → CSP senza `'unsafe-eval'`, HSTS con preload,
+      `frame-ancestors 'none'`, `Permissions-Policy` che nega tutto tranne la
+      geolocalizzazione. `connect-src` nomina l'host Supabase **reale**, sostituito al deploy:
+      un `*.supabase.co` lascerebbe parlare con qualsiasi progetto Supabase del mondo
+- [x] 8.2 `deploy/_redirects` → www → apex con 301 vero, `/t/*` → `/` per chi ha il vecchio
+      link, e la rewrite `200` per il routing SPA (un 301 verso `/` perderebbe il percorso)
+- [x] 8.3 `deploy-staging.yml` (push su `main`) e `deploy-prod.yml` (tag `v*`). In produzione
+      analyze, test e **audit RLS** rigirano prima di pubblicare — un tag si può mettere su
+      qualsiasi commit — e dopo il deploy il workflow **interroga il sito vero** e fallisce se
+      gli header non ci sono: Cloudflare ignora un `_headers` malformato senza dirlo
+- [~] 8.4 Pagina di redirect pronta in `deploy/gh-pages/`, **non pubblicata**: finché
+      `pkfamily.app` non risponde, `gh-pages` è l'unica versione raggiungibile e sostituirla
+      manderebbe su una pagina morta chi ha il QR. `publish_gh_pages_redirect.sh` lo verifica
+      da sé. **GitHub Pages non può fare un 301 vero**: la pagina usa `rel=canonical`, meta
+      refresh e un link visibile — è meno, e va detto
+- [x] 8.5 `security.txt` generato a ogni deploy con `Expires` ricalcolato (RFC 9116 lo rende
+      obbligatorio, e una data scaduta è peggio del file assente). `SECURITY.md` riscritto:
+      tempi che una persona sola può tenere, e via le voci spuntate che descrivevano il
+      backend FastAPI mai deployato
+- [x] 8.6 **Si lancia senza error tracking**, come decisione motivata in `docs/OPS_TODO.md`
+      §12: un error tracker è un responsabile del trattamento in più su un progetto che ne ha
+      tre. Al suo posto una schermata d'errore leggibile che dice a chi la vede cosa scrivere
+      e dove — perché senza telemetria l'unico sensore sono gli utenti
+- [x] 8.7 `robots.txt` e `sitemap.xml` generati (permissivi in produzione, `Disallow: /` su
+      staging), meta OG e `canonical` in `index.html`. Nessun `noindex` residuo nell'app
+- [x] **CanvasKit servito da noi, non da `gstatic.com`.** Il build predefinito lo scarica dal
+      CDN di Google a ogni apertura — cioè esattamente la richiesta che l'informativa dichiara
+      di non fare. `--no-web-resources-cdn` la elimina, e `prepare_deploy.mjs` si rifiuta di
+      pubblicare un build che non ce l'abbia
+- [x] `scripts/prepare_deploy.mjs` — l'ultima rete prima della pubblicazione: rifiuta un
+      bundle con dentro una secret key, un host Supabase diverso da quello nella CSP, un
+      segnaposto non sostituito. Gira anche in CI, così si rompe lì e non a tag già spinto
+- [→] Dominio registrato, DNS, progetti Cloudflare, i quattro secret, DPA, caselle email
+
+> **31 MB.** È quanto pesa il build, e il service worker di Flutter se li porta giù tutti per
+> l'uso offline. Alla prima apertura il browser ne scarica ~10 MB (un motore di rendering
+> solo), il resto arriva dopo, in background, su rete mobile. Non l'ho cambiato: per un'app
+> che si apre davanti a un muro dove il campo non prende, l'offline vale quei megabyte. Ma è
+> una decisione da prendere sapendo il numero — opzioni in `docs/OPS_TODO.md` §12-bis.
 
 ## BLOCCO 9 — Verifica prima del tag
 

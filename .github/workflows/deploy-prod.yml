@@ -1,0 +1,132 @@
+name: Deploy produzione
+
+# Solo da tag `v*`. Non da `main`, non a mano su un commit qualunque.
+#
+# Il motivo è il rollback: con i tag, tornare indietro è «ripubblica v1.2.3» —
+# una cosa che si fa in trenta secondi mentre il sito è rotto e le mani
+# tremano. Con i deploy da branch bisogna trovare il commit giusto, e nessuno
+# lo trova al momento giusto.
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false # un deploy in produzione non si interrompe a metà
+
+jobs:
+  # La CI gira sulle PR, ma un tag si può mettere ovunque. Rifare i controlli
+  # qui costa tre minuti e impedisce di pubblicare un commit che non è mai
+  # passato da una PR.
+  controlli:
+    name: I test passano su questo commit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.5"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+        working-directory: mobile
+
+      - run: dart format --set-exit-if-changed .
+        working-directory: mobile
+
+      - run: flutter analyze
+        working-directory: mobile
+
+      - run: flutter test
+        working-directory: mobile
+
+  rls:
+    name: Cosa vede un estraneo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      # In produzione questo controllo **non** si può saltare. Sulle PR sì (chi
+      # clona il repo non ha i secret), ma pubblicare senza sapere cosa è
+      # leggibile da fuori è come è passata inosservata la lettura aperta su
+      # `reports`.
+      - name: Audit RLS
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: |
+          if [ -z "$SUPABASE_URL" ]; then
+            echo "::error::Secret Supabase assenti: non si pubblica alla cieca."
+            exit 1
+          fi
+          node scripts/audit_rls.mjs
+
+  deploy:
+    name: Build e pubblica
+    needs: [controlli, rls]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.5"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+        working-directory: mobile
+
+      - name: Build web
+        working-directory: mobile
+        run: |
+          flutter build web --release --csp --no-web-resources-cdn \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Header, redirect, security.txt, sitemap
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: node scripts/prepare_deploy.mjs --env=prod
+
+      - name: Pubblica
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy mobile/build/web
+            --project-name=pkfamily
+            --branch=main
+            --commit-dirty=true
+
+      # Gli header stanno in un file di testo che Cloudflare può anche decidere
+      # di ignorare se la sintassi non gli piace, e non lo dice. L'unico modo di
+      # sapere che ci sono è chiederli al sito vero, dopo.
+      - name: Gli header ci sono davvero
+        run: |
+          sleep 15
+          intestazioni=$(curl -sSI --max-time 30 https://pkfamily.app || true)
+          mancanti=""
+          for atteso in content-security-policy strict-transport-security \
+                        x-content-type-options referrer-policy permissions-policy; do
+            echo "$intestazioni" | grep -qi "^$atteso:" || mancanti="$mancanti $atteso"
+          done
+          if [ -n "$mancanti" ]; then
+            echo "::error::Il sito è online ma senza:$mancanti"
+            echo "$intestazioni"
+            exit 1
+          fi
+          echo "Tutti gli header di sicurezza sono serviti."

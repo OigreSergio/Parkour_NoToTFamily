@@ -1,0 +1,73 @@
+# Header HTTP per Cloudflare Pages.
+#
+# NON è questo il file che viene pubblicato: `scripts/prepare_deploy.mjs`
+# sostituisce __SUPABASE_HOST__ con l'host reale del progetto e scrive
+# `mobile/build/web/_headers`. Modificare a mano il file generato non serve a
+# niente — al deploy successivo torna com'era.
+#
+# Perché non i meta tag: `<meta http-equiv="Content-Security-Policy">` non
+# supporta `frame-ancestors` né `Strict-Transport-Security`, e arriva dopo che
+# il parser ha già cominciato. È una delle ragioni per cui il sito sta su
+# Cloudflare Pages e non su GitHub Pages.
+
+/*
+  # --- Content Security Policy ---------------------------------------------
+  #
+  # `script-src 'self'` è la riga che conta: senza codice iniettabile, quasi
+  # tutte le altre difese diventano ridondanti. Le eccezioni sono due e sono
+  # entrambe spiegate.
+  #
+  # `'wasm-unsafe-eval'` — CanvasKit e Skwasm sono WebAssembly, e senza questa
+  # parola chiave il browser rifiuta di istanziare il modulo: l'app non parte
+  # affatto. Non è `'unsafe-eval'`: consente **solo** WebAssembly, non `eval()`
+  # né `new Function()`. Il build usa `--csp`, che dice a dart2js di non
+  # generare codice a runtime.
+  #
+  # `style-src 'unsafe-inline'` — Flutter web disegna tutto dentro un canvas ma
+  # posiziona gli elementi con stili inline, e senza questa parola chiave la
+  # pagina resta bianca. È il compromesso che la documentazione Flutter stessa
+  # prescrive. Quanto costa davvero: apre a CSS injection, che serve a qualcosa
+  # solo se prima esiste un modo di iniettare markup — e non c'è, perché non
+  # renderizziamo mai HTML fornito dagli utenti (i testi legali passano da
+  # `MarkdownText`, che costruisce widget, non nodi DOM).
+  #
+  # `connect-src` è l'elenco completo di dove l'app può parlare. Vale la pena
+  # leggerlo come una dichiarazione: se un giorno ci finisse dentro un dominio
+  # di analytics, si vedrebbe qui prima che nell'informativa.
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; frame-src 'none'; form-action 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: blob: https://tiles.openfreemap.org https://upload.wikimedia.org https://images.mapillary.com https://scontent.xx.fbcdn.net https://*.fbcdn.net; media-src 'self'; manifest-src 'self'; worker-src 'self' blob:; connect-src 'self' https://__SUPABASE_HOST__ wss://__SUPABASE_HOST__ https://tiles.openfreemap.org https://upload.wikimedia.org https://images.mapillary.com https://scontent.xx.fbcdn.net https://*.fbcdn.net; upgrade-insecure-requests
+
+  # --- Trasporto -------------------------------------------------------------
+  #
+  # Due anni, sottodomini inclusi, con `preload`. `.app` è già nella lista di
+  # preload HSTS a livello di TLD: il browser impone HTTPS su pkfamily.app
+  # ancora prima di aver visto questo header. Lo mandiamo comunque, perché la
+  # lista copre il TLD e non i client che non la portano dietro.
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+  # --- Il resto --------------------------------------------------------------
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+
+  # Nega tutto tranne la geolocalizzazione, che l'app chiede solo al tocco di
+  # «dove sono» e non trasmette mai. Le altre voci non servono a niente qui, e
+  # negarle esplicitamente significa che un domani nessuna dipendenza può
+  # cominciare a usarle in silenzio.
+  Permissions-Policy: geolocation=(self), camera=(), microphone=(), payment=(), usb=(), midi=(), serial=(), bluetooth=(), hid=(), magnetometer=(), gyroscope=(), accelerometer=(), ambient-light-sensor=(), display-capture=(), idle-detection=(), local-fonts=(), screen-wake-lock=(), xr-spatial-tracking=()
+
+  # Il build Flutter web **non mette un hash nei nomi dei file**: `main.dart.js`
+  # si chiama così a ogni deploy. Un `max-age` lungo servirebbe quindi la
+  # versione vecchia dell'app a chi l'ha già aperta, per giorni. `no-cache` non
+  # vuol dire «non salvare»: vuol dire «chiedi se è cambiato», e la risposta è
+  # un 304 vuoto. Il traffico risparmiato da un max-age aggressivo non vale
+  # un'app che non si aggiorna.
+  Cache-Control: no-cache
+
+# Le icone hanno il numero nel nome e non cambiano mai contenuto: queste sì.
+/icons/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.png
+  Cache-Control: public, max-age=604800

@@ -1,0 +1,20 @@
+# Routing per Cloudflare Pages.
+#
+# Copiato così com'è in `build/web/_redirects` da `scripts/prepare_deploy.mjs`.
+# L'ordine conta: Cloudflare applica la prima regola che combacia.
+
+# www → apex, con un 301 vero. Serve un indirizzo solo: due host che servono la
+# stessa app sono due origini distinte per il browser, quindi due `localStorage`
+# separati — chi arriva da www non trova la sessione aperta su pkfamily.app.
+https://www.pkfamily.app/*  https://pkfamily.app/:splat  301!
+
+# Il vecchio percorso dell'anteprima privata. Chi ha il QR stampato o il link
+# nei messaggi atterra sull'app, non su un 404.
+/t/*  /  301
+
+# Tutto il resto all'app: è una SPA, il routing lo fa Flutter.
+#
+# Nota sul `200`: è una **rewrite**, non un redirect. L'URL nella barra resta
+# quello che l'utente ha scritto e il contenuto è `index.html`. Con un 301 verso
+# `/` ogni link profondo perderebbe il percorso.
+/*  /index.html  200

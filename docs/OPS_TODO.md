@@ -243,14 +243,85 @@ Coordinate e nomi di luoghi pubblici non sono in sé proteggibili: il problema �
 Va ricostruita da **OpenStreetMap** (ODbL, con attribuzione) e da segnalazioni della community.
 Il BLOCCO 3 ripulisce le foto, ma **questa decisione è tua**.
 
+### 8-bis. Cloudflare: progetti, DNS e i quattro secret
+I workflow di deploy esistono e sono pronti; senza queste cose non partono.
+
+**Due progetti Cloudflare Pages**, creati dal pannello (non serve collegare il repo: il deploy
+lo fa il workflow con Wrangler):
+
+| Progetto | Dominio | Chi ci entra |
+| --- | --- | --- |
+| `pkfamily` | `pkfamily.app` + `www.pkfamily.app` | tutti |
+| `pkfamily-staging` | `staging.pkfamily.app` | solo tu, dietro Cloudflare Access |
+
+Su `pkfamily-staging` metti una **policy Access** con la tua email (e quelle di chi provalo
+con te). Senza, lo staging è un secondo sito pubblico con dati di prova dentro.
+
+**DNS su Cloudflare**, oltre ai record dei due progetti:
+- **CAA** — limita quali autorità possono emettere certificati per il dominio;
+- **SPF `v=spf1 -all` e DMARC `v=DMARC1; p=reject;`** anche se non mandi posta. Senza,
+  chiunque può spedire email che sembrano venire da `@pkfamily.app`, e le prime a riceverle
+  sarebbero le persone iscritte all'app.
+
+**Quattro secret** in GitHub → Settings → Secrets → Actions:
+
+| Secret | Dove si prende |
+| --- | --- |
+| `SUPABASE_URL` | Dashboard Supabase → Project Settings → API |
+| `SUPABASE_PUBLISHABLE_KEY` | stessa pagina — la **publishable**, non la secret |
+| `CLOUDFLARE_API_TOKEN` | Cloudflare → My Profile → API Tokens, permesso *Cloudflare Pages: Edit* |
+| `CLOUDFLARE_ACCOUNT_ID` | barra laterale della dashboard Cloudflare |
+
+Il token Cloudflare va creato **con il solo permesso Pages**, non con quello globale: se
+GitHub venisse compromesso, un token che sa solo pubblicare pagine è molto meno grave di uno
+che può cambiare il DNS.
+
+Nota su `SUPABASE_PUBLISHABLE_KEY` come secret: non è un segreto — finisce nel bundle e ce
+l'hanno tutti. Sta lì solo perché è un valore di configurazione che cambia fra progetti.
+`prepare_deploy.mjs` si rifiuta di pubblicare se il valore comincia per `sb_secret_`.
+
+### 8-ter. Dependabot e CodeQL
+`SECURITY.md` li dava per attivi da mesi. Non lo erano: nessun `.github/dependabot.yml`,
+nessuna scansione nelle impostazioni del repository. Ora il file dice la verità («da
+attivare»), e attivarli è un minuto:
+
+- **Dependabot** — Settings → Code security → Dependabot alerts + security updates;
+- **CodeQL** — stessa pagina, *Code scanning* → Set up → Default. Analizza JavaScript e
+  Python; Dart non è fra i linguaggi supportati, quindi copre `web-admin/` e `scripts/`, non
+  l'app.
+
 ### 9. Assicurazione
 Valuta una polizza di responsabilità civile a tuo nome. E appena la community cresce o entra
 del denaro, valuta il passaggio a **ASD/APS**: separa il patrimonio personale e dà accesso a
 coperture pensate per lo sport. Protegge più di qualsiasi disclaimer.
 
-### 10. `SECURITY.md`
-Oggi promette «48h ack / 14d fix» e punta a `security@notot.family`. Una persona sola non può
-garantirlo. Riscrivi l'SLA su qualcosa che puoi mantenere davvero e aggiorna l'indirizzo.
+### 10. ~~`SECURITY.md`~~ — fatto nel BLOCCO 8
+Riscritto: l'indirizzo è `security@pkfamily.app` e i tempi sono quelli che una persona sola
+può davvero tenere (una settimana per la presa in carico, non 48 ore). Sono sparite anche le
+voci spuntate che descrivevano il backend FastAPI mai deployato — Argon2id, rotazione dei
+refresh token, allowlist CORS — e che davano un'impressione di solidità che il sistema vero
+non aveva.
+
+Resta a te: **attivare davvero Dependabot e CodeQL** (§8-ter), che il vecchio file dava per
+già attivi.
+
+### 10-ter. Il redirect di gh-pages, al momento giusto
+La pagina è pronta in `deploy/gh-pages/` e si pubblica con
+`./scripts/publish_gh_pages_redirect.sh --fallo`.
+
+**Non l'ho lanciato, e non va lanciato adesso.** Finché `pkfamily.app` non risponde,
+`gh-pages` è l'unica versione raggiungibile dell'app: sostituirla vorrebbe dire mandare su una
+pagina morta chiunque abbia il QR stampato. Lo script lo verifica da solo e si ferma con un
+errore se il sito nuovo non risponde 200.
+
+Da sapere prima: **GitHub Pages non può fare un 301 vero.** Il redirect HTTP lo decide il
+server, e quel server non è nostro. La pagina usa `rel=canonical` (la parte che conta perché
+i motori di ricerca non tengano in giro un doppione), un meta refresh e un link visibile.
+Funziona, ma è meno di un 301 e va saputo.
+
+Dopo averlo lanciato: lo «Scenario C» di `📲/README.md` — tornare indietro sul sito con un
+`git revert` su `gh-pages` — non ha più una storia su cui tornare. Il rollback diventa
+«ripubblica il tag precedente», che è comunque meglio.
 
 ---
 
@@ -285,9 +356,79 @@ di sì. In più noi non incorporiamo affatto: apriamo un link, che non richiede 
 Le tappe senza video restano visibili con «video in arrivo»: un percorso dichiaratamente
 incompleto è più utile di uno che finge di esserlo.
 
-### 12. Error tracking
-Sentry in region UE con scrubbing dei dati personali, oppure la scelta esplicita di lanciare
-senza. Lanciare alla cieca è una decisione legittima, ma va presa, non subita.
+### 12. Error tracking — si lancia senza, e questo è il perché
+**Decisione presa nel BLOCCO 8, da confermare o ribaltare.** Nessun Sentry, nessuna
+telemetria, nessun servizio terzo.
+
+Il motivo non è il costo (Sentry ha un piano gratuito con region UE). È che aggiungere un
+error tracker significa aggiungere **un responsabile del trattamento**: una riga nel registro
+art. 30, una voce in `sub-responsabili.md`, un paragrafo nell'informativa, un DPA da firmare
+e un altro posto dove finiscono dati che possono contenere frammenti di contenuto utente. Su
+un progetto con tre fornitori in tutto, il quarto va giustificato.
+
+Cosa costa la scelta, detto chiaramente: **quando l'app si rompe per qualcuno, non lo
+sappiamo.** Non c'è un cruscotto, non c'è un alert, non c'è un conteggio. Lo sapremo se
+qualcuno scrive.
+
+Cosa c'è al posto suo:
+- una schermata d'errore leggibile invece del rettangolo grigio, che dice a chi la vede di
+  scrivere a `info@pkfamily.app` e cosa raccontare (`_SchermataErrore` in `main.dart`);
+- gli errori 5xx e il traffico anomalo restano visibili nell'analitica di Cloudflare, che è
+  già un nostro fornitore e non aggiunge niente;
+- i log di Postgres in Supabase, per gli errori lato database.
+
+**Quando ribaltarla:** se la community cresca abbastanza che «me lo dirà qualcuno» smette di
+funzionare — indicativamente dalle poche centinaia di utenti attivi. A quel punto il candidato
+giusto è **GlitchTip self-hosted** o Sentry in region UE con `sendDefaultPii: false`, e
+l'informativa va aggiornata prima di accenderlo, non dopo.
+
+### 12-bis. L'app pesa 31 MB, e il service worker se li porta giù tutti
+Misurato al primo build di produzione. Il grosso è CanvasKit: 26 MB fra i tre motori di
+rendering che Flutter include (`canvaskit.wasm`, `skwasm.wasm`, `skwasm_heavy.wasm`, più la
+variante Chromium e i file `.symbols`).
+
+Alla **prima apertura** il browser ne scarica una frazione: un motore solo, circa 10 MB fra
+wasm e `main.dart.js`. Ma il service worker generato da Flutter, appena attivato, precarica
+**l'intero pacchetto** per l'uso offline. Su un telefono in strada, con la rete che fa quello
+che può, sono 31 MB non richiesti.
+
+Le opzioni, in ordine di quanto costano:
+
+1. **Lasciare così.** L'uso offline è un vantaggio reale per un'app che si apre davanti a un
+   muro dove il campo non prende. Il download avviene in background, dopo il primo caricamento.
+2. **`--pwa-strategy=none`** al build: niente service worker, niente precaricamento, niente
+   offline. L'app resta installabile.
+3. Un service worker scritto a mano che precarichi solo lo stretto necessario. È la soluzione
+   giusta e la più costosa: va mantenuta a ogni aggiornamento di Flutter.
+
+Il mio consiglio è la 1 finché non ci sono lamentele: l'offline vale quei megabyte, per
+questa app più che per altre. Ma è una decisione, e va presa sapendo il numero.
+
+**Da non fare mai:** cancellare i file `.symbols` dall'output per risparmiare 4 MB. Il service
+worker li elenca fra le risorse, e uno che manca fa fallire l'attivazione — l'app smette di
+funzionare offline senza dire perché.
+
+### 12-ter. 🟠 Le foto Mapillary potrebbero scadere — da verificare col token
+Emerso scrivendo la CSP, che deve elencare gli host da cui arrivano le immagini.
+
+`scripts/enrich_spots.py` salva in `spot_photos.url` il campo `thumb_1024_url` restituito
+dall'API Mapillary. Quegli URL stanno su una CDN di Meta e — per quanto ne so — sono
+**firmati e a scadenza**: parametri `oh` e `oe` nella query, validi per un tempo limitato. Se
+è così, le foto importate smetterebbero di caricarsi dopo qualche tempo, tutte insieme, senza
+che nessuno tocchi niente.
+
+Non ho potuto verificarlo: Mapillary non è raggiungibile da qui e serve un token. **Quando
+lanci `enrich_spots.py` (§7-bis), guarda un URL restituito**: se contiene `oe=` e `oh=`, la
+scadenza c'è.
+
+Il rimedio, se confermato: l'id dell'immagine è già salvato dentro `source_url`
+(`mapillary.com/app/?pKey=<id>`), quindi il thumb si può richiedere di nuovo al momento di
+mostrarlo, oppure — meglio — scaricare l'immagine una volta e metterla in Supabase Storage,
+il che risolve anche la CSP e la dipendenza da una CDN di Meta.
+
+La CSP intanto elenca sia `images.mapillary.com` sia `*.fbcdn.net`, perché non so quale dei
+due l'API restituisca. **Quando lo sai, togli quello che non serve** da
+`deploy/_headers.template`: una riga in meno in `img-src` è una superficie in meno.
 
 ### 13. Backup completo settimanale
 `📲/README.md` lo raccomanda 1×/settimana sul tuo PC, e non è automatizzabile (richiede la

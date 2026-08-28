@@ -1,0 +1,86 @@
+name: Deploy staging
+
+# Ogni push su `main` finisce su staging.pkfamily.app, che sta dietro
+# Cloudflare Access: lo vede solo chi è invitato.
+#
+# La produzione **non** si aggiorna da qui. Ci si va solo con un tag, perché
+# tornare indietro dev'essere «ripubblica il tag precedente» e non «trova il
+# commit giusto mentre il sito è rotto».
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-staging
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Build e pubblica su staging
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.35.5"
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+        working-directory: mobile
+
+      # I secret non arrivano: meglio fermarsi qui che pubblicare un sito che
+      # mostra «configurazione Supabase assente» a chiunque lo apra.
+      - name: I secret ci sono
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          mancanti=""
+          for nome in SUPABASE_URL SUPABASE_PUBLISHABLE_KEY \
+                      CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID; do
+            [ -z "${!nome}" ] && mancanti="$mancanti $nome"
+          done
+          if [ -n "$mancanti" ]; then
+            echo "::error::Secret mancanti:$mancanti — vedi docs/OPS_TODO.md"
+            exit 1
+          fi
+
+      # `--csp` dice a dart2js di non generare codice a runtime, così la CSP può
+      # fare a meno di 'unsafe-eval'. `--no-web-resources-cdn` serve CanvasKit
+      # dalla nostra origine invece che da gstatic.com: senza, a ogni apertura
+      # partirebbe una richiesta verso Google che l'informativa dice che non
+      # parte. `prepare_deploy.mjs` verifica entrambe le cose e si rifiuta di
+      # pubblicare se una manca.
+      - name: Build web
+        working-directory: mobile
+        run: |
+          flutter build web --release --csp --no-web-resources-cdn \
+            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
+            --dart-define=SUPABASE_PUBLISHABLE_KEY=${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Header, redirect, security.txt
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+        run: node scripts/prepare_deploy.mjs --env=staging
+
+      - name: Pubblica
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: >-
+            pages deploy mobile/build/web
+            --project-name=pkfamily-staging
+            --branch=main
+            --commit-dirty=true

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PkFAMILY si è spostata</title>
+
+<!-- GitHub Pages serve file statici e basta: **non può fare un 301 vero**,
+     perché il redirect HTTP lo decide il server e qui il server non è nostro.
+     Quello che si può fare è tutto qui, e va detto per quello che è:
+
+       - `rel=canonical` dice ai motori di ricerca qual è l'indirizzo buono,
+         ed è la parte che conta per non lasciare in giro un doppione indicizzato;
+       - il meta refresh porta via il browser dopo mezzo secondo;
+       - il link resta visibile per chi arriva con JavaScript disattivato o con
+         un lettore di schermo che annuncia la pagina prima di saltare.
+
+     Mezzo secondo e non zero: un refresh istantaneo impedisce di premere
+     «indietro», perché la pagina si ricarica prima che il tasto risponda. -->
+<link rel="canonical" href="https://pkfamily.app/">
+<meta http-equiv="refresh" content="0.5; url=https://pkfamily.app/">
+<meta name="robots" content="noindex, follow">
+
+<style>
+  :root { color-scheme: dark; }
+  body {
+    margin: 0; min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    background: #111; color: #eee;
+    font: 16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    padding: 2rem; text-align: center;
+  }
+  h1 { font-size: 1.4rem; margin: 0 0 .5rem; }
+  p  { margin: 0 0 1.5rem; color: #bbb; max-width: 32rem; }
+  a.vai {
+    display: inline-block; padding: .8rem 1.6rem; border-radius: 999px;
+    background: #14b8a6; color: #06231f; font-weight: 700; text-decoration: none;
+  }
+  small { display: block; margin-top: 2rem; color: #777; }
+</style>
+</head>
+<body>
+  <main>
+    <h1>PkFAMILY adesso sta su pkfamily.app</h1>
+    <p>
+      Questa era l'anteprima privata. Il sito è pubblico, all'indirizzo nuovo:
+      la mappa, la chat e i video sono lì, con lo stesso account.
+    </p>
+    <a class="vai" href="https://pkfamily.app/">Vai su pkfamily.app</a>
+    <small>Se non succede niente, tocca il pulsante.</small>
+  </main>
+</body>
+</html>

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,8 +13,83 @@ import 'services/supabase_client.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  _installaGestoreErrori();
   await initSupabase();
   runApp(const ProviderScope(child: ParkourApp()));
+}
+
+/// Cosa vede l'utente quando qualcosa si rompe.
+///
+/// Non c'è error tracking: nessun Sentry, nessuna telemetria, nessun servizio
+/// terzo che ci racconti cosa è andato storto — è una scelta dichiarata in
+/// `docs/OPS_TODO.md`, presa per non aggiungere un responsabile del trattamento
+/// a un progetto che ne ha tre.
+///
+/// Il prezzo è che **l'unico sensore siamo noi e chi usa l'app**. Quindi
+/// almeno: niente schermata rossa da debug in produzione, e un messaggio che
+/// dica cosa fare invece di un rettangolo grigio in cui la gente resta ferma.
+void _installaGestoreErrori() {
+  ErrorWidget.builder = (dettagli) => _SchermataErrore(dettagli: dettagli);
+
+  FlutterError.onError = (dettagli) {
+    // In debug il comportamento standard è più utile: stack completo in
+    // console, schermata rossa, tutto dove uno sviluppatore lo cerca.
+    FlutterError.presentError(dettagli);
+  };
+}
+
+class _SchermataErrore extends StatelessWidget {
+  const _SchermataErrore({required this.dettagli});
+
+  final FlutterErrorDetails dettagli;
+
+  @override
+  Widget build(BuildContext context) {
+    // `ErrorWidget.builder` può essere chiamato prima che esista un
+    // `MaterialApp`, quindi niente `Theme.of(context)` qui dentro: servirebbe
+    // un contesto che potrebbe non esserci, e l'errore diventerebbe due.
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: ColoredBox(
+        color: const Color(0xFF111111),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.error_outline,
+                  color: Color(0xFF888888),
+                  size: 40,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Qui si è rotto qualcosa.\n\n'
+                  'Ricarica la pagina. Se succede di nuovo scrivilo a '
+                  'info@pkfamily.app, dicendo cosa stavi facendo: non abbiamo '
+                  'nessun sistema che ce lo racconti al posto tuo.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Color(0xFFDDDDDD), fontSize: 15),
+                ),
+                if (kDebugMode) ...[
+                  const SizedBox(height: 24),
+                  Text(
+                    '${dettagli.exception}',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Color(0xFFFF8A80),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class ParkourApp extends StatelessWidget {

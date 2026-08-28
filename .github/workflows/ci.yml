@@ -47,12 +47,29 @@ jobs:
       # Il build usa valori segnaposto: serve a dimostrare che compila, non a
       # produrre un artefatto pubblicabile. Le chiavi vere arrivano dai secret
       # nei workflow di deploy.
+      #
+      # I flag sono però **gli stessi della produzione**. Un CI che compila in
+      # un modo e un deploy che compila in un altro non verifica il deploy:
+      # verifica un build che non pubblicheremo mai.
       - name: Build web
         run: |
-          flutter build web --release \
+          flutter build web --release --csp --no-web-resources-cdn \
             --dart-define=SUPABASE_URL=https://example.supabase.co \
             --dart-define=SUPABASE_PUBLISHABLE_KEY=ci-placeholder
         working-directory: mobile
+
+      # `prepare_deploy.mjs` scrive gli header di sicurezza e i suoi controlli
+      # sono l'ultima rete prima della pubblicazione. Se si rompe, deve
+      # rompersi qui — non a tag già spinto, con il deploy in corso.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Header e file di deploy
+        env:
+          SUPABASE_URL: https://example.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: ci-placeholder
+        run: node scripts/prepare_deploy.mjs --env=staging
 
   dati:
     name: Qualità dei dati degli spot
