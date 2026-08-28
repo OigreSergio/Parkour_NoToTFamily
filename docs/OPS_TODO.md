@@ -7,6 +7,43 @@ tuo. Ordinate per urgenza.
 
 ## 🔴 Prima di scrivere altro codice
 
+### 0. Le sessioni anonime sono spente, e senza di loro il gate non esiste
+Trovato nel BLOCCO 9 interrogando la produzione. È il buco più serio emerso finora, perché
+non si vede leggendo il codice.
+
+```sh
+GET /auth/v1/settings                          →  "anonymous_users": false
+GET /rest/v1/spots?select=id,name,lat,lng      →  200, 24 spot con le coordinate
+```
+
+Il secondo comando è senza login, con la sola chiave pubblica. **Chiunque, senza account e
+senza aver visto il gate, legge tutti gli spot con le coordinate.**
+
+Perché succede, ed è la parte che conta: la policy della migration `0005` è dichiarata
+`to authenticated`. Si applica cioè al ruolo `authenticated`. Chi non apre nessuna sessione è
+`anon`, e quella policy **non lo tocca**. Il disegno teneva per una ragione che non sta
+nell'SQL — il client apre una sessione anonima all'avvio, trasformando ogni visitatore in
+`authenticated` — ma quella è una riga di Dart, e la difesa non può stare in un client che
+l'utente controlla. Con le sessioni anonime spente, non succede nemmeno quello.
+
+Due cose, in **quest'ordine**:
+
+1. **Attiva le sessioni anonime**: Dashboard → Authentication → Sign In / Providers →
+   *Anonymous sign-ins*. Servono comunque: senza, nessun visitatore può registrare la presa
+   d'atto, e la mappa resterebbe vuota per chi non ha un account.
+2. **Applica `0010_gate_anche_senza_login.sql`**, che nega gli spot al ruolo `anon` in modo
+   esplicito. Un `anon` non ha un `auth.uid()` a cui legare una presa d'atto: per lui la
+   risposta è no, non «dipende».
+
+L'ordine inverso non rompe niente di irreparabile, ma svuota la mappa a tutti quelli che non
+sono registrati, e nessuno capisce perché.
+
+Se decidi invece di **non** attivare le sessioni anonime, la conseguenza è che per vedere la
+mappa bisogna registrarsi. È una decisione di prodotto legittima, ma va presa: la terza
+strada — il gate che c'è nell'interfaccia e non nel database — non è una strada.
+
+`scripts/audit_rls.mjs` controlla adesso entrambe le cose insieme e dice quale manca.
+
 ### 1. Regione del progetto Supabase → Francoforte
 Il progetto è `gkdzdtxqkftebrxhgway`. Verifica in **Dashboard → Settings → General** che la
 region sia **Frankfurt `eu-central-1`**.
@@ -433,6 +470,27 @@ due l'API restituisca. **Quando lo sai, togli quello che non serve** da
 ### 13. Backup completo settimanale
 `📲/README.md` lo raccomanda 1×/settimana sul tuo PC, e non è automatizzabile (richiede la
 secret key, che non deve stare in nessun CI). Mettilo in calendario.
+
+### 13-bis. Il ripristino, provato almeno una volta
+Lo «Scenario B» di `📲/README.md` non è un piano di ripristino finché nessuno l'ha eseguito:
+è un file. La procedura è il §9 di [`COLLAUDO.md`](COLLAUDO.md) — progetto vuoto, migration,
+ripristino, e **l'app fatta partire contro quel progetto**, perché «i dati ci sono» e «i dati
+si usano» non sono la stessa cosa.
+
+Segna quanto ci metti. È il numero che dice quanto dura un disastro, e serve saperlo prima
+che serva.
+
+### 14. Il collaudo a mano
+[`COLLAUDO.md`](COLLAUDO.md) è la sequenza da provare su staging prima di mettere il tag: il
+gate rifiutato, l'age gate, l'accesso del genitore, la chat con due account, l'export dei
+dati, la cancellazione con i messaggi pseudonimizzati, e l'app aperta **da telefono in 4G**.
+
+Due passaggi lì dentro non sono formalità e vale la pena anticiparli qui:
+
+- **con il gate rifiutato, chiedi gli spot all'API a mano.** Deve tornare `[]`. È il controllo
+  che ha trovato il buco del §0;
+- **su un account supervisionato con la chat spenta, prova a scrivere via API.** Se passa, il
+  vincolo è solo nell'interfaccia e non vale niente.
 
 ---
 

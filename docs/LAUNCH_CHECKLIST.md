@@ -226,8 +226,35 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 9 — Verifica prima del tag
 
-- [ ] 9.1 `scripts/audit_rls.mjs` in CI
-- [ ] 9.2 Percorsi utente provati a mano su staging
-- [ ] 9.3 Header di sicurezza verificati
-- [ ] 9.4 Restore di prova dal backup
-- [ ] 9.5 Checklist e OPS_TODO aggiornati
+- [x] 9.1 `scripts/audit_rls.mjs` in due fasi. **Fase 1** (in CI): cosa vede chi non ha fatto
+      login. **Fase 2** (`--sessione`, a mano prima di un tag): cosa può fare chi *un account
+      ce l'ha* — non può nominarsi admin, non tocca il profilo di un altro, non vede la
+      corrispondenza altrui, non si autoverifica uno spot. La fase 2 non è in CI perché
+      lascia dietro un utente anonimo per esecuzione
+- [x] 9.1-bis Il controllo del gate è **conclusivo**, non «non concludente»: guarda gli spot
+      prima e dopo aver registrato la presa d'atto. Se prima niente e dopo sì, la policy della
+      `0005` funziona davvero — l'unico controllo dello script che dimostra qualcosa anche su
+      una tabella piena
+- [x] 9.3 `scripts/check_headers.mjs` — non guarda solo se un header c'è, guarda cosa dice:
+      una CSP con `'unsafe-eval'` è presente e inutile, un HSTS con `max-age=60` è presente e
+      non protegge. Controlla anche che `connect-src` non usi `*.supabase.co`, che
+      `security.txt` non sia scaduto, e che lo staging non sia indicizzabile
+- [~] 9.2 / 9.4 `docs/COLLAUDO.md` — la sequenza da provare a mano su staging, passaggio per
+      passaggio, con dentro il ripristino del backup su un progetto vuoto. **Da eseguire:**
+      serve staging online, le migration applicate e un secondo account
+- [x] 9.5 Checklist e `docs/OPS_TODO.md` aggiornati
+
+> 🔴 **Trovato eseguendo la verifica: il gate di sicurezza non regge per chi non fa login.**
+> Con la sola chiave pubblica e nessuna sessione, `GET /rest/v1/spots` restituisce i 24 spot
+> con le coordinate. La policy della `0005` è `to authenticated` e non tocca il ruolo `anon`;
+> il disegno teneva perché il client apre una sessione anonima all'avvio — ma quella è una
+> riga di Dart, e in produzione **le sessioni anonime sono spente**
+> (`"anonymous_users": false`). Chiuso da `0010_gate_anche_senza_login.sql`, che nega gli spot
+> ad `anon` in modo esplicito. Va applicata **dopo** aver attivato le sessioni anonime:
+> `docs/OPS_TODO.md` §0.
+
+> **Cosa questo blocco non ha potuto verificare.** La fase 2 dell'audit è scritta ma **mai
+> eseguita fino in fondo**: in produzione le sessioni anonime sono spente, quindi non c'è modo
+> di aprire la sessione che le serve, e lo script si ferma dichiarandolo «non concludente»
+> invece di fingere. La prima esecuzione vera sarà su staging, ed è il primo passo di
+> `COLLAUDO.md`.

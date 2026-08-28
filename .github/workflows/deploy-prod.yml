@@ -113,20 +113,17 @@ jobs:
             --commit-dirty=true
 
       # Gli header stanno in un file di testo che Cloudflare può anche decidere
-      # di ignorare se la sintassi non gli piace, e non lo dice. L'unico modo di
-      # sapere che ci sono è chiederli al sito vero, dopo.
+      # di ignorare se la sintassi non gli piace, e non lo dice: il deploy
+      # riesce, il sito va online, e la CSP non c'è. L'unico modo di saperlo è
+      # chiederlo al sito vero, dopo.
+      #
+      # Lo stesso script che si lancia a mano su staging (`docs/COLLAUDO.md`):
+      # non guarda solo se un header c'è, guarda cosa dice.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: Gli header ci sono davvero
         run: |
-          sleep 15
-          intestazioni=$(curl -sSI --max-time 30 https://pkfamily.app || true)
-          mancanti=""
-          for atteso in content-security-policy strict-transport-security \
-                        x-content-type-options referrer-policy permissions-policy; do
-            echo "$intestazioni" | grep -qi "^$atteso:" || mancanti="$mancanti $atteso"
-          done
-          if [ -n "$mancanti" ]; then
-            echo "::error::Il sito è online ma senza:$mancanti"
-            echo "$intestazioni"
-            exit 1
-          fi
-          echo "Tutti gli header di sicurezza sono serviti."
+          sleep 20
+          node scripts/check_headers.mjs https://pkfamily.app
