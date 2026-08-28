@@ -41,6 +41,9 @@ dependencies:
   video_player: ^2.9.1
   cached_network_image: ^3.4.0
 
+  # Preferenze locali (storage tecnico: nessun dato personale)
+  shared_preferences: ^2.3.2
+
   # Hash del testo del gate di sicurezza, calcolato dal file mostrato
   crypto: ^3.0.5
 

@@ -1,0 +1,88 @@
+{
+  "_nota": [
+    "Il percorso «Inizia da qui»: sette tappe, nell'ordine in cui ha senso",
+    "affrontarle. Titoli, descrizioni e note di sicurezza sono curati e",
+    "pronti — è la parte che vale, e vale anche senza i video.",
+    "",
+    "`youtube_id` è vuoto di proposito. Riempirlo con id inventati produrrebbe",
+    "link morti o, peggio, video che parlano d'altro: lo stesso tipo di dato",
+    "finto che clean_spots.py ha appena finito di togliere dagli spot.",
+    "",
+    "Come riempirlo: cerca su YouTube, incolla l'id (gli 11 caratteri dopo",
+    "`v=`), poi lancia `node scripts/seed_starter_path.mjs --check`. Lo script",
+    "verifica via oEmbed che il video esista, ne prende titolo e autore reali,",
+    "e si rifiuta di caricare tutto ciò che non riesce a verificare."
+  ],
+  "stages": [
+    {
+      "stage": "riscaldamento",
+      "order_index": 1,
+      "title": "Riscaldamento e mobilità",
+      "description": "Caviglie, polsi, anche e spalle: sono le quattro cose che il parkour carica di più e che nessuno scalda abbastanza. Dieci minuti prima di ogni sessione, sempre, anche quando hai fretta — soprattutto quando hai fretta.",
+      "safety_note": "Il freddo non è un dettaglio: la maggior parte delle distorsioni di caviglia capita nei primi dieci minuti.",
+      "category": "conditioning",
+      "level": "beginner",
+      "youtube_id": ""
+    },
+    {
+      "stage": "atterraggio",
+      "order_index": 2,
+      "title": "Atterrare e rullare",
+      "description": "Prima di imparare a salire, si impara a scendere. Atterraggio sull'avampiede, ginocchia che assorbono, e la rullata (roulade) per dissipare l'energia di una caduta invece di prenderla tutta sulle articolazioni. È la tecnica che rende possibile tutto il resto.",
+      "safety_note": "Sull'erba finché la rullata non è pulita. Sull'asfalto una rullata storta è una spalla o una clavicola.",
+      "category": "practice",
+      "level": "beginner",
+      "youtube_id": ""
+    },
+    {
+      "stage": "quadrupedia",
+      "order_index": 3,
+      "title": "Quadrupedia",
+      "description": "Muoversi a quattro appoggi: costruisce polsi, spalle e coordinazione, e insegna a sentire il peso del corpo. Noiosa da guardare, decisiva da fare — è il condizionamento che regge tutto il resto e che si può fare ovunque, anche in casa.",
+      "safety_note": "I polsi vanno preparati per gradi: se fanno male, il carico è troppo, non sei «poco allenato».",
+      "category": "conditioning",
+      "level": "beginner",
+      "youtube_id": ""
+    },
+    {
+      "stage": "precision",
+      "order_index": 4,
+      "title": "Salto di precisione",
+      "description": "Saltare da un punto a un altro e fermarsi lì, senza aggiustamenti. Si comincia a terra, su una linea, poi su un cordolo basso. La precisione viene dalla ripetizione, non dal coraggio.",
+      "safety_note": "Mai sopra il vuoto finché la stessa distanza non è banale a terra. Un piede corto su un muretto è una caviglia rotta.",
+      "category": "practice",
+      "level": "beginner",
+      "youtube_id": ""
+    },
+    {
+      "stage": "vault",
+      "order_index": 5,
+      "title": "I passamuro di base",
+      "description": "Safety vault, speed vault, kong: i tre modi fondamentali di superare un ostacolo. Ognuno ha il suo contesto — il safety è quello da cui partire, perché tiene sempre un appoggio.",
+      "safety_note": "Prova ogni vault prima su un ostacolo che puoi scavalcare camminando. La superficie va controllata con le mani, non con gli occhi.",
+      "category": "practice",
+      "level": "beginner",
+      "youtube_id": ""
+    },
+    {
+      "stage": "progressione",
+      "order_index": 6,
+      "title": "Progressione e paura",
+      "description": "Come si passa da «non ci riesco» a «l'ho fatto» senza farsi male in mezzo: spezzare il movimento, abbassare l'altezza, ripetere finché è noioso. La paura non è un ostacolo da superare a forza — è un'informazione, e di solito ha ragione.",
+      "safety_note": "Se esiti tre volte davanti allo stesso salto, quel salto oggi non è tuo. Non è vigliaccheria, è la cosa che ti tiene intero.",
+      "category": "practice",
+      "level": "beginner",
+      "youtube_id": ""
+    },
+    {
+      "stage": "recupero",
+      "order_index": 7,
+      "title": "Infortuni e recupero",
+      "description": "Cosa fare quando qualcosa fa male, e come evitare che diventi cronico. Tendinopatie di ginocchio e caviglia, polsi, e il riposo — che è parte dell'allenamento, non una pausa dall'allenamento.",
+      "safety_note": "Un dolore che dura più di qualche giorno non si allena: si fa vedere. Nessun video sostituisce un fisioterapista.",
+      "category": "recovery",
+      "level": "beginner",
+      "youtube_id": ""
+    }
+  ]
+}

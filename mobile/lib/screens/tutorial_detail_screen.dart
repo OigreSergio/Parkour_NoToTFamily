@@ -1,9 +1,9 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:video_player/video_player.dart';
 
 import '../models/video.dart';
+import '../widgets/video_opener.dart';
 import '../providers.dart';
 import '../widgets/difficulty_gauge.dart';
 
@@ -27,13 +27,7 @@ class TutorialDetailScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          AspectRatio(
-            aspectRatio: 16 / 9,
-            child:
-                video.locked || video.url == null
-                    ? _LockedBanner(thumbnailUrl: video.thumbnailUrl)
-                    : _TutorialPlayer(url: video.url!),
-          ),
+          AspectRatio(aspectRatio: 16 / 9, child: VideoOpener(video: video)),
           const SizedBox(height: 16),
           Row(
             children: [
@@ -42,10 +36,6 @@ class TutorialDetailScreen extends ConsumerWidget {
               Chip(
                 visualDensity: VisualDensity.compact,
                 label: Text(video.level),
-                avatar:
-                    video.isPremium
-                        ? const Icon(Icons.workspace_premium, size: 16)
-                        : const Icon(Icons.lock_open, size: 16),
               ),
               const Spacer(),
               IconButton(
@@ -76,56 +66,6 @@ class TutorialDetailScreen extends ConsumerWidget {
 }
 
 /// Shown instead of the player when the tutorial requires a subscription.
-class _LockedBanner extends StatelessWidget {
-  const _LockedBanner({required this.thumbnailUrl});
-
-  final String? thumbnailUrl;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (thumbnailUrl != null && thumbnailUrl!.isNotEmpty)
-          CachedNetworkImage(imageUrl: thumbnailUrl!, fit: BoxFit.cover),
-        ColoredBox(color: Colors.black.withValues(alpha: 0.6)),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.lock, color: Colors.white, size: 42),
-            const SizedBox(height: 8),
-            const Text(
-              'Premium tutorial',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'Subscribe to unlock intermediate and\nadvanced technique videos.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white70),
-            ),
-            const SizedBox(height: 12),
-            FilledButton(
-              onPressed:
-                  () => ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Subscriptions are coming soon!'),
-                    ),
-                  ),
-              child: const Text('Subscribe'),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-/// Minimal network video player with tap-to-toggle play/pause.
 class _TutorialPlayer extends StatefulWidget {
   const _TutorialPlayer({required this.url});
 

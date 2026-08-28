@@ -1,39 +1,37 @@
-"""Business rules for tutorial/video visibility.
+"""Visibilità dei video.
 
-The catalog is public: everyone — anonymous visitors, guest accounts signed in
-without an email, and registered users — can browse every tutorial with its
-title, thumbnail, difficulty and level. Watching is tiered:
+**Il catalogo è gratuito e aperto a tutti.** Chiunque — visitatori anonimi
+compresi — può guardare qualsiasi video, senza account e senza abbonamento.
 
-- ``beginner`` videos are free for everyone, including guests and anonymous
-  viewers.
-- ``intermediate`` / ``advanced`` videos require an active subscription
-  (``user.is_subscribed``). Admins can always watch.
+Fino al lancio pubblico questo modulo faceva altro: i video sopra il livello
+``beginner`` tornavano con ``locked=True`` e ``url=None`` finché l'utente non
+si abbonava. Quel paywall è stato rimosso ovunque — qui, nelle policy RLS su
+``videos`` (migration 0008) e nel client — perché il servizio è gratuito.
+Lasciarlo in piedi da qualche parte produce esattamente il guaio che si era già
+visto: interfaccia sbloccata e server che rifiuta, cioè errori silenziosi.
 
-Locked videos are still listed, but with ``url`` hidden and ``locked=True`` so
-clients can render the paywall state.
+⚠️ ``backend/`` non è deployato. Il backend di produzione è Supabase; questo
+pacchetto resta come riferimento del dominio. Vedi README.md e
+docs/LAUNCH_PLAN.md.
 """
 
-from app.models.user import User, UserRole
-from app.models.video import Video, VideoLevel
+from app.models.user import User
+from app.models.video import Video
 from app.schemas.video import VideoOut
 
 
-def is_premium(video: Video) -> bool:
-    return video.level != VideoLevel.beginner
-
-
 def can_watch(video: Video, user: User | None) -> bool:
-    if not is_premium(video):
-        return True
-    if user is None:
-        return False
-    return user.is_subscribed or user.role == UserRole.admin
+    """Sempre vero. Il servizio è gratuito.
+
+    La funzione resta perché i chiamanti la usano, e perché un giorno potrebbe
+    servire un gate per ragioni diverse dal denaro (per esempio contenuti non
+    adatti agli account supervisionati). Se quel giorno arriva, si cambia qui.
+    """
+    return True
 
 
 def to_out(video: Video, user: User | None) -> VideoOut:
     out = VideoOut.model_validate(video)
-    out.is_premium = is_premium(video)
-    out.locked = not can_watch(video, user)
-    if out.locked:
-        out.url = None
+    out.is_premium = False
+    out.locked = False
     return out

@@ -217,9 +217,7 @@ class _SuggestionCard extends StatelessWidget {
       child: ListTile(
         leading: DifficultyGauge(difficulty: video.difficulty),
         title: Text(video.title),
-        subtitle: Text(
-          video.locked ? 'Premium — subscribe to watch' : video.level,
-        ),
+        subtitle: Text(video.level),
         trailing: const Icon(Icons.chevron_right),
         onTap:
             () => Navigator.of(context).push(

@@ -109,12 +109,21 @@ Legenda: `[ ]` da fare · `[~]` in corso · `[x]` fatto · `[→]` sta all'umano
 
 ## BLOCCO 5 — Video
 
-- [ ] 5.1 Gating premium rimosso lato server, non solo in UI
-- [ ] 5.2 `is_starter` e `order_index` su `videos`
-- [ ] 5.3 Percorso "Inizia da qui"
-- [ ] 5.4 Embed `youtube-nocookie.com` con placeholder fino al consenso
-- [ ] 5.5 Riga di sicurezza in ogni scheda
-- [ ] 5.6 Percorso iniziale popolato
+- [x] 5.1 Gating premium rimosso **dove è davvero applicato**: policy su `videos`
+      (migration `0008`), modello Dart (`is_premium`/`locked` non esistono più) e
+      `video_service.py`. Il vecchio bundle lo forzava solo nel JavaScript, e il server
+      continuava a rifiutare
+- [x] 5.2 `is_starter`, `order_index` (0006) + `stage`, `description`, `safety_note`,
+      `author` (0008)
+- [x] 5.3 Percorso «Inizia da qui»: 7 tappe curate, in cima alla sezione video
+- [x] 5.4 **Nessuna richiesta verso Google prima del tocco** — nemmeno per l'anteprima,
+      che è disegnata in locale. Il video si apre fuori dall'app su `youtube-nocookie`,
+      dopo una spiegazione mostrata una volta sola
+- [x] 5.5 Riga di sicurezza **per tappa**, non un banner generico: quello che serve sapere
+      prima di una rullata non è quello che serve prima di un salto di precisione
+- [~] 5.6 Struttura del percorso pronta; **i 7 id YouTube restano da riempire**.
+      `seed_starter_path.mjs` li verifica via oEmbed e rifiuta tutto ciò che non esiste o
+      che l'autore non consente di incorporare
 
 ## BLOCCO 6 — Moderazione e DSA
 

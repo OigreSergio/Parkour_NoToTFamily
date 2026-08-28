@@ -215,9 +215,27 @@ esattamente ciò che il BLOCCO 3-bis smette di fare. Se ti serviva per altro, di
 riscritto, non ripristinato.
 
 ### 11. Video del percorso "Inizia da qui"
-Il BLOCCO 5 popolerà il percorso con video liberamente embeddabili. Per quelli in cui vuoi
-usare materiale di creator specifici, serve una conferma dall'autore — l'embed è tecnicamente
-lecito se la fonte è legittima, ma una riga di consenso evita discussioni.
+Le sette tappe sono scritte: titolo, descrizione e nota di sicurezza sono pronte e valgono
+già da sole. **Mancano i video**, e li scegli tu:
+
+```sh
+# 1. apri scripts/data/starter_path.json
+# 2. per ogni tappa incolla in `youtube_id` gli 11 caratteri dopo v= nell'URL
+node scripts/seed_starter_path.mjs --check            # verifica
+SUPABASE_URL=… SUPABASE_SECRET_KEY=… node scripts/seed_starter_path.mjs
+```
+
+Non li ho scelti io di proposito: non conosco id YouTube reali per queste tappe, e
+inventarli avrebbe prodotto link morti o video che parlano d'altro — lo stesso dato finto
+che abbiamo tolto dagli spot. Lo script verifica ogni id via oEmbed (esiste? come si chiama
+davvero? chi l'ha fatto?) e **si rifiuta di caricare** ciò che non riesce a verificare.
+
+Una nota che semplifica la scelta: oEmbed risponde solo per i video con l'incorporamento
+abilitato, e quella impostazione è dell'autore. Se passa la verifica, l'autore ha già detto
+di sì. In più noi non incorporiamo affatto: apriamo un link, che non richiede permesso.
+
+Le tappe senza video restano visibili con «video in arrivo»: un percorso dichiaratamente
+incompleto è più utile di uno che finge di esserlo.
 
 ### 12. Error tracking
 Sentry in region UE con scrubbing dei dati personali, oppure la scelta esplicita di lanciare

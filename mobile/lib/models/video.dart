@@ -1,9 +1,14 @@
-/// A tutorial/training video.
+/// Un video del catalogo.
 ///
-/// Matches the backend `VideoOut` schema (`backend/app/schemas/video.py`).
-/// Access tiers are decided by the backend: `beginner` videos are free for
-/// everyone (including guests signed in without an email), higher levels come
-/// back with `locked == true` and `url == null` until the user subscribes.
+/// Colonne reali di `videos` dopo le migration 0006 e 0008: `id, title, url,
+/// category, level, created_at, is_starter, order_index, description,
+/// safety_note, author, source, stage`.
+///
+/// **Non c'è più nessun gating.** Il servizio è gratuito e ogni video è
+/// accessibile a chiunque, anche senza account: `is_premium` e `locked` non
+/// esistono più, né qui né nelle policy. Il vecchio bundle li forzava a `false`
+/// nel JavaScript mentre il database continuava a rifiutare — l'utente vedeva
+/// un'interfaccia sbloccata e riceveva errori silenziosi.
 class TutorialVideo {
   const TutorialVideo({
     required this.id,
@@ -16,9 +21,12 @@ class TutorialVideo {
     this.trickCategory,
     this.difficulty = 1,
     this.durationSeconds = 0,
-    this.isPremium = false,
-    this.locked = false,
     this.landed = false,
+    this.isStarter = false,
+    this.orderIndex,
+    this.stage,
+    this.safetyNote,
+    this.author,
     required this.createdAt,
   });
 
@@ -26,7 +34,9 @@ class TutorialVideo {
   final String title;
   final String description;
 
-  /// Playback URL — `null` when [locked] (the backend hides it).
+  /// Dove si guarda. **null quando la tappa del percorso non ha ancora un
+  /// video**: la descrizione e la nota di sicurezza valgono già da sole, e
+  /// mostrare «in arrivo» è meglio che far sparire la tappa.
   final String? url;
 
   final String? thumbnailUrl;
@@ -46,17 +56,33 @@ class TutorialVideo {
 
   final int durationSeconds;
 
-  /// True for videos above beginner level (subscription required to watch).
-  final bool isPremium;
-
-  /// True when the current viewer cannot watch this video yet.
-  final bool locked;
-
   /// Whether the current user has landed this trick. Client-side field;
   /// defaults to `false` until the backend persists it (see roadmap).
   final bool landed;
 
+  /// Fa parte del percorso «Inizia da qui»?
+  final bool isStarter;
+
+  /// La posizione nel percorso. Un percorso senza ordine non è un percorso.
+  final int? orderIndex;
+
+  /// `riscaldamento` | `atterraggio` | `quadrupedia` | `precision` | `vault` |
+  /// `progressione` | `recupero`. Null per i video fuori dal percorso.
+  final String? stage;
+
+  /// L'avvertenza specifica di questa tappa.
+  ///
+  /// Non è la stessa per tutti, ed è il motivo per cui sta sul singolo video e
+  /// non in un banner generico: quello che serve sapere prima di una rullata
+  /// non è quello che serve prima di un salto di precisione.
+  final String? safetyNote;
+
+  /// Chi ha fatto il video, verificato via oEmbed al momento del seed.
+  final String? author;
+
   final DateTime createdAt;
+
+  bool get hasVideo => url != null && url!.isNotEmpty;
 
   /// Returns a copy with the landed state flipped — optimistic UI update.
   TutorialVideo toggleLanded() => copyWith(landed: !landed);
@@ -72,9 +98,12 @@ class TutorialVideo {
     trickCategory: trickCategory,
     difficulty: difficulty,
     durationSeconds: durationSeconds,
-    isPremium: isPremium,
-    locked: locked,
     landed: landed ?? this.landed,
+    isStarter: isStarter,
+    orderIndex: orderIndex,
+    stage: stage,
+    safetyNote: safetyNote,
+    author: author,
     createdAt: createdAt,
   );
 
@@ -89,9 +118,12 @@ class TutorialVideo {
     trickCategory: json['trick_category'] as String?,
     difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
     durationSeconds: (json['duration_seconds'] as num?)?.toInt() ?? 0,
-    isPremium: (json['is_premium'] as bool?) ?? false,
-    locked: (json['locked'] as bool?) ?? false,
     landed: (json['landed'] as bool?) ?? false,
+    isStarter: (json['is_starter'] as bool?) ?? false,
+    orderIndex: (json['order_index'] as num?)?.toInt(),
+    stage: json['stage'] as String?,
+    safetyNote: json['safety_note'] as String?,
+    author: json['author'] as String?,
     createdAt:
         json['created_at'] == null
             ? DateTime.fromMillisecondsSinceEpoch(0)
@@ -109,9 +141,12 @@ class TutorialVideo {
     'trick_category': trickCategory,
     'difficulty': difficulty,
     'duration_seconds': durationSeconds,
-    'is_premium': isPremium,
-    'locked': locked,
     'landed': landed,
+    'is_starter': isStarter,
+    'order_index': orderIndex,
+    'stage': stage,
+    'safety_note': safetyNote,
+    'author': author,
     'created_at': createdAt.toIso8601String(),
   };
 }

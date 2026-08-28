@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'starter_path_screen.dart';
 import 'suggestion_screen.dart';
 import 'tutorial_list_screen.dart';
 
@@ -37,9 +38,14 @@ const _categories = <_Category>[
   _Category('All Tricks', null, Color(0xFF1FA88C), Icons.grid_view),
 ];
 
-/// Tutorials home: a colorful grid of trick categories, mirroring the
-/// reference design. Everyone can browse — no account or email needed.
-/// Premium tutorials show up locked until the user subscribes.
+/// La sezione video.
+///
+/// In cima il percorso «Inizia da qui»: chi apre questa schermata senza aver
+/// mai fatto parkour non sa da quale categoria cominciare, e una griglia di
+/// otto riquadri non glielo dice. Sotto, le categorie per chi sa già cosa
+/// cerca.
+///
+/// Tutto è aperto: nessun account, nessuna email, nessun video bloccato.
 class TutorialsScreen extends StatelessWidget {
   const TutorialsScreen({super.key});
 
@@ -47,6 +53,22 @@ class TutorialsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(12, 12, 12, 4),
+          child: SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              icon: const Icon(Icons.school_outlined),
+              label: const Text('Inizia da qui — non hai mai fatto parkour?'),
+              onPressed:
+                  () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => const StarterPathScreen(),
+                    ),
+                  ),
+            ),
+          ),
+        ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(

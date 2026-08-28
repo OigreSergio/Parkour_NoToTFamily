@@ -123,16 +123,10 @@ class _TutorialRow extends ConsumerWidget {
     return ListTile(
       leading: _Thumbnail(url: video.thumbnailUrl),
       title: Text(video.title),
-      subtitle:
-          video.locked ? const Text('Premium — subscribe to watch') : null,
+      subtitle: video.author == null ? null : Text('di ${video.author}'),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (video.locked)
-            const Padding(
-              padding: EdgeInsets.only(right: 8),
-              child: Icon(Icons.lock_outline, color: Colors.grey),
-            ),
           DifficultyGauge(difficulty: video.difficulty),
           IconButton(
             tooltip: video.landed ? 'Landed! Tap to unset' : 'Mark as landed',

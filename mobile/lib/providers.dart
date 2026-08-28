@@ -213,6 +213,11 @@ final tutorialsProvider = FutureProvider<List<TutorialVideo>>(
   (ref) => ref.watch(videoRepositoryProvider).fetchTutorials(),
 );
 
+/// Il percorso «Inizia da qui».
+final starterPathProvider = FutureProvider<List<TutorialVideo>>(
+  (ref) => ref.watch(videoRepositoryProvider).starterPath(),
+);
+
 /// Trick segnati come "riusciti". Stub lato client finché il backend non
 /// persiste il progresso per utente.
 class LandedTricksNotifier extends StateNotifier<Set<String>> {
