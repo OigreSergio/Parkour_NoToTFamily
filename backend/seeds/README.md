@@ -57,6 +57,21 @@ valutazione della qualità didattica sono documentati in
 
 I campi da `title` a `duration_seconds` corrispondono a `VideoCreate`
 (`backend/app/schemas/video.py`). `source_channel` e `quality` sono metadati
-editoriali del catalogo e vanno ignorati in fase di caricamento.
+editoriali del catalogo e vengono ignorati dal loader.
 
-`url` fa da chiave: un caricamento ripetuto deve saltare i video già presenti.
+- `url` fa da chiave: il seed salta i video già presenti con lo stesso URL,
+  quindi si può rilanciare ogni volta che il catalogo cresce.
+- `difficulty` va da 1 a 10 e pilota l'indicatore nella lista dei tutorial.
+- `level` decide anche l'accesso: `beginner` è libero, gli altri livelli
+  richiedono l'abbonamento (vedi `app/services/video_service.py`).
+
+Ogni voce viene validata con `VideoCreate` prima di toccare il database: se una
+riga è malformata il seed si ferma subito indicando indice e titolo.
+
+## Caricamento
+
+```sh
+make seed-videos
+# oppure, dentro il container api:
+python -m app.db.seed_videos
+```

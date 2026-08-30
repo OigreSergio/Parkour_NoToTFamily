@@ -5,7 +5,7 @@ selezione dei contenuti realmente **formativi** da usare come base per la sezion
 Tutorial dell'app.
 
 I dati sono stati estratti direttamente dalle pagine dei canali; la versione machine-readable della stessa selezione è in
-[`backend/seeds/videos.json`](../backend/seeds/videos.json).
+[`backend/seeds/videos.json`](../backend/seeds/videos.json) e si carica a database con `make seed-videos`.
 
 ## Nota sui canali richiesti
 
@@ -21,6 +21,15 @@ rispetto alla richiesta (in particolare Ronnie Street Stunts).
 | [Sydney Olson](https://www.youtube.com/@SydneyOlson) | `@SydneyOlson` | 53K | 232 | **5** |
 
 Totale video selezionati: **124** su 1.234 video long-form censiti.
+
+> **Nota per chi carica il catalogo**: nel backend il livello decide anche
+> l'accesso — `beginner` è gratuito, `intermediate` e `advanced` richiedono
+> l'abbonamento (`app/services/video_service.py`). Con questa selezione 51 video
+> restano liberi e 73 finiscono dietro il paywall, inclusi contenuti di sicurezza
+> come il rolling sul cemento, le cadute impreviste e gli atterraggi da altezza.
+> Se l'intenzione è tenere libera tutta la parte di sicurezza, va deciso a
+> livello di prodotto: o si abbassa il livello di quei video, o si aggiunge un
+> criterio di accesso separato dal livello tecnico.
 
 ## Criteri applicati
 
