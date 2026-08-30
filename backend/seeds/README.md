@@ -51,13 +51,15 @@ valutazione della qualità didattica sono documentati in
   "difficulty": 3,
   "duration_seconds": 310,
   "source_channel": "Nome del canale",
-  "quality": "Alta | Media"
+  "quality": "Alta | Media",
+  "safety": true
 }
 ```
 
 I campi da `title` a `duration_seconds` corrispondono a `VideoCreate`
-(`backend/app/schemas/video.py`). `source_channel` e `quality` sono metadati
-editoriali del catalogo e vengono ignorati dal loader.
+(`backend/app/schemas/video.py`). `source_channel`, `quality` e `safety` sono
+metadati editoriali del catalogo e vengono ignorati dal loader; `safety` è
+presente solo sui video di sicurezza.
 
 - `url` fa da chiave: il seed salta i video già presenti con lo stesso URL,
   quindi si può rilanciare ogni volta che il catalogo cresce.

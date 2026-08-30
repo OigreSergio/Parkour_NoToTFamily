@@ -3,7 +3,7 @@ import json
 import pytest
 
 from app.db.seed_videos import SEED_FILE, load_entries
-from app.models.video import Video, VideoLevel
+from app.models.video import Video
 
 
 def test_seed_file_is_valid() -> None:
@@ -56,25 +56,24 @@ def test_invalid_entry_reports_its_position(tmp_path) -> None:
 # I video di sicurezza sono marcati beginner per scelta di prodotto: nel backend
 # il livello pilota anche il paywall, e questi contenuti devono restare gratuiti
 # anche quando sono tecnicamente più impegnativi (vedi docs/TUTORIAL_CATALOG.md).
-SAFETY_VIDEO_URLS = {
-    # evitare o assorbire un infortunio
-    "https://www.youtube.com/watch?v=CDxhYN6KKz4",  # rolling sul cemento
-    "https://www.youtube.com/watch?v=Ehlx0KrVJa0",  # 10 tipi di rolling
-    "https://www.youtube.com/watch?v=ohjbbVwg6OU",  # cadere senza farsi male
-    "https://www.youtube.com/watch?v=r9XPcXQ-7VY",  # 10 modi di cadere
-    "https://www.youtube.com/watch?v=ZTlEwMtDH9s",  # atterraggio da altezza
-    "https://www.youtube.com/watch?v=xNGPuvDcGLw",  # superhero landing
-    "https://www.youtube.com/watch?v=UUzpvxuRYg4",  # allenarsi da infortunato
-    # gestione del rischio ambientale
-    "https://www.youtube.com/watch?v=vPWXtEDHsdM",  # neve e ghiaccio
-    "https://www.youtube.com/watch?v=W2QahKbXDyk",  # pioggia
-    "https://www.youtube.com/watch?v=EQdvkv5XRf0",  # alberi bagnati
-}
+# Nel file di seed li identifica il flag editoriale "safety".
+SAFETY_VIDEO_COUNT = 10
+
+
+def _safety_entries() -> list[dict]:
+    raw = json.loads(SEED_FILE.read_text(encoding="utf-8"))
+    return [item for item in raw if item.get("safety")]
+
+
+def test_safety_videos_are_all_marked() -> None:
+    assert len(_safety_entries()) == SAFETY_VIDEO_COUNT
 
 
 def test_safety_videos_stay_free() -> None:
-    by_url = {entry.url: entry for entry in load_entries()}
-    missing = SAFETY_VIDEO_URLS - by_url.keys()
-    assert not missing, f"video di sicurezza spariti dal seed: {missing}"
-    for url in SAFETY_VIDEO_URLS:
-        assert by_url[url].level == VideoLevel.beginner, url
+    for item in _safety_entries():
+        assert item["level"] == "beginner", item["title"]
+
+
+def test_safety_flag_is_not_persisted() -> None:
+    """Il flag è editoriale: non deve arrivare al modello."""
+    assert not any(hasattr(entry, "safety") for entry in load_entries())

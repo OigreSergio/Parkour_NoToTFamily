@@ -6,8 +6,8 @@ di finire a database, così un errore nel JSON si vede subito e non a metà
 caricamento. Il seed è idempotente — un video già presente con lo stesso ``url``
 viene saltato, quindi si può rilanciare ogni volta che il catalogo cresce.
 
-Le chiavi editoriali del catalogo (``source_channel``, ``quality``) non fanno
-parte del modello e vengono ignorate.
+Le chiavi editoriali del catalogo (``source_channel``, ``quality``, ``safety``)
+non fanno parte del modello e vengono ignorate.
 
 Uso (dentro il container api)::
 
@@ -28,7 +28,7 @@ from app.schemas.video import VideoCreate
 SEED_FILE = Path(__file__).resolve().parents[2] / "seeds" / "videos.json"
 
 # Metadati editoriali del catalogo, non colonne di ``videos``.
-CATALOG_ONLY_FIELDS = ("source_channel", "quality")
+CATALOG_ONLY_FIELDS = ("source_channel", "quality", "safety")
 
 
 def load_entries(path: Path = SEED_FILE) -> list[VideoCreate]:

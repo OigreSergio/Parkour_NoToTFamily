@@ -7,6 +7,16 @@ Tutorial dell'app.
 I dati sono stati estratti direttamente dalle pagine dei canali; la versione machine-readable della stessa selezione è in
 [`backend/seeds/videos.json`](../backend/seeds/videos.json) e si carica a database con `make seed-videos`.
 
+Per sfogliare il catalogo dentro la UI della schermata Tutorial, senza tirare su
+il backend, apri [`docs/demo/tutorial-catalog-preview.html`](demo/tutorial-catalog-preview.html):
+è una pagina autonoma con i tre profili di accesso (anonimo, ospite, abbonato),
+utile per verificare cosa resta libero e cosa finisce dietro il paywall. Si
+rigenera dal seed con:
+
+```sh
+python3 docs/demo/tools/build_tutorial_preview.py
+```
+
 ## Nota sui canali richiesti
 
 La lista di partenza indicava 5 voci, ma **Team Farang compare due volte**: i canali
@@ -32,7 +42,8 @@ Totale video selezionati: **124** su 1.234 video long-form censiti.
 > quelli che insegnano a gestire il rischio ambientale (superfici bagnate,
 > ghiacciate o scivolose). Nelle tabelle queste righe riportano
 > *Principiante (tecnicamente: intermedio/avanzato)* e il campo `difficulty`
-> (1-10) del seed continua a portare la difficoltà tecnica reale.
+> (1-10) del seed continua a portare la difficoltà tecnica reale. Nel seed questi
+> video hanno il flag `"safety": true`, su cui vigila `test_seed_videos.py`.
 >
 > Risultato: **61 video liberi e 63 premium**.
 >

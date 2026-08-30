@@ -647,7 +647,8 @@
     "difficulty": 4,
     "duration_seconds": 472,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Alta"
+    "quality": "Alta",
+    "safety": true
   },
   {
     "title": "How to BACK ROLL - Parkour Tutorial",
@@ -673,7 +674,8 @@
     "difficulty": 4,
     "duration_seconds": 692,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Alta"
+    "quality": "Alta",
+    "safety": true
   },
   {
     "title": "How to DIVE ROLL - Parkour Tutorial",
@@ -712,7 +714,8 @@
     "difficulty": 4,
     "duration_seconds": 500,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Alta"
+    "quality": "Alta",
+    "safety": true
   },
   {
     "title": "10 Ways To Fall Like A Stunt Man",
@@ -725,7 +728,8 @@
     "difficulty": 5,
     "duration_seconds": 857,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Alta"
+    "quality": "Alta",
+    "safety": true
   },
   {
     "title": "How To JUMP FROM A ROOF SAFELY - Height Drop Tutorial",
@@ -738,7 +742,8 @@
     "difficulty": 6,
     "duration_seconds": 607,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Alta"
+    "quality": "Alta",
+    "safety": true
   },
   {
     "title": "How To Do The SUPER HERO LANDING",
@@ -751,7 +756,8 @@
     "difficulty": 4,
     "duration_seconds": 450,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Media"
+    "quality": "Media",
+    "safety": true
   },
   {
     "title": "Avoid Parkour Injuries: 5 Rules You Can't Ignore",
@@ -777,7 +783,8 @@
     "difficulty": 2,
     "duration_seconds": 768,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Media"
+    "quality": "Media",
+    "safety": true
   },
   {
     "title": "Parkour Warm Up - Assassins Creed Parkour",
@@ -1362,7 +1369,8 @@
     "difficulty": 3,
     "duration_seconds": 445,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Media"
+    "quality": "Media",
+    "safety": true
   },
   {
     "title": "How To Train In the Rain - Gazebo Tic Tac Tunnel Flip",
@@ -1375,7 +1383,8 @@
     "difficulty": 3,
     "duration_seconds": 439,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Media"
+    "quality": "Media",
+    "safety": true
   },
   {
     "title": "How To CLIMB TREES SAFELY With No Equipment",
@@ -1414,7 +1423,8 @@
     "difficulty": 3,
     "duration_seconds": 516,
     "source_channel": "Ronnie Street Stunts",
-    "quality": "Media"
+    "quality": "Media",
+    "safety": true
   },
   {
     "title": "How To climb DOWN Trees",
