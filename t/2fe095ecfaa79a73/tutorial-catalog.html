@@ -1,0 +1,1000 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parkour NoToT · Catalogo Tutorial</title>
+<style>
+  :root {
+    --ink: #1c2733;
+    --ink-soft: #5b6975;
+    --ground: #eceff1;
+    --surface: #ffffff;
+    --surface-2: #f5f7f8;
+    --line: #d8dee3;
+    --header: #2e6e97;
+    --header-ink: #ffffff;
+    --accent: #1fa88c;
+    --lock: #8a949c;
+    --landed: #e23b3b;
+    --good: #34a853;
+    --warn: #f5a623;
+    --hard: #e2593b;
+    --shadow: 0 1px 3px rgba(28, 39, 51, 0.12);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e8edf1;
+      --ink-soft: #9fadb8;
+      --ground: #141a1f;
+      --surface: #1e262d;
+      --surface-2: #242e36;
+      --line: #33404a;
+      --header: #24597c;
+      --header-ink: #f2f7fa;
+      --lock: #74808a;
+      --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="light"] {
+    --ink: #1c2733;
+    --ink-soft: #5b6975;
+    --ground: #eceff1;
+    --surface: #ffffff;
+    --surface-2: #f5f7f8;
+    --line: #d8dee3;
+    --header: #2e6e97;
+    --header-ink: #ffffff;
+    --lock: #8a949c;
+    --shadow: 0 1px 3px rgba(28, 39, 51, 0.12);
+  }
+  :root[data-theme="dark"] {
+    --ink: #e8edf1;
+    --ink-soft: #9fadb8;
+    --ground: #141a1f;
+    --surface: #1e262d;
+    --surface-2: #242e36;
+    --line: #33404a;
+    --header: #24597c;
+    --header-ink: #f2f7fa;
+    --lock: #74808a;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    line-height: 1.45;
+  }
+
+  .page {
+    max-width: 460px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- demo banner (outside the "app") ---------- */
+  .banner {
+    padding: 12px 16px 10px;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+  .banner strong { color: var(--ink); }
+  .banner code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.72rem;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 5px;
+    white-space: nowrap;
+  }
+
+  /* ---------- role switcher ---------- */
+  .roles {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 12px;
+  }
+  .role {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink-soft);
+    border-radius: 20px;
+    padding: 7px 4px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .role small { display: block; font-weight: 400; font-size: 0.66rem; }
+  .role[aria-pressed="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .role:focus-visible, .icon-btn:focus-visible, .tile:focus-visible,
+  .row:focus-visible, .bigbtn:focus-visible, .runner:focus-visible,
+  .subscribe:focus-visible, .backlink:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* ---------- app frame ---------- */
+  .app {
+    background: var(--ground);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    margin: 0 12px 24px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    min-height: 620px;
+  }
+  .appbar {
+    background: var(--header);
+    color: var(--header-ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    min-height: 52px;
+  }
+  .appbar h1 {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    flex: 1;
+    text-align: center;
+    text-wrap: balance;
+  }
+  .icon-btn {
+    background: none;
+    border: 0;
+    color: var(--header-ink);
+    font-size: 1.15rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    min-width: 34px;
+  }
+  .icon-btn[hidden] { display: none; }
+  .searchbox {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.16);
+    border: 0;
+    border-radius: 8px;
+    color: var(--header-ink);
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+  .searchbox::placeholder { color: rgba(255, 255, 255, 0.65); }
+
+  .screen {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ---------- tutorials grid ---------- */
+  .suggest-cta {
+    margin: 12px 12px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    color: var(--ink);
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+  .tile {
+    border: 0;
+    border-radius: 12px;
+    color: #fff;
+    min-height: 96px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+    transition: transform 0.12s;
+  }
+  .tile:active { transform: scale(0.97); }
+  .tile .glyph { font-size: 1.7rem; }
+  .tile .count { font-size: 0.7rem; font-weight: 500; opacity: 0.85; }
+
+  /* ---------- trick list ---------- */
+  .colhead {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--header);
+    color: var(--header-ink);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.94;
+  }
+  .rows { background: var(--surface); }
+  .row {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 46px 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    background: var(--surface);
+    border: 0;
+    border-bottom: 1px dashed var(--line);
+    color: var(--ink);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+  .row:hover { background: var(--surface-2); }
+  .thumb {
+    width: 46px;
+    height: 34px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #fff;
+    flex: none;
+  }
+  .row .name { font-weight: 600; font-size: 0.94rem; }
+  .row .sub { font-size: 0.72rem; color: var(--lock); }
+  .empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 0.9rem;
+  }
+
+  /* difficulty gauge */
+  .gauge { position: relative; width: 34px; height: 34px; flex: none; }
+  .gauge svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .gauge .num {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* landed toggle */
+  .runner {
+    background: none;
+    border: 0;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 8px;
+    filter: grayscale(1) opacity(0.4);
+    transition: filter 0.15s, transform 0.15s;
+  }
+  .runner[aria-pressed="true"] { filter: none; transform: scale(1.1); }
+
+  .lockmark { color: var(--lock); font-size: 0.95rem; }
+
+  /* ---------- detail ---------- */
+  .detail { padding: 14px; display: flex; flex-direction: column; gap: 14px; }
+  .player {
+    aspect-ratio: 16 / 9;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #26313a;
+  }
+  .player .bg { position: absolute; inset: 0; opacity: 0.55; }
+  .player .inner {
+    position: relative;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+  }
+  .player .play { font-size: 3rem; cursor: pointer; }
+  .player.locked .inner h3 { margin: 0; font-size: 1.05rem; }
+  .player.locked .inner p { margin: 0; font-size: 0.8rem; opacity: 0.85; max-width: 30ch; }
+  .subscribe {
+    background: var(--accent);
+    color: #fff;
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .meta { display: flex; align-items: center; gap: 12px; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 3px 10px;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+  .meta .runner { margin-left: auto; font-size: 1.5rem; }
+  .desc { margin: 0; font-size: 0.92rem; max-width: 62ch; }
+  .apinote {
+    font-size: 0.72rem;
+    color: var(--ink-soft);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+  }
+  .apinote code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+  }
+
+  /* ---------- suggestions ---------- */
+  .suggestwrap { padding: 16px 14px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+  .suggestwrap .hint { font-size: 0.82rem; color: var(--ink-soft); text-align: center; margin: 0; }
+  .bigbtn {
+    background: var(--header);
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 18px;
+    font-size: 1.35rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: var(--shadow);
+  }
+  .bigbtn:disabled { opacity: 0.45; cursor: default; }
+  .suggestion-list { display: flex; flex-direction: column; gap: 8px; }
+  .spacer { flex: 1; }
+
+  /* ---------- bottom nav ---------- */
+  .navbar {
+    display: flex;
+    background: #2b3238;
+    color: #cdd5db;
+  }
+  .navbar .nav {
+    flex: 1;
+    background: none;
+    border: 0;
+    color: inherit;
+    padding: 10px 4px 12px;
+    font-size: 0.72rem;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .navbar .nav .g { font-size: 1.15rem; }
+  .navbar .nav[aria-current="true"] { color: #ffffff; font-weight: 700; }
+  .navbar .nav:disabled { opacity: 0.45; cursor: default; }
+
+  /* toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: var(--ground);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 0.85rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s;
+    max-width: 90vw;
+    z-index: 10;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .backlink {
+    background: none;
+    border: 0;
+    color: var(--header-ink);
+    font-size: 1.3rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 8px;
+  }
+
+  .checklist {
+    margin: 0 16px 28px;
+    padding: 14px 16px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    font-size: 0.82rem;
+  }
+  .checklist h2 { margin: 0 0 8px; font-size: 0.9rem; }
+  .checklist ol { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 5px; }
+
+  .safe-chip {
+    background: color-mix(in srgb, var(--good) 16%, transparent);
+    color: var(--good);
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chip.safe-chip { border: 1px solid color-mix(in srgb, var(--good) 45%, transparent); }
+  .meta { flex-wrap: wrap; row-gap: 8px; }
+  .player .play { text-decoration: none; }
+  .banner a, .navnote a { color: var(--accent); font-weight: 600; }
+  .navnote { margin: -12px 16px 22px; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+  a.nav { text-decoration: none; }
+  .banner a:focus-visible, .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+<meta name="robots" content="noindex, nofollow">
+<script>
+(function(){try{var t=localStorage.getItem('pk_pass');
+if(!t){location.replace('/Parkour_NoToTFamily/');return}
+var p=t.split('.');
+crypto.subtle.digest('SHA-256',new TextEncoder().encode('PkFAMILY::pk_4f7934b9aed5ae01b547a0c1::'+p[0])).then(function(b){
+var h=Array.prototype.slice.call(new Uint8Array(b),0,8).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+if(h!==p[1]){try{localStorage.removeItem('pk_pass')}catch(e){}location.replace('/Parkour_NoToTFamily/')}});
+}catch(e){}})();
+</script>
+</head>
+<body>
+
+
+<div class="page">
+  <p class="banner">
+    <strong>Anteprima del catalogo tutorial</strong> — i <strong>124 video</strong> selezionati
+    nella <a href="https://github.com/OigreSergio/Parkour_NoToTFamily/pull/13">PR #13</a>, dentro la UI della schermata Tutorial. Le regole di accesso
+    sono quelle vere di <code>video_service.can_watch</code>. Cambia profilo per vedere cosa sblocca
+    il backend:
+  </p>
+
+  <div class="roles" role="group" aria-label="Profilo di accesso simulato">
+    <button class="role" data-role="anon" aria-pressed="true">Anonimo<small>nessun accesso</small></button>
+    <button class="role" data-role="guest" aria-pressed="false">Ospite<small>accesso senza email</small></button>
+    <button class="role" data-role="sub" aria-pressed="false">Abbonato<small>premium sbloccati</small></button>
+  </div>
+
+  <div class="app">
+    <div class="appbar" id="appbar"></div>
+    <div class="screen" id="screen"></div>
+    <nav class="navbar" aria-label="Navigazione app">
+      <a class="nav" href="./" target="_blank" rel="noopener"><span class="g">🗺️</span>Map</a>
+      <a class="nav" href="./" target="_blank" rel="noopener"><span class="g">📋</span>List</a>
+      <button class="nav" aria-current="true" id="navTutorials"><span class="g">📖</span>Tutorials</button>
+    </nav>
+  </div>
+<p class="navnote">Mappa e Lista aprono <a href="./" target="_blank" rel="noopener">l'app vera</a> in una nuova scheda — spot, foto e schede sono quelli veri, e questa pagina resta aperta. Il tab Tutorials dell'app legge da Supabase, dove il catalogo non è ancora caricato: è questa pagina a mostrarlo.</p>
+
+  <div class="checklist">
+    <h2>Cosa vale la pena provare</h2>
+    <ol>
+      <li>Da <strong>Anonimo</strong> o <strong>Ospite</strong>: i 61 video <em>beginner</em> si aprono
+        e portano al video reale su YouTube; i 63 <em>intermediate/advanced</em> mostrano
+        il paywall con l'URL nascosto, esattamente come risponde l'API.</li>
+      <li><strong>Sicurezza sempre libera</strong>: apri <em>Ground Tricks</em> da Anonimo. Rolling sul
+        cemento, cadere senza farsi male, 10 modi di cadere e l'atterraggio da altezza restano aperti
+        pur avendo difficoltà 4-6 — sono i 10 video marcati
+        <span class="safe-chip">⛑ sicurezza</span>.</li>
+      <li>La <strong>difficoltà reale</strong> resta nell'indicatore numerico: un video sbloccato con
+        gauge 6 è gratuito ma non facile.</li>
+      <li>Griglia categorie → lista filtrata; lente 🔍 per cercare fra i 124 titoli;
+        omino 🏃 per segnare un video come "landed".</li>
+      <li><strong>Suggestion Generator</strong>: pesca fra i video non ancora landed, con
+        − Easier / + Harder / 🔀 Switch type.</li>
+    </ol>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+  // Same taxonomy and colors as mobile/lib/screens/tutorials_screen.dart.
+  const CATEGORIES = [
+    { key: 'flips',         label: 'Flips',         color: '#34A853', glyph: '🤸' },
+    { key: 'basics',        label: 'Basics',        color: '#A6408F', glyph: '🚶' },
+    { key: 'vaults',        label: 'Vaults',        color: '#2A6AA8', glyph: '🦘' },
+    { key: 'wall_tricks',   label: 'Wall Tricks',   color: '#C99A18', glyph: '🧗' },
+    { key: 'bar_tricks',    label: 'Bar Tricks',    color: '#F0913A', glyph: '🤾' },
+    { key: 'other',         label: 'Other Tricks',  color: '#7B2FBE', glyph: '✨' },
+    { key: 'ground_tricks', label: 'Ground Tricks', color: '#E23B3B', glyph: '🤼' },
+    { key: null,            label: 'All Tricks',    color: '#1FA88C', glyph: '🗂️' },
+  ];
+
+  // Catalogo reale: backend/seeds/videos.json (124 video).
+  const TRICKS = [
+    {"id": "trNyPrKzm8I", "title": "HOW TO BEGIN - Parkour or Freerunning ( Jesse La Flair )", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Primi passi: da dove si comincia. Che cos'è il parkour, come strutturare le prime sessioni, quali movimenti imparare per primi e con che mentalità avvicinarsi alla disciplina. È il video d'ingresso del canale.", "url": "https://www.youtube.com/watch?v=trNyPrKzm8I", "ch": "Jesse La Flair", "dur": "5:10", "q": "Alta", "safe": false},
+    {"id": "TnKhMF7g10I", "title": "How to Warm Up ( Parkour & Freerunning ) - Jesse La Flair", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Riscaldamento completo pre-sessione. Riscaldamento full-body articolazione per articolazione prima di allenare parkour: mobilità, attivazione e progressione dell'intensità. Lungo e parlato, pensato per essere seguito passo passo.", "url": "https://www.youtube.com/watch?v=TnKhMF7g10I", "ch": "Jesse La Flair", "dur": "15:51", "q": "Alta", "safe": false},
+    {"id": "DY0NcgkvPpU", "title": "How to Overcome Fear", "cat": "other", "level": "beginner", "diff": 1, "desc": "Gestione della paura. Metodo per scomporre un salto che spaventa in passaggi affrontabili e distinguere paura utile da paura irrazionale.", "url": "https://www.youtube.com/watch?v=DY0NcgkvPpU", "ch": "Jesse La Flair", "dur": "4:27", "q": "Alta", "safe": false},
+    {"id": "tp83vNIWI6k", "title": "How To Avoid Ripping Your Hands ( Parkour Tutorial / Tip )", "cat": "other", "level": "beginner", "diff": 1, "desc": "Prevenzione: proteggere le mani. Come evitare di strappare la pelle delle mani su barre e bordi, e come gestire i calli.", "url": "https://www.youtube.com/watch?v=tp83vNIWI6k", "ch": "Jesse La Flair", "dur": "4:10", "q": "Alta", "safe": false},
+    {"id": "qa1sRUN1J5c", "title": "Best Shoes For Parkour & WHY", "cat": "other", "level": "beginner", "diff": 1, "desc": "Scelta delle scarpe. Che cosa cercare in una scarpa da parkour (grip, suola, ammortizzazione) e perché.", "url": "https://www.youtube.com/watch?v=qa1sRUN1J5c", "ch": "Jesse La Flair", "dur": "16:07", "q": "Media", "safe": false},
+    {"id": "1iICtT7ycUs", "title": "Parkour Roll Tutorial - Beginner & Advanced", "cat": "ground_tricks", "level": "beginner", "diff": 2, "desc": "Progressione rolling (base e avanzata). Il rolling di sicurezza spiegato dal perché si rotola fino agli errori più comuni: linea diagonale della spalla, testa fuori traiettoria, uscita in piedi. Copre sia la versione base sia quella avanzata.", "url": "https://www.youtube.com/watch?v=1iICtT7ycUs", "ch": "Jesse La Flair", "dur": "13:22", "q": "Alta", "safe": false},
+    {"id": "sQbLGyASd54", "title": "BEST PARKOUR PRECISION TUTORIAL", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Salto di precisione. Tecnica del precision jump: caricamento, uso delle braccia, atterraggio assorbito sull'avampiede e blocco sul bordo. Il mattone su cui si costruisce tutto il resto.", "url": "https://www.youtube.com/watch?v=sQbLGyASd54", "ch": "Jesse La Flair", "dur": "6:16", "q": "Alta", "safe": false},
+    {"id": "6Fl28CLxC-w", "title": "SAFETY VAULT TUTORIAL ( Beginner PARKOUR ) - Jesse La Flair", "cat": "vaults", "level": "beginner", "diff": 2, "desc": "Safety vault. Il vault più utile e più sicuro da imparare per primo: appoggio mano-piede, controllo del bacino, uscita senza perdere velocità.", "url": "https://www.youtube.com/watch?v=6Fl28CLxC-w", "ch": "Jesse La Flair", "dur": "5:57", "q": "Alta", "safe": false},
+    {"id": "z0KY7XM9g_o", "title": "LAZY VAULT & THIEF VAULT TUTORIAL ( Beginner Parkour ) - Jesse La Flair", "cat": "vaults", "level": "beginner", "diff": 2, "desc": "Lazy vault e thief vault. Due passaggi laterali di base, con differenze, errori tipici e progressione su ostacolo basso.", "url": "https://www.youtube.com/watch?v=z0KY7XM9g_o", "ch": "Jesse La Flair", "dur": "6:33", "q": "Alta", "safe": false},
+    {"id": "aPEJzbekjlk", "title": "Indoor Balance and Control Exercise – Parkour and Freerunning: How To", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Equilibrio e controllo indoor. Esercizi di equilibrio e propriocezione da fare in casa o in palestra, utili come lavoro complementare quotidiano.", "url": "https://www.youtube.com/watch?v=aPEJzbekjlk", "ch": "Jesse La Flair", "dur": "4:58", "q": "Alta", "safe": false},
+    {"id": "7JAmpMtUm-0", "title": "HOW TO FIND PARKOUR SPOTS - Jesse La Flair", "cat": "other", "level": "beginner", "diff": 2, "desc": "Trovare e leggere gli spot. Come riconoscere superfici e ostacoli allenabili in città e valutarne la sicurezza.", "url": "https://www.youtube.com/watch?v=7JAmpMtUm-0", "ch": "Jesse La Flair", "dur": "6:56", "q": "Media", "safe": false},
+    {"id": "m1DR9UxkNIE", "title": "SPEED VAULT TUTORIAL ( BEGINNER PARKOUR ) - Jesse La Flair", "cat": "vaults", "level": "beginner", "diff": 3, "desc": "Speed vault. Passaggio laterale in corsa: timing dello stacco, appoggio della mano e mantenimento della velocità.", "url": "https://www.youtube.com/watch?v=m1DR9UxkNIE", "ch": "Jesse La Flair", "dur": "6:13", "q": "Alta", "safe": false},
+    {"id": "3X-27U0Pie4", "title": "DASH VAULT TUTORIAL ( HOW TO - BEGINNER PARKOUR ) - Jesse La Flair", "cat": "vaults", "level": "beginner", "diff": 3, "desc": "Dash vault. Passaggio con i piedi avanti e spinta delle mani dietro: drill di avvicinamento e gestione della paura di restare corti.", "url": "https://www.youtube.com/watch?v=3X-27U0Pie4", "ch": "Jesse La Flair", "dur": "8:10", "q": "Alta", "safe": false},
+    {"id": "lJEUY0wzT3U", "title": "TURN VAULT PARKOUR TUTORIAL (Jesse La Flair)", "cat": "vaults", "level": "beginner", "diff": 3, "desc": "Turn vault. Vault con rotazione di 180° e presa sul bordo: fondamentale per gestire i vuoti e per uscire in sicurezza da un ostacolo alto.", "url": "https://www.youtube.com/watch?v=lJEUY0wzT3U", "ch": "Jesse La Flair", "dur": "6:27", "q": "Alta", "safe": false},
+    {"id": "3S9LFHETtL0", "title": "TIC TAC - PARKOUR TUTORIAL", "cat": "wall_tricks", "level": "intermediate", "diff": 3, "desc": "Tic tac. Rimbalzo sul muro per cambiare direzione o guadagnare quota: angolo di attacco e uso del piede.", "url": "https://www.youtube.com/watch?v=3S9LFHETtL0", "ch": "Jesse La Flair", "dur": "4:50", "q": "Alta", "safe": false},
+    {"id": "cFUU3J5Hdbk", "title": "CAT LEAP / ARM JUMP - PARKOUR TUTORIAL", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Cat leap / arm jump. Salto verso un muro con presa a gatto: distanza corretta, assorbimento con piedi e braccia, errori che portano a sbattere il petto.", "url": "https://www.youtube.com/watch?v=cFUU3J5Hdbk", "ch": "Jesse La Flair", "dur": "4:26", "q": "Alta", "safe": false},
+    {"id": "SYGU697kF0Q", "title": "CAT PASS / KONG / MONKEY VAULT - PARKOUR TUTORIAL", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Kong / monkey vault (cat pass). Il vault più iconico spiegato per gradi: partenza dal quadrupedale, spinta delle braccia, passaggio delle gambe fra le mani.", "url": "https://www.youtube.com/watch?v=SYGU697kF0Q", "ch": "Jesse La Flair", "dur": "8:05", "q": "Alta", "safe": false},
+    {"id": "cTlIeAOQkqc", "title": "REVERSE VAULT TUTORIAL (PARKOUR VERY DETAILED)", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Reverse vault. Passaggio con rotazione all'indietro, spiegato in modo molto dettagliato; utile per capire il controllo della rotazione sull'ostacolo.", "url": "https://www.youtube.com/watch?v=cTlIeAOQkqc", "ch": "Jesse La Flair", "dur": "11:06", "q": "Alta", "safe": false},
+    {"id": "2fckhZQimpk", "title": "GATE VAULT Parkour Tutorial (Jesse La Flair)", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Gate vault. Superamento di cancelli e ringhiere alte, con varianti di presa.", "url": "https://www.youtube.com/watch?v=2fckhZQimpk", "ch": "Jesse La Flair", "dur": "5:26", "q": "Media", "safe": false},
+    {"id": "08x3P2E122U", "title": "WALL RUN & CLIMB UP TUTORIAL", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Wall run e climb up. Salita al muro: passo sul muro, presa del bordo e climb up (top out). Il video più visto del canale, con progressione dal muro basso a quello alto.", "url": "https://www.youtube.com/watch?v=08x3P2E122U", "ch": "Jesse La Flair", "dur": "10:47", "q": "Alta", "safe": false},
+    {"id": "Z9OgpgqBOjM", "title": "HOW TO DO PARKOUR: Part 1 of 3 (Wall Control Master Program)", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Wall Control Master Program 1/3 — pounce, tic tac, wall run orizzontale. Prima parte di un programma in 3 puntate dedicato al controllo del muro: chiave dell'aderenza del piede, pounce, tic tac, horizontal wall run, 270 wall run.", "url": "https://www.youtube.com/watch?v=Z9OgpgqBOjM", "ch": "Jesse La Flair", "dur": "14:29", "q": "Alta", "safe": false},
+    {"id": "d96EKXEM5XE", "title": "How To STRIDE & Bound : Parkour TUTORIAL (Jesse La Flair)", "cat": "basics", "level": "intermediate", "diff": 4, "desc": "Stride e bound (passo di corsa sugli ostacoli). Come attaccare un ostacolo con un piede solo mantenendo la corsa: il collegamento fra due salti che rende fluida una linea.", "url": "https://www.youtube.com/watch?v=d96EKXEM5XE", "ch": "Jesse La Flair", "dur": "9:53", "q": "Alta", "safe": false},
+    {"id": "E1IR5z1LIf4", "title": "Stride to Safety Step Through :Parkour Tutorial - (Jesse La Flair)", "cat": "basics", "level": "intermediate", "diff": 4, "desc": "Stride to safety, step through. Combinazione fra stride e safety vault per passare da un ostacolo all'altro senza fermarsi.", "url": "https://www.youtube.com/watch?v=E1IR5z1LIf4", "ch": "Jesse La Flair", "dur": "5:17", "q": "Alta", "safe": false},
+    {"id": "3GT-E0dyK4Q", "title": "Underbar Tutorial – Parkour and Freerunning: How To", "cat": "bar_tricks", "level": "intermediate", "diff": 4, "desc": "Underbar (passaggio sotto la barra). Passaggio sotto una barra o una finestra: raccolta delle gambe, spinta delle braccia e atterraggio.", "url": "https://www.youtube.com/watch?v=3GT-E0dyK4Q", "ch": "Jesse La Flair", "dur": "8:09", "q": "Alta", "safe": false},
+    {"id": "qXnydR29W-8", "title": "Kip Up Tutorial - (Jesse La Flair)", "cat": "ground_tricks", "level": "intermediate", "diff": 4, "desc": "Kip up (rialzarsi da terra). Rialzarsi in piedi da supino con la spinta di bacino e gambe.", "url": "https://www.youtube.com/watch?v=qXnydR29W-8", "ch": "Jesse La Flair", "dur": "7:36", "q": "Media", "safe": false},
+    {"id": "fDNoiQXPYMM", "title": "Slide Tutorial – Parkour and Freerunning: How To", "cat": "ground_tricks", "level": "intermediate", "diff": 4, "desc": "Slide (scivolata sotto gli ostacoli). Scivolata al suolo per passare sotto un ostacolo basso, con attenzione all'usura e agli attriti.", "url": "https://www.youtube.com/watch?v=fDNoiQXPYMM", "ch": "Jesse La Flair", "dur": "8:25", "q": "Media", "safe": false},
+    {"id": "UBUmNTxJuEE", "title": "HOW TO DO PARKOUR: Part 2 of 3 (Wall Control Master Program)", "cat": "wall_tricks", "level": "intermediate", "diff": 5, "desc": "Wall Control Master Program 2/3 — cat hang, traverse, cat leap, cat 180. Seconda parte: sospensione a gatto, traversata laterale, cat leap e cat 180. Lavoro di forza di presa e di controllo del corpo appeso.", "url": "https://www.youtube.com/watch?v=UBUmNTxJuEE", "ch": "Jesse La Flair", "dur": "11:53", "q": "Alta", "safe": false},
+    {"id": "c5qN8ml5HAo", "title": "HOW TO DO PARKOUR: Part 3 of 3 (Wall Control Master Program)", "cat": "wall_tricks", "level": "intermediate", "diff": 5, "desc": "Wall Control Master Program 3/3 — wall run, climb up, top out. Terza parte: salita completa al muro con tre livelli di top out, dal più semplice al più efficiente.", "url": "https://www.youtube.com/watch?v=c5qN8ml5HAo", "ch": "Jesse La Flair", "dur": "11:42", "q": "Alta", "safe": false},
+    {"id": "1Mn06LXFDsk", "title": "Assassins Creed: Horizontal Wall Run - Parkour Tutorial (Jesse La Flair)", "cat": "wall_tricks", "level": "intermediate", "diff": 5, "desc": "Wall run orizzontale. Corsa laterale sul muro: velocità d'ingresso, inclinazione del corpo, numero di appoggi.", "url": "https://www.youtube.com/watch?v=1Mn06LXFDsk", "ch": "Jesse La Flair", "dur": "6:48", "q": "Media", "safe": false},
+    {"id": "3o0NrxeRCsk", "title": "Lache Parkour Tutorial - How to swing from a bar (Jesse La Flair)", "cat": "bar_tricks", "level": "intermediate", "diff": 5, "desc": "Lache (sospensione e stacco dalla barra). Come dondolare e lasciare la barra al momento giusto, con progressione dalla barra bassa.", "url": "https://www.youtube.com/watch?v=3o0NrxeRCsk", "ch": "Jesse La Flair", "dur": "10:07", "q": "Alta", "safe": false},
+    {"id": "vac5SEOnc8M", "title": "Bar Kip Tutorial", "cat": "bar_tricks", "level": "intermediate", "diff": 5, "desc": "Bar kip (salita alla sbarra). Salita sopra la barra con il kip: timing e forza necessaria.", "url": "https://www.youtube.com/watch?v=vac5SEOnc8M", "ch": "Jesse La Flair", "dur": "3:17", "q": "Media", "safe": false},
+    {"id": "2pxzkxDX3lY", "title": "Cat 180: Parkour Tutorial - (Jesse La Flair)", "cat": "wall_tricks", "level": "intermediate", "diff": 5, "desc": "Cat 180. Rotazione di 180° da presa a gatto per ripartire nella direzione opposta.", "url": "https://www.youtube.com/watch?v=2pxzkxDX3lY", "ch": "Jesse La Flair", "dur": "5:44", "q": "Media", "safe": false},
+    {"id": "LSpKH0qsz6E", "title": "HOW TO DO A 360 PRECISION - Freerunning Tutorial (Jesse La Flair)", "cat": "basics", "level": "advanced", "diff": 6, "desc": "Precision con 360. Salto di precisione con rotazione completa: solo dopo aver consolidato il precision base.", "url": "https://www.youtube.com/watch?v=LSpKH0qsz6E", "ch": "Jesse La Flair", "dur": "7:35", "q": "Media", "safe": false},
+    {"id": "PkzlN3sKbas", "title": "KONG VAULT TO CAT GRAB - PARKOUR TUTORIAL", "cat": "vaults", "level": "advanced", "diff": 6, "desc": "Kong vault to cat grab. Collegamento fra kong e presa a gatto sul muro opposto.", "url": "https://www.youtube.com/watch?v=PkzlN3sKbas", "ch": "Jesse La Flair", "dur": "2:27", "q": "Media", "safe": false},
+    {"id": "obC2nJlfBz0", "title": "KONG TO PRECISION - PARKOUR TUTORIAL", "cat": "vaults", "level": "advanced", "diff": 6, "desc": "Kong to precision. Kong che finisce su un bordo stretto: controllo dell'atterraggio dopo il passaggio.", "url": "https://www.youtube.com/watch?v=obC2nJlfBz0", "ch": "Jesse La Flair", "dur": "3:41", "q": "Media", "safe": false},
+    {"id": "Y8Qv1qJnvWI", "title": "DOUBLE KONG TUTORIAL ( PARKOUR ) - Jesse La Flair", "cat": "vaults", "level": "advanced", "diff": 7, "desc": "Double kong. Doppia spinta delle braccia su ostacoli lunghi: progressione e condizioni di sicurezza.", "url": "https://www.youtube.com/watch?v=Y8Qv1qJnvWI", "ch": "Jesse La Flair", "dur": "9:52", "q": "Alta", "safe": false},
+    {"id": "wDE8y6QoD2w", "title": "Kash Vault Tutorial - How to PARKOUR ( Jesse La Flair )", "cat": "vaults", "level": "advanced", "diff": 7, "desc": "Kash vault. Combinazione kong + dash su ostacoli larghi, spiegata per gradi.", "url": "https://www.youtube.com/watch?v=wDE8y6QoD2w", "ch": "Jesse La Flair", "dur": "8:29", "q": "Alta", "safe": false},
+    {"id": "HzN-kO8NdgA", "title": "Reverse Kong Push - Parkour Tutorial ( Jesse La Flair )", "cat": "vaults", "level": "advanced", "diff": 7, "desc": "Reverse kong push. Variante avanzata del kong con spinta all'indietro.", "url": "https://www.youtube.com/watch?v=HzN-kO8NdgA", "ch": "Jesse La Flair", "dur": "9:38", "q": "Media", "safe": false},
+    {"id": "iHXaunhTpuU", "title": "Dive Kong Tutorial – Parkour and Freerunning: How To", "cat": "vaults", "level": "advanced", "diff": 8, "desc": "Dive kong. Kong con fase di volo iniziale: prerequisiti severi e drill di avvicinamento.", "url": "https://www.youtube.com/watch?v=iHXaunhTpuU", "ch": "Jesse La Flair", "dur": "9:17", "q": "Alta", "safe": false},
+    {"id": "dUpX8JaZxSo", "title": "How To Start Parkour - Assassins Creed Style", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Come iniziare il parkour. Video d'ingresso della serie in stile Assassin's Creed: primi movimenti, atteggiamento e progressione iniziale. È il tutorial più visto del canale.", "url": "https://www.youtube.com/watch?v=dUpX8JaZxSo", "ch": "Ronnie Street Stunts", "dur": "4:28", "q": "Alta", "safe": false},
+    {"id": "zv1Fuqhxia8", "title": "HOW TO START PARKOUR - Can Anyone Do It?", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Chiunque può fare parkour?. Requisiti reali per iniziare, aspettative e come impostare i primi mesi di allenamento.", "url": "https://www.youtube.com/watch?v=zv1Fuqhxia8", "ch": "Ronnie Street Stunts", "dur": "6:57", "q": "Alta", "safe": false},
+    {"id": "vuIMWGITL8c", "title": "How To Learn Parkour By Yourself", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Allenarsi da soli. Come costruire un percorso di apprendimento autonomo senza palestra e senza coach, con criteri per autovalutarsi.", "url": "https://www.youtube.com/watch?v=vuIMWGITL8c", "ch": "Ronnie Street Stunts", "dur": "12:00", "q": "Alta", "safe": false},
+    {"id": "2xpOs0iChPA", "title": "What Age Can You Start Parkour?", "cat": "other", "level": "beginner", "diff": 1, "desc": "A che età si può iniziare. Considerazioni su età, crescita e carichi: utile per genitori e per chi inizia tardi.", "url": "https://www.youtube.com/watch?v=2xpOs0iChPA", "ch": "Ronnie Street Stunts", "dur": "8:21", "q": "Media", "safe": false},
+    {"id": "0w956_Qe7r0", "title": "5 BEGINNER PARKOUR MISTAKES", "cat": "basics", "level": "beginner", "diff": 1, "desc": "5 errori dei principianti. Gli errori che rallentano o infortunano chi inizia, con la correzione per ciascuno.", "url": "https://www.youtube.com/watch?v=0w956_Qe7r0", "ch": "Ronnie Street Stunts", "dur": "5:56", "q": "Alta", "safe": false},
+    {"id": "LMyzNQsrRJ8", "title": "How To OVERCOME FEAR In 6 Steps", "cat": "other", "level": "beginner", "diff": 1, "desc": "Superare la paura in 6 passi. Metodo strutturato in sei fasi per affrontare un movimento che spaventa, riducendo il rischio invece di ignorarlo.", "url": "https://www.youtube.com/watch?v=LMyzNQsrRJ8", "ch": "Ronnie Street Stunts", "dur": "7:59", "q": "Alta", "safe": false},
+    {"id": "_2R0nL_NEHw", "title": "Avoid Parkour Injuries: 5 Rules You Can't Ignore", "cat": "other", "level": "beginner", "diff": 1, "desc": "5 regole per evitare gli infortuni. Cinque principi di prevenzione infortuni ricavati da anni di allenamento e di errori: uno dei contenuti più recenti del canale.", "url": "https://www.youtube.com/watch?v=_2R0nL_NEHw", "ch": "Ronnie Street Stunts", "dur": "11:10", "q": "Alta", "safe": false},
+    {"id": "h6vK_HNxLjI", "title": "Parkour Warm Up - Assassins Creed Parkour", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Riscaldamento per il parkour. Routine di riscaldamento breve e pratica da fare prima di ogni sessione.", "url": "https://www.youtube.com/watch?v=h6vK_HNxLjI", "ch": "Ronnie Street Stunts", "dur": "2:29", "q": "Media", "safe": false},
+    {"id": "-3CtMt9VrZ8", "title": "Intro to Parkour Conditioning Tutorials - Silver Fox", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Introduzione al conditioning per il parkour. Video introduttivo alla serie di condizionamento: logica del lavoro di forza per il parkour.", "url": "https://www.youtube.com/watch?v=-3CtMt9VrZ8", "ch": "Ronnie Street Stunts", "dur": "1:50", "q": "Media", "safe": false},
+    {"id": "hNybGpJLW4o", "title": "5 Parkour Moves EVERYONE Should Learn", "cat": "basics", "level": "beginner", "diff": 2, "desc": "5 movimenti che tutti dovrebbero imparare. Selezione ragionata dei movimenti fondamentali con cui costruire una base solida prima di tutto il resto.", "url": "https://www.youtube.com/watch?v=hNybGpJLW4o", "ch": "Ronnie Street Stunts", "dur": "10:46", "q": "Alta", "safe": false},
+    {"id": "6zfRFfwNWtk", "title": "10 Parkour Moves Anyone Can Learn", "cat": "basics", "level": "beginner", "diff": 2, "desc": "10 movimenti alla portata di tutti. Panoramica di dieci movimenti base con dimostrazione: utile come mappa iniziale, meno approfondito dei tutorial singoli.", "url": "https://www.youtube.com/watch?v=6zfRFfwNWtk", "ch": "Ronnie Street Stunts", "dur": "16:40", "q": "Media", "safe": false},
+    {"id": "6x-cG9giKXY", "title": "PARKOUR SAFETY ROLLS Tutorial - Forward Roll, Side Roll, Back Roll", "cat": "ground_tricks", "level": "beginner", "diff": 2, "desc": "Rolling di sicurezza: avanti, laterale, indietro. Il tutorial di riferimento sui rolling: tre direzioni, progressione da terra morbida a dura, obiettivo di rotolare per istinto.", "url": "https://www.youtube.com/watch?v=6x-cG9giKXY", "ch": "Ronnie Street Stunts", "dur": "10:13", "q": "Alta", "safe": false},
+    {"id": "eMC-1_q8zg0", "title": "Learn the PARKOUR ROLL - Assassins Creed Style", "cat": "ground_tricks", "level": "beginner", "diff": 2, "desc": "Parkour roll (versione base). Introduzione al rolling in avanti, spiegato in modo semplice e adatto alla primissima sessione.", "url": "https://www.youtube.com/watch?v=eMC-1_q8zg0", "ch": "Ronnie Street Stunts", "dur": "4:31", "q": "Alta", "safe": false},
+    {"id": "Xpq20Bizkdg", "title": "How to BACK ROLL - Parkour Tutorial", "cat": "ground_tricks", "level": "beginner", "diff": 2, "desc": "Back roll. Rotolata all'indietro, utile quando si perde l'equilibrio all'indietro in atterraggio.", "url": "https://www.youtube.com/watch?v=Xpq20Bizkdg", "ch": "Ronnie Street Stunts", "dur": "3:27", "q": "Media", "safe": false},
+    {"id": "UUzpvxuRYg4", "title": "How To TRAIN PARKOUR On a SPRAINED ANKLE", "cat": "other", "level": "beginner", "diff": 2, "desc": "Allenarsi con una caviglia distorta. Come continuare a muoversi durante un infortunio alla caviglia senza aggravarlo.", "url": "https://www.youtube.com/watch?v=UUzpvxuRYg4", "ch": "Ronnie Street Stunts", "dur": "12:48", "q": "Media", "safe": true},
+    {"id": "kUYUCIrQvhw", "title": "10 BEGINNER PARKOUR EXERCISES | Practical Fitness", "cat": "basics", "level": "beginner", "diff": 2, "desc": "10 esercizi per principianti. Condizionamento specifico a corpo libero per chi inizia: forza utile al movimento, non estetica.", "url": "https://www.youtube.com/watch?v=kUYUCIrQvhw", "ch": "Ronnie Street Stunts", "dur": "10:27", "q": "Alta", "safe": false},
+    {"id": "07jEvyImwW8", "title": "10 Minute Parkour Workout | Ground Exercises | Training At Home", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Workout di 10 minuti a terra. Circuito breve da fare a casa, centrato su esercizi al suolo e movimento quadrupedale.", "url": "https://www.youtube.com/watch?v=07jEvyImwW8", "ch": "Ronnie Street Stunts", "dur": "10:21", "q": "Alta", "safe": false},
+    {"id": "nLYj6MqCOqE", "title": "Quarantine Parkour | How To Train At Home", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Allenarsi in casa. Programma di allenamento domestico quando non si può uscire: forza, mobilità e tecnica a secco.", "url": "https://www.youtube.com/watch?v=nLYj6MqCOqE", "ch": "Ronnie Street Stunts", "dur": "8:41", "q": "Alta", "safe": false},
+    {"id": "ocV-i6Fh9-g", "title": "10 Parkour Moves on Flat Ground", "cat": "basics", "level": "beginner", "diff": 2, "desc": "10 movimenti al suolo (quadrupedia). Movimento quadrupedale e spostamenti a terra: base di forza e coordinazione spesso saltata dai principianti.", "url": "https://www.youtube.com/watch?v=ocV-i6Fh9-g", "ch": "Ronnie Street Stunts", "dur": "8:14", "q": "Alta", "safe": false},
+    {"id": "6NqjhzdXmGo", "title": "How To Improve Your Balance", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Migliorare l'equilibrio. Progressione di esercizi di equilibrio su ringhiere e bordi, dal basso all'alto.", "url": "https://www.youtube.com/watch?v=6NqjhzdXmGo", "ch": "Ronnie Street Stunts", "dur": "12:13", "q": "Alta", "safe": false},
+    {"id": "hbas1G_9JrI", "title": "10 PARKOUR VAULTS FOR BEGINNERS", "cat": "vaults", "level": "beginner", "diff": 2, "desc": "10 vault per principianti. Panoramica ordinata dei vault di base, uno dopo l'altro, con l'uso pratico di ciascuno.", "url": "https://www.youtube.com/watch?v=hbas1G_9JrI", "ch": "Ronnie Street Stunts", "dur": "13:06", "q": "Alta", "safe": false},
+    {"id": "OZFnbIOmmIY", "title": "How to SAFETY VAULT - Parkour Tutorial", "cat": "vaults", "level": "beginner", "diff": 2, "desc": "Safety vault. Il vault di riferimento per iniziare, con dettagli su appoggio e uscita.", "url": "https://www.youtube.com/watch?v=OZFnbIOmmIY", "ch": "Ronnie Street Stunts", "dur": "3:25", "q": "Alta", "safe": false},
+    {"id": "3bLX2VJZMgk", "title": "How to LAZY VAULT - Parkour Tutorial", "cat": "vaults", "level": "beginner", "diff": 2, "desc": "Lazy vault. Passaggio laterale economico, spiegato in versione breve.", "url": "https://www.youtube.com/watch?v=3bLX2VJZMgk", "ch": "Ronnie Street Stunts", "dur": "1:49", "q": "Media", "safe": false},
+    {"id": "2kJQt0TrRkw", "title": "How to SIDE VAULT - Parkour Tutorial", "cat": "vaults", "level": "beginner", "diff": 2, "desc": "Side vault. Il vault laterale più semplice, buon primo passaggio in assoluto.", "url": "https://www.youtube.com/watch?v=2kJQt0TrRkw", "ch": "Ronnie Street Stunts", "dur": "1:32", "q": "Media", "safe": false},
+    {"id": "9sb4TYNHGio", "title": "How to PRECISION JUMP - Parkour Tutorial", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Salto di precisione. Tecnica base del precision jump con atterraggio bloccato sul bordo.", "url": "https://www.youtube.com/watch?v=9sb4TYNHGio", "ch": "Ronnie Street Stunts", "dur": "2:38", "q": "Alta", "safe": false},
+    {"id": "mH0nR9SnreM", "title": "PARKOUR VISION - How to Find Parkour Spots", "cat": "other", "level": "beginner", "diff": 2, "desc": "Riconoscere gli spot in città. Come 'vedere' il parkour nell'ambiente urbano e valutare superfici, altezze e rischi.", "url": "https://www.youtube.com/watch?v=mH0nR9SnreM", "ch": "Ronnie Street Stunts", "dur": "10:30", "q": "Alta", "safe": false},
+    {"id": "w6oepGmoFHw", "title": "How to Parkour Train Indoors During Bad Weather", "cat": "other", "level": "beginner", "diff": 2, "desc": "Allenarsi al chiuso con il maltempo. Alternative indoor quando fuori è impraticabile.", "url": "https://www.youtube.com/watch?v=w6oepGmoFHw", "ch": "Ronnie Street Stunts", "dur": "9:00", "q": "Media", "safe": false},
+    {"id": "X5x8P_gbG10", "title": "How To CLIMB TREES SAFELY With No Equipment", "cat": "other", "level": "beginner", "diff": 2, "desc": "Arrampicata sugli alberi in sicurezza. Movimento naturale: come salire e scendere da un albero senza attrezzatura, valutando rami e appigli.", "url": "https://www.youtube.com/watch?v=X5x8P_gbG10", "ch": "Ronnie Street Stunts", "dur": "9:00", "q": "Media", "safe": false},
+    {"id": "ksUXxWUQkXc", "title": "How To climb DOWN Trees", "cat": "other", "level": "beginner", "diff": 2, "desc": "Scendere dagli alberi. La parte che quasi nessuno allena: la discesa controllata.", "url": "https://www.youtube.com/watch?v=ksUXxWUQkXc", "ch": "Ronnie Street Stunts", "dur": "7:08", "q": "Media", "safe": false},
+    {"id": "kVwxbulZbB0", "title": "5 Ways To Safety Vault - Parkour Tutorial", "cat": "vaults", "level": "intermediate", "diff": 3, "desc": "5 varianti di safety vault. Cinque modi di eseguire il safety vault a seconda dell'ostacolo e della direzione d'uscita.", "url": "https://www.youtube.com/watch?v=kVwxbulZbB0", "ch": "Ronnie Street Stunts", "dur": "6:09", "q": "Alta", "safe": false},
+    {"id": "ar-pYbemlXw", "title": "How To SPEED VAULT - Parkour Tutorial", "cat": "vaults", "level": "beginner", "diff": 3, "desc": "Speed vault. Passaggio in corsa: rincorsa, stacco e appoggio della mano.", "url": "https://www.youtube.com/watch?v=ar-pYbemlXw", "ch": "Ronnie Street Stunts", "dur": "3:06", "q": "Alta", "safe": false},
+    {"id": "9E-QcfGC0rQ", "title": "How to DASH VAULT - Parkour Tutorial", "cat": "vaults", "level": "beginner", "diff": 3, "desc": "Dash vault. Passaggio con i piedi avanti: setup e correzione degli errori tipici.", "url": "https://www.youtube.com/watch?v=9E-QcfGC0rQ", "ch": "Ronnie Street Stunts", "dur": "2:46", "q": "Alta", "safe": false},
+    {"id": "3tip1pMXBoM", "title": "How to TURN VAULT - Assassins Creed Parkour Tutorial", "cat": "vaults", "level": "beginner", "diff": 3, "desc": "Turn vault. Vault con rotazione e presa: fondamentale per affacciarsi sui vuoti in sicurezza.", "url": "https://www.youtube.com/watch?v=3tip1pMXBoM", "ch": "Ronnie Street Stunts", "dur": "3:41", "q": "Alta", "safe": false},
+    {"id": "A97PxrZHkxg", "title": "How to WALL RUN - Assassins Creed Parkour Style", "cat": "wall_tricks", "level": "beginner", "diff": 3, "desc": "Wall run (versione introduttiva). Versione più semplice e divulgativa del wall run, dalla serie Assassin's Creed.", "url": "https://www.youtube.com/watch?v=A97PxrZHkxg", "ch": "Ronnie Street Stunts", "dur": "4:12", "q": "Media", "safe": false},
+    {"id": "x5-HzZXi470", "title": "TIC TAC/Horizontal Wall Run Tutorial - Assassins Creed Parkour", "cat": "wall_tricks", "level": "beginner", "diff": 3, "desc": "Tic tac / wall run orizzontale. Introduzione al rimbalzo laterale sul muro.", "url": "https://www.youtube.com/watch?v=x5-HzZXi470", "ch": "Ronnie Street Stunts", "dur": "2:38", "q": "Media", "safe": false},
+    {"id": "Z_GEOdqnCx4", "title": "How To PRECISION JUMP - Extreme Slow Motion Parkour Tutorial", "cat": "basics", "level": "intermediate", "diff": 3, "desc": "Precision jump al rallentatore. Analisi in slow motion estremo del precision: si vede esattamente cosa fanno piedi, bacino e braccia.", "url": "https://www.youtube.com/watch?v=Z_GEOdqnCx4", "ch": "Ronnie Street Stunts", "dur": "6:38", "q": "Alta", "safe": false},
+    {"id": "dtDtiSsnS3w", "title": "Master The Dash Vault - Parkour Progressions", "cat": "vaults", "level": "intermediate", "diff": 3, "desc": "Dash vault: progressioni. Serie 'Progressions' sul dash vault, dall'ostacolo basso alla versione in corsa.", "url": "https://www.youtube.com/watch?v=dtDtiSsnS3w", "ch": "Ronnie Street Stunts", "dur": "4:57", "q": "Alta", "safe": false},
+    {"id": "vPWXtEDHsdM", "title": "How to Parkour in Winter (snow and ice) - Ronnie Shalvis 2012", "cat": "other", "level": "beginner", "diff": 3, "desc": "Allenarsi su neve e ghiaccio. Adattare il movimento a superfici scivolose, con precauzioni specifiche.", "url": "https://www.youtube.com/watch?v=vPWXtEDHsdM", "ch": "Ronnie Street Stunts", "dur": "7:25", "q": "Media", "safe": true},
+    {"id": "W2QahKbXDyk", "title": "How To Train In the Rain - Gazebo Tic Tac Tunnel Flip", "cat": "other", "level": "beginner", "diff": 3, "desc": "Allenarsi sotto la pioggia. Gestione del grip ridotto e scelta degli ostacoli quando è bagnato.", "url": "https://www.youtube.com/watch?v=W2QahKbXDyk", "ch": "Ronnie Street Stunts", "dur": "7:19", "q": "Media", "safe": true},
+    {"id": "7VUR74BATOU", "title": "10 WAYS TO CLIMB A TREE (No Equipment) - Tutorials", "cat": "other", "level": "intermediate", "diff": 3, "desc": "10 modi di salire su un albero. Rassegna di tecniche di salita su tronchi e rami diversi.", "url": "https://www.youtube.com/watch?v=7VUR74BATOU", "ch": "Ronnie Street Stunts", "dur": "15:45", "q": "Media", "safe": false},
+    {"id": "EQdvkv5XRf0", "title": "How to Safely Climb Trees in Wet Conditions", "cat": "other", "level": "beginner", "diff": 3, "desc": "Alberi bagnati: come gestirli. Precauzioni e tecnica quando la corteccia è bagnata.", "url": "https://www.youtube.com/watch?v=EQdvkv5XRf0", "ch": "Ronnie Street Stunts", "dur": "8:36", "q": "Media", "safe": true},
+    {"id": "CDxhYN6KKz4", "title": "How To Parkour Roll On Concrete | Safety Roll on Hard Surfaces", "cat": "ground_tricks", "level": "beginner", "diff": 4, "desc": "Rolling sul cemento. Come portare il rolling dalla superficie morbida al cemento senza farsi male: correzioni di linea e di contatto della spalla.", "url": "https://www.youtube.com/watch?v=CDxhYN6KKz4", "ch": "Ronnie Street Stunts", "dur": "7:52", "q": "Alta", "safe": true},
+    {"id": "Ehlx0KrVJa0", "title": "10 Ways To Roll - Parkour Rolls and Trick Rolls", "cat": "ground_tricks", "level": "beginner", "diff": 4, "desc": "10 tipi di rolling. Rassegna di rolling da parkour e da tricking, con l'uso pratico di ciascuno.", "url": "https://www.youtube.com/watch?v=Ehlx0KrVJa0", "ch": "Ronnie Street Stunts", "dur": "11:32", "q": "Alta", "safe": true},
+    {"id": "GHGUNOrW9RE", "title": "How to DIVE ROLL - Parkour Tutorial", "cat": "ground_tricks", "level": "intermediate", "diff": 4, "desc": "Dive roll. Rolling con fase di volo: progressione e criteri per non anticipare troppo il contatto.", "url": "https://www.youtube.com/watch?v=GHGUNOrW9RE", "ch": "Ronnie Street Stunts", "dur": "5:46", "q": "Alta", "safe": false},
+    {"id": "ohjbbVwg6OU", "title": "How To Fail Safely (Fall Without Getting Injured)", "cat": "ground_tricks", "level": "beginner", "diff": 4, "desc": "Cadere senza farsi male. Tecniche di adattamento alla caduta imprevista, cioè quando il movimento va storto: è il complemento naturale dei rolling.", "url": "https://www.youtube.com/watch?v=ohjbbVwg6OU", "ch": "Ronnie Street Stunts", "dur": "8:20", "q": "Alta", "safe": true},
+    {"id": "xNGPuvDcGLw", "title": "How To Do The SUPER HERO LANDING", "cat": "basics", "level": "beginner", "diff": 4, "desc": "Superhero landing. Atterraggio su tre punti: tecnica e, soprattutto, quando NON usarlo. Taglio spettacolare ma con contenuto tecnico.", "url": "https://www.youtube.com/watch?v=xNGPuvDcGLw", "ch": "Ronnie Street Stunts", "dur": "7:30", "q": "Media", "safe": true},
+    {"id": "QhrRKTZSY5U", "title": "Wall Climb Up and Strength Exercises - Parkour Tutorial", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Climb up e forza per il muro. Salita sopra il muro più gli esercizi di forza specifici per riuscirci.", "url": "https://www.youtube.com/watch?v=QhrRKTZSY5U", "ch": "Ronnie Street Stunts", "dur": "5:53", "q": "Alta", "safe": false},
+    {"id": "gfG1WnJME3w", "title": "How to HAND STAND and Increase Hand Stand Strength", "cat": "ground_tricks", "level": "intermediate", "diff": 4, "desc": "Verticale e forza delle spalle. Handstand e lavoro di forza per spalle e polsi.", "url": "https://www.youtube.com/watch?v=gfG1WnJME3w", "ch": "Ronnie Street Stunts", "dur": "4:31", "q": "Media", "safe": false},
+    {"id": "YpOI8WsA_BI", "title": "How to DASH VAULT and 10 Dash Vault Variations", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Dash vault e 10 varianti. Dal dash base a dieci varianti, utile per capire come si adatta un vault al contesto.", "url": "https://www.youtube.com/watch?v=YpOI8WsA_BI", "ch": "Ronnie Street Stunts", "dur": "10:46", "q": "Alta", "safe": false},
+    {"id": "lFvqnWhi-fQ", "title": "How To KONG VAULT - Monkey Vault Tutorial", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Kong / monkey vault. Tutorial classico sul kong con progressione dall'ostacolo basso.", "url": "https://www.youtube.com/watch?v=lFvqnWhi-fQ", "ch": "Ronnie Street Stunts", "dur": "4:43", "q": "Alta", "safe": false},
+    {"id": "W_c0-4pC57E", "title": "How to GATE VAULT - Parkour Tutorial", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Gate vault. Passaggio di cancelli e recinzioni alte.", "url": "https://www.youtube.com/watch?v=W_c0-4pC57E", "ch": "Ronnie Street Stunts", "dur": "3:00", "q": "Media", "safe": false},
+    {"id": "sXyyi4q1Jp4", "title": "How to REVERSE VAULT - Free Running Tutorial", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Reverse vault. Passaggio con rotazione inversa sull'ostacolo.", "url": "https://www.youtube.com/watch?v=sXyyi4q1Jp4", "ch": "Ronnie Street Stunts", "dur": "3:34", "q": "Media", "safe": false},
+    {"id": "ZKSaCLPsYj0", "title": "How To UNDER BAR - Parkour Tutorial", "cat": "bar_tricks", "level": "intermediate", "diff": 4, "desc": "Underbar. Passaggio sotto la barra con raccolta e spinta.", "url": "https://www.youtube.com/watch?v=ZKSaCLPsYj0", "ch": "Ronnie Street Stunts", "dur": "4:51", "q": "Alta", "safe": false},
+    {"id": "iZo1t0c__eU", "title": "How To WALL RUN - Parkour Tutorial", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Wall run (salita verticale al muro). Tutorial di riferimento sul wall run: angolo di attacco, spinta del piede, presa del bordo.", "url": "https://www.youtube.com/watch?v=iZo1t0c__eU", "ch": "Ronnie Street Stunts", "dur": "7:37", "q": "Alta", "safe": false},
+    {"id": "8VnGI31lp0w", "title": "How To: TIC TAC | 2 STEP | 3 STEP WALL RUN - Parkour Tutorial", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Tic tac, 2 e 3 appoggi sul muro. Dal tic tac singolo al wall run a due e tre appoggi: come si accumulano gli appoggi.", "url": "https://www.youtube.com/watch?v=8VnGI31lp0w", "ch": "Ronnie Street Stunts", "dur": "5:14", "q": "Alta", "safe": false},
+    {"id": "iDVfO6Rodbw", "title": "WALL POP UP - Fastest Way Up a Wall Parkour Tutorial", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Wall pop up (salita rapida). Il modo più veloce per superare un muro all'altezza del petto.", "url": "https://www.youtube.com/watch?v=iDVfO6Rodbw", "ch": "Ronnie Street Stunts", "dur": "3:04", "q": "Media", "safe": false},
+    {"id": "qOduMtzjgXE", "title": "How to Cat Hang to Cat Leap - Parkour Tutorial", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Da cat hang a cat leap. Sospensione a gatto e salto da presa a presa: forza di presa e transizione.", "url": "https://www.youtube.com/watch?v=qOduMtzjgXE", "ch": "Ronnie Street Stunts", "dur": "3:28", "q": "Alta", "safe": false},
+    {"id": "lE-Q0lmzHI4", "title": "Master The Cat Leap | Parkour Progressions", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Cat leap: progressioni. Serie 'Progressions': dal muretto basso al cat leap completo, per gradi misurabili.", "url": "https://www.youtube.com/watch?v=lE-Q0lmzHI4", "ch": "Ronnie Street Stunts", "dur": "3:40", "q": "Alta", "safe": false},
+    {"id": "EwMMmv-YjyE", "title": "Master The Wall Run | Parkour Progressions", "cat": "wall_tricks", "level": "intermediate", "diff": 4, "desc": "Wall run: progressioni. Serie 'Progressions' applicata al wall run: ogni step ha un prerequisito chiaro.", "url": "https://www.youtube.com/watch?v=EwMMmv-YjyE", "ch": "Ronnie Street Stunts", "dur": "5:32", "q": "Alta", "safe": false},
+    {"id": "946BFgkrgEM", "title": "Master The Kong Vault | Parkour Progressions", "cat": "vaults", "level": "intermediate", "diff": 4, "desc": "Kong vault: progressioni. Serie 'Progressions' sul kong: quadrupedia, spinta, passaggio delle gambe.", "url": "https://www.youtube.com/watch?v=946BFgkrgEM", "ch": "Ronnie Street Stunts", "dur": "4:21", "q": "Alta", "safe": false},
+    {"id": "vOuBDSlRC6w", "title": "KIP UP Parkour Tutorial - How To Get Up Like a Ninja", "cat": "ground_tricks", "level": "intermediate", "diff": 4, "desc": "Kip up. Rialzarsi da terra con la spinta di bacino e gambe.", "url": "https://www.youtube.com/watch?v=vOuBDSlRC6w", "ch": "Ronnie Street Stunts", "dur": "4:07", "q": "Media", "safe": false},
+    {"id": "r9XPcXQ-7VY", "title": "10 Ways To Fall Like A Stunt Man", "cat": "ground_tricks", "level": "beginner", "diff": 5, "desc": "10 modi di cadere (metodo stuntman). Cadute controllate prese dal mestiere dello stuntman, con progressione dal tappeto al suolo duro.", "url": "https://www.youtube.com/watch?v=r9XPcXQ-7VY", "ch": "Ronnie Street Stunts", "dur": "14:17", "q": "Alta", "safe": true},
+    {"id": "w6nAUtBudJ0", "title": "How to Muscle Up: Silver Fox Parkour Tutorial (46 yr old Ron Sr.)", "cat": "bar_tricks", "level": "intermediate", "diff": 5, "desc": "Muscle up. Progressione per il muscle up alla sbarra, dimostrata dal 'Silver Fox' (padre di Ronnie, 46 anni).", "url": "https://www.youtube.com/watch?v=w6nAUtBudJ0", "ch": "Ronnie Street Stunts", "dur": "4:44", "q": "Media", "safe": false},
+    {"id": "YHhyVlARNqg", "title": "Ninja Warrior Strength Training - Silver Fox Tutorial", "cat": "bar_tricks", "level": "intermediate", "diff": 5, "desc": "Forza in stile Ninja Warrior. Circuito di forza per presa e trazione, orientato agli ostacoli sospesi.", "url": "https://www.youtube.com/watch?v=YHhyVlARNqg", "ch": "Ronnie Street Stunts", "dur": "3:42", "q": "Media", "safe": false},
+    {"id": "FS3Wnl7HZfw", "title": "How To CAST VAULT - Parkour Tutorial", "cat": "vaults", "level": "intermediate", "diff": 5, "desc": "Cast vault. Vault con spinta delle braccia dall'appoggio, verso ostacoli lunghi.", "url": "https://www.youtube.com/watch?v=FS3Wnl7HZfw", "ch": "Ronnie Street Stunts", "dur": "4:59", "q": "Media", "safe": false},
+    {"id": "jYLhuTA-Xhg", "title": "Parkour Flow Tutorial: Vaults", "cat": "vaults", "level": "intermediate", "diff": 5, "desc": "Collegare i vault in una linea. Come passare da un vault isolato a una sequenza fluida: ritmo, direzione e transizioni.", "url": "https://www.youtube.com/watch?v=jYLhuTA-Xhg", "ch": "Ronnie Street Stunts", "dur": "7:48", "q": "Alta", "safe": false},
+    {"id": "lSYi_rmYmGk", "title": "How to CORNER WALL RUN - Parkour Tutorial", "cat": "wall_tricks", "level": "intermediate", "diff": 5, "desc": "Corner wall run. Salita sull'angolo fra due muri, con appoggi alternati.", "url": "https://www.youtube.com/watch?v=lSYi_rmYmGk", "ch": "Ronnie Street Stunts", "dur": "4:39", "q": "Media", "safe": false},
+    {"id": "7OaPBbDE1OA", "title": "How To 360 DIVE ROLL - Free Running Tutorial", "cat": "ground_tricks", "level": "advanced", "diff": 6, "desc": "360 dive roll. Dive roll con rotazione: solo dopo un dive roll pulito e consolidato.", "url": "https://www.youtube.com/watch?v=7OaPBbDE1OA", "ch": "Ronnie Street Stunts", "dur": "5:42", "q": "Media", "safe": false},
+    {"id": "ZTlEwMtDH9s", "title": "How To JUMP FROM A ROOF SAFELY - Height Drop Tutorial", "cat": "basics", "level": "beginner", "diff": 6, "desc": "Atterraggio da altezza (height drop). Come scendere da altezze importanti: assorbimento, uso del rolling, limiti da rispettare e criteri per non superarli.", "url": "https://www.youtube.com/watch?v=ZTlEwMtDH9s", "ch": "Ronnie Street Stunts", "dur": "10:07", "q": "Alta", "safe": true},
+    {"id": "pliZdxlK0ng", "title": "How To KONG-PRE (Kong to Precision) - Parkour Tutorial", "cat": "vaults", "level": "advanced", "diff": 6, "desc": "Kong to precision. Kong che termina su un bordo stretto.", "url": "https://www.youtube.com/watch?v=pliZdxlK0ng", "ch": "Ronnie Street Stunts", "dur": "5:07", "q": "Media", "safe": false},
+    {"id": "9pCTmdbggsE", "title": "How to DOUBLE KONG Vault - Parkour Tutorial", "cat": "vaults", "level": "advanced", "diff": 7, "desc": "Double kong. Doppia spinta su ostacoli lunghi.", "url": "https://www.youtube.com/watch?v=9pCTmdbggsE", "ch": "Ronnie Street Stunts", "dur": "3:36", "q": "Media", "safe": false},
+    {"id": "9HGSlOQvQyI", "title": "Teaching Gymnast Gracie Kramer Parkour", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Prima lezione di parkour a una ginnasta. Prima lezione di parkour a una ginnasta di livello: si vede il trasferimento di abilità e quali fondamentali vengono introdotti per primi. Formato vlog, non tutorial strutturato.", "url": "https://www.youtube.com/watch?v=9HGSlOQvQyI", "ch": "Sydney Olson", "dur": "14:38", "q": "Media", "safe": false},
+    {"id": "RKyMTGP_f4o", "title": "Working Through Fear (Challenge Revival Series Ep. 3)", "cat": "other", "level": "intermediate", "diff": 3, "desc": "Lavorare sulla paura. Racconto in prima persona del processo mentale per affrontare un movimento che spaventa. Valore formativo sul piano mentale, non tecnico.", "url": "https://www.youtube.com/watch?v=RKyMTGP_f4o", "ch": "Sydney Olson", "dur": "11:01", "q": "Media", "safe": false},
+    {"id": "dD3i0GQZEq4", "title": "Jump Dissection with Jesse La Flair", "cat": "basics", "level": "intermediate", "diff": 4, "desc": "Analisi tecnica di salti difficili. Sessione con Jesse La Flair in cui vengono scomposti alcuni salti tecnici. Contenuto utile ma inserito in un formato vlog.", "url": "https://www.youtube.com/watch?v=dD3i0GQZEq4", "ch": "Sydney Olson", "dur": "8:30", "q": "Media", "safe": false},
+    {"id": "8rmBFwzglrE", "title": "How to do a Raiden/Wall Front Handspring", "cat": "wall_tricks", "level": "advanced", "diff": 7, "desc": "Raiden / wall front handspring. Il suo primo e unico tutorial in senso stretto: scomposizione del raiden con indicazioni su appoggio della mano e rotazione. Formato breve, senza progressione intermedia articolata.", "url": "https://www.youtube.com/watch?v=8rmBFwzglrE", "ch": "Sydney Olson", "dur": "5:09", "q": "Media", "safe": false},
+    {"id": "H983xkFH6c4", "title": "Teaching my Teammates How to Do  A Raiden", "cat": "wall_tricks", "level": "advanced", "diff": 7, "desc": "Insegnare il raiden a tre atleti. Non un tutorial classico ma una lezione filmata: insegna lo stesso movimento a tre persone diverse e risponde alle loro domande sui punti confusi. Il valore didattico sta nel vedere errori reali corretti in diretta.", "url": "https://www.youtube.com/watch?v=H983xkFH6c4", "ch": "Sydney Olson", "dur": "9:48", "q": "Alta", "safe": false},
+    {"id": "_Z8Mifb7woc", "title": "DAILY STRETCHES FOR PARKOUR | With Valtteri", "cat": "basics", "level": "beginner", "diff": 1, "desc": "Routine quotidiana di stretching. Routine di allungamento quotidiana di Valtteri Luoma-aho, esercizio per esercizio: mobilità di anche, spalle e caviglie, la parte che più incide sulla longevità nel parkour.", "url": "https://www.youtube.com/watch?v=_Z8Mifb7woc", "ch": "Team Farang", "dur": "14:10", "q": "Alta", "safe": false},
+    {"id": "gXTzunSQnGM", "title": "LEARN PARKOUR & FREERUNNING - Ultimate Tutorial for Beginners", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Corso completo per principianti (1h43, con capitoli). Il contenuto formativo più completo dei quattro canali: atterraggi (06:40), rolling (08:48), lazy vault, speed vault, precision (19:50), dash, kong, underbar, reverse vault, tic tac (48:27), turn vault, cat leap (1:01:51), 180, wall run (1:16:57), palm spin, wall spin, più capitoli non tecnici su paura (41:25), scelta delle scarpe, ricerca degli spot, allenamento a secco (1:25:37), prove di bail (1:00:40) e ripetizione. Sottotitoli disponibili in più lingue.", "url": "https://www.youtube.com/watch?v=gXTzunSQnGM", "ch": "Team Farang", "dur": "1:43:06", "q": "Alta", "safe": false},
+    {"id": "yGiuyejsaII", "title": "HOW TO GET READY FOR CONCRETE  | Dom's Guide | Parkour", "cat": "basics", "level": "beginner", "diff": 2, "desc": "Preparare il corpo al cemento. Guida di Dominic Di Tommaso alla preparazione prima di allenare su superfici dure: stretching e attivazione. Tono ironico, contenuto comunque utilizzabile come routine.", "url": "https://www.youtube.com/watch?v=yGiuyejsaII", "ch": "Team Farang", "dur": "10:54", "q": "Media", "safe": false},
+    {"id": "uve85iIhiAw", "title": "How to fix your shitty SIDEFLIP | Parkour Tutorial", "cat": "flips", "level": "advanced", "diff": 6, "desc": "Correggere un side flip sbagliato. Analisi degli errori più comuni nel side flip e come correggerli: taglio diagnostico più che introduttivo.", "url": "https://www.youtube.com/watch?v=uve85iIhiAw", "ch": "Team Farang", "dur": "9:15", "q": "Media", "safe": false},
+    {"id": "Q1GLqQW6cXc", "title": "How to 360 DIVEROLL by Dominic Di Tommaso - Freerunning Tutorials - Team Farang", "cat": "ground_tricks", "level": "advanced", "diff": 6, "desc": "360 dive roll. Tutorial breve della vecchia serie 'Freerunning Tutorials' con Dominic Di Tommaso.", "url": "https://www.youtube.com/watch?v=Q1GLqQW6cXc", "ch": "Team Farang", "dur": "2:45", "q": "Media", "safe": false},
+    {"id": "uLZVLlmXOoI", "title": "How to do 360 Bar-Tricks by Jason Paul - Freerunning Tutorial - Team Farang", "cat": "bar_tricks", "level": "advanced", "diff": 6, "desc": "360 alla sbarra. Rotazioni sulla barra spiegate da Jason Paul; formato breve, poca progressione intermedia.", "url": "https://www.youtube.com/watch?v=uLZVLlmXOoI", "ch": "Team Farang", "dur": "5:09", "q": "Media", "safe": false},
+    {"id": "HdRQH032r0g", "title": "Webster Progressions Guide I Parkour & Tricking Tutorial", "cat": "flips", "level": "advanced", "diff": 7, "desc": "Progressione guidata al webster. Quasi 20 minuti di progressione metodica verso il webster: prerequisiti, drill intermedi ed errori. Ottimo esempio di metodo di progressione, anche se il movimento è acrobatico.", "url": "https://www.youtube.com/watch?v=HdRQH032r0g", "ch": "Team Farang", "dur": "19:46", "q": "Alta", "safe": false},
+    {"id": "sb7DEbKzzQk", "title": "How to Wall Front by Jason Paul - Freerunning Tutorial - Team Farang", "cat": "wall_tricks", "level": "advanced", "diff": 7, "desc": "Wall front. Tutorial breve della vecchia serie; presuppone basi acrobatiche già solide.", "url": "https://www.youtube.com/watch?v=sb7DEbKzzQk", "ch": "Team Farang", "dur": "2:54", "q": "Media", "safe": false},
+    {"id": "UemFP0yNsKY", "title": "CORK PROGRESSION GUIDE | Jason Paul", "cat": "flips", "level": "advanced", "diff": 8, "desc": "Progressione guidata al cork. Guida di Jason Paul alla progressione verso il cork, con tappe intermedie e criteri per passare allo step successivo.", "url": "https://www.youtube.com/watch?v=UemFP0yNsKY", "ch": "Team Farang", "dur": "10:47", "q": "Alta", "safe": false},
+  ];
+
+  const state = {
+    role: 'anon',              // anon | guest | sub  → mirrors backend viewer state
+    view: { name: 'home' },    // home | list | detail | suggest
+    landed: new Set(),
+    search: '',
+    searching: false,
+    suggestCat: null,          // category pinned in the Suggestion Generator
+  };
+
+  // The exact rule from backend/app/services/video_service.py.
+  const isPremium = (t) => t.level !== 'beginner';
+  const isLocked = (t) => isPremium(t) && state.role !== 'sub';
+
+  const catOf = (key) => CATEGORIES.find((c) => c.key === key);
+  const $ = (sel) => document.querySelector(sel);
+  const esc = (s) => s.replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
+
+  function gauge(diff) {
+    const d = Math.max(1, Math.min(10, diff));
+    const color = d <= 3 ? 'var(--good)' : d <= 5 ? 'var(--warn)' : d <= 7 ? '#f0913a' : 'var(--hard)';
+    const r = 14, c = 2 * Math.PI * r;
+    return `<span class="gauge" role="img" aria-label="Difficoltà ${d} su 10">
+      <svg viewBox="0 0 34 34">
+        <circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--line)" stroke-width="3.5"></circle>
+        <circle cx="17" cy="17" r="${r}" fill="none" stroke="${color}" stroke-width="3.5"
+          stroke-linecap="round" stroke-dasharray="${(c * d / 10).toFixed(1)} ${c.toFixed(1)}"></circle>
+      </svg>
+      <span class="num">${d}</span>
+    </span>`;
+  }
+
+  function runnerBtn(t, size) {
+    const on = state.landed.has(t.id);
+    return `<button class="runner" style="${size ? 'font-size:' + size : ''}" data-landed="${t.id}"
+      aria-pressed="${on}" title="${on ? 'Landed! Tocca per annullare' : 'Segna come landed'}">🏃</button>`;
+  }
+
+  function toast(msg) {
+    const el = $('#toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2200);
+  }
+
+  /* ---------- screens ---------- */
+
+  function renderHome() {
+    $('#appbar').innerHTML = '<h1>Tutorials</h1>';
+    $('#screen').innerHTML = `
+      <button class="suggest-cta" data-nav="suggest">💡 Suggestion Generator</button>
+      <div class="grid">
+        ${CATEGORIES.map((c) => {
+          const n = TRICKS.filter((t) => c.key === null || t.cat === c.key).length;
+          return `<button class="tile" style="background:${c.color}" data-cat="${c.key ?? ''}">
+            <span class="glyph">${c.glyph}</span>${c.label}
+            <span class="count">${n} video</span>
+          </button>`;
+        }).join('')}
+      </div>`;
+  }
+
+  function renderList(catKey) {
+    const cat = catOf(catKey);
+    const title = cat ? (cat.key === null ? 'All Trick Tutorials' : cat.label) : 'All Trick Tutorials';
+    $('#appbar').innerHTML = `
+      <button class="backlink" data-nav="home" aria-label="Indietro">‹</button>
+      ${state.searching
+        ? `<input class="searchbox" id="search" placeholder="Cerca fra i 124 video…" value="${esc(state.search)}" aria-label="Cerca trick">`
+        : `<h1>${esc(title)}</h1>`}
+      <button class="icon-btn" id="toggleSearch" aria-label="Cerca">${state.searching ? '✕' : '🔍'}</button>`;
+
+    const q = state.search.trim().toLowerCase();
+    const items = TRICKS
+      .filter((t) => (catKey === null || t.cat === catKey))
+      .filter((t) => !q || t.title.toLowerCase().includes(q))
+      .sort((a, b) => a.title.localeCompare(b.title));
+
+    $('#screen').innerHTML = `
+      <div class="colhead"><span>Tutorial</span><span>Difficoltà</span><span>Landed</span></div>
+      <div class="rows">
+        ${items.length === 0 ? '<p class="empty">Nessun tutorial in questa categoria.</p>' : items.map((t) => {
+          const c = catOf(t.cat);
+          return `<div class="row" data-open="${t.id}" tabindex="0" role="button"
+              aria-label="${esc(t.title)}, difficoltà ${t.diff} su 10${isLocked(t) ? ', premium bloccato' : ''}">
+            <span class="thumb" style="background:${c.color}">${c.glyph}</span>
+            <span>
+              <span class="name">${esc(t.title)}</span>
+              <br><span class="sub">${esc(t.ch)} · ${esc(t.dur)}${t.safe ? ' · <span class="safe-chip">⛑ sicurezza</span>' : ''}${isLocked(t) ? ' · 🔒 premium' : ''}</span>
+            </span>
+            ${gauge(t.diff)}
+            ${runnerBtn(t)}
+          </div>`;
+        }).join('')}
+      </div>`;
+
+    if (state.searching) {
+      const input = $('#search');
+      input.focus();
+      input.addEventListener('input', () => {
+        state.search = input.value;
+        renderList(catKey);
+        const again = $('#search');
+        again.focus();
+        again.setSelectionRange(again.value.length, again.value.length);
+      });
+    }
+    $('#toggleSearch').addEventListener('click', () => {
+      state.searching = !state.searching;
+      if (!state.searching) state.search = '';
+      renderList(catKey);
+    });
+  }
+
+  function renderDetail(id, from) {
+    const t = TRICKS.find((x) => x.id === id);
+    const c = catOf(t.cat);
+    const locked = isLocked(t);
+    $('#appbar').innerHTML = `
+      <button class="backlink" data-nav-back="1" aria-label="Indietro">‹</button>
+      <h1>${esc(t.title)}</h1><span style="min-width:34px"></span>`;
+
+    $('#screen').innerHTML = `
+      <div class="detail">
+        ${locked ? `
+          <div class="player locked">
+            <div class="bg" style="background:${c.color}"></div>
+            <div class="inner">
+              <span style="font-size:2rem">🔒</span>
+              <h3>Premium tutorial</h3>
+              <p>Serve l'abbonamento per i video intermediate e advanced. I contenuti di sicurezza restano liberi.</p>
+              <button class="subscribe" id="subBtn">Subscribe</button>
+            </div>
+          </div>` : `
+          <div class="player">
+            <div class="bg" style="background:${c.color}"></div>
+            <div class="inner">
+              <a class="play" href="${t.url}" target="_blank" rel="noopener" aria-label="Guarda su YouTube">▶️</a>
+              <span style="font-size:0.75rem;opacity:0.85">${esc(t.ch)} · ${esc(t.dur)}</span>
+            </div>
+          </div>`}
+        <div class="meta">
+          ${gauge(t.diff)}
+          <span class="chip">${isPremium(t) ? '⭐' : '🔓'} ${t.level}</span>
+          <span class="chip">${c.glyph} ${c.label}</span>
+          <span class="chip">⏱ ${esc(t.dur)}</span>
+          <span class="chip">🎓 didattica ${esc(t.q.toLowerCase())}</span>
+          ${t.safe ? '<span class="chip safe-chip">⛑ sempre gratuito</span>' : ''}
+          ${runnerBtn(t, '1.5rem')}
+        </div>
+        <p class="desc">${esc(t.desc)}</p>
+        <p class="apinote">${esc(t.ch)} · risposta del backend per questo profilo:
+          <code>{"locked": ${locked}, "is_premium": ${isPremium(t)}, "difficulty": ${t.diff}, "url": ${locked ? 'null' : '"' + t.url + '"'}}</code>
+        </p>
+      </div>`;
+
+    const sub = $('#subBtn');
+    if (sub) sub.addEventListener('click', () => toast('Nell’app reale: "Subscriptions are coming soon!" — qui puoi passare al profilo Abbonato in alto.'));
+    const play = $('#playBtn');
+    if (play) {
+      const go = () => toast('▶ Il video parte: URL fornito dal backend per questo profilo.');
+      play.addEventListener('click', go);
+      play.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    }
+    state.view = { name: 'detail', id, from };
+  }
+
+  // Same rule as mobile/lib/screens/suggestion_screen.dart: fully random
+  // picks among not-landed tricks, steered by the easier/harder/switch
+  // controls and the category chips.
+  const notLanded = () => TRICKS.filter((t) => !state.landed.has(t.id));
+  const suggestPool = () =>
+    notLanded().filter((t) => !state.suggestCat || t.cat === state.suggestCat);
+  const pickRandom = (pool) => pool[Math.floor(Math.random() * pool.length)];
+
+  const SUGGEST_CHIPS = [
+    [null, 'Any'], ['flips', 'Flips'], ['basics', 'Basics'], ['vaults', 'Vaults'],
+    ['wall_tricks', 'Wall'], ['bar_tricks', 'Bar'], ['ground_tricks', 'Ground'], ['other', 'Other'],
+  ];
+
+  function suggestionCard(t) {
+    const c = catOf(t.cat);
+    return `<div class="row" style="border:1px solid var(--line);border-radius:10px" data-open="${t.id}" tabindex="0" role="button">
+      <span class="thumb" style="background:${c.color}">${c.glyph}</span>
+      <span><span class="name">${esc(t.title)}</span><br>
+        <span class="sub">${esc(t.ch)} · ${isLocked(t) ? '🔒 premium' : t.level}</span></span>
+      ${gauge(t.diff)}<span></span>
+    </div>`;
+  }
+
+  function steer(filterFn, emptyMsg) {
+    const found = suggestPool().filter(filterFn);
+    if (found.length === 0) { toast(emptyMsg); return; }
+    renderSuggest(pickRandom(found).id, state.view.showAll);
+  }
+
+  function renderSuggest(pickedId, showAll) {
+    state.view = { name: 'suggest', pickedId, showAll };
+    $('#appbar').innerHTML = `
+      <button class="backlink" data-nav="home" aria-label="Indietro">‹</button>
+      <h1>Suggestion Generator</h1><span style="min-width:34px"></span>`;
+    const pool = suggestPool();
+    const picked = pickedId ? TRICKS.find((t) => t.id === pickedId) : null;
+    $('#screen').innerHTML = `
+      <div class="suggestwrap">
+        <p class="hint">"New Trick" pesca a caso tra i trick che non hai ancora landed
+          (${state.landed.size} landed finora). Poi aggiusta il tiro: più facile, più difficile
+          o cambia tipologia.</p>
+        <div class="roles" style="padding:0;flex-wrap:wrap" role="group" aria-label="Filtra per tipologia">
+          ${SUGGEST_CHIPS.map(([key, label]) =>
+            `<button class="role" style="flex:0 0 auto;padding:5px 12px" data-chip="${key ?? ''}"
+              aria-pressed="${state.suggestCat === key}">${label}</button>`).join('')}
+        </div>
+        ${picked ? suggestionCard(picked) : '<div class="spacer" style="display:flex;align-items:center;justify-content:center;font-size:3rem;opacity:0.3">💡</div>'}
+        ${picked ? `
+        <div class="roles" style="padding:0">
+          <button class="role" id="easier">− Easier</button>
+          <button class="role" id="harder">+ Harder</button>
+          <button class="role" id="switchType">🔀 Switch type</button>
+        </div>` : ''}
+        ${showAll ? `<div class="suggestion-list">${[...pool].sort((a, b) => a.diff - b.diff).map(suggestionCard).join('')}</div>` : ''}
+        <div class="spacer"></div>
+        <button class="bigbtn" id="newTrick" ${pool.length === 0 ? 'disabled' : ''}>New Trick</button>
+        <button class="bigbtn" id="allSuggestions" ${pool.length === 0 ? 'disabled' : ''}>All Suggestions</button>
+        ${pool.length === 0 ? '<p class="hint">Hai landed tutto qui — grande!</p>' : ''}
+      </div>`;
+
+    document.querySelectorAll('[data-chip]').forEach((chip) =>
+      chip.addEventListener('click', (e) => {
+        e.stopPropagation();
+        state.suggestCat = chip.dataset.chip || null;
+        renderSuggest(state.view.pickedId, state.view.showAll);
+      }));
+    const nt = $('#newTrick');
+    if (nt) nt.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSuggest(pickRandom(pool).id, showAll);
+    });
+    const all = $('#allSuggestions');
+    if (all) all.addEventListener('click', (e) => {
+      e.stopPropagation();
+      renderSuggest(pickedId, !showAll);
+    });
+    if (picked) {
+      $('#easier').addEventListener('click', (e) => {
+        e.stopPropagation();
+        steer((t) => t.diff < picked.diff, 'Nessun trick più facile qui: cambia tipologia o filtro.');
+      });
+      $('#harder').addEventListener('click', (e) => {
+        e.stopPropagation();
+        steer((t) => t.diff > picked.diff, 'Nessun trick più difficile qui: cambia tipologia o filtro.');
+      });
+      $('#switchType').addEventListener('click', (e) => {
+        e.stopPropagation();
+        state.suggestCat = null;
+        const found = notLanded().filter((t) => t.cat !== picked.cat);
+        if (found.length === 0) { toast('Nessun trick in altre tipologie.'); return; }
+        renderSuggest(pickRandom(found).id, showAll);
+      });
+    }
+  }
+
+  /* ---------- routing / events ---------- */
+
+  function render() {
+    const v = state.view;
+    if (v.name === 'home') renderHome();
+    else if (v.name === 'list') renderList(v.cat);
+    else if (v.name === 'detail') renderDetail(v.id, v.from);
+    else renderSuggest(v.pickedId, v.showAll);
+  }
+
+  document.addEventListener('click', (e) => {
+    const roleBtn = e.target.closest('.role');
+    if (roleBtn) {
+      state.role = roleBtn.dataset.role;
+      document.querySelectorAll('.role').forEach((b) =>
+        b.setAttribute('aria-pressed', String(b === roleBtn)));
+      const names = { anon: 'Anonimo', guest: 'Ospite senza email', sub: 'Abbonato' };
+      toast(state.role === 'sub'
+        ? 'Abbonato: il backend restituisce tutti gli URL.'
+        : names[state.role] + ': video beginner liberi, premium bloccati.');
+      render();
+      return;
+    }
+    const landedBtn = e.target.closest('[data-landed]');
+    if (landedBtn) {
+      const id = landedBtn.dataset.landed;
+      if (!state.landed.delete(id)) state.landed.add(id);
+      render();
+      return;
+    }
+    const openRow = e.target.closest('[data-open]');
+    if (openRow) { renderDetail(openRow.dataset.open, state.view); return; }
+    const catTile = e.target.closest('[data-cat]');
+    if (catTile) {
+      state.searching = false; state.search = '';
+      state.view = { name: 'list', cat: catTile.dataset.cat || null };
+      render();
+      return;
+    }
+    const nav = e.target.closest('[data-nav]');
+    if (nav) { state.view = { name: nav.dataset.nav }; render(); return; }
+    const back = e.target.closest('[data-nav-back]');
+    if (back) { state.view = state.view.from || { name: 'home' }; render(); return; }
+    if (e.target.closest('#navTutorials')) { state.view = { name: 'home' }; render(); }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('.row[data-open]')) {
+      e.preventDefault();
+      renderDetail(e.target.dataset.open, state.view);
+    }
+  });
+
+  render();
+</script>
+
+</body>
+</html>
