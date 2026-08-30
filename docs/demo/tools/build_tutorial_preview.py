@@ -19,6 +19,10 @@ Uso:
     # in più: la stessa pagina senza <html>/<head>/<body>, per pubblicarla
     # come artifact
 
+    python3 docs/demo/tools/build_tutorial_preview.py out.html --app-url ./ --gate
+    # variante per lo spazio di test su gh-pages: i tab Mappa e Lista aprono
+    # l'app vera che sta accanto, e la pagina eredita il gate a inviti
+
 Va rilanciato quando cambia il seed: la pagina è un artefatto generato.
 """
 
@@ -32,6 +36,21 @@ SEED = REPO / "backend" / "seeds" / "videos.json"
 DEFAULT_OUT = REPO / "docs" / "demo" / "tutorial-catalog-preview.html"
 
 PR_URL = "https://github.com/OigreSergio/Parkour_NoToTFamily/pull/13"
+
+# Lo stesso gate a inviti dell'app (t/<token>/index.html): senza un pk_pass
+# valido la pagina rimanda al placeholder. È riservatezza, non autenticazione
+# — vedi docs/WEB_TEST_SPACE.md.
+GATE = """<meta name="robots" content="noindex, nofollow">
+<script>
+(function(){try{var t=localStorage.getItem('pk_pass');
+if(!t){location.replace('/Parkour_NoToTFamily/');return}
+var p=t.split('.');
+crypto.subtle.digest('SHA-256',new TextEncoder().encode('PkFAMILY::pk_4f7934b9aed5ae01b547a0c1::'+p[0])).then(function(b){
+var h=Array.prototype.slice.call(new Uint8Array(b),0,8).map(function(x){return x.toString(16).padStart(2,'0')}).join('');
+if(h!==p[1]){try{localStorage.removeItem('pk_pass')}catch(e){}location.replace('/Parkour_NoToTFamily/')}});
+}catch(e){}})();
+</script>
+</head>"""
 
 
 def duration(seconds: int) -> str:
@@ -75,7 +94,7 @@ def replace(page: str, old: str, new: str) -> str:
     return page.replace(old, new)
 
 
-def build() -> str:
+def build(app_url: str | None = None, gate: bool = False) -> str:
     page = DEMO.read_text(encoding="utf-8")
     rows = dataset()
     free = sum(1 for row in rows if row["level"] == "beginner")
@@ -97,6 +116,22 @@ def build() -> str:
     )
 
     # Testata e checklist: la demo parlava di trick di esempio.
+    # Con l'app accanto (gh-pages) i due tab ci portano davvero; da soli restano spenti.
+    if app_url:
+        link = f'href="{app_url}" target="_blank" rel="noopener"'
+        nav_map = f'<a class="nav" {link}><span class="g">\U0001f5fa️</span>Map</a>'
+        nav_list = f'<a class="nav" {link}><span class="g">\U0001f4cb</span>List</a>'
+        nav_note = (
+            f'<p class="navnote">Mappa e Lista aprono <a {link}>l\'app vera</a> in una nuova '
+            "scheda — spot, foto e schede sono quelli veri, e questa pagina resta aperta. "
+            "Il tab Tutorials dell'app legge da Supabase, dove il catalogo non è ancora "
+            "caricato: è questa pagina a mostrarlo.</p>"
+        )
+    else:
+        nav_map = '<button class="nav" disabled><span class="g">\U0001f5fa️</span>Map</button>'
+        nav_list = '<button class="nav" disabled><span class="g">\U0001f4cb</span>List</button>'
+        nav_note = ""
+
     banner_start = page.index('  <p class="banner">')
     checklist_end = page.index('</div>\n\n<div class="toast"')
     page = (
@@ -118,11 +153,12 @@ def build() -> str:
     <div class="appbar" id="appbar"></div>
     <div class="screen" id="screen"></div>
     <nav class="navbar" aria-label="Navigazione app">
-      <button class="nav" disabled><span class="g">\U0001f5fa️</span>Map</button>
-      <button class="nav" disabled><span class="g">\U0001f4cb</span>List</button>
+      {nav_map}
+      {nav_list}
       <button class="nav" aria-current="true" id="navTutorials"><span class="g">\U0001f4d6</span>Tutorials</button>
     </nav>
   </div>
+{nav_note}
 
   <div class="checklist">
     <h2>Cosa vale la pena provare</h2>
@@ -227,7 +263,9 @@ def build() -> str:
   .chip.safe-chip { border: 1px solid color-mix(in srgb, var(--good) 45%, transparent); }
   .meta { flex-wrap: wrap; row-gap: 8px; }
   .player .play { text-decoration: none; }
-  .banner a { color: var(--accent); font-weight: 600; }
+  .banner a, .navnote a { color: var(--accent); font-weight: 600; }
+  .navnote { margin: -12px 16px 22px; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+  a.nav { text-decoration: none; }
   .banner a:focus-visible, .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   @media (prefers-reduced-motion: reduce) {""",
@@ -238,6 +276,8 @@ def build() -> str:
         "<title>Parkour NoToT · Demo Tutorial</title>",
         "<title>Parkour NoToT · Catalogo Tutorial</title>",
     )
+    if gate:
+        page = replace(page, "</head>", GATE)
     return page
 
 
@@ -248,18 +288,30 @@ def fragment(page: str) -> str:
     return "<title>Catalogo Tutorial NoToT</title>\n" + style + "\n" + body.strip() + "\n"
 
 
+def mostra(path: Path) -> str:
+    """Percorso relativo al repo quando ci sta dentro, altrimenti assoluto."""
+    try:
+        return str(path.relative_to(REPO))
+    except ValueError:
+        return str(path)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("output", nargs="?", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--fragment", type=Path, help="scrive anche la versione per l'artifact")
+    parser.add_argument("--app-url", help="URL dell'app vera: rende cliccabili i tab Mappa e Lista")
+    parser.add_argument(
+        "--gate", action="store_true", help="aggiunge il gate a inviti dello spazio di test"
+    )
     args = parser.parse_args()
 
-    page = build()
+    page = build(app_url=args.app_url, gate=args.gate)
     args.output.write_text(page, encoding="utf-8")
-    print(f"scritto {args.output.relative_to(REPO)}")
+    print(f"scritto {mostra(args.output)}")
     if args.fragment:
         args.fragment.write_text(fragment(page), encoding="utf-8")
-        print(f"scritto {args.fragment}")
+        print(f"scritto {mostra(args.fragment)}")
 
 
 if __name__ == "__main__":

@@ -17,6 +17,11 @@ rigenera dal seed con:
 python3 docs/demo/tools/build_tutorial_preview.py
 ```
 
+La stessa pagina è pubblicata nello spazio di test privato su `gh-pages`
+(`/t/<token>/tutorial-catalog.html`, QR in `docs/qr/tutorial-catalog-qr.png`):
+lì i tab Mappa e Lista aprono l'app vera, per un controllo end-to-end. Vedi
+[`docs/WEB_TEST_SPACE.md`](WEB_TEST_SPACE.md).
+
 ## Nota sui canali richiesti
 
 La lista di partenza indicava 5 voci, ma **Team Farang compare due volte**: i canali

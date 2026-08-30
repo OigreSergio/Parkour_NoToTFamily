@@ -467,7 +467,9 @@
   .chip.safe-chip { border: 1px solid color-mix(in srgb, var(--good) 45%, transparent); }
   .meta { flex-wrap: wrap; row-gap: 8px; }
   .player .play { text-decoration: none; }
-  .banner a { color: var(--accent); font-weight: 600; }
+  .banner a, .navnote a { color: var(--accent); font-weight: 600; }
+  .navnote { margin: -12px 16px 22px; font-size: 0.82rem; color: var(--ink-soft); line-height: 1.5; }
+  a.nav { text-decoration: none; }
   .banner a:focus-visible, .play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   @media (prefers-reduced-motion: reduce) {
@@ -501,6 +503,7 @@
       <button class="nav" aria-current="true" id="navTutorials"><span class="g">📖</span>Tutorials</button>
     </nav>
   </div>
+
 
   <div class="checklist">
     <h2>Cosa vale la pena provare</h2>
