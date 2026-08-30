@@ -65,8 +65,9 @@ editoriali del catalogo e vengono ignorati dal loader.
 - `level` decide anche l'accesso: `beginner` è libero, gli altri livelli
   richiedono l'abbonamento (vedi `app/services/video_service.py`). Per questo i
   **contenuti di sicurezza sono marcati `beginner` anche quando sono tecnicamente
-  più impegnativi** (rolling sul cemento, cadute, atterraggi da altezza): devono
-  restare accessibili a tutti. La difficoltà tecnica reale di quei video resta
+  più impegnativi** (rolling sul cemento, cadute, atterraggi da altezza, e la
+  gestione delle superfici bagnate o ghiacciate): devono restare accessibili a
+  tutti. La difficoltà tecnica reale di quei video resta
   leggibile in `difficulty`, e l'elenco completo è in
   `docs/TUTORIAL_CATALOG.md`; `tests/test_seed_videos.py` fa da guardia.
 

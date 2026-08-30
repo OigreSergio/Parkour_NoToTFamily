@@ -57,6 +57,7 @@ def test_invalid_entry_reports_its_position(tmp_path) -> None:
 # il livello pilota anche il paywall, e questi contenuti devono restare gratuiti
 # anche quando sono tecnicamente più impegnativi (vedi docs/TUTORIAL_CATALOG.md).
 SAFETY_VIDEO_URLS = {
+    # evitare o assorbire un infortunio
     "https://www.youtube.com/watch?v=CDxhYN6KKz4",  # rolling sul cemento
     "https://www.youtube.com/watch?v=Ehlx0KrVJa0",  # 10 tipi di rolling
     "https://www.youtube.com/watch?v=ohjbbVwg6OU",  # cadere senza farsi male
@@ -64,6 +65,10 @@ SAFETY_VIDEO_URLS = {
     "https://www.youtube.com/watch?v=ZTlEwMtDH9s",  # atterraggio da altezza
     "https://www.youtube.com/watch?v=xNGPuvDcGLw",  # superhero landing
     "https://www.youtube.com/watch?v=UUzpvxuRYg4",  # allenarsi da infortunato
+    # gestione del rischio ambientale
+    "https://www.youtube.com/watch?v=vPWXtEDHsdM",  # neve e ghiaccio
+    "https://www.youtube.com/watch?v=W2QahKbXDyk",  # pioggia
+    "https://www.youtube.com/watch?v=EQdvkv5XRf0",  # alberi bagnati
 }
 
 

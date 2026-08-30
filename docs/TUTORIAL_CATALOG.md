@@ -26,13 +26,15 @@ Totale video selezionati: **124** su 1.234 video long-form censiti.
 > `beginner` è gratuito, `intermediate` e `advanced` richiedono l'abbonamento
 > (`app/services/video_service.py`). Per scelta di prodotto **i contenuti di
 > sicurezza sono marcati `beginner` anche quando sono tecnicamente più
-> impegnativi**, così restano accessibili a tutti: sono i video il cui scopo è
-> evitare o assorbire un infortunio (rolling, cadute, atterraggi da altezza,
-> allenarsi con un infortunio in corso). Nelle tabelle queste righe riportano
+> impegnativi**, così restano accessibili a tutti. Rientrano in questa categoria
+> sia i video che insegnano a evitare o assorbire un infortunio (rolling,
+> cadute, atterraggi da altezza, allenarsi con un infortunio in corso), sia
+> quelli che insegnano a gestire il rischio ambientale (superfici bagnate,
+> ghiacciate o scivolose). Nelle tabelle queste righe riportano
 > *Principiante (tecnicamente: intermedio/avanzato)* e il campo `difficulty`
 > (1-10) del seed continua a portare la difficoltà tecnica reale.
 >
-> Risultato: **58 video liberi e 66 premium**.
+> Risultato: **61 video liberi e 63 premium**.
 >
 > | Video marcato `beginner` per sicurezza | Livello tecnico | difficulty |
 > |---|---|---|
@@ -43,6 +45,9 @@ Totale video selezionati: **124** su 1.234 video long-form censiti.
 > | How To JUMP FROM A ROOF SAFELY - Height Drop Tutorial | Avanzato | 6 |
 > | How To Do The SUPER HERO LANDING | Intermedio | 4 |
 > | How To TRAIN PARKOUR On a SPRAINED ANKLE | Intermedio | 2 |
+> | How to Parkour in Winter (snow and ice) | Intermedio | 3 |
+> | How To Train In the Rain | Intermedio | 3 |
+> | How to Safely Climb Trees in Wet Conditions | Intermedio | 3 |
 
 ## Criteri applicati
 
@@ -285,11 +290,11 @@ convivono contenuti spettacolari a tema film/videogiochi, esclusi dalla selezion
 | Video | Durata | Argomento | Livello | Cosa imparerai | Qualità |
 |---|---|---|---|---|---|
 | [PARKOUR VISION - How to Find Parkour Spots](https://www.youtube.com/watch?v=mH0nR9SnreM) | 10:30 | Riconoscere gli spot in città | Principiante | Come 'vedere' il parkour nell'ambiente urbano e valutare superfici, altezze e rischi. | Alta |
-| [How to Parkour in Winter (snow and ice) - Ronnie Shalvis 2012](https://www.youtube.com/watch?v=vPWXtEDHsdM) | 7:25 | Allenarsi su neve e ghiaccio | Intermedio | Adattare il movimento a superfici scivolose, con precauzioni specifiche. | Media |
-| [How To Train In the Rain - Gazebo Tic Tac Tunnel Flip](https://www.youtube.com/watch?v=W2QahKbXDyk) | 7:19 | Allenarsi sotto la pioggia | Intermedio | Gestione del grip ridotto e scelta degli ostacoli quando è bagnato. | Media |
+| [How to Parkour in Winter (snow and ice) - Ronnie Shalvis 2012](https://www.youtube.com/watch?v=vPWXtEDHsdM) | 7:25 | Allenarsi su neve e ghiaccio | Principiante (tecnicamente: intermedio) | Adattare il movimento a superfici scivolose, con precauzioni specifiche. | Media |
+| [How To Train In the Rain - Gazebo Tic Tac Tunnel Flip](https://www.youtube.com/watch?v=W2QahKbXDyk) | 7:19 | Allenarsi sotto la pioggia | Principiante (tecnicamente: intermedio) | Gestione del grip ridotto e scelta degli ostacoli quando è bagnato. | Media |
 | [How To CLIMB TREES SAFELY With No Equipment](https://www.youtube.com/watch?v=X5x8P_gbG10) | 9:00 | Arrampicata sugli alberi in sicurezza | Principiante | Movimento naturale: come salire e scendere da un albero senza attrezzatura, valutando rami e appigli. | Media |
 | [10 WAYS TO CLIMB A TREE (No Equipment) - Tutorials](https://www.youtube.com/watch?v=7VUR74BATOU) | 15:45 | 10 modi di salire su un albero | Intermedio | Rassegna di tecniche di salita su tronchi e rami diversi. | Media |
-| [How to Safely Climb Trees in Wet Conditions](https://www.youtube.com/watch?v=EQdvkv5XRf0) | 8:36 | Alberi bagnati: come gestirli | Intermedio | Precauzioni e tecnica quando la corteccia è bagnata. | Media |
+| [How to Safely Climb Trees in Wet Conditions](https://www.youtube.com/watch?v=EQdvkv5XRf0) | 8:36 | Alberi bagnati: come gestirli | Principiante (tecnicamente: intermedio) | Precauzioni e tecnica quando la corteccia è bagnata. | Media |
 | [How To climb DOWN Trees](https://www.youtube.com/watch?v=ksUXxWUQkXc) | 7:08 | Scendere dagli alberi | Principiante | La parte che quasi nessuno allena: la discesa controllata. | Media |
 
 ---
