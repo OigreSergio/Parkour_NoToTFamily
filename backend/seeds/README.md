@@ -63,7 +63,12 @@ editoriali del catalogo e vengono ignorati dal loader.
   quindi si può rilanciare ogni volta che il catalogo cresce.
 - `difficulty` va da 1 a 10 e pilota l'indicatore nella lista dei tutorial.
 - `level` decide anche l'accesso: `beginner` è libero, gli altri livelli
-  richiedono l'abbonamento (vedi `app/services/video_service.py`).
+  richiedono l'abbonamento (vedi `app/services/video_service.py`). Per questo i
+  **contenuti di sicurezza sono marcati `beginner` anche quando sono tecnicamente
+  più impegnativi** (rolling sul cemento, cadute, atterraggi da altezza): devono
+  restare accessibili a tutti. La difficoltà tecnica reale di quei video resta
+  leggibile in `difficulty`, e l'elenco completo è in
+  `docs/TUTORIAL_CATALOG.md`; `tests/test_seed_videos.py` fa da guardia.
 
 Ogni voce viene validata con `VideoCreate` prima di toccare il database: se una
 riga è malformata il seed si ferma subito indicando indice e titolo.

@@ -22,14 +22,27 @@ rispetto alla richiesta (in particolare Ronnie Street Stunts).
 
 Totale video selezionati: **124** su 1.234 video long-form censiti.
 
-> **Nota per chi carica il catalogo**: nel backend il livello decide anche
-> l'accesso — `beginner` è gratuito, `intermediate` e `advanced` richiedono
-> l'abbonamento (`app/services/video_service.py`). Con questa selezione 51 video
-> restano liberi e 73 finiscono dietro il paywall, inclusi contenuti di sicurezza
-> come il rolling sul cemento, le cadute impreviste e gli atterraggi da altezza.
-> Se l'intenzione è tenere libera tutta la parte di sicurezza, va deciso a
-> livello di prodotto: o si abbassa il livello di quei video, o si aggiunge un
-> criterio di accesso separato dal livello tecnico.
+> **Livello e accesso**: nel backend il livello decide anche l'accesso —
+> `beginner` è gratuito, `intermediate` e `advanced` richiedono l'abbonamento
+> (`app/services/video_service.py`). Per scelta di prodotto **i contenuti di
+> sicurezza sono marcati `beginner` anche quando sono tecnicamente più
+> impegnativi**, così restano accessibili a tutti: sono i video il cui scopo è
+> evitare o assorbire un infortunio (rolling, cadute, atterraggi da altezza,
+> allenarsi con un infortunio in corso). Nelle tabelle queste righe riportano
+> *Principiante (tecnicamente: intermedio/avanzato)* e il campo `difficulty`
+> (1-10) del seed continua a portare la difficoltà tecnica reale.
+>
+> Risultato: **58 video liberi e 66 premium**.
+>
+> | Video marcato `beginner` per sicurezza | Livello tecnico | difficulty |
+> |---|---|---|
+> | How To Parkour Roll On Concrete | Intermedio | 4 |
+> | 10 Ways To Roll - Parkour Rolls and Trick Rolls | Intermedio | 4 |
+> | How To Fail Safely (Fall Without Getting Injured) | Intermedio | 4 |
+> | 10 Ways To Fall Like A Stunt Man | Intermedio | 5 |
+> | How To JUMP FROM A ROOF SAFELY - Height Drop Tutorial | Avanzato | 6 |
+> | How To Do The SUPER HERO LANDING | Intermedio | 4 |
+> | How To TRAIN PARKOUR On a SPRAINED ANKLE | Intermedio | 2 |
 
 ## Criteri applicati
 
@@ -180,8 +193,8 @@ convivono contenuti spettacolari a tema film/videogiochi, esclusi dalla selezion
 
 | Video | Durata | Argomento | Livello | Cosa imparerai | Qualità |
 |---|---|---|---|---|---|
-| [How To JUMP FROM A ROOF SAFELY - Height Drop Tutorial](https://www.youtube.com/watch?v=ZTlEwMtDH9s) | 10:07 | Atterraggio da altezza (height drop) | Avanzato | Come scendere da altezze importanti: assorbimento, uso del rolling, limiti da rispettare e criteri per non superarli. | Alta |
-| [How To Do The SUPER HERO LANDING](https://www.youtube.com/watch?v=xNGPuvDcGLw) | 7:30 | Superhero landing | Intermedio | Atterraggio su tre punti: tecnica e, soprattutto, quando NON usarlo. Taglio spettacolare ma con contenuto tecnico. | Media |
+| [How To JUMP FROM A ROOF SAFELY - Height Drop Tutorial](https://www.youtube.com/watch?v=ZTlEwMtDH9s) | 10:07 | Atterraggio da altezza (height drop) | Principiante (tecnicamente: avanzato) | Come scendere da altezze importanti: assorbimento, uso del rolling, limiti da rispettare e criteri per non superarli. | Alta |
+| [How To Do The SUPER HERO LANDING](https://www.youtube.com/watch?v=xNGPuvDcGLw) | 7:30 | Superhero landing | Principiante (tecnicamente: intermedio) | Atterraggio su tre punti: tecnica e, soprattutto, quando NON usarlo. Taglio spettacolare ma con contenuto tecnico. | Media |
 | [How to PRECISION JUMP - Parkour Tutorial](https://www.youtube.com/watch?v=9sb4TYNHGio) | 2:38 | Salto di precisione | Principiante | Tecnica base del precision jump con atterraggio bloccato sul bordo. | Alta |
 | [How To PRECISION JUMP - Extreme Slow Motion Parkour Tutorial](https://www.youtube.com/watch?v=Z_GEOdqnCx4) | 6:38 | Precision jump al rallentatore | Intermedio | Analisi in slow motion estremo del precision: si vede esattamente cosa fanno piedi, bacino e braccia. | Alta |
 
@@ -191,13 +204,13 @@ convivono contenuti spettacolari a tema film/videogiochi, esclusi dalla selezion
 |---|---|---|---|---|---|
 | [PARKOUR SAFETY ROLLS Tutorial - Forward Roll, Side Roll, Back Roll](https://www.youtube.com/watch?v=6x-cG9giKXY) | 10:13 | Rolling di sicurezza: avanti, laterale, indietro | Principiante | Il tutorial di riferimento sui rolling: tre direzioni, progressione da terra morbida a dura, obiettivo di rotolare per istinto. | Alta |
 | [Learn the PARKOUR ROLL - Assassins Creed Style](https://www.youtube.com/watch?v=eMC-1_q8zg0) | 4:31 | Parkour roll (versione base) | Principiante | Introduzione al rolling in avanti, spiegato in modo semplice e adatto alla primissima sessione. | Alta |
-| [How To Parkour Roll On Concrete \| Safety Roll on Hard Surfaces](https://www.youtube.com/watch?v=CDxhYN6KKz4) | 7:52 | Rolling sul cemento | Intermedio | Come portare il rolling dalla superficie morbida al cemento senza farsi male: correzioni di linea e di contatto della spalla. | Alta |
+| [How To Parkour Roll On Concrete \| Safety Roll on Hard Surfaces](https://www.youtube.com/watch?v=CDxhYN6KKz4) | 7:52 | Rolling sul cemento | Principiante (tecnicamente: intermedio) | Come portare il rolling dalla superficie morbida al cemento senza farsi male: correzioni di linea e di contatto della spalla. | Alta |
 | [How to BACK ROLL - Parkour Tutorial](https://www.youtube.com/watch?v=Xpq20Bizkdg) | 3:27 | Back roll | Principiante | Rotolata all'indietro, utile quando si perde l'equilibrio all'indietro in atterraggio. | Media |
-| [10 Ways To Roll - Parkour Rolls and Trick Rolls](https://www.youtube.com/watch?v=Ehlx0KrVJa0) | 11:32 | 10 tipi di rolling | Intermedio | Rassegna di rolling da parkour e da tricking, con l'uso pratico di ciascuno. | Alta |
+| [10 Ways To Roll - Parkour Rolls and Trick Rolls](https://www.youtube.com/watch?v=Ehlx0KrVJa0) | 11:32 | 10 tipi di rolling | Principiante (tecnicamente: intermedio) | Rassegna di rolling da parkour e da tricking, con l'uso pratico di ciascuno. | Alta |
 | [How to DIVE ROLL - Parkour Tutorial](https://www.youtube.com/watch?v=GHGUNOrW9RE) | 5:46 | Dive roll | Intermedio | Rolling con fase di volo: progressione e criteri per non anticipare troppo il contatto. | Alta |
 | [How To 360 DIVE ROLL - Free Running Tutorial](https://www.youtube.com/watch?v=7OaPBbDE1OA) | 5:42 | 360 dive roll | Avanzato | Dive roll con rotazione: solo dopo un dive roll pulito e consolidato. | Media |
-| [How To Fail Safely (Fall Without Getting Injured)](https://www.youtube.com/watch?v=ohjbbVwg6OU) | 8:20 | Cadere senza farsi male | Intermedio | Tecniche di adattamento alla caduta imprevista, cioè quando il movimento va storto: è il complemento naturale dei rolling. | Alta |
-| [10 Ways To Fall Like A Stunt Man](https://www.youtube.com/watch?v=r9XPcXQ-7VY) | 14:17 | 10 modi di cadere (metodo stuntman) | Intermedio | Cadute controllate prese dal mestiere dello stuntman, con progressione dal tappeto al suolo duro. | Alta |
+| [How To Fail Safely (Fall Without Getting Injured)](https://www.youtube.com/watch?v=ohjbbVwg6OU) | 8:20 | Cadere senza farsi male | Principiante (tecnicamente: intermedio) | Tecniche di adattamento alla caduta imprevista, cioè quando il movimento va storto: è il complemento naturale dei rolling. | Alta |
+| [10 Ways To Fall Like A Stunt Man](https://www.youtube.com/watch?v=r9XPcXQ-7VY) | 14:17 | 10 modi di cadere (metodo stuntman) | Principiante (tecnicamente: intermedio) | Cadute controllate prese dal mestiere dello stuntman, con progressione dal tappeto al suolo duro. | Alta |
 | [KIP UP Parkour Tutorial - How To Get Up Like a Ninja](https://www.youtube.com/watch?v=vOuBDSlRC6w) | 4:07 | Kip up | Intermedio | Rialzarsi da terra con la spinta di bacino e gambe. | Media |
 
 ### Vault (passaggi di ostacolo)
@@ -265,7 +278,7 @@ convivono contenuti spettacolari a tema film/videogiochi, esclusi dalla selezion
 | Video | Durata | Argomento | Livello | Cosa imparerai | Qualità |
 |---|---|---|---|---|---|
 | [Avoid Parkour Injuries: 5 Rules You Can't Ignore](https://www.youtube.com/watch?v=_2R0nL_NEHw) | 11:10 | 5 regole per evitare gli infortuni | Principiante | Cinque principi di prevenzione infortuni ricavati da anni di allenamento e di errori: uno dei contenuti più recenti del canale. | Alta |
-| [How To TRAIN PARKOUR On a SPRAINED ANKLE](https://www.youtube.com/watch?v=UUzpvxuRYg4) | 12:48 | Allenarsi con una caviglia distorta | Intermedio | Come continuare a muoversi durante un infortunio alla caviglia senza aggravarlo. | Media |
+| [How To TRAIN PARKOUR On a SPRAINED ANKLE](https://www.youtube.com/watch?v=UUzpvxuRYg4) | 12:48 | Allenarsi con una caviglia distorta | Principiante (tecnicamente: intermedio) | Come continuare a muoversi durante un infortunio alla caviglia senza aggravarlo. | Media |
 
 ### Ambiente, spot e attrezzatura
 

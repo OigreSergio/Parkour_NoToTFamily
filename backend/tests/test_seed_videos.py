@@ -3,7 +3,7 @@ import json
 import pytest
 
 from app.db.seed_videos import SEED_FILE, load_entries
-from app.models.video import Video
+from app.models.video import Video, VideoLevel
 
 
 def test_seed_file_is_valid() -> None:
@@ -51,3 +51,25 @@ def test_invalid_entry_reports_its_position(tmp_path) -> None:
     )
     with pytest.raises(ValueError, match=r"voce 1 \(rotto\)"):
         load_entries(bad)
+
+
+# I video di sicurezza sono marcati beginner per scelta di prodotto: nel backend
+# il livello pilota anche il paywall, e questi contenuti devono restare gratuiti
+# anche quando sono tecnicamente più impegnativi (vedi docs/TUTORIAL_CATALOG.md).
+SAFETY_VIDEO_URLS = {
+    "https://www.youtube.com/watch?v=CDxhYN6KKz4",  # rolling sul cemento
+    "https://www.youtube.com/watch?v=Ehlx0KrVJa0",  # 10 tipi di rolling
+    "https://www.youtube.com/watch?v=ohjbbVwg6OU",  # cadere senza farsi male
+    "https://www.youtube.com/watch?v=r9XPcXQ-7VY",  # 10 modi di cadere
+    "https://www.youtube.com/watch?v=ZTlEwMtDH9s",  # atterraggio da altezza
+    "https://www.youtube.com/watch?v=xNGPuvDcGLw",  # superhero landing
+    "https://www.youtube.com/watch?v=UUzpvxuRYg4",  # allenarsi da infortunato
+}
+
+
+def test_safety_videos_stay_free() -> None:
+    by_url = {entry.url: entry for entry in load_entries()}
+    missing = SAFETY_VIDEO_URLS - by_url.keys()
+    assert not missing, f"video di sicurezza spariti dal seed: {missing}"
+    for url in SAFETY_VIDEO_URLS:
+        assert by_url[url].level == VideoLevel.beginner, url
