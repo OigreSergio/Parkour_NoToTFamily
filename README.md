@@ -57,7 +57,7 @@ npm run dev
 docker compose up --build
 ```
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details, and [docs/TUTORIAL_CATALOG.md](docs/TUTORIAL_CATALOG.md) for the curated parkour tutorial catalog behind the Videos feature.
 
 ## Contributing
 

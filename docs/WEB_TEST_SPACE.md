@@ -10,6 +10,8 @@ anteprima privata finché non sarà pronta per il lancio pubblico.
 /404.html          → placeholder, meta noindex
 /robots.txt        → User-agent: * / Disallow: /   (blocca tutti i crawler)
 /t/<token>/        → la web app vera e propria, base dei percorsi riscritta
+/t/<token>/tutorial-catalog.html
+                   → anteprima del catalogo tutorial (pagina statica)
 ```
 
 - **Non indicizzata**: `robots.txt` + meta `noindex, nofollow` su tutte le
@@ -50,6 +52,32 @@ Sul bundle pubblicato sono applicate le patch di
 
 Dopo un nuovo export Expo le patch vanno riapplicate al nuovo bundle
 (`python3 scripts/patch-gh-pages-test-free.py <entry.js>`) prima del push.
+
+## Anteprima del catalogo tutorial
+
+`/t/<token>/tutorial-catalog.html` mostra i video di `backend/seeds/videos.json`
+dentro la UI della schermata Tutorial, con i tre profili di accesso (anonimo,
+ospite, abbonato) e le regole vere di `video_service.can_watch`. Serve a
+controllare cosa resta libero e cosa finisce dietro il paywall — in particolare
+i video di sicurezza — senza tirare su il backend.
+
+- I tab **Mappa** e **Lista** aprono l'app vera che sta accanto, in una nuova
+  scheda: gli spot sono quelli veri. Il tab Tutorials dell'app legge invece da
+  Supabase, dove il catalogo non è ancora caricato.
+- La pagina eredita lo stesso gate a inviti dell'app e il meta `noindex`: senza
+  un `pk_pass` valido rimanda al placeholder.
+- QR di accesso: `docs/qr/tutorial-catalog-qr.png`.
+
+Si rigenera dal seed e si ripubblica così:
+
+```sh
+python3 docs/demo/tools/build_tutorial_preview.py /tmp/tutorial-catalog.html \
+  --app-url ./ --gate
+# poi copiare il file in t/<token>/ sul branch gh-pages
+```
+
+Nota: `deploy_test_web.sh` ripubblica lo spazio a partire da un export Expo e
+non conosce questa pagina — dopo un rideploy va ricopiata.
 
 ## Rideploy dell'app aggiornata
 
