@@ -99,6 +99,7 @@ before they go public.
 | Feature                | Backend | Mobile              | Web admin | Status        |
 | ---------------------- | ------- | ------------------- | --------- | ------------- |
 | Auth (email + JWT)     | ✅      | ⏳ planned          | ⏳        | In progress   |
+| Account menu & settings| —       | ✅                  | —         | **Shipped**   |
 | Map / list of spots    | ✅      | ✅ read-only        | —         | **Shipped**   |
 | Spot detail            | ✅      | ✅                  | —         | **Shipped**   |
 | Submit a spot          | ✅      | ⏳ planned          | —         | Planned       |
@@ -107,7 +108,7 @@ before they go public.
 | "Water nearby" flag    | ⏳      | ✅ client-side stub | ⏳        | Client-first  |
 | Chat                   | ✅      | ⏳ planned          | —         | Planned       |
 | Videos / tutorials     | ✅      | ✅ read-only        | ⏳        | **Shipped**   |
-| Guest sign-in (no email)| ✅     | ⏳ planned          | —         | In progress   |
+| Guest sign-in (no email)| ✅     | ✅                  | —         | **Shipped**   |
 | Premium gating (subscription) | ✅ | ✅ paywall UI    | —         | **Shipped**   |
 | Landed tricks          | ⏳      | ✅ client-side stub | —         | Client-first  |
 
@@ -136,6 +137,12 @@ a scrollable list, with a detail view. No auth required.
 Login/register flow against `POST /api/v1/auth/*`; store the JWT + refresh token
 securely (`flutter_secure_storage`); attach `Authorization: Bearer` to
 requests. Unlocks likes, spot submission and chat.
+
+Already in place: the **account menu** in the app bar (settings, guest sign-in
+via `POST /api/v1/auth/guest`, log out via `POST /api/v1/auth/logout`), the
+session stored with `flutter_secure_storage` and restored on start-up, and the
+settings screen. What is left for this milestone is the email login/register
+flow and attaching the bearer token to the spot and video calls.
 
 ### Milestone 4 — Submit a spot
 Mobile submit form → `POST /api/v1/spots` (`status = pending`); web-admin

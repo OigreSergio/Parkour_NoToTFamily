@@ -25,17 +25,52 @@ class ApiClient {
 
   /// `GET` [path] (relative to [baseUrl]) with optional query parameters and
   /// return the decoded JSON body.
-  Future<dynamic> getJson(String path, {Map<String, dynamic>? query}) async {
+  ///
+  /// Pass [accessToken] to authenticate the call with `Authorization: Bearer`.
+  Future<dynamic> getJson(
+    String path, {
+    Map<String, dynamic>? query,
+    String? accessToken,
+  }) async {
     final uri = Uri.parse('$baseUrl$path').replace(
       queryParameters: query?.map((k, v) => MapEntry(k, '$v')),
     );
-    final res = await _http.get(uri, headers: const {
-      'Accept': 'application/json',
-    });
+    final res = await _http.get(uri, headers: _headers(accessToken));
+    return _decode(res, uri);
+  }
+
+  /// `POST` [body] (encoded as JSON) to [path] and return the decoded JSON
+  /// body, or `null` when the backend answers `204 No Content` — which is what
+  /// `POST /api/v1/auth/logout` does.
+  ///
+  /// Pass [accessToken] to authenticate the call with `Authorization: Bearer`.
+  Future<dynamic> postJson(
+    String path, {
+    Object? body,
+    String? accessToken,
+  }) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final res = await _http.post(
+      uri,
+      headers: {..._headers(accessToken), 'Content-Type': 'application/json'},
+      body: jsonEncode(body ?? const <String, dynamic>{}),
+    );
+    return _decode(res, uri);
+  }
+
+  Map<String, String> _headers(String? accessToken) => {
+        'Accept': 'application/json',
+        if (accessToken != null && accessToken.isNotEmpty)
+          'Authorization': 'Bearer $accessToken',
+      };
+
+  /// Throw on a non-2xx response, otherwise decode the body (`null` when it is
+  /// empty, e.g. `204 No Content`).
+  dynamic _decode(http.Response res, Uri uri) {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw ApiException(res.statusCode, res.body, uri);
     }
-    return jsonDecode(res.body);
+    return res.body.isEmpty ? null : jsonDecode(res.body);
   }
 
   /// Release the underlying connection pool.
