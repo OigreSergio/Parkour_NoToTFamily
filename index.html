@@ -1,113 +1,53 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
-<head>
-<meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PkFAMILY</title>
-<style>
-  body { margin: 0; display: grid; place-items: center; min-height: 100vh;
-         font-family: system-ui, sans-serif; background: #111; color: #eee; }
-  main { text-align: center; padding: 2rem; max-width: 420px; }
-  p { color: #999; }
-  .ok { color: #5fbf82; font-weight: 600; }
-  .bad { color: #e07a6e; font-weight: 600; }
-  .btn { display: inline-block; margin-top: 1.2rem; padding: 14px 22px; border-radius: 14px;
-         background: #2743E3; color: #fff; font-weight: 700; font-size: 17px;
-         border: 0; cursor: pointer; text-decoration: none; }
-  .btn.ghost { background: transparent; border: 1px solid #333; color: #bbb; font-weight: 500; font-size: 14px; }
-  small.note { display: block; margin-top: 0.9rem; color: #777; line-height: 1.5; }
-  .hidden { display: none; }
-</style>
-</head>
-<body>
-<main>
-  <h1>PkFAMILY</h1>
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>PkFAMILY — mappa degli spot di parkour</title>
+    <meta name="description" content="PkFAMILY: la mappa collaborativa degli spot di parkour. Trova gli spot vicino a te con foto, livello di difficoltà, distanza e percorso." />
+    <link rel="canonical" href="https://oigresergio.github.io/Parkour_NoToTFamily/" />
+    <meta name="theme-color" content="#2743E3" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PkFAMILY" />
+    <meta property="og:title" content="PkFAMILY — mappa degli spot di parkour" />
+    <meta property="og:description" content="PkFAMILY: la mappa collaborativa degli spot di parkour. Trova gli spot vicino a te con foto, livello di difficoltà, distanza e percorso." />
+    <meta property="og:url" content="https://oigresergio.github.io/Parkour_NoToTFamily/" />
+    <meta property="og:locale" content="it_IT" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="PkFAMILY — mappa degli spot di parkour" />
+    <meta name="twitter:description" content="PkFAMILY: la mappa collaborativa degli spot di parkour. Trova gli spot vicino a te con foto, livello di difficoltà, distanza e percorso." />
 
-  <div id="v-locked">
-    <p>Anteprima privata — l'accesso avviene solo tramite invito (QR code).</p>
-  </div>
+    <!-- The `react-native-web` recommended style reset: https://necolas.github.io/react-native-web/docs/setup/#root-element -->
+    <style id="expo-reset">
+      /* These styles make the body full-height */
+      html,
+      body {
+        height: 100%;
+      }
+      /* These styles disable body scrolling if you are using <ScrollView> */
+      body {
+        overflow: hidden;
+      }
+      /* These styles make the root element full-height */
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+    </style>
+  <link rel="icon" href="/Parkour_NoToTFamily/favicon.ico"/><link rel="preload" href="/Parkour_NoToTFamily/_expo/static/css/maplibre-gl-251fdbfda84eb147f0a36795135ef43b.css" as="style">
+<link rel="stylesheet" href="/Parkour_NoToTFamily/_expo/static/css/maplibre-gl-251fdbfda84eb147f0a36795135ef43b.css"></head>
 
-  <div id="v-invalid" class="hidden">
-    <p class="bad">Invito non valido o rovinato.</p>
-    <p>Chiedi all'admin di rimandarti il link.</p>
-  </div>
-
-  <div id="v-register" class="hidden">
-    <p class="ok">Invito valido ✅</p>
-    <p>Benvenutə <b id="r-nome"></b> <span id="r-ruolo"></span></p>
-    <button class="btn" id="btn-register">🎟️ Registra questo dispositivo ed entra</button>
-    <small class="note">Questo invito si può condividere via link.</small>
-  </div>
-
-  <div id="v-welcome" class="hidden">
-    <p class="ok">Bentornatə <b id="w-nome"></b>, dispositivo già registrato.</p>
-    <a class="btn" id="btn-enter" href="#">Entra in PkFAMILY →</a>
-    <small class="note">Ti sto portando nell'app…</small>
-  </div>
-</main>
-
-<script>
-"use strict";
-/* PkPASS — gate a inviti firmati (livello demo: la verifica è client-side,
-   quindi è riservatezza, non autenticazione — vedi docs/WEB_TEST_SPACE.md).
-   Link invito: <root>#pass=<payload_b64url>.<firma> */
-const PK_SECRET = "pk_4f7934b9aed5ae01b547a0c1";
-const APP_PATH = "t/2fe095ecfaa79a73/";
-
-const b64uDec = s => decodeURIComponent(escape(atob(s.replace(/-/g, "+").replace(/_/g, "/"))));
-async function firma(payload) {
-  const buf = await crypto.subtle.digest("SHA-256",
-    new TextEncoder().encode("PkFAMILY::" + PK_SECRET + "::" + payload));
-  return [...new Uint8Array(buf)].slice(0, 8).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-async function verifica(token) {
-  try {
-    const [p, sig] = token.split(".");
-    if (!p || !sig || (await firma(p)) !== sig) return null;
-    return JSON.parse(b64uDec(p));
-  } catch (e) { return null; }
-}
-function ls(k, v) {
-  try { return v === undefined ? localStorage.getItem(k) : localStorage.setItem(k, v); }
-  catch (e) { return null; }
-}
-const mostra = id => {
-  for (const v of ["v-locked", "v-invalid", "v-register", "v-welcome"])
-    document.getElementById(v).classList.toggle("hidden", v !== id);
-};
-
-window.addEventListener("hashchange", () => location.reload());
-
-(async function () {
-  const m = location.hash.match(/#pass=([^&]+)/);
-  const daUrl = m ? decodeURIComponent(m[1]) : null;
-  let token = daUrl || ls("pk_pass");
-  if (!token) return; // resta la schermata "anteprima privata"
-
-  const dati = await verifica(token);
-  if (!dati) { if (daUrl) mostra("v-invalid"); else ls("pk_pass", ""); return; }
-
-  ls("pk_pass", token);
-  if (daUrl) history.replaceState(null, "", location.pathname); // niente token nella barra
-
-  const ruolo = dati.r === "admin" ? "· ruolo ADMIN 👑" : "";
-  if (ls("pk_dev_reg") === dati.c) {
-    document.getElementById("w-nome").textContent = dati.n || "traceur";
-    mostra("v-welcome");
-    document.getElementById("btn-enter").href = APP_PATH;
-    setTimeout(() => location.replace(APP_PATH), 1200);
-    return;
-  }
-
-  document.getElementById("r-nome").textContent = dati.n || "traceur";
-  document.getElementById("r-ruolo").textContent = ruolo;
-  mostra("v-register");
-  document.getElementById("btn-register").onclick = () => {
-    ls("pk_dev_reg", dati.c);
-    location.replace(APP_PATH);
-  };
-})();
-</script>
+  <body>
+    <!-- Use static rendering with Expo Router to support running without JavaScript. -->
+    <noscript>
+      You need to enable JavaScript to run this app.
+    </noscript>
+    <!-- The root element for your Expo app. -->
+    <div id="root"></div>
+  <script src="/Parkour_NoToTFamily/_expo/static/js/web/entry-31eeb9da393e4be03e681a4908e16e37.js" defer></script>
+<script src="./pk-route.js" defer></script>
+<script src="./pk-scheda.js" defer></script>
 </body>
 </html>
