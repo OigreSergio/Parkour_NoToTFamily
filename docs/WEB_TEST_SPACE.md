@@ -63,10 +63,65 @@ cd .. && scripts/deploy_test_web.sh mobile/dist
 Lo script ripubblica `gh-pages` conservando placeholder, robots e percorso
 riservato. Il token attuale è in cima allo script.
 
-## Passaggio al pubblico (quando sarà il momento)
+## Passaggio al pubblico
 
-1. Spostare l'app da `/t/<token>/` alla root di `gh-pages` (o rideploy senza
-   riscrittura della base).
-2. Rimuovere `robots.txt` restrittivo e i meta `noindex`.
-3. Rigenerare il QR "pubblico" (`docs/qr/webapp-qr.png`, che oggi porta al
-   placeholder) e, volendo, collegare un dominio custom prima di pubblicizzare.
+Tre passaggi, tutti automatizzati da `scripts/promote_web_public.sh`:
+
+1. app da `/t/<token>/` alla root di `gh-pages` (base dei percorsi riscritta
+   da `/Parkour_NoToTFamily/t/<token>` a `/Parkour_NoToTFamily`);
+2. via il `robots.txt` restrittivo e i meta `noindex`;
+3. QR pubblico — `docs/qr/webapp-qr.png` codifica già l'URL base
+   `https://oigresergio.github.io/Parkour_NoToTFamily/`, quindi diventa
+   valido nel momento in cui l'app arriva sulla root. Va rigenerato solo se
+   l'URL cambia (dominio custom): `python3 scripts/make_qr.py --url <URL>`.
+
+```sh
+scripts/promote_web_public.sh --dry-run   # prova a vuoto: prepara il commit, non pubblica
+scripts/promote_web_public.sh             # pubblica
+```
+
+Non serve un nuovo export Expo: lo script riusa il bundle già online.
+Prima del push salva lo stato attuale sul branch `gh-pages-anteprima`, quindi
+si torna indietro con `git push -f origin gh-pages-anteprima:gh-pages`.
+
+### Cosa cambia esattamente
+
+Il lavoro vero lo fa `scripts/gh_pages_public.py` (idempotente, si può anche
+lanciare a mano su una copia di `gh-pages`):
+
+- app spostata sulla root, `/t/<token>/` eliminato;
+- **gate a inviti PkPASS rimosso**: il redirect su `pk_pass` rimandava alla
+  root, che ora *è* l'app — lasciandolo si otterrebbe un loop di reindirizzamenti.
+  Con l'app pubblica gli inviti non servono più (`admin-inviti.html` resta
+  online ma fuori dagli indici);
+- meta `noindex, nofollow` tolti da tutte le pagine tranne `admin-inviti.html`;
+- `robots.txt` permissivo (`Allow: /`, `Disallow: /admin-inviti.html`) con
+  riga `Sitemap:`, più `sitemap.xml`;
+- `404.html` diventa una copia di `index.html`, così i deep link della SPA
+  funzionano anche su GitHub Pages;
+- meta SEO di base su `index.html`: `title`, `description`, `canonical`,
+  Open Graph, Twitter card, `lang="it"`, `theme-color`.
+
+Resta attiva la modalità test del bundle (spot fissi, tutto gratuito): è una
+scelta di prodotto, non un effetto del passaggio al pubblico. Per disattivarla
+serve un nuovo export senza le patch di `patch-gh-pages-test-free.py`.
+
+### Deploy successivi
+
+Dopo il passaggio al pubblico, i nuovi export vanno pubblicati con:
+
+```sh
+cd mobile && npx expo export --platform web
+cd .. && scripts/deploy_public_web.sh mobile/dist
+```
+
+(`scripts/deploy_test_web.sh` resta per tornare all'anteprima privata.)
+
+### Dominio custom (facoltativo)
+
+Se in futuro colleghi un dominio, dopo averlo configurato su GitHub Pages:
+
+```sh
+python3 scripts/make_qr.py --url https://tuo-dominio.it/
+# poi aggiorna SITE_URL in scripts/promote_web_public.sh e deploy_public_web.sh
+```

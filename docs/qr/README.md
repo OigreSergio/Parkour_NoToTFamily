@@ -1,15 +1,26 @@
 # QR code — web app
 
-La web app è in **anteprima privata** (vedi `docs/WEB_TEST_SPACE.md`): l'URL
-base mostra solo un placeholder e l'app vera è su un percorso riservato,
-raggiungibile con il QR di test.
-
 | File | Punta a | Uso |
 | --- | --- | --- |
-| `webapp-test-qr.png` / `.svg` | percorso riservato `/t/<token>/` | **QR attuale di accesso** all'anteprima |
-| `webapp-qr.png` / `.svg` | URL base (oggi placeholder) | da rigenerare al lancio pubblico |
+| `webapp-qr.png` / `.svg` | `https://oigresergio.github.io/Parkour_NoToTFamily/` | **QR pubblico** della web app |
+| `webapp-test-qr.png` / `.svg` | percorso riservato `/t/<token>/` | QR dell'anteprima privata (storico) |
 
-![QR code di accesso all'anteprima](./webapp-test-qr.png)
+![QR code della web app](./webapp-qr.png)
 
-I QR sono generati con correzione d'errore di livello M; la build web (export
-Expo) è servita dal branch `gh-pages`.
+Finché l'app sta sotto `/t/<token>/` (anteprima privata, vedi
+`docs/WEB_TEST_SPACE.md`) il QR pubblico porta al placeholder; diventa valido
+appena l'app viene spostata sulla root con `scripts/promote_web_public.sh`.
+
+## Rigenerarli
+
+Servono solo se cambia l'URL (per esempio con un dominio custom):
+
+```sh
+pip install "qrcode[pil]"
+python3 scripts/make_qr.py                                  # QR pubblico
+python3 scripts/make_qr.py --url <URL> --nome webapp-test-qr
+```
+
+Correzione d'errore livello M, 12 px (1,2 mm) per modulo, bordo di 4 moduli:
+gli stessi parametri dei file già in repo, quindi la rigenerazione è
+riproducibile byte per byte.

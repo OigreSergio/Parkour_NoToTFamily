@@ -38,7 +38,11 @@ jobs:
 
       - name: Patch del bundle pubblicato
         run: |
-          python3 scripts/update_deployed_spots.py ghp/t/*/_expo/static/js/web/entry-*.js
+          # l'app sta sulla root di gh-pages (o sotto /t/<token>/ in anteprima)
+          entry=$(ls ghp/_expo/static/js/web/entry-*.js \
+                     ghp/t/*/_expo/static/js/web/entry-*.js 2>/dev/null | head -1)
+          [ -n "$entry" ] || { echo "bundle entry-*.js non trovato su gh-pages"; exit 1; }
+          python3 scripts/update_deployed_spots.py "$entry"
 
       - name: Commit su gh-pages
         run: |
