@@ -32,11 +32,22 @@ class SpotImagery {
         '&bboxSR=4326&size=$width,$height&imageSR=3857&format=jpg&f=image';
   }
 
-  /// The image to show for [spot]: its own first photo when it has one,
-  /// otherwise the aerial view.
+  /// The image to show for [spot], best first:
+  ///
+  /// 1. a real photo of the spot,
+  /// 2. the Street View shot aimed at it — trees and roofs hide from above
+  ///    what is obvious from the pavement,
+  /// 3. the aerial view, which every spot can always fall back to.
   static String coverUrl(Spot spot, {int width = 640, int height = 360}) {
     final preview = spot.previewUrl;
     if (preview != null && preview.isNotEmpty) return preview;
+    final streetView = spot.streetViewUrl;
+    if (streetView != null && streetView.isNotEmpty) return streetView;
     return aerialUrl(spot.location, width: width, height: height);
   }
+
+  /// True when [coverUrl] is going to be the aerial view — nothing closer to
+  /// the ground was found for this spot.
+  static bool onlyAerial(Spot spot) =>
+      (spot.previewUrl?.isEmpty ?? true) && (spot.streetViewUrl?.isEmpty ?? true);
 }

@@ -33,7 +33,10 @@ class Spot {
     required this.location,
     required this.photoUrls,
     String? previewUrl,
-    required this.difficulty,
+    this.streetViewUrl,
+    this.difficulty,
+    this.rating,
+    this.ratingCount = 0,
     required this.status,
     this.water = false,
     required this.submittedBy,
@@ -57,8 +60,25 @@ class Spot {
       _previewUrl ?? (photoUrls.isNotEmpty ? photoUrls.first : null);
   final String? _previewUrl;
 
-  /// 1–5, where 5 is the hardest.
-  final int difficulty;
+  /// Ground-level view of the spot (Street View), when one was found for its
+  /// coordinates. Client-side field filled from the bundled spot data — the
+  /// backend does not carry it yet. See `scripts/fetch_spot_streetview.py`.
+  final String? streetViewUrl;
+
+  /// 1–5, where 5 is the hardest. `null` while nobody has graded the spot:
+  /// the app never makes a difficulty up from imported metadata.
+  final int? difficulty;
+
+  /// Average of the ratings people left, 1–5, or `null` when there are none.
+  /// Client-side field: the backend has no reviews endpoint yet, so today this
+  /// is always `null` and every spot shows as *not rated*.
+  final double? rating;
+
+  /// How many people rated the spot. `0` means "nobody yet".
+  final int ratingCount;
+
+  /// Whether anyone has actually rated this spot.
+  bool get isRated => ratingCount > 0 && rating != null;
 
   /// `pending` | `verified` | `rejected` from the backend.
   ///
@@ -105,7 +125,10 @@ class Spot {
         location: location,
         photoUrls: photoUrls,
         previewUrl: _previewUrl,
+        streetViewUrl: streetViewUrl,
         difficulty: difficulty,
+        rating: rating,
+        ratingCount: ratingCount,
         status: status,
         water: water ?? this.water,
         submittedBy: submittedBy,
@@ -124,7 +147,10 @@ class Spot {
             .map((e) => e as String)
             .toList(growable: false),
         previewUrl: json['preview_url'] as String?,
-        difficulty: (json['difficulty'] as num?)?.toInt() ?? 1,
+        streetViewUrl: json['street_view_url'] as String?,
+        difficulty: (json['difficulty'] as num?)?.toInt(),
+        rating: (json['rating'] as num?)?.toDouble(),
+        ratingCount: (json['rating_count'] as num?)?.toInt() ?? 0,
         status: (json['status'] as String?) ?? 'verified',
         water: (json['water'] as bool?) ?? false,
         submittedBy: json['submitted_by'] as String?,
@@ -143,7 +169,10 @@ class Spot {
         'location': location.toJson(),
         'photo_urls': photoUrls,
         'preview_url': previewUrl,
+        'street_view_url': streetViewUrl,
         'difficulty': difficulty,
+        'rating': rating,
+        'rating_count': ratingCount,
         'status': status,
         'water': water,
         'submitted_by': submittedBy,

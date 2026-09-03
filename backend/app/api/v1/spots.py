@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from geoalchemy2.shape import to_shape
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -17,7 +17,7 @@ from app.schemas.spot import (
     SpotOut,
     SpotSearchQuery,
 )
-from app.services import spot_service
+from app.services import photo_storage, spot_service
 
 router = APIRouter(prefix="/spots", tags=["spots"])
 
@@ -47,6 +47,25 @@ def _comment_to_out(comment: SpotComment) -> SpotCommentOut:
         body=comment.body,
         created_at=comment.created_at,
     )
+
+
+@router.post("/photos", status_code=status.HTTP_201_CREATED)
+async def upload_photos(
+    files: list[UploadFile] = File(...),
+    user: User = Depends(current_user),
+) -> dict[str, list[str]]:
+    """Carica le foto di una segnalazione e ritorna i loro URL.
+
+    Il client le carica prima di inviare lo spot, poi passa gli URL ottenuti in
+    ``photo_urls``. Servono almeno tre foto: una segnalazione senza foto non è
+    verificabile dai moderatori.
+    """
+    photo_storage.validate_count(len(files))
+    urls = []
+    for upload in files:
+        content = await upload.read()
+        urls.append(photo_storage.store(content, upload.content_type))
+    return {"photo_urls": urls}
 
 
 @router.post("", response_model=SpotOut, status_code=status.HTTP_201_CREATED)

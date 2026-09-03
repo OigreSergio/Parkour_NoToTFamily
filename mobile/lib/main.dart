@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'providers.dart';
 import 'screens/spots_list_screen.dart';
 import 'screens/spots_map_screen.dart';
+import 'screens/submit_spot_screen.dart';
 import 'screens/tutorials_screen.dart';
 import 'widgets/account_menu.dart';
 
@@ -66,6 +67,18 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: const [AccountMenuButton()],
       ),
       body: IndexedStack(index: _index, children: _screens),
+      // Reporting a spot belongs to the map and the list, not to the tutorials.
+      floatingActionButton: _index == 2
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (_) => const SubmitSpotScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.add_location_alt_outlined),
+              label: const Text('Add spot'),
+            ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),

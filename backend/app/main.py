@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter
 from slowapi.errors import RateLimitExceeded
 from slowapi.util import get_remote_address
@@ -11,6 +12,7 @@ from app.api.v1 import api_router
 from app.core.config import get_settings
 from app.core.exceptions import AppError
 from app.core.logging import configure_logging, log
+from app.services import photo_storage
 
 settings = get_settings()
 configure_logging(debug=settings.debug)
@@ -41,6 +43,16 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+
+# Foto delle segnalazioni (vedi app.services.photo_storage). La cartella è
+# creata al primo avvio così il mount non fallisce su un deploy pulito.
+photo_storage.MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
+app.mount(
+    photo_storage.MEDIA_URL,
+    StaticFiles(directory=photo_storage.MEDIA_ROOT),
+    name="media",
 )
 
 

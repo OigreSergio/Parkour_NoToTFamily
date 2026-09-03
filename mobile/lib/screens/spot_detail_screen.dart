@@ -1,18 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/spot.dart';
+import '../models/water_point.dart';
+import '../providers.dart';
+import '../repositories/water_repository.dart';
+import '../services/spot_distance.dart';
 import '../services/spot_imagery.dart';
+import '../widgets/spot_rating.dart';
 
 /// Read-only detail view for a single [Spot].
-class SpotDetailScreen extends StatelessWidget {
+class SpotDetailScreen extends ConsumerWidget {
   const SpotDetailScreen({super.key, required this.spot});
 
   final Spot spot;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final photos = spot.photoUrls;
+    final here = ref.watch(currentLocationProvider).valueOrNull;
+    final distance = SpotDistance.labelFor(spot, here);
 
     return Scaffold(
       appBar: AppBar(title: Text(spot.name)),
@@ -42,7 +50,7 @@ class SpotDetailScreen extends StatelessWidget {
               ),
             )
           else
-            _SatelliteView(spot: spot),
+            _GroundOrSkyView(spot: spot),
           const SizedBox(height: 20),
           if (spot.isCommunity) ...[
             const _UnverifiedBanner(),
@@ -50,12 +58,24 @@ class SpotDetailScreen extends StatelessWidget {
           ],
           Text(spot.name, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
-          _DifficultyStars(difficulty: spot.difficulty),
+          SpotRating(spot: spot),
+          if (distance != null) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.near_me_outlined, size: 18),
+                const SizedBox(width: 6),
+                Text('$distance from you', style: theme.textTheme.bodyMedium),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           Text(
             spot.description.isEmpty ? 'No description yet.' : spot.description,
             style: theme.textTheme.bodyLarge,
           ),
+          const SizedBox(height: 20),
+          _WaterNearby(spot: spot),
           const SizedBox(height: 24),
           _InfoRow(
             icon: Icons.place_outlined,
@@ -74,28 +94,6 @@ class SpotDetailScreen extends StatelessWidget {
   }
 }
 
-class _DifficultyStars extends StatelessWidget {
-  const _DifficultyStars({required this.difficulty});
-
-  final int difficulty;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 1; i <= 5; i++)
-          Icon(
-            i <= difficulty ? Icons.star : Icons.star_border,
-            size: 20,
-            color: Colors.amber,
-          ),
-        const SizedBox(width: 8),
-        Text('Difficulty $difficulty/5',
-            style: Theme.of(context).textTheme.bodySmall),
-      ],
-    );
-  }
-}
 
 class _InfoRow extends StatelessWidget {
   const _InfoRow({
@@ -126,19 +124,25 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-/// Satellite view of a spot nobody has photographed yet.
+/// The best picture of a spot that has no photo of its own.
 ///
-/// The community spots come from a shared online list: no one from the family
-/// has been there, so there is no photo — but there is always the sky. The
-/// imagery is Esri's World Imagery, the same source the web app uses.
-class _SatelliteView extends StatelessWidget {
-  const _SatelliteView({required this.spot});
+/// Street View first: from above, trees, canopies and roofs hide exactly the
+/// walls and rails a traceur is looking for, while the pavement view shows
+/// them. The satellite view stays as the fallback for spots no car ever drove
+/// past. Both are labelled for what they are.
+class _GroundOrSkyView extends StatelessWidget {
+  const _GroundOrSkyView({required this.spot});
 
   final Spot spot;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final streetView = spot.streetViewUrl;
+    final fromTheGround = streetView != null && streetView.isNotEmpty;
+    final url = fromTheGround
+        ? streetView
+        : SpotImagery.aerialUrl(spot.location, width: 800, height: 450);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,7 +152,7 @@ class _SatelliteView extends StatelessWidget {
           child: AspectRatio(
             aspectRatio: 16 / 9,
             child: Image.network(
-              SpotImagery.aerialUrl(spot.location, width: 800, height: 450),
+              url,
               fit: BoxFit.cover,
               loadingBuilder: (context, child, progress) => progress == null
                   ? child
@@ -169,15 +173,18 @@ class _SatelliteView extends StatelessWidget {
         Row(
           children: [
             Icon(
-              Icons.satellite_alt_outlined,
+              fromTheGround ? Icons.streetview : Icons.satellite_alt_outlined,
               size: 14,
               color: theme.colorScheme.outline,
             ),
             const SizedBox(width: 6),
             Expanded(
               child: Text(
-                'Satellite view — no photo of this spot yet. '
-                'Imagery © Esri World Imagery.',
+                fromTheGround
+                    ? 'Street View pointed at the spot — no photo of it yet. '
+                        'Imagery © Google.'
+                    : 'Satellite view — no photo or street-level shot of this '
+                        'spot yet. Imagery © Esri World Imagery.',
                 style: theme.textTheme.bodySmall
                     ?.copyWith(color: theme.colorScheme.outline),
               ),
@@ -219,4 +226,94 @@ class _UnverifiedBanner extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Where to fill a bottle near the spot, from OpenStreetMap.
+///
+/// Parkour is thirsty work and the family's spots are often a piazza with a
+/// *nasone* around the corner. The lookup runs when the spot is opened and
+/// says plainly when nothing is mapped nearby — "none found" is different from
+/// "there is none".
+class _WaterNearby extends ConsumerWidget {
+  const _WaterNearby({required this.spot});
+
+  final Spot spot;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final water = ref.watch(waterNearSpotProvider(spot));
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.water_drop_outlined, color: theme.colorScheme.primary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: water.when(
+              loading: () => Text(
+                'Looking for drinking water nearby…',
+                style: theme.textTheme.bodyMedium,
+              ),
+              error: (_, __) => Text(
+                'Could not check for drinking water right now.',
+                style: theme.textTheme.bodyMedium,
+              ),
+              data: (points) => _summary(context, points),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _summary(BuildContext context, List<WaterPoint> points) {
+    final theme = Theme.of(context);
+
+    if (points.isEmpty) {
+      return Text(
+        'No drinking water mapped within '
+        '${WaterRepositoryRadius.label}. Bring a bottle.',
+        style: theme.textTheme.bodyMedium,
+      );
+    }
+
+    final nearest = points.first;
+    final rest = points.length - 1;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${nearest.label} ${SpotDistance.format(nearest.distanceMeters)} away'
+          '${nearest.name == null ? '' : ' — ${nearest.name}'}',
+          style: theme.textTheme.bodyMedium
+              ?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        if (rest > 0)
+          Text(
+            '$rest more within ${WaterRepositoryRadius.label}.',
+            style: theme.textTheme.bodySmall,
+          ),
+        Text(
+          'Data © OpenStreetMap contributors.',
+          style: theme.textTheme.bodySmall
+              ?.copyWith(color: theme.colorScheme.outline),
+        ),
+      ],
+    );
+  }
+}
+
+/// The search radius, spelled out once for the copy above.
+class WaterRepositoryRadius {
+  const WaterRepositoryRadius._();
+
+  static String get label =>
+      SpotDistance.format(WaterRepository.defaultRadiusMeters.toDouble());
 }

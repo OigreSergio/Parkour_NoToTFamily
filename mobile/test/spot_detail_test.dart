@@ -1,51 +1,128 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 
 import 'package:parkour_notot/models/spot.dart';
+import 'package:parkour_notot/providers.dart';
+import 'package:parkour_notot/repositories/water_repository.dart';
 import 'package:parkour_notot/screens/spot_detail_screen.dart';
 
-Spot _spot({List<String> photos = const [], bool community = false}) => Spot(
+Spot _spot({
+  List<String> photos = const [],
+  String? streetView,
+  bool community = false,
+}) =>
+    Spot(
       id: 'gmaps-1',
       name: 'Spot Náfplio 1',
       description: 'Dalla lista community Google Maps.',
       location: const GeoPoint(lat: 37.5645, lng: 22.7946),
       photoUrls: photos,
-      difficulty: 3,
+      streetViewUrl: streetView,
       status: community ? 'community' : 'verified',
       submittedBy: null,
       verifiedAt: null,
       createdAt: DateTime(2026, 1, 1),
     );
 
+/// Water lookup that answers "nothing mapped here", so the tests are about the
+/// screen and not about Overpass.
+WaterRepository _noWater() => WaterRepository(
+      httpClient: MockClient(
+        (_) async => http.Response('{"elements": []}', 200),
+      ),
+    );
+
 Future<void> _pump(WidgetTester tester, Spot spot) async {
-  await tester.pumpWidget(MaterialApp(home: SpotDetailScreen(spot: spot)));
-  await tester.pump();
+  // Tall viewport: the detail is a ListView, and what is off-screen is not
+  // built at all.
+  tester.view.physicalSize = const Size(1000, 2400);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [waterRepositoryProvider.overrideWithValue(_noWater())],
+      child: MaterialApp(home: SpotDetailScreen(spot: spot)),
+    ),
+  );
+  await tester.pumpAndSettle();
 }
 
 void main() {
-  testWidgets('an unverified spot gets a satellite view and says so',
+  testWidgets('a spot with a Street View shot opens on the ground view',
+      (tester) async {
+    await _pump(
+      tester,
+      _spot(
+        community: true,
+        streetView: 'https://streetviewpixels-pa.googleapis.com/v1/thumbnail?x',
+      ),
+    );
+
+    expect(find.textContaining('Street View pointed at the spot'), findsOneWidget);
+    expect(find.textContaining('Not verified'), findsOneWidget);
+  });
+
+  testWidgets('with no photo and no Street View it falls back to satellite',
       (tester) async {
     await _pump(tester, _spot(community: true));
 
     expect(find.textContaining('Satellite view'), findsOneWidget);
-    expect(find.textContaining('Not verified'), findsOneWidget);
     expect(find.textContaining('Esri'), findsOneWidget);
   });
 
-  testWidgets('a spot with photos shows them, with no satellite caption',
+  testWidgets('a spot with photos shows them and no imagery caption',
       (tester) async {
     await _pump(tester, _spot(photos: const ['https://photos.example/a.jpg']));
 
     expect(find.textContaining('Satellite view'), findsNothing);
+    expect(find.textContaining('Street View'), findsNothing);
     expect(find.textContaining('Not verified'), findsNothing);
-    expect(find.byType(Image), findsWidgets);
   });
 
-  testWidgets('a verified spot without photos still gets the satellite view, '
-      'but is not flagged as unverified', (tester) async {
+  testWidgets('every spot reads as not rated until people vote', (tester) async {
     await _pump(tester, _spot());
 
-    expect(find.textContaining('Satellite view'), findsOneWidget);
-    expect(find.textContaining('Not verified'), findsNothing);
+    expect(find.textContaining('Not rated'), findsOneWidget);
+    expect(find.byIcon(Icons.star), findsNothing);
+  });
+
+  testWidgets('it says when no drinking water is mapped nearby', (tester) async {
+    await _pump(tester, _spot());
+
+    expect(find.textContaining('No drinking water mapped'), findsOneWidget);
+    expect(find.textContaining('OpenStreetMap'), findsNothing);
+  });
+
+  testWidgets('it names the nearest fountain when there is one', (tester) async {
+    tester.view.physicalSize = const Size(1000, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          waterRepositoryProvider.overrideWithValue(
+            WaterRepository(
+              httpClient: MockClient(
+                (_) async => http.Response(
+                  '{"elements": [{"id": 1, "lat": 37.5646, "lon": 22.7947, '
+                  '"tags": {"amenity": "drinking_water", "name": "Krini"}}]}',
+                  200,
+                ),
+              ),
+            ),
+          ),
+        ],
+        child: MaterialApp(home: SpotDetailScreen(spot: _spot())),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Krini'), findsOneWidget);
+    expect(find.textContaining('OpenStreetMap'), findsOneWidget);
   });
 }

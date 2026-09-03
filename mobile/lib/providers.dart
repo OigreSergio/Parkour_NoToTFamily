@@ -6,9 +6,11 @@ import 'package:latlong2/latlong.dart';
 import 'models/account.dart';
 import 'models/app_settings.dart';
 import 'models/spot.dart';
+import 'models/water_point.dart';
 import 'models/video.dart';
 import 'repositories/auth_repository.dart';
 import 'repositories/spot_repository.dart';
+import 'repositories/water_repository.dart';
 import 'repositories/video_repository.dart';
 import 'services/api_client.dart';
 import 'services/local_store.dart';
@@ -68,6 +70,19 @@ final mapStyleProvider = FutureProvider<vt.Style>((ref) async {
   ref.onDispose(style.dispose);
   return style;
 });
+
+/// Drinking-water lookup (OpenStreetMap via Overpass).
+final waterRepositoryProvider = Provider<WaterRepository>((ref) {
+  final repository = WaterRepository();
+  ref.onDispose(repository.close);
+  return repository;
+});
+
+/// Drinking water around one spot, asked for only when its detail is open.
+final waterNearSpotProvider =
+    FutureProvider.autoDispose.family<List<WaterPoint>, Spot>(
+  (ref, spot) => ref.watch(waterRepositoryProvider).nearSpot(spot),
+);
 
 /// Tutorial video data source.
 final videoRepositoryProvider = Provider<VideoRepository>(
@@ -289,6 +304,36 @@ class SessionController extends StateNotifier<SessionState> {
       state = SessionState(status: SessionStatus.signedOut, error: failure);
     }
     return LogoutOutcome(revokedOnServer: failure == null, error: failure);
+  }
+
+  /// Send a spot report: uploads its photos, then posts the spot itself.
+  ///
+  /// It lives on the session because the access token never leaves this
+  /// controller. The map is refreshed afterwards, though the new spot only
+  /// shows up once a moderator verifies it.
+  Future<Spot> submitSpot({
+    required String name,
+    required String description,
+    required LatLng position,
+    required List<SpotPhotoUpload> photos,
+  }) async {
+    final token = _tokens?.accessToken;
+    if (token == null || token.isEmpty) {
+      throw StateError('Sign in before reporting a spot.');
+    }
+
+    final repository = _ref.read(spotRepositoryProvider);
+    final photoUrls = await repository.uploadPhotos(photos, accessToken: token);
+    final spot = await repository.submitSpot(
+      name: name,
+      description: description,
+      lat: position.latitude,
+      lng: position.longitude,
+      photoUrls: photoUrls,
+      accessToken: token,
+    );
+    _ref.invalidate(spotsProvider);
+    return spot;
   }
 
   /// Re-read the account behind the current tokens. A failure here is not

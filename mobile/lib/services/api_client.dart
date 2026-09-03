@@ -58,6 +58,13 @@ class ApiClient {
     return _decode(res, uri);
   }
 
+  /// Send a prepared request — multipart photo uploads go through here — and
+  /// return its decoded JSON body.
+  Future<dynamic> sendJson(http.BaseRequest request) async {
+    final res = await http.Response.fromStream(await _http.send(request));
+    return _decode(res, request.url);
+  }
+
   Map<String, String> _headers(String? accessToken) => {
         'Accept': 'application/json',
         if (accessToken != null && accessToken.isNotEmpty)
