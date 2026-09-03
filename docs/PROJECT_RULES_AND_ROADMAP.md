@@ -108,6 +108,7 @@ before they go public.
 | "Water nearby" flag    | ⏳      | ✅ client-side stub | ⏳        | Client-first  |
 | Chat                   | ✅      | ⏳ planned          | —         | Planned       |
 | Videos / tutorials     | ✅      | ✅ read-only        | ⏳        | **Shipped**   |
+| Catalogo tutorial (seed)| ✅ 124 video | ✅ apre su YouTube | ⏳   | **Shipped**   |
 | Guest sign-in (no email)| ✅     | ✅                  | —         | **Shipped**   |
 | Premium gating (subscription) | ✅ | ✅ paywall UI    | —         | **Shipped**   |
 | Landed tricks          | ⏳      | ✅ client-side stub | —         | Client-first  |
@@ -155,6 +156,11 @@ WebSocket `/api/v1/ws/chat`, conversation list + room on mobile.
 ### Milestone 6 — Videos
 Category tabs (recovery / practice / conditioning) backed by
 `GET /api/v1/videos`; web-admin CMS to curate them.
+
+Il catalogo di partenza è già nel repo: `backend/seeds/videos.json` (124 video,
+generato da `scripts/import_tutorial_catalog.py`) si carica con
+`make seed-videos`. Sono link a canali pubblici, quindi l'app li apre su
+YouTube invece di provare a riprodurli inline.
 
 ---
 

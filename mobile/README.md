@@ -41,6 +41,7 @@ lib/
 │   ├── spots_map_screen.dart        flutter_map + one marker per spot
 │   ├── spots_list_screen.dart       scrollable list, tap → detail
 │   ├── spot_detail_screen.dart      single-spot detail view
+│   ├── tutorial_detail_screen.dart  player, paywall or "watch on YouTube"
 │   └── settings_screen.dart         account, appearance, spot search, about
 └── widgets/
     ├── error_view.dart              shared error/retry state
@@ -74,6 +75,16 @@ Tokens live in `flutter_secure_storage` (Keychain / encrypted shared
 preferences) behind `services/local_store.dart`, which degrades to a no-op when
 the platform channel is unavailable, so tests and unsupported platforms still
 run.
+
+## Tutorials
+
+The catalog is curated from public channels (`backend/seeds/videos.json`), so
+most tutorials are **YouTube links, not video files**: `video_player` cannot
+stream those, and the detail screen shows the thumbnail with a *Watch on
+youtube.com* button that hands the video to the YouTube app or the browser
+(`url_launcher`). A tutorial whose `url` points straight at a media file
+(`.mp4`, `.m3u8`, `.webm`, `.mov`, `.m4v`) still plays inline — see
+`TutorialVideo.isStreamable`.
 
 ## Data source
 

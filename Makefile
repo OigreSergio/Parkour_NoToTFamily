@@ -1,4 +1,4 @@
-.PHONY: help up down logs api-shell db-shell migrate seed-spots test lint format
+.PHONY: help up down logs api-shell db-shell migrate seed-spots seed-videos test lint format
 
 help:
 	@echo "Common targets:"
@@ -7,6 +7,7 @@ help:
 	@echo "  logs       Tail logs"
 	@echo "  migrate    Apply DB migrations"
 	@echo "  seed-spots Load backend/seeds/spots.json as verified spots"
+	@echo "  seed-videos Load backend/seeds/videos.json as the tutorial catalog"
 	@echo "  test       Run backend tests"
 	@echo "  lint       Run linters across the repo"
 	@echo "  format     Auto-format Python + JS/TS"
@@ -31,6 +32,9 @@ migrate:
 
 seed-spots:
 	docker compose exec api python -m app.db.seed_spots
+
+seed-videos:
+	docker compose exec api python -m app.db.seed_videos
 
 test:
 	cd backend && pytest

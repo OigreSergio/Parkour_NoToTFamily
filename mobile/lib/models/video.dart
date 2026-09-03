@@ -58,6 +58,36 @@ class TutorialVideo {
 
   final DateTime createdAt;
 
+  /// File extensions the in-app player (`video_player`) can stream.
+  static const Set<String> _streamableExtensions = {
+    '.mp4',
+    '.m3u8',
+    '.webm',
+    '.mov',
+    '.m4v',
+  };
+
+  /// True when [url] points straight at a video file the app can play inline.
+  bool get isStreamable {
+    final url = this.url;
+    if (url == null || url.isEmpty) return false;
+    final path = Uri.tryParse(url)?.path.toLowerCase() ?? '';
+    return _streamableExtensions.any(path.endsWith);
+  }
+
+  /// True when the tutorial lives on a video platform (YouTube & co.) and has
+  /// to be opened outside the app: the catalog is curated from public channels,
+  /// and those pages are not streamable media files.
+  bool get opensExternally => url != null && url!.isNotEmpty && !isStreamable;
+
+  /// Host the tutorial opens on, e.g. `youtube.com` — used to label the button.
+  String? get externalHost {
+    if (!opensExternally) return null;
+    final host = Uri.tryParse(url!)?.host.toLowerCase();
+    if (host == null || host.isEmpty) return null;
+    return host.startsWith('www.') ? host.substring(4) : host;
+  }
+
   /// Returns a copy with the landed state flipped — optimistic UI update.
   TutorialVideo toggleLanded() => copyWith(landed: !landed);
 
