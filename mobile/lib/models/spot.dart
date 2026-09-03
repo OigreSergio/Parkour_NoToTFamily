@@ -60,8 +60,16 @@ class Spot {
   /// 1–5, where 5 is the hardest.
   final int difficulty;
 
-  /// `pending` | `verified` | `rejected`.
+  /// `pending` | `verified` | `rejected` from the backend.
+  ///
+  /// Clients also ship a fixed list of community spots (the shared Google Maps
+  /// list) that the backend does not store yet; those carry `community`, so
+  /// the map can tell them apart. Client-side value — see [isCommunity].
   final String status;
+
+  /// Whether the spot comes from the shared community list rather than from
+  /// the family's moderated map.
+  bool get isCommunity => status == 'community';
 
   /// Whether there is a drinking-water source (fountain, tap) at or near the
   /// spot. Client-side field; defaults to `false` until the backend exposes it.

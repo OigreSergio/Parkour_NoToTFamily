@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers.dart';
+import '../services/spot_imagery.dart';
 import '../widgets/error_view.dart';
 import 'spot_detail_screen.dart';
 
@@ -32,7 +33,7 @@ class SpotsListScreen extends ConsumerWidget {
             itemBuilder: (context, i) {
               final spot = spots[i];
               return ListTile(
-                leading: _SpotThumbnail(url: spot.previewUrl),
+                leading: _SpotThumbnail(url: SpotImagery.coverUrl(spot, width: 112, height: 112)),
                 title: Text(spot.name),
                 subtitle: Text(
                   spot.description.isEmpty
@@ -56,6 +57,8 @@ class SpotsListScreen extends ConsumerWidget {
   }
 }
 
+/// Spot photo, or the aerial view of its coordinates when it has none — so a
+/// row never falls back to a bare icon.
 class _SpotThumbnail extends StatelessWidget {
   const _SpotThumbnail({required this.url});
 

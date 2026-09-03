@@ -59,5 +59,7 @@ class SpotCommentOut(BaseModel):
 class SpotSearchQuery(BaseModel):
     lat: float = Field(ge=-90, le=90)
     lng: float = Field(ge=-180, le=180)
-    radius_m: int = Field(default=5000, ge=10, le=50_000)
-    limit: int = Field(default=100, ge=1, le=500)
+    # 20 000 km copre il pianeta: serve alla mappa "tutti gli spot" dei client,
+    # che non hanno ancora una query per riquadro di schermo.
+    radius_m: int = Field(default=5000, ge=10, le=20_000_000)
+    limit: int = Field(default=100, ge=1, le=2000)

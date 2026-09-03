@@ -82,8 +82,24 @@ void main() {
 
     test('searchRadiusLabel reads in kilometres', () {
       expect(
-        const AppSettings(searchRadiusMeters: 25000).searchRadiusLabel,
-        '25 km',
+        const AppSettings(searchRadiusMeters: 10000).searchRadiusLabel,
+        '10 km',
+      );
+    });
+
+    test('the whole-planet radius reads as "everywhere"', () {
+      const settings = AppSettings(
+        searchRadiusMeters: AppSettings.allSpotsRadiusMeters,
+      );
+      expect(settings.searchRadiusLabel, 'everywhere');
+      expect(AppSettings.radiusChoiceLabel(settings.searchRadiusMeters), 'All');
+      expect(AppSettings.radiusChoiceLabel(50000), '50 km');
+    });
+
+    test('defaults to reaching every spot', () {
+      expect(
+        const AppSettings().searchRadiusMeters,
+        AppSettings.allSpotsRadiusMeters,
       );
     });
   });

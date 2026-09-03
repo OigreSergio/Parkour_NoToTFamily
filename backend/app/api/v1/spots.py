@@ -63,8 +63,8 @@ async def submit_spot(
 async def list_nearby(
     lat: float = Query(...),
     lng: float = Query(...),
-    radius_m: int = Query(5000, ge=10, le=50_000),
-    limit: int = Query(100, ge=1, le=500),
+    radius_m: int = Query(5000, ge=10, le=20_000_000),
+    limit: int = Query(100, ge=1, le=2000),
     session: AsyncSession = Depends(db_session),
 ) -> list[SpotOut]:
     q = SpotSearchQuery(lat=lat, lng=lng, radius_m=radius_m, limit=limit)

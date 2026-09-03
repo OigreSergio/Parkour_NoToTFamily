@@ -16,13 +16,13 @@ class SpotRepository {
   ///
   /// The backend requires a search centre, so callers pass the user's GPS
   /// position (or a sensible fallback when location is unavailable). Defaults
-  /// use the widest radius the API allows so the list/map are populated even
-  /// without a precise fix.
+  /// use the widest radius the API allows (the whole planet), so the map is
+  /// populated even without a precise fix.
   Future<List<Spot>> fetchSpots({
     required double lat,
     required double lng,
-    int radiusMeters = 50000,
-    int limit = 500,
+    int radiusMeters = 20000000,
+    int limit = 2000,
   }) async {
     final data = await _api.getJson(
       _spotsPath,

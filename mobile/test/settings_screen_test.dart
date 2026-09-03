@@ -79,15 +79,24 @@ void main() {
 
   testWidgets('the search radius drives the spot query', (tester) async {
     await pumpSettings(tester);
+    // Out of the box the map reaches every spot, wherever it is.
     expect(
       container.read(settingsProvider).searchRadiusMeters,
-      AppSettings.defaultSearchRadiusMeters,
+      AppSettings.allSpotsRadiusMeters,
     );
+    expect(find.text('Every spot, wherever it is'), findsOneWidget);
 
     await tapItem(tester, find.text('10 km'));
 
     expect(container.read(settingsProvider).searchRadiusMeters, 10000);
     expect(find.text('Spots within 10 km'), findsOneWidget);
+
+    await tapItem(tester, find.text('All'));
+
+    expect(
+      container.read(settingsProvider).searchRadiusMeters,
+      AppSettings.allSpotsRadiusMeters,
+    );
   });
 
   testWidgets('turning location off falls back to the default centre',
@@ -107,7 +116,7 @@ void main() {
   testWidgets('preferences saved earlier are restored', (tester) async {
     store = InMemoryLocalStore({
       SettingsStore.settingsKey:
-          '{"theme_mode":"light","search_radius_m":25000,'
+          '{"theme_mode":"light","search_radius_m":10000,'
               '"use_device_location":false}',
     });
     container = ProviderContainer(
@@ -127,7 +136,7 @@ void main() {
 
     final settings = container.read(settingsProvider);
     expect(settings.themeMode, ThemeMode.light);
-    expect(settings.searchRadiusMeters, 25000);
+    expect(settings.searchRadiusMeters, 10000);
     expect(settings.useDeviceLocation, isFalse);
   });
 

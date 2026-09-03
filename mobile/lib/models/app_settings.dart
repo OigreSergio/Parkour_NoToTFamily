@@ -13,11 +13,23 @@ class AppSettings {
     this.useDeviceLocation = true,
   });
 
-  /// Widest radius the API allows (`radius_m` is capped at 50 km server-side).
-  static const int defaultSearchRadiusMeters = 50000;
+  /// Radius that reaches every spot on the planet — the map's default, so the
+  /// community list shows up wherever you open the app.
+  static const int allSpotsRadiusMeters = 20000000;
+
+  /// Radius the app starts with.
+  static const int defaultSearchRadiusMeters = allSpotsRadiusMeters;
 
   /// Radii offered in the settings screen, in metres.
-  static const List<int> searchRadiusChoices = [5000, 10000, 25000, 50000];
+  static const List<int> searchRadiusChoices = [
+    5000,
+    10000,
+    50000,
+    allSpotsRadiusMeters,
+  ];
+
+  /// Most spots the API returns in one call.
+  static const int spotsLimit = 2000;
 
   /// Light / dark / follow the system.
   final ThemeMode themeMode;
@@ -29,8 +41,16 @@ class AppSettings {
   /// of asking the device for a GPS fix.
   final bool useDeviceLocation;
 
-  /// Search radius rendered for the UI, e.g. `50 km`.
-  String get searchRadiusLabel => '${(searchRadiusMeters / 1000).round()} km';
+  /// Search radius rendered for the UI, e.g. `50 km` or `everywhere`.
+  String get searchRadiusLabel => searchRadiusMeters == allSpotsRadiusMeters
+      ? 'everywhere'
+      : '${(searchRadiusMeters / 1000).round()} km';
+
+  /// Short label for the radius picker.
+  static String radiusChoiceLabel(int radiusMeters) =>
+      radiusMeters == allSpotsRadiusMeters
+          ? 'All'
+          : '${(radiusMeters / 1000).round()} km';
 
   AppSettings copyWith({
     ThemeMode? themeMode,

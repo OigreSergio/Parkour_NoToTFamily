@@ -24,8 +24,9 @@ dependencies:
   # Secure token storage
   flutter_secure_storage: ^9.2.2
 
-  # Map
-  flutter_map: ^7.0.2
+  # Map — vector tiles so the "ricamo" MapLibre style renders as designed
+  flutter_map: ^8.2.0
+  flutter_map_vector_tiles: ^2.8.1
   latlong2: ^0.9.1
   geolocator: ^12.0.0
 
@@ -39,7 +40,6 @@ dependencies:
   # Models
   freezed_annotation: ^2.4.4
   json_annotation: ^4.9.0
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -50,3 +50,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/map/

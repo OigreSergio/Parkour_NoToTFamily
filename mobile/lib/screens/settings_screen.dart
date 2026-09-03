@@ -94,7 +94,11 @@ class SettingsScreen extends ConsumerWidget {
           ListTile(
             leading: const Icon(Icons.radar),
             title: const Text('Search radius'),
-            subtitle: Text('Spots within ${settings.searchRadiusLabel}'),
+            subtitle: Text(
+              settings.searchRadiusMeters == AppSettings.allSpotsRadiusMeters
+                  ? 'Every spot, wherever it is'
+                  : 'Spots within ${settings.searchRadiusLabel}',
+            ),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
@@ -103,7 +107,7 @@ class SettingsScreen extends ConsumerWidget {
                 for (final radius in AppSettings.searchRadiusChoices)
                   ButtonSegment<int>(
                     value: radius,
-                    label: Text('${(radius / 1000).round()} km'),
+                    label: Text(AppSettings.radiusChoiceLabel(radius)),
                   ),
               ],
               selected: {settings.searchRadiusMeters},

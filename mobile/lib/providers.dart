@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart' show ThemeMode;
+import 'package:flutter_map_vector_tiles/flutter_map_vector_tiles.dart' as vt;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -12,6 +13,7 @@ import 'repositories/video_repository.dart';
 import 'services/api_client.dart';
 import 'services/local_store.dart';
 import 'services/location_service.dart';
+import 'services/map_style.dart';
 import 'services/session_service.dart';
 import 'services/settings_store.dart';
 
@@ -56,7 +58,15 @@ final spotsProvider = FutureProvider<List<Spot>>((ref) async {
         lat: center.latitude,
         lng: center.longitude,
         radiusMeters: radius,
+        limit: AppSettings.spotsLimit,
       );
+});
+
+/// The embroidery map style, parsed once and kept for the app's lifetime.
+final mapStyleProvider = FutureProvider<vt.Style>((ref) async {
+  final style = await const MapStyleLoader().load();
+  ref.onDispose(style.dispose);
+  return style;
 });
 
 /// Tutorial video data source.

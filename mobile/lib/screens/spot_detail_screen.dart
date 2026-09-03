@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../models/spot.dart';
+import '../services/spot_imagery.dart';
 
 /// Read-only detail view for a single [Spot].
 class SpotDetailScreen extends StatelessWidget {
   const SpotDetailScreen({super.key, required this.spot});
 
   final Spot spot;
+
+  /// Photos of the spot, or — when it has none — a single aerial view of its
+  /// coordinates, so every spot opens with a picture of the place.
+  static List<String> _gallery(Spot spot) => spot.photoUrls.isNotEmpty
+      ? spot.photoUrls
+      : [SpotImagery.aerialUrl(spot.location, width: 800, height: 600)];
 
   @override
   Widget build(BuildContext context) {
@@ -16,17 +23,17 @@ class SpotDetailScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          if (spot.photoUrls.isNotEmpty) ...[
+          if (_gallery(spot).isNotEmpty) ...[
             SizedBox(
               height: 200,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: spot.photoUrls.length,
+                itemCount: _gallery(spot).length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, i) => ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    spot.photoUrls[i],
+                    _gallery(spot)[i],
                     width: 280,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(

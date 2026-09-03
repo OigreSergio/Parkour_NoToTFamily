@@ -66,6 +66,12 @@ before they go public.
   admin is seeded server-side and any other is promoted manually at the
   database level.
 
+### Mappa
+Lo stile "ricamo" (lino, punti filza, spilli da cucito) è definito una volta
+sola in `scripts/pk_embroidery_style.py`: `patch-gh-pages-test-free.py` lo
+inietta nel bundle web, `build_embroidery_style.py` lo scrive come style JSON
+per l'app Flutter. Chi cambia lo stile tocca quel modulo, non le due copie.
+
 ### Mobile — Flutter 3.22+ (Dart)
 - Lints: `flutter_lints`. State: **Riverpod**. HTTP via a single configurable
   base URL (`http://10.0.2.2:8000` for the Android emulator by default).
@@ -101,6 +107,7 @@ before they go public.
 | Auth (email + JWT)     | ✅      | ⏳ planned          | ⏳        | In progress   |
 | Account menu & settings| —       | ✅                  | —         | **Shipped**   |
 | Map / list of spots    | ✅      | ✅ read-only        | —         | **Shipped**   |
+| Stile mappa "ricamo"   | —       | ✅ vector tiles     | ✅ web    | **Shipped**   |
 | Spot detail            | ✅      | ✅                  | —         | **Shipped**   |
 | Submit a spot          | ✅      | ⏳ planned          | —         | Planned       |
 | Verify a spot          | ✅      | —                   | ⏳        | Planned       |

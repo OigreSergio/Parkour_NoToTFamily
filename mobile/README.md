@@ -30,6 +30,8 @@ lib/
 │   └── app_settings.dart            On-device preferences (theme, radius, location)
 ├── services/
 │   ├── api_client.dart              http client, configurable base URL
+│   ├── map_style.dart               stile "ricamo" (vector tiles OpenFreeMap)
+│   ├── spot_imagery.dart            vista aerea per gli spot senza foto
 │   ├── local_store.dart             key/value store (secure storage, or in-memory)
 │   ├── session_service.dart         tokens + cached account on the device
 │   ├── settings_store.dart          preference persistence
@@ -45,12 +47,34 @@ lib/
 │   └── settings_screen.dart         account, appearance, spot search, about
 └── widgets/
     ├── error_view.dart              shared error/retry state
+    ├── sewing_pin.dart              marker a spillo da cucito
     ├── account_menu.dart            app bar avatar → menu (settings / log out)
     └── logout_confirmation.dart     confirm dialog + log out feedback
 ```
 
-State: **Riverpod**. HTTP: **http**. Map: **flutter_map** (OpenStreetMap tiles,
-no API key) with **latlong2**. Location: **geolocator**.
+State: **Riverpod**. HTTP: **http**. Map: **flutter_map** +
+**flutter_map_vector_tiles** (vector tiles OpenFreeMap, no API key) with
+**latlong2**. Location: **geolocator**.
+
+## Map
+
+The map is the project's **"ricamo"** style — the world drawn as stitching on
+linen: dashed running-stitch roads, fabric patches for parks, buildings and
+water, seams on the borders. It is the same style the web app uses: the layers
+live in `scripts/pk_embroidery_style.py` and
+`scripts/build_embroidery_style.py` writes them to
+`assets/map/embroidery_style.json` for the app.
+
+- **Markers** are sewing pins (`widgets/sewing_pin.dart`), the needle tip on the
+  exact coordinates: **red thread** for the family's verified spots, **blue**
+  for the ones from the shared community list.
+- **Tiles** are OpenMapTiles vectors served by OpenFreeMap, no API key. While
+  the style loads — or if it cannot be loaded — the map falls back to plain
+  OpenStreetMap raster tiles.
+- **Photos**: a spot without pictures is not left blank. `services/spot_imagery`
+  builds an aerial view of its coordinates (Esri World Imagery, the same source
+  the web app uses), which is what the list thumbnail and the detail gallery
+  show.
 
 ## Account menu & settings
 
@@ -90,7 +114,9 @@ youtube.com* button that hands the video to the YouTube app or the browser
 
 `GET /api/v1/spots?lat=&lng=&radius_m=&limit=` returns only `verified` spots.
 The request is centred on the user's GPS position (or a fallback when location
-is unavailable). Spot shape is documented in
+is unavailable). The search radius comes from the settings and **defaults to
+the whole planet** (`radius_m` up to 20 000 km, `limit` up to 2000), so the map
+shows every spot wherever you open the app; pick 5/10/50 km to narrow it down. Spot shape is documented in
 [`../docs/DATA_MODEL.md`](../docs/DATA_MODEL.md).
 
 ## Test
