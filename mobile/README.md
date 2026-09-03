@@ -71,10 +71,17 @@ live in `scripts/pk_embroidery_style.py` and
 - **Tiles** are OpenMapTiles vectors served by OpenFreeMap, no API key. While
   the style loads — or if it cannot be loaded — the map falls back to plain
   OpenStreetMap raster tiles.
+- **Pins are thinned by zoom** (`services/map_pins.dart`): one pin per 44-pixel
+  grid cell, family spots winning over community ones, capped at 400 per frame.
+  Drawing all 1706 at world zoom is what made the map crawl and a phone tab run
+  out of memory. The map also stops at `minZoom: 2`, below which the world is
+  smaller than the screen.
 - **Photos**: a spot without pictures is not left blank. `services/spot_imagery`
-  builds an aerial view of its coordinates (Esri World Imagery, the same source
-  the web app uses), which is what the list thumbnail and the detail gallery
-  show.
+  builds a satellite view of its coordinates (Esri World Imagery, the same
+  source the web app uses): it is the list thumbnail, and on the detail screen
+  it fills the header with an explicit caption. Community spots — found on a
+  shared online list, where nobody from the family has been yet — also carry a
+  *not verified* banner.
 
 ## Account menu & settings
 

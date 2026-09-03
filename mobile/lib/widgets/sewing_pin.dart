@@ -49,12 +49,11 @@ class _SewingPinPainter extends CustomPainter {
     canvas.save();
     canvas.scale(size.width / _vbWidth, size.height / _vbHeight);
 
-    // Drop shadow, so the pin reads over both linen and photos.
-    canvas.drawShadow(
-      Path()..addOval(Rect.fromCircle(center: const Offset(17, 9), radius: 7.5)),
-      Colors.black54,
-      2,
-      false,
+    // A flat shadow under the head: `Canvas.drawShadow` allocates a path and a
+    // blur per pin, which is too much when the map draws hundreds of them.
+    canvas.drawOval(
+      Rect.fromCenter(center: const Offset(17.8, 10.5), width: 15, height: 15),
+      Paint()..color = Colors.black.withValues(alpha: 0.18),
     );
 
     // Needle.

@@ -9,31 +9,27 @@ class SpotDetailScreen extends StatelessWidget {
 
   final Spot spot;
 
-  /// Photos of the spot, or — when it has none — a single aerial view of its
-  /// coordinates, so every spot opens with a picture of the place.
-  static List<String> _gallery(Spot spot) => spot.photoUrls.isNotEmpty
-      ? spot.photoUrls
-      : [SpotImagery.aerialUrl(spot.location, width: 800, height: 600)];
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final photos = spot.photoUrls;
+
     return Scaffold(
       appBar: AppBar(title: Text(spot.name)),
       body: ListView(
         padding: const EdgeInsets.all(20),
         children: [
-          if (_gallery(spot).isNotEmpty) ...[
+          if (photos.isNotEmpty)
             SizedBox(
               height: 200,
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: _gallery(spot).length,
+                itemCount: photos.length,
                 separatorBuilder: (_, __) => const SizedBox(width: 8),
                 itemBuilder: (context, i) => ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.network(
-                    _gallery(spot)[i],
+                    photos[i],
                     width: 280,
                     fit: BoxFit.cover,
                     errorBuilder: (_, __, ___) => Container(
@@ -44,8 +40,13 @@ class SpotDetailScreen extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
+            )
+          else
+            _SatelliteView(spot: spot),
+          const SizedBox(height: 20),
+          if (spot.isCommunity) ...[
+            const _UnverifiedBanner(),
+            const SizedBox(height: 16),
           ],
           Text(spot.name, style: theme.textTheme.headlineSmall),
           const SizedBox(height: 8),
@@ -119,6 +120,101 @@ class _InfoRow extends StatelessWidget {
           const SizedBox(width: 12),
           Text('$label: ', style: theme.textTheme.labelLarge),
           Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
+        ],
+      ),
+    );
+  }
+}
+
+/// Satellite view of a spot nobody has photographed yet.
+///
+/// The community spots come from a shared online list: no one from the family
+/// has been there, so there is no photo — but there is always the sky. The
+/// imagery is Esri's World Imagery, the same source the web app uses.
+class _SatelliteView extends StatelessWidget {
+  const _SatelliteView({required this.spot});
+
+  final Spot spot;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Image.network(
+              SpotImagery.aerialUrl(spot.location, width: 800, height: 450),
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, progress) => progress == null
+                  ? child
+                  : ColoredBox(
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      child: const Center(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                    ),
+              errorBuilder: (_, __, ___) => ColoredBox(
+                color: theme.colorScheme.surfaceContainerHighest,
+                child: const Center(child: Icon(Icons.satellite_alt_outlined)),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            Icon(
+              Icons.satellite_alt_outlined,
+              size: 14,
+              color: theme.colorScheme.outline,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                'Satellite view — no photo of this spot yet. '
+                'Imagery © Esri World Imagery.',
+                style: theme.textTheme.bodySmall
+                    ?.copyWith(color: theme.colorScheme.outline),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Says out loud that a community spot has not been checked by anyone.
+class _UnverifiedBanner extends StatelessWidget {
+  const _UnverifiedBanner();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.help_outline, color: theme.colorScheme.onSecondaryContainer),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              'Not verified: found on the shared community list, nobody from '
+              'the family has been there yet.',
+              style: theme.textTheme.bodySmall
+                  ?.copyWith(color: theme.colorScheme.onSecondaryContainer),
+            ),
+          ),
         ],
       ),
     );

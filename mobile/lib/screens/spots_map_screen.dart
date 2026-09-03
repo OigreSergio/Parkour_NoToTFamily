@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/spot.dart';
 import '../providers.dart';
 import '../services/location_service.dart';
+import '../services/map_pins.dart';
 import '../widgets/error_view.dart';
 import '../widgets/sewing_pin.dart';
 import 'spot_detail_screen.dart';
@@ -38,6 +39,10 @@ class SpotsMapScreen extends ConsumerWidget {
           initialCenter: center,
           initialZoom: 12,
           maxZoom: 18,
+          // Below this the world is smaller than the screen and every spot
+          // piles onto the same pixels — nothing to see, and enough work to
+          // make a phone give up on the page.
+          minZoom: 2,
         ),
         children: [
           styleAsync.maybeWhen(
@@ -52,24 +57,36 @@ class SpotsMapScreen extends ConsumerWidget {
               userAgentPackageName: 'family.notot.parkour_notot',
             ),
           ),
-          MarkerLayer(
-            markers: [
-              for (final spot in spots)
-                Marker(
-                  point: spot.location.toLatLng(),
-                  width: 34,
-                  height: 52,
-                  alignment: Alignment.topCenter,
-                  child: GestureDetector(
-                    onTap: () => _showSpot(context, spot),
-                    child: SewingPin(
-                      color: spot.isCommunity
-                          ? SewingPin.pinBlue
-                          : SewingPin.pinRed,
+          // The pins are rebuilt from the camera on every move, so only the
+          // ones worth drawing at this zoom exist (see [MapPins]).
+          Builder(
+            builder: (context) {
+              final camera = MapCamera.of(context);
+              final pins = MapPins.visible(
+                spots,
+                bounds: camera.visibleBounds,
+                zoom: camera.zoom,
+              );
+              return MarkerLayer(
+                markers: [
+                  for (final spot in pins)
+                    Marker(
+                      point: spot.location.toLatLng(),
+                      width: 34,
+                      height: 52,
+                      alignment: Alignment.topCenter,
+                      child: GestureDetector(
+                        onTap: () => _showSpot(context, spot),
+                        child: SewingPin(
+                          color: spot.isCommunity
+                              ? SewingPin.pinBlue
+                              : SewingPin.pinRed,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-            ],
+                ],
+              );
+            },
           ),
           RichAttributionWidget(
             attributions: [
