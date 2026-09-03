@@ -1,5 +1,6 @@
 User-agent: *
 Allow: /
 Disallow: /admin-inviti.html
+Disallow: /t/
 
 Sitemap: https://oigresergio.github.io/Parkour_NoToTFamily/sitemap.xml
