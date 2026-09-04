@@ -8,6 +8,8 @@ import '../repositories/water_repository.dart';
 import '../services/spot_distance.dart';
 import '../services/spot_imagery.dart';
 import '../widgets/spot_rating.dart';
+import '../widgets/stitch_divider.dart';
+import '../widgets/take_me_there.dart';
 
 /// Read-only detail view for a single [Spot].
 class SpotDetailScreen extends ConsumerWidget {
@@ -19,7 +21,8 @@ class SpotDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final photos = spot.photoUrls;
-    final here = ref.watch(currentLocationProvider).valueOrNull;
+    // Live position: the distance ticks down while you walk to the spot.
+    final here = ref.watch(userPositionProvider);
     final distance = SpotDistance.labelFor(spot, here);
 
     return Scaffold(
@@ -70,11 +73,18 @@ class SpotDetailScreen extends ConsumerWidget {
             ),
           ],
           const SizedBox(height: 16),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: TakeMeThereButton(spot: spot, distanceLabel: distance),
+          ),
+          const SizedBox(height: 16),
           Text(
             spot.description.isEmpty ? 'No description yet.' : spot.description,
             style: theme.textTheme.bodyLarge,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 12),
+          const StitchDivider(),
+          const SizedBox(height: 12),
           _WaterNearby(spot: spot),
           const SizedBox(height: 24),
           _InfoRow(

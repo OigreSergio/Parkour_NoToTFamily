@@ -52,6 +52,30 @@ final currentLocationProvider = FutureProvider<LatLng>((ref) {
   return ref.watch(locationServiceProvider).currentLatLng();
 });
 
+/// The device position as it changes, so distances tick down while you walk.
+///
+/// Falls back to the one-shot fix ([currentLocationProvider]) until the first
+/// live update arrives, and stays on the last known position if the stream
+/// stops. Turning "use my location" off silences it: the app then measures
+/// from nothing and simply omits distances.
+final livePositionProvider = StreamProvider<LatLng>((ref) {
+  final useDeviceLocation =
+      ref.watch(settingsProvider.select((s) => s.useDeviceLocation));
+  if (!useDeviceLocation) return const Stream<LatLng>.empty();
+  return ref.watch(locationServiceProvider).watchLatLng();
+});
+
+/// Where the user is right now, as far as the app knows: the live position
+/// when there is one, the start-up fix otherwise, `null` without either.
+final userPositionProvider = Provider<LatLng?>((ref) {
+  final live = ref.watch(livePositionProvider).valueOrNull;
+  if (live != null) return live;
+  final useDeviceLocation =
+      ref.watch(settingsProvider.select((s) => s.useDeviceLocation));
+  if (!useDeviceLocation) return null;
+  return ref.watch(currentLocationProvider).valueOrNull;
+});
+
 /// Verified spots near the current location, within the configured radius.
 final spotsProvider = FutureProvider<List<Spot>>((ref) async {
   final center = await ref.watch(currentLocationProvider.future);

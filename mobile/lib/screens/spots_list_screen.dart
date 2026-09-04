@@ -6,6 +6,8 @@ import '../services/spot_distance.dart';
 import '../services/spot_imagery.dart';
 import '../widgets/error_view.dart';
 import '../widgets/spot_rating.dart';
+import '../widgets/stitch_divider.dart';
+import '../widgets/take_me_there.dart';
 import 'spot_detail_screen.dart';
 
 /// Scrollable list of verified spots. Tapping a row opens its detail screen.
@@ -15,9 +17,9 @@ class SpotsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final spotsAsync = ref.watch(spotsProvider);
-    // Null until the device gives a fix (or when the user turned location off):
-    // the rows then simply omit the distance.
-    final here = ref.watch(currentLocationProvider).valueOrNull;
+    // Live position: rows keep their distance up to date as you move. Null
+    // when location is off or has not answered yet — the rows omit it then.
+    final here = ref.watch(userPositionProvider);
 
     return spotsAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -27,7 +29,11 @@ class SpotsListScreen extends ConsumerWidget {
       ),
       data: (spots) {
         if (spots.isEmpty) {
-          return const Center(child: Text('No spots nearby yet.'));
+          return const PinnedEmptyState(
+            title: 'No spots pinned around here yet',
+            subtitle: 'Widen the search radius in the settings, or add the '
+                'first one yourself.',
+          );
         }
         return RefreshIndicator(
           onRefresh: () => ref.refresh(spotsProvider.future),
@@ -55,7 +61,7 @@ class SpotsListScreen extends ConsumerWidget {
                     ),
                     if (distance != null)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: const EdgeInsets.only(top: 2),
                         child: Row(
                           children: [
                             const Icon(Icons.near_me_outlined, size: 14),
@@ -64,6 +70,8 @@ class SpotsListScreen extends ConsumerWidget {
                               distance,
                               style: Theme.of(context).textTheme.labelMedium,
                             ),
+                            const SizedBox(width: 4),
+                            TakeMeThereButton(spot: spot, compact: true),
                           ],
                         ),
                       ),

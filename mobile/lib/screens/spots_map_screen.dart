@@ -9,6 +9,7 @@ import '../services/location_service.dart';
 import '../services/map_pins.dart';
 import '../widgets/error_view.dart';
 import '../widgets/sewing_pin.dart';
+import '../widgets/take_me_there.dart';
 import 'spot_detail_screen.dart';
 
 /// The "ricamo" map: the world stitched on linen (see `services/map_style.dart`)
@@ -138,19 +139,22 @@ class SpotsMapScreen extends ConsumerWidget {
               style: Theme.of(sheetContext).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
-            Align(
-              alignment: Alignment.centerRight,
-              child: FilledButton(
-                onPressed: () {
-                  Navigator.of(sheetContext).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => SpotDetailScreen(spot: spot),
-                    ),
-                  );
-                },
-                child: const Text('Details'),
-              ),
+            Row(
+              children: [
+                TakeMeThereButton(spot: spot),
+                const Spacer(),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(sheetContext).pop();
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => SpotDetailScreen(spot: spot),
+                      ),
+                    );
+                  },
+                  child: const Text('Details'),
+                ),
+              ],
             ),
           ],
         ),

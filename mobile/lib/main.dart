@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'providers.dart';
+import 'theme/pk_theme.dart';
 import 'screens/spots_list_screen.dart';
 import 'screens/spots_map_screen.dart';
 import 'screens/submit_spot_screen.dart';
@@ -23,15 +24,8 @@ class ParkourApp extends ConsumerWidget {
     return MaterialApp(
       title: 'Parkour NoToT Family',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: Colors.teal,
-        useMaterial3: true,
-      ),
-      darkTheme: ThemeData(
-        colorSchemeSeed: Colors.teal,
-        brightness: Brightness.dark,
-        useMaterial3: true,
-      ),
+      theme: PkTheme.light(),
+      darkTheme: PkTheme.dark(),
       themeMode: themeMode,
       home: const HomeScreen(),
     );

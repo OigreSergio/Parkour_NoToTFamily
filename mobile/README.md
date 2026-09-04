@@ -52,6 +52,12 @@ lib/
     └── logout_confirmation.dart     confirm dialog + log out feedback
 ```
 
+Look: `lib/theme/pk_theme.dart` dresses the app in the map's own palette —
+linen, embroidery thread, rounded corners and the **Quicksand** typeface
+(bundled under `assets/fonts/`, SIL OFL). Nothing is invented there: the hexes
+are the ones the map style stitches with, so the chrome and the map read as one
+piece of cloth.
+
 State: **Riverpod**. HTTP: **http**. Map: **flutter_map** +
 **flutter_map_vector_tiles** (vector tiles OpenFreeMap, no API key) with
 **latlong2**. Location: **geolocator**.
@@ -78,8 +84,12 @@ live in `scripts/pk_embroidery_style.py` and
   smaller than the screen.
 - **Ratings are never invented**: a spot reads *Not rated yet* until real
   people rate it (`Spot.isRated`). Imported metadata is not turned into stars.
-- **Distance**: with location on, the list and the detail say how far the spot
-  is from you (`services/spot_distance.dart`).
+- **Distance, live**: with location on, the app follows the device position
+  (`livePositionProvider`, a GPS stream with a 10 m filter) so the distance
+  ticks down while you walk. **Take me there** hands the spot to the phone's
+  own maps app — the `geo:` intent on Android (every installed map app can
+  answer), Apple Maps on iOS, a web map anywhere else
+  (`services/spot_directions.dart`).
 - **Drinking water**: the detail asks OpenStreetMap (Overpass, the database the
   fountain apps use) for water within 400 m and names the nearest one.
 - **Report a spot**: the *Add spot* button opens a form — name, description,
