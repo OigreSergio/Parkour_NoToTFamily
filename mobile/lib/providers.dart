@@ -277,18 +277,76 @@ class SessionController extends StateNotifier<SessionState> {
     await _refreshAccount();
   }
 
+  /// Create an account with an email and the name the person picked, then
+  /// sign in with it.
+  ///
+  /// The name is checked by the server: if it comes back refused, the reason
+  /// lands in [SessionState.error] ready to be shown.
+  Future<bool> registerWithEmail({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    state = state.copyWith(status: SessionStatus.busy, clearError: true);
+    try {
+      await _auth.register(
+        email: email,
+        password: password,
+        displayName: displayName,
+      );
+      return await _finishSignIn(
+        await _auth.login(email: email, password: password),
+      );
+    } catch (error) {
+      if (mounted) {
+        state = SessionState(
+          status: SessionStatus.signedOut,
+          error: _message(error),
+        );
+      }
+      return false;
+    }
+  }
+
+  /// Sign in with an email and password already registered.
+  Future<bool> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    state = state.copyWith(status: SessionStatus.busy, clearError: true);
+    try {
+      return await _finishSignIn(
+        await _auth.login(email: email, password: password),
+      );
+    } catch (error) {
+      if (mounted) {
+        state = SessionState(
+          status: SessionStatus.signedOut,
+          error: _message(error),
+        );
+      }
+      return false;
+    }
+  }
+
+  /// Store a fresh token pair and read back who it belongs to.
+  Future<bool> _finishSignIn(AuthTokens tokens) async {
+    await _service.saveTokens(tokens);
+    _tokens = tokens;
+    final account = await _auth.me(tokens.accessToken);
+    await _service.saveAccount(account);
+    if (!mounted) return true;
+    state = SessionState(status: SessionStatus.signedIn, account: account);
+    return true;
+  }
+
   /// Sign in without an email (`POST /api/v1/auth/guest`).
   Future<bool> signInAsGuest({String? displayName}) async {
     state = state.copyWith(status: SessionStatus.busy, clearError: true);
     try {
-      final tokens = await _auth.loginAsGuest(displayName: displayName);
-      await _service.saveTokens(tokens);
-      _tokens = tokens;
-      final account = await _auth.me(tokens.accessToken);
-      await _service.saveAccount(account);
-      if (!mounted) return true;
-      state = SessionState(status: SessionStatus.signedIn, account: account);
-      return true;
+      return await _finishSignIn(
+        await _auth.loginAsGuest(displayName: displayName),
+      );
     } catch (error) {
       if (mounted) {
         state = SessionState(
@@ -388,7 +446,7 @@ class SessionController extends StateNotifier<SessionState> {
   }
 
   String _message(Object error) =>
-      error is ApiException ? 'Server error ${error.statusCode}' : '$error';
+      error is ApiException ? error.userMessage : '$error';
 }
 
 /// Result of [SessionController.logout].

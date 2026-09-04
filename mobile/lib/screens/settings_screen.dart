@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/account.dart';
 import '../models/app_settings.dart';
 import '../providers.dart';
+import 'sign_in_screen.dart';
 import '../services/api_client.dart';
 import '../widgets/logout_confirmation.dart';
 
@@ -45,12 +46,13 @@ class SettingsScreen extends ConsumerWidget {
             )
           else
             ListTile(
-              leading: const Icon(Icons.person_add_alt),
-              title: const Text('Sign in as a guest'),
-              subtitle: const Text('No email needed'),
-              onTap: session.isBusy
-                  ? null
-                  : () => ref.read(sessionProvider.notifier).signInAsGuest(),
+              leading: const Icon(Icons.login),
+              title: const Text('Sign in'),
+              subtitle: const Text('With your email, or as a guest'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SignInScreen()),
+              ),
             ),
 
           const Divider(),

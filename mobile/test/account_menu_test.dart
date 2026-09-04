@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:parkour_notot/providers.dart';
 import 'package:parkour_notot/screens/settings_screen.dart';
+import 'package:parkour_notot/screens/sign_in_screen.dart';
 import 'package:parkour_notot/services/api_client.dart';
 import 'package:parkour_notot/services/local_store.dart';
 import 'package:parkour_notot/services/session_service.dart';
@@ -37,7 +38,21 @@ void main() {
     );
   }
 
+  /// The guest account now lives inside the sign-in screen, one tap deeper.
+  Future<void> signInAsGuest(WidgetTester tester) async {
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue as a guest'));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> pumpMenu(WidgetTester tester) async {
+    // Tall viewport: the sign-in screen is a list, and what is off-screen is
+    // not built at all.
+    tester.view.physicalSize = const Size(1000, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
     await tester.pumpWidget(
       UncontrolledProviderScope(container: container, child: _host()),
     );
@@ -51,14 +66,27 @@ void main() {
     addTearDown(container.dispose);
   });
 
-  testWidgets('the menu offers settings and guest sign-in when signed out',
+  testWidgets('the menu offers settings and a way in when signed out',
       (tester) async {
     await pumpMenu(tester);
 
     expect(find.text('Not signed in'), findsOneWidget);
     expect(find.text('Settings'), findsOneWidget);
-    expect(find.text('Sign in as a guest'), findsOneWidget);
+    expect(find.text('Sign in'), findsOneWidget);
+    expect(find.text('With your email, or as a guest'), findsOneWidget);
     expect(find.text('Log out'), findsNothing);
+  });
+
+  testWidgets('Sign in opens the screen where the guest way out lives',
+      (tester) async {
+    await pumpMenu(tester);
+
+    await tester.tap(find.text('Sign in'));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(SignInScreen), findsOneWidget);
+    expect(find.text('Continue as a guest'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Your name here'), findsOneWidget);
   });
 
   testWidgets('Settings opens the settings screen', (tester) async {
@@ -76,8 +104,7 @@ void main() {
       'revokes and clears it', (tester) async {
     await pumpMenu(tester);
 
-    await tester.tap(find.text('Sign in as a guest'));
-    await tester.pumpAndSettle();
+    await signInAsGuest(tester);
 
     expect(backend.called('POST', '/api/v1/auth/guest'), isTrue);
     expect(container.read(sessionProvider).account?.displayName, 'Guest-9f2c');
@@ -111,8 +138,7 @@ void main() {
 
   testWidgets('cancelling the confirmation keeps the session', (tester) async {
     await pumpMenu(tester);
-    await tester.tap(find.text('Sign in as a guest'));
-    await tester.pumpAndSettle();
+    await signInAsGuest(tester);
 
     await tester.tap(find.byType(AccountMenuButton));
     await tester.pumpAndSettle();
@@ -131,8 +157,7 @@ void main() {
     addTearDown(container.dispose);
 
     await pumpMenu(tester);
-    await tester.tap(find.text('Sign in as a guest'));
-    await tester.pumpAndSettle();
+    await signInAsGuest(tester);
 
     await tester.tap(find.byType(AccountMenuButton));
     await tester.pumpAndSettle();

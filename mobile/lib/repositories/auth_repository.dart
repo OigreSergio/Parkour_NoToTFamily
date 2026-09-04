@@ -11,9 +11,41 @@ class AuthRepository {
 
   final ApiClient _api;
 
+  static const String _registerPath = '/api/v1/auth/register';
+  static const String _loginPath = '/api/v1/auth/login';
   static const String _guestPath = '/api/v1/auth/guest';
   static const String _logoutPath = '/api/v1/auth/logout';
   static const String _mePath = '/api/v1/users/me';
+
+  /// Create an account with an email, a password and a chosen name.
+  ///
+  /// The name goes through the server's public-name policy, which refuses
+  /// slurs, calls to hatred and staff impersonation; when it does, the message
+  /// it sends back is meant to be shown to the person as it is.
+  Future<Account> register({
+    required String email,
+    required String password,
+    required String displayName,
+  }) async {
+    final data = await _api.postJson(_registerPath, body: {
+      'email': email,
+      'password': password,
+      'display_name': displayName,
+    });
+    return Account.fromJson(data as Map<String, dynamic>);
+  }
+
+  /// Sign in with email and password.
+  Future<AuthTokens> login({
+    required String email,
+    required String password,
+  }) async {
+    final data = await _api.postJson(_loginPath, body: {
+      'email': email,
+      'password': password,
+    });
+    return AuthTokens.fromJson(data as Map<String, dynamic>);
+  }
 
   /// Create a device-only account (no email) and return its token pair.
   Future<AuthTokens> loginAsGuest({String? displayName}) async {

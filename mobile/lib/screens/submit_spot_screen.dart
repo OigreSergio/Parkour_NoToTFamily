@@ -129,7 +129,8 @@ class _SubmitSpotScreenState extends ConsumerState<SubmitSpotScreen> {
                 padding: const EdgeInsets.only(bottom: 16),
                 child: _Notice(
                   icon: Icons.person_outline,
-                  text: 'Sign in from the account menu to send a report.',
+                  text: 'Sign in to send a report — with your email, or as a '
+                      'guest from the account menu.',
                 ),
               ),
             TextFormField(

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/account.dart';
 import '../providers.dart';
 import '../screens/settings_screen.dart';
+import '../screens/sign_in_screen.dart';
 import 'logout_confirmation.dart';
 
 /// App bar entry point to the account menu: the avatar of the signed-in
@@ -102,29 +103,19 @@ class AccountMenu extends ConsumerWidget {
             )
           else
             ListTile(
-              leading: const Icon(Icons.person_add_alt),
-              title: const Text('Sign in as a guest'),
-              subtitle: const Text('No email needed — just start training'),
-              onTap: session.isBusy
-                  ? null
-                  : () async {
-                      final messenger = ScaffoldMessenger.of(context);
-                      final navigator = Navigator.of(context);
-                      final ok = await ref
-                          .read(sessionProvider.notifier)
-                          .signInAsGuest();
-                      if (!ok) {
-                        messenger.showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Could not sign in: '
-                              '${ref.read(sessionProvider).error}',
-                            ),
-                          ),
-                        );
-                      }
-                      if (navigator.canPop()) navigator.pop();
-                    },
+              leading: const Icon(Icons.login),
+              title: const Text('Sign in'),
+              subtitle: const Text('With your email, or as a guest'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                final navigator = Navigator.of(context);
+                navigator.pop();
+                navigator.push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const SignInScreen(),
+                  ),
+                );
+              },
             ),
           const SizedBox(height: 8),
         ],

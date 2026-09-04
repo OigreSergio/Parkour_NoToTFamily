@@ -92,6 +92,35 @@ class ApiException implements Exception {
   final String body;
   final Uri uri;
 
+  /// The message meant for the person using the app.
+  ///
+  /// The API answers `{"error": {"code": ..., "message": ...}}`; when it does,
+  /// that message is already written for them (the display-name policy relies
+  /// on this), so it is shown as it is instead of a status code.
+  String get userMessage {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) {
+        final error = decoded['error'];
+        if (error is Map<String, dynamic>) {
+          final message = error['message'] ?? error['detail'];
+          if (message is String && message.isNotEmpty) return message;
+        }
+        if (error is String && error.isNotEmpty) return error;
+        final detail = decoded['detail'];
+        if (detail is String && detail.isNotEmpty) return detail;
+      }
+    } catch (_) {
+      // Body that is not JSON: fall through to the generic message.
+    }
+    return switch (statusCode) {
+      401 => 'Email or password not recognised.',
+      409 => 'That email is already registered.',
+      >= 500 => 'The server is having trouble. Try again in a moment.',
+      _ => 'Something went wrong ($statusCode).',
+    };
+  }
+
   @override
   String toString() => 'ApiException($statusCode) for $uri: $body';
 }

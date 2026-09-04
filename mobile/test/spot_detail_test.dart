@@ -27,9 +27,13 @@ Spot _spot({
       createdAt: DateTime(2026, 1, 1),
     );
 
-/// Water lookup that answers "nothing mapped here", so the tests are about the
-/// screen and not about Overpass.
+/// A build without the harvested dataset: these tests are about the screen,
+/// so the lookup goes straight to the (stubbed) live one.
+Future<String> _noBundle(String key) async => throw Exception('no asset');
+
+/// Water lookup that answers "nothing mapped here".
 WaterRepository _noWater() => WaterRepository(
+      loadAsset: _noBundle,
       httpClient: MockClient(
         (_) async => http.Response('{"elements": []}', 200),
       ),
@@ -48,6 +52,9 @@ Future<void> _pump(WidgetTester tester, Spot spot) async {
       child: MaterialApp(home: SpotDetailScreen(spot: spot)),
     ),
   );
+  await tester.pumpAndSettle();
+  // The water lookup resolves after the first settle.
+  await tester.pump(const Duration(milliseconds: 50));
   await tester.pumpAndSettle();
 }
 
@@ -107,6 +114,7 @@ void main() {
         overrides: [
           waterRepositoryProvider.overrideWithValue(
             WaterRepository(
+              loadAsset: _noBundle,
               httpClient: MockClient(
                 (_) async => http.Response(
                   '{"elements": [{"id": 1, "lat": 37.5646, "lon": 22.7947, '
@@ -120,6 +128,8 @@ void main() {
         child: MaterialApp(home: SpotDetailScreen(spot: _spot())),
       ),
     );
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(milliseconds: 50));
     await tester.pumpAndSettle();
 
     expect(find.textContaining('Krini'), findsOneWidget);

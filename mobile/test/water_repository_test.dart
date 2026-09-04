@@ -22,9 +22,15 @@ Spot _spot() => Spot(
 String _overpass(List<Map<String, dynamic>> elements) =>
     jsonEncode({'elements': elements});
 
+/// A build without the harvested dataset, for the tests about the live lookup.
+Future<String> _noBundle(String key) async => throw Exception('no asset');
+
 void main() {
+  _bundleTests();
+
   test('reads the fountains around a spot, nearest first', () async {
     final repository = WaterRepository(
+      loadAsset: _noBundle,
       httpClient: MockClient((request) async => http.Response(
             _overpass([
               {
@@ -54,6 +60,7 @@ void main() {
 
   test('a source tagged as not drinkable is left out', () async {
     final repository = WaterRepository(
+      loadAsset: _noBundle,
       httpClient: MockClient((request) async => http.Response(
             _overpass([
               {
@@ -72,6 +79,7 @@ void main() {
 
   test('an area with nothing mapped answers "none", not an error', () async {
     final repository = WaterRepository(
+      loadAsset: _noBundle,
       httpClient: MockClient((request) async => http.Response(_overpass([]), 200)),
     );
 
@@ -81,6 +89,7 @@ void main() {
   test('a busy mirror is retried on the next one', () async {
     final tried = <String>[];
     final repository = WaterRepository(
+      loadAsset: _noBundle,
       endpoints: const ['https://busy.example/api', 'https://spare.example/api'],
       httpClient: MockClient((request) async {
         tried.add(request.url.host);
@@ -110,6 +119,7 @@ void main() {
   test('when no mirror answers the caller is told, not fed an empty list',
       () async {
     final repository = WaterRepository(
+      loadAsset: _noBundle,
       endpoints: const ['https://down.example/api'],
       httpClient: MockClient((request) async => http.Response('nope', 500)),
     );
@@ -123,6 +133,7 @@ void main() {
   test('the query asks for the spot coordinates and the radius', () async {
     late Uri asked;
     final repository = WaterRepository(
+      loadAsset: _noBundle,
       httpClient: MockClient((request) async {
         asked = request.url;
         return http.Response(_overpass([]), 200);
@@ -134,5 +145,90 @@ void main() {
     final query = asked.queryParameters['data']!;
     expect(query, contains('around:250,41.8925,12.4966'));
     expect(query, contains('drinking_water'));
+  });
+}
+
+/// The harvested dataset shipped with the app (`scripts/fetch_water_points.py`).
+void _bundleTests() {
+  test('the bundled harvest answers without touching the network', () async {
+    var asked = false;
+    final repository = WaterRepository(
+      loadAsset: (key) async => jsonEncode({
+        's1': [
+          {
+            'osm_id': 42,
+            'lat': 41.8926,
+            'lng': 12.4967,
+            'kind': 'drinking_water',
+            'name': 'Nasone',
+            'distance_m': 18,
+          },
+        ],
+      }),
+      httpClient: MockClient((_) async {
+        asked = true;
+        return http.Response('{"elements": []}', 200);
+      }),
+    );
+
+    final points = await repository.nearSpot(_spot());
+
+    expect(points.single.name, 'Nasone');
+    expect(points.single.distanceMeters, 18);
+    expect(asked, isFalse, reason: 'no Overpass call for a harvested spot');
+  });
+
+  test('a spot the harvest never saw falls back to the live lookup', () async {
+    var asked = false;
+    final repository = WaterRepository(
+      loadAsset: (key) async => jsonEncode({'another-spot': []}),
+      httpClient: MockClient((_) async {
+        asked = true;
+        return http.Response(
+          jsonEncode({
+            'elements': [
+              {
+                'id': 7,
+                'lat': 41.8926,
+                'lon': 12.4967,
+                'tags': {'amenity': 'drinking_water'},
+              },
+            ],
+          }),
+          200,
+        );
+      }),
+    );
+
+    final points = await repository.nearSpot(_spot());
+
+    expect(asked, isTrue, reason: 'a just-reported spot is not in the harvest');
+    expect(points.single.id, 7);
+  });
+
+  test('a spot harvested with nothing nearby says so, without asking again',
+      () async {
+    var asked = false;
+    final repository = WaterRepository(
+      loadAsset: (key) async => jsonEncode({'s1': <dynamic>[]}),
+      httpClient: MockClient((_) async {
+        asked = true;
+        return http.Response('{"elements": []}', 200);
+      }),
+    );
+
+    expect(await repository.nearSpot(_spot()), isEmpty);
+    expect(asked, isFalse);
+  });
+
+  test('without the asset the app still asks Overpass', () async {
+    final repository = WaterRepository(
+      loadAsset: (key) async => throw Exception('asset not in this build'),
+      httpClient: MockClient(
+        (_) async => http.Response('{"elements": []}', 200),
+      ),
+    );
+
+    expect(await repository.nearSpot(_spot()), isEmpty);
   });
 }

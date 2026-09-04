@@ -90,8 +90,17 @@ live in `scripts/pk_embroidery_style.py` and
   own maps app — the `geo:` intent on Android (every installed map app can
   answer), Apple Maps on iOS, a web map anywhere else
   (`services/spot_directions.dart`).
-- **Drinking water**: the detail asks OpenStreetMap (Overpass, the database the
-  fountain apps use) for water within 400 m and names the nearest one.
+- **Drinking water**: the fountains within 400 m of every spot are harvested
+  from OpenStreetMap ahead of time (`scripts/fetch_water_points.py`, Rome
+  first, then Italy, Europe and the rest) and bundled in
+  `assets/water/spot_water.json`, so the answer is instant and works offline.
+  A spot the harvest never saw — one just reported, say — falls back to a live
+  Overpass lookup.
+- **Sign in**: with an email (choosing the name the family will see) or as a
+  guest, for whoever would rather not hand one over — the guest account is a
+  choice, not the only door. Names go through the server's public-name policy
+  (`backend/app/services/display_name_policy.py`): no slurs, no calls to
+  hatred, no pretending to be the staff; the reason it gives is shown as it is.
 - **Report a spot**: the *Add spot* button opens a form — name, description,
   position, and at least three photos, without which the send button stays off,
   since a moderator cannot verify a spot nobody can see. Photos go to

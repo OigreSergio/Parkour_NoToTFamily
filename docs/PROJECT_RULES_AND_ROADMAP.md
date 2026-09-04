@@ -104,7 +104,9 @@ per l'app Flutter. Chi cambia lo stile tocca quel modulo, non le due copie.
 
 | Feature                | Backend | Mobile              | Web admin | Status        |
 | ---------------------- | ------- | ------------------- | --------- | ------------- |
-| Auth (email + JWT)     | ✅      | ⏳ planned          | ⏳        | In progress   |
+| Auth (email + JWT)     | ✅      | ✅ login + registrazione | ⏳   | **Shipped**   |
+| Policy sui nomi pubblici| ✅     | ✅ messaggi dal server | —      | **Shipped**   |
+| Fontanelle (OSM)       | —       | ✅ dataset + live    | —        | **Shipped**   |
 | Account menu & settings| —       | ✅                  | —         | **Shipped**   |
 | Map / list of spots    | ✅      | ✅ read-only        | —         | **Shipped**   |
 | Stile mappa "ricamo"   | —       | ✅ vector tiles     | ✅ web    | **Shipped**   |
