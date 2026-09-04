@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_-_la_villa_P1000740.JPG",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Villa_Carpegna_-_la_villa_P1000740.JPG",
-    "author": "Lalupa",
-    "license": "CC BY-SA 3.0"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_-_la_vasca_P1000747.JPG",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Villa_Carpegna_-_la_vasca_P1000747.JPG",
-    "author": "Lalupa",
-    "license": "CC BY-SA 3.0"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_P1000749.JPG",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Villa_Carpegna_P1000749.JPG",
-    "author": "Lalupa",
-    "license": "CC BY-SA 3.0"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_-_la_villa_P1000740.JPG",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Villa_Carpegna_-_la_villa_P1000740.JPG",
+  "author": "Lalupa",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "la villa dietro la siepe",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_-_la_vasca_P1000747.JPG",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e2/Villa_Carpegna_-_la_vasca_P1000747.JPG",
+  "author": "Lalupa",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "debole",
+   "note": "la vasca circolare con il bordo rialzato: un appoggio c'è, ma il resto no",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Villa_Carpegna_P1000749.JPG",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/Villa_Carpegna_P1000749.JPG",
+  "author": "Lalupa",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "prato del parco",
+   "checked": "2026-09-04"
+  }
+ }
 ]

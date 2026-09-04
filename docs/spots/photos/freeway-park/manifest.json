@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_03.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Seattle_Freeway_Park_03.jpg",
-    "author": "Joe Mabel",
-    "license": "CC BY-SA 3.0"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_05.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Seattle_Freeway_Park_05.jpg",
-    "author": "Joe Mabel",
-    "license": "CC BY-SA 3.0"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_09.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Seattle_Freeway_Park_09.jpg",
-    "author": "Joe Mabel",
-    "license": "CC BY-SA 3.0"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_03.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/Seattle_Freeway_Park_03.jpg",
+  "author": "Joe Mabel",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "ok",
+   "note": "i blocchi in cemento della cascata: le forme dello spot si riconoscono",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_05.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/bb/Seattle_Freeway_Park_05.jpg",
+  "author": "Joe Mabel",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "ok",
+   "note": "terrazzamenti, gradoni e blocchi dall'alto",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Seattle_Freeway_Park_09.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Seattle_Freeway_Park_09.jpg",
+  "author": "Joe Mabel",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "debole",
+   "note": "vialetto con prato: niente ostacoli in primo piano",
+   "checked": "2026-09-04"
+  }
+ }
 ]

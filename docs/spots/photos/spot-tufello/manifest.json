@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:TUFELLOCERVIALTO3200812.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/TUFELLOCERVIALTO3200812.jpg",
-    "author": "indeciso42",
-    "license": "CC BY 4.0"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:TUFELLOMELAINA5200812.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/TUFELLOMELAINA5200812.jpg",
-    "author": "indeciso42",
-    "license": "CC BY 4.0"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:TufelloconVisureAcatastali2018dic_25.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/TufelloconVisureAcatastali2018dic_25.jpg",
-    "author": "Giorgio Pietrocola",
-    "license": "CC BY-SA 4.0"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:TUFELLOCERVIALTO3200812.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/24/TUFELLOCERVIALTO3200812.jpg",
+  "author": "indeciso42",
+  "license": "CC BY 4.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "palazzina in bianco e nero: quartiere, non spot",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:TUFELLOMELAINA5200812.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/TUFELLOMELAINA5200812.jpg",
+  "author": "indeciso42",
+  "license": "CC BY 4.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "palazzine e transenne in bianco e nero",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:TufelloconVisureAcatastali2018dic_25.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/13/TufelloconVisureAcatastali2018dic_25.jpg",
+  "author": "Giorgio Pietrocola",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "auto parcheggiate su uno sterrato",
+   "checked": "2026-09-04"
+  }
+ }
 ]

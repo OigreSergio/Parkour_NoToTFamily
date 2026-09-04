@@ -1,16 +1,26 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://www.parkourbilbao.com/?cat=4",
-    "image_url": "https://www.parkourbilbao.com/wp-content/uploads/2021/06/Uribarri-1.jpg",
-    "author": "Asociación Parkour Bilbao",
-    "license": "© Parkour Bilbao (sito dell'associazione, nessuna licenza CC dichiarata)"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://www.parkourbilbao.com/?cat=4",
-    "image_url": "https://www.parkourbilbao.com/wp-content/uploads/2021/06/Uribarri-4.jpg",
-    "author": "Asociación Parkour Bilbao",
-    "license": "© Parkour Bilbao (sito dell'associazione, nessuna licenza CC dichiarata)"
+ {
+  "file": "01.jpg",
+  "source_page": "https://www.parkourbilbao.com/?cat=4",
+  "image_url": "https://www.parkourbilbao.com/wp-content/uploads/2021/06/Uribarri-1.jpg",
+  "author": "Asociación Parkour Bilbao",
+  "license": "© Parkour Bilbao (sito dell'associazione, nessuna licenza CC dichiarata)",
+  "review": {
+   "verdict": "ok",
+   "note": "gradoni, muretti e piani sfalsati: lo spot si riconosce subito",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://www.parkourbilbao.com/?cat=4",
+  "image_url": "https://www.parkourbilbao.com/wp-content/uploads/2021/06/Uribarri-4.jpg",
+  "author": "Asociación Parkour Bilbao",
+  "license": "© Parkour Bilbao (sito dell'associazione, nessuna licenza CC dichiarata)",
+  "review": {
+   "verdict": "ok",
+   "note": "seconda angolazione degli stessi gradoni",
+   "checked": "2026-09-04"
+  }
+ }
 ]

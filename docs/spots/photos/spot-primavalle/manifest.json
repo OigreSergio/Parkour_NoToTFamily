@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Roma_Primavalle_cortile_casa_popolare.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Roma_Primavalle_cortile_casa_popolare.jpg",
-    "author": "Blackcat",
-    "license": "CC BY-SA 4.0"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Largo_borromeo_primavalle_roma.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Largo_borromeo_primavalle_roma.jpg",
-    "author": "Jaspar74",
-    "license": "CC BY-SA 4.0"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Piazza_clemente_xi_primavalle_roma.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Piazza_clemente_xi_primavalle_roma.jpg",
-    "author": "Jaspar74",
-    "license": "Public domain"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Roma_Primavalle_cortile_casa_popolare.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Roma_Primavalle_cortile_casa_popolare.jpg",
+  "author": "Blackcat",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "debole",
+   "note": "cortile con pergolato e panche in pietra: qualche appoggio, spot poco leggibile",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Largo_borromeo_primavalle_roma.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Largo_borromeo_primavalle_roma.jpg",
+  "author": "Jaspar74",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "largo Borromeo con fermata e auto",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Piazza_clemente_xi_primavalle_roma.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Piazza_clemente_xi_primavalle_roma.jpg",
+  "author": "Jaspar74",
+  "license": "Public domain",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "piazza Clemente XI con auto in sosta",
+   "checked": "2026-09-04"
+  }
+ }
 ]

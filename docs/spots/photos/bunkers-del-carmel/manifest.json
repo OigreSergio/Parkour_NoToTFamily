@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:049_Tur%C3%B3_de_la_Rovira,_antiga_bateria_antia%C3%A8ria.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/049_Tur%C3%B3_de_la_Rovira%2C_antiga_bateria_antia%C3%A8ria.jpg",
-    "author": "Enric",
-    "license": "CC BY-SA 4.0"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Bunkers_del_Carmel_Barcelona.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/57/Bunkers_del_Carmel_Barcelona.jpg",
-    "author": "Barcelonatips",
-    "license": "CC BY-SA 4.0"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg",
-    "author": "Thingstodoinbarcelona",
-    "license": "CC BY-SA 4.0"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:049_Tur%C3%B3_de_la_Rovira,_antiga_bateria_antia%C3%A8ria.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/ca/049_Tur%C3%B3_de_la_Rovira%2C_antiga_bateria_antia%C3%A8ria.jpg",
+  "author": "Enric",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "ok",
+   "note": "le piattaforme e i muri in cemento della batteria: superfici e appoggi ben visibili",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Bunkers_del_Carmel_Barcelona.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/57/Bunkers_del_Carmel_Barcelona.jpg",
+  "author": "Barcelonatips",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "debole",
+   "note": "tramonto con molta gente seduta sui muretti: si vedono gli appoggi ma la scena è affollata",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/3b/Nice_afternoon_at_the_Bunkers_del_Carmel_in_Barcelona.jpg",
+  "author": "Thingstodoinbarcelona",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "debole",
+   "note": "gruppo seduto sul muretto con volti riconoscibili",
+   "checked": "2026-09-04"
+  }
+ }
 ]

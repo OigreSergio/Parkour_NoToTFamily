@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
-    "author": "indeciso42",
-    "license": "CC BY-SA 4.0"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Garbatella_-_piazza_sant_Eurosia_01648.JPG",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Garbatella_-_piazza_sant_Eurosia_01648.JPG",
-    "author": "Lalupa",
-    "license": "CC BY-SA 3.0"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Garbatella2018camminandoconVisureAcatastali_21.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Garbatella2018camminandoconVisureAcatastali_21.jpg",
-    "author": "Giorgio Pietrocola",
-    "license": "CC BY-SA 4.0"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/db/Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
+  "author": "indeciso42",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "ok",
+   "note": "la scalinata con i muretti laterali: è esattamente lo spot",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Garbatella_-_piazza_sant_Eurosia_01648.JPG",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Garbatella_-_piazza_sant_Eurosia_01648.JPG",
+  "author": "Lalupa",
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "palazzine di Garbatella: quartiere, non spot",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Garbatella2018camminandoconVisureAcatastali_21.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/80/Garbatella2018camminandoconVisureAcatastali_21.jpg",
+  "author": "Giorgio Pietrocola",
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "il Palladium e il traffico: non c'entra con la scalinata",
+   "checked": "2026-09-04"
+  }
+ }
 ]

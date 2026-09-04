@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:CORVIALE3.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/df/CORVIALE3.jpg",
-    "author": "indeciso42",
-    "license": "Public domain"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:CORVIALE2.jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/CORVIALE2.jpg",
-    "author": "indeciso42",
-    "license": "Public domain"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://commons.wikimedia.org/wiki/File:Corviale_(5582065280).jpg",
-    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Corviale_%285582065280%29.jpg",
-    "author": "Umberto Rotundo",
-    "license": "CC BY 2.0"
+ {
+  "file": "01.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:CORVIALE3.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/df/CORVIALE3.jpg",
+  "author": "indeciso42",
+  "license": "Public domain",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "veduta aerea storica del Corviale in bianco e nero",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:CORVIALE2.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d9/CORVIALE2.jpg",
+  "author": "indeciso42",
+  "license": "Public domain",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "prospetto dell'edificio in bianco e nero",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://commons.wikimedia.org/wiki/File:Corviale_(5582065280).jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Corviale_%285582065280%29.jpg",
+  "author": "Umberto Rotundo",
+  "license": "CC BY 2.0",
+  "review": {
+   "verdict": "debole",
+   "note": "sotto il palazzo, pilastri e passaggi in bianco e nero: architettura, non lo spot",
+   "checked": "2026-09-04"
+  }
+ }
 ]

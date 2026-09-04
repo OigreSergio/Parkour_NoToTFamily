@@ -1,23 +1,38 @@
 [
-  {
-    "file": "01.jpg",
-    "source_page": "https://www.comune.roma.it/web/it/notizia.page?contentId=NWS1533517",
-    "image_url": "https://www.comune.roma.it/web-resources/cms/images/Parkour_Mun_III_d0.jpeg",
-    "author": "Roma Capitale (ufficio stampa)",
-    "license": "sconosciuta (foto istituzionale Roma Capitale)"
-  },
-  {
-    "file": "02.jpg",
-    "source_page": "https://www.vistanet.it/roma/2026/02/19/il-nuovo-volto-di-montesacro-tra-sostenibilita-e-sport-nasce-il-polo-urbano-di-piazzale-ennio-flaiano/",
-    "image_url": "https://www.vistanet.it/roma/wp-content/uploads/sites/4/2026/02/1Parkour_Mun_III_d0.jpg",
-    "author": "Roma Capitale / Vistanet",
-    "license": "sconosciuta"
-  },
-  {
-    "file": "03.jpg",
-    "source_page": "https://abitarearoma.it/montesacro-inaugurato-il-nuovo-piazzale-flaiano-e-il-primo-parkour-park-pubblico/",
-    "image_url": "https://abitarearoma.it/wp/wp-content/uploads/2026/02/nuovo_parcheggio_piazzale_Flaiano_d0.jpeg",
-    "author": "Abitarearoma / Roma Capitale",
-    "license": "sconosciuta"
+ {
+  "file": "01.jpg",
+  "source_page": "https://www.comune.roma.it/web/it/notizia.page?contentId=NWS1533517",
+  "image_url": "https://www.comune.roma.it/web-resources/cms/images/Parkour_Mun_III_d0.jpeg",
+  "author": "Roma Capitale (ufficio stampa)",
+  "license": "sconosciuta (foto istituzionale Roma Capitale)",
+  "review": {
+   "verdict": "ok",
+   "note": "le strutture del parkour park in uso",
+   "checked": "2026-09-04"
   }
+ },
+ {
+  "file": "02.jpg",
+  "source_page": "https://www.vistanet.it/roma/2026/02/19/il-nuovo-volto-di-montesacro-tra-sostenibilita-e-sport-nasce-il-polo-urbano-di-piazzale-ennio-flaiano/",
+  "image_url": "https://www.vistanet.it/roma/wp-content/uploads/sites/4/2026/02/1Parkour_Mun_III_d0.jpg",
+  "author": "Roma Capitale / Vistanet",
+  "license": "sconosciuta",
+  "review": {
+   "verdict": "debole",
+   "note": "stesso scatto della 01 a pochi istanti di distanza: doppione",
+   "checked": "2026-09-04"
+  }
+ },
+ {
+  "file": "03.jpg",
+  "source_page": "https://abitarearoma.it/montesacro-inaugurato-il-nuovo-piazzale-flaiano-e-il-primo-parkour-park-pubblico/",
+  "image_url": "https://abitarearoma.it/wp/wp-content/uploads/2026/02/nuovo_parcheggio_piazzale_Flaiano_d0.jpeg",
+  "author": "Abitarearoma / Roma Capitale",
+  "license": "sconosciuta",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "il parcheggio di piazzale Flaiano vuoto: non è l'area parkour",
+   "checked": "2026-09-04"
+  }
+ }
 ]

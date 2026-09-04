@@ -27,78 +27,25 @@ REPO = Path(__file__).resolve().parents[3]
 STREETVIEW = REPO / "docs" / "demo" / "spots-streetview.json"
 DEFAULT_OUT = REPO / "docs" / "demo" / "pk-scheda.js"
 
-# Foto di contesto curate a mano (le stesse della pagina demo e del seed),
-# verificate una a una: solo dove mostrano davvero la zona dello spot.
+# Foto di contesto curate a mano, ricontrollate una a una il 2026-09-04 (vedi
+# docs/spots/PHOTO_AUDIT.md). Restano solo quelle in cui si vedono davvero le
+# strutture su cui ci si allena: le altre — Colosseo per lo spot della metro,
+# il laghetto dell'EUR, Villa Carpegna sotto la neve, largo Borromeo — sono
+# state tolte perché mostravano il monumento o il quartiere, non lo spot, e
+# per giunta prendevano il posto della seconda angolazione Street View, che è
+# più utile. Torneranno le foto vere, scattate sul posto.
 CURATED = {
     "Foro Italico — Stadio dei Marmi": {
         "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Stadio_dei_marmi_009.jpg/960px-Stadio_dei_marmi_009.jpg",
         "page": "https://commons.wikimedia.org/wiki/File:Stadio_dei_marmi_009.jpg",
         "credit": "Wikimedia Commons · Pubblico dominio",
-    },
-    "EUR Laghetto": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Roma_EUR_Laghetto_vista_dal_basso.jpg/960px-Roma_EUR_Laghetto_vista_dal_basso.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Roma_EUR_Laghetto_vista_dal_basso.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 3.0 IT",
-    },
-    "Colle Oppio Park": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Parco_Del_Colle_Oppio_-_panoramio.jpg/960px-Parco_Del_Colle_Oppio_-_panoramio.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Parco_Del_Colle_Oppio_-_panoramio.jpg",
-        "credit": "Wikimedia Commons · CC BY 3.0",
-    },
-    "Villa Borghese — Piazza di Siena": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg/960px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Plaza_de_Siena,_Villa_Borghese,_Roma,_Italia,_2022-09-14,_DD_14.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 4.0",
-    },
-    "Spot Colonne Colosseo": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg/960px-Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Colonne_Tempio_Venere_Colosseo_Roma_09feb08.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 3.0",
+        "note": "gradoni in marmo e statue: le superfici dello spot si vedono",
     },
     "Garbatella — Scalinate": {
         "src": "https://live.staticflickr.com/34/72998499_c2311608eb_b.jpg",
         "page": "https://www.flickr.com/photos/93226994@N00/72998499",
         "credit": "antmoose (Flickr) · CC BY 2.0",
-    },
-    "Spot Metro Colosseo": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Colosseo_-_panoramio_%2810%29.jpg/960px-Colosseo_-_panoramio_%2810%29.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Colosseo_-_panoramio_(10).jpg",
-        "credit": "Wikimedia Commons · CC BY 3.0",
-    },
-    "Spot EUR": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/2024-05-06-Palazzo-dello-Sport-2.jpg/960px-2024-05-06-Palazzo-dello-Sport-2.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:2024-05-06-Palazzo-dello-Sport-2.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 4.0",
-    },
-    "Spot Corviale 1": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Corviale_%285582072620%29.jpg/960px-Corviale_%285582072620%29.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Corviale_(5582072620).jpg",
-        "credit": "Wikimedia Commons · Pubblico dominio",
-    },
-    "Spot Corviale 2": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Municipio_XI_%28Roma%29_in_2020.03.jpg/960px-Municipio_XI_%28Roma%29_in_2020.03.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.03.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 4.0",
-    },
-    "Spot Corviale 3": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Municipio_XI_%28Roma%29_in_2020.02.jpg/960px-Municipio_XI_%28Roma%29_in_2020.02.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Municipio_XI_(Roma)_in_2020.02.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 4.0",
-    },
-    "Spot Primavalle": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Largo_borromeo_primavalle_roma.jpg/960px-Largo_borromeo_primavalle_roma.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Largo_borromeo_primavalle_roma.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 4.0",
-    },
-    "Spot Villa Carpegna": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg/960px-Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Roma_-_Villa_Carpegna_innevata_-_panoramio.jpg",
-        "credit": "Wikimedia Commons · CC BY 3.0",
-    },
-    "Spot Colosseo — Monte Oppio": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/960px-Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
-        "page": "https://commons.wikimedia.org/wiki/File:Parc_Colle_Oppio_-_Rome_(IT62)_-_2021-08-29_-_1.jpg",
-        "credit": "Wikimedia Commons · CC BY-SA 4.0",
+        "note": "il muro dipinto con la scalinata di fianco: la zona è riconoscibile",
     },
 }
 
@@ -209,7 +156,8 @@ TEMPLATE = """/* PkFAMILY — contesto visivo nella scheda spot.
     // esiste, altrimenti una seconda Street View da un'angolazione diversa —
     // più la vista aerea.
     if (spot.photo) {
-      box.appendChild(media(spot.photo.src, 'Foto: ' + spot.photo.credit, spot.photo.page));
+      box.appendChild(media(spot.photo.src,
+        'Foto della zona \\u00B7 ' + spot.photo.credit, spot.photo.page));
     } else if (spot.sv2) {
       box.appendChild(media(svThumb(spot.sv2),
         'Street View \\u00B7 altra angolazione \\u00B7 ~' + spot.sv2.distance_m + ' m dallo spot'));

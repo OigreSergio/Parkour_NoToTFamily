@@ -7,8 +7,7 @@
     "description": "Piazzetta pedonale sulla salita verso la metro Cipro. Fioriere rialzate in mattoni con bordi in travertino, muretti e panchine in pietra: perfette per precision jump, stride e vault a varie distanze. Dalla piazza parte una lunga scalinata con muretti laterali inclinati in mattoni e travertino, corrimano in ferro e diverse rampe: ottima per salti in discesa, precision sui muretti, rail e linee in dislivello. Zona pubblica, fondo in sampietrini e lastre di pietra.",
     "photo_urls": [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/Roma_Metro_A_Cipro_piano_strada.jpg/1280px-Roma_Metro_A_Cipro_piano_strada.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Cipro_Metro_A_Station_in_2020.03.jpg/1280px-Cipro_Metro_A_Station_in_2020.03.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Cipro_Metro_A_Station_in_2020.01.jpg/1280px-Cipro_Metro_A_Station_in_2020.01.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Cipro_Metro_A_Station_in_2020.03.jpg/1280px-Cipro_Metro_A_Station_in_2020.03.jpg"
     ]
   },
   {
@@ -17,11 +16,7 @@
     "lng": 12.4703,
     "difficulty": 3,
     "description": "Piazzali larghi, panche in marmo e dislivelli intorno al laghetto. Superfici lisce, ottime per flow.",
-    "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg/1280px-Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Roma_Laghetto_EUR_e_Palazzo_ENI.jpg/1280px-Roma_Laghetto_EUR_e_Palazzo_ENI.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg/1280px-Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg"
-    ]
+    "photo_urls": []
   },
   {
     "name": "Villa Borghese — Piazza di Siena",
@@ -30,7 +25,6 @@
     "difficulty": 1,
     "description": "Tronchi, muretti bassi e prati per allenare atterraggi e capriole in sicurezza.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_13.jpg/1280px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_13.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg/1280px-Plaza_de_Siena%2C_Villa_Borghese%2C_Roma%2C_Italia%2C_2022-09-14%2C_DD_14.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Piazza_di_Siena.jpg/1280px-Piazza_di_Siena.jpg"
     ]
@@ -43,8 +37,7 @@
     "description": "Gradonate in marmo e muri alti: spot tecnico per salti di precisione e passamuro. Attenzione ai custodi.",
     "photo_urls": [
       "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Stadio_dei_Marmi.jpg/1280px-Stadio_dei_Marmi.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg/1280px-Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg/1280px-Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg/1280px-Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg"
     ]
   },
   {
@@ -54,9 +47,7 @@
     "difficulty": 3,
     "description": "Scalinate strette, ringhiere e cortili del quartiere storico. Rail session e cat leap tra i lotti.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Scala_degli_innamorati_Garbatella_30082021_093A.jpg/1280px-Scala_degli_innamorati_Garbatella_30082021_093A.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Garbatella_-_piazza_sant_Eurosia_01648.JPG/1280px-Garbatella_-_piazza_sant_Eurosia_01648.JPG",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Garbatella2018camminandoconVisureAcatastali_21.jpg/1280px-Garbatella2018camminandoconVisureAcatastali_21.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Scala_degli_innamorati_Garbatella_30082021_093A.jpg/1280px-Scala_degli_innamorati_Garbatella_30082021_093A.jpg"
     ]
   },
   {
@@ -73,11 +64,7 @@
     "lng": 12.491545,
     "difficulty": 3,
     "description": "Rione I Monti, vicino alla fermata Metro Colosseo.",
-    "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Entr%C3%A9e_Station_M%C3%A9tro_Colosseo_Piazza_Colosseo_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Stazione_metro_Colosseo.jpg/1280px-Stazione_metro_Colosseo.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg/1280px-Rome_Metro_-_Line_B_-_Colosseo_-_Entrance_01.jpg"
-    ]
+    "photo_urls": []
   },
   {
     "name": "Parkour Park Municipio Roma III",
@@ -87,8 +74,7 @@
     "description": "Piazzale Ennio Flaiano, 00139 Roma. Parkour park attrezzato.",
     "photo_urls": [
       "https://www.comune.roma.it/web-resources/cms/images/Parkour_Mun_III_d0.jpeg",
-      "https://www.vistanet.it/roma/wp-content/uploads/sites/4/2026/02/1Parkour_Mun_III_d0.jpg",
-      "https://abitarearoma.it/wp/wp-content/uploads/2026/02/nuovo_parcheggio_piazzale_Flaiano_d0.jpeg"
+      "https://www.vistanet.it/roma/wp-content/uploads/sites/4/2026/02/1Parkour_Mun_III_d0.jpg"
     ]
   },
   {
@@ -97,11 +83,7 @@
     "lng": 12.466853,
     "difficulty": 3,
     "description": "Quartiere EUR, 00144 Roma.",
-    "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg/1280px-Roma_EUR_Palazzo_dello_Sport_da_viale_America.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/L%27Obelisco_Marconi_-_panoramio.jpg/1280px-L%27Obelisco_Marconi_-_panoramio.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Laghetto_dell%27_EUR_-_panoramio.jpg/1280px-Laghetto_dell%27_EUR_-_panoramio.jpg"
-    ]
+    "photo_urls": []
   },
   {
     "name": "Spot Rooftop Casal Lumbroso",
@@ -150,8 +132,6 @@
     "difficulty": 3,
     "description": "Corviale, Roma.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/CORVIALE3.jpg/1280px-CORVIALE3.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d9/CORVIALE2.jpg/1280px-CORVIALE2.jpg",
       "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Corviale_%285582065280%29.jpg/1280px-Corviale_%285582065280%29.jpg"
     ]
   },
@@ -162,9 +142,7 @@
     "difficulty": 3,
     "description": "Corviale, Roma.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/CORVIALE10a.jpg/1280px-CORVIALE10a.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/CORVIALE6.jpg/1280px-CORVIALE6.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Corviale_%285582066704%29.jpg/1280px-Corviale_%285582066704%29.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/CORVIALE6.jpg/1280px-CORVIALE6.jpg"
     ]
   },
   {
@@ -174,9 +152,7 @@
     "difficulty": 3,
     "description": "Corviale, Roma.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/CORVIALEARENA12.jpg/1280px-CORVIALEARENA12.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Corviale_%285581474085%29.jpg/1280px-Corviale_%285581474085%29.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Municipio_XI_%28Roma%29_in_2020.01.jpg/1280px-Municipio_XI_%28Roma%29_in_2020.01.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/CORVIALEARENA12.jpg/1280px-CORVIALEARENA12.jpg"
     ]
   },
   {
@@ -185,11 +161,7 @@
     "lng": 12.532099,
     "difficulty": 3,
     "description": "Tufello, Roma.",
-    "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/TUFELLOCERVIALTO3200812.jpg/1280px-TUFELLOCERVIALTO3200812.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/TUFELLOMELAINA5200812.jpg/1280px-TUFELLOMELAINA5200812.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/13/TufelloconVisureAcatastali2018dic_25.jpg/1280px-TufelloconVisureAcatastali2018dic_25.jpg"
-    ]
+    "photo_urls": []
   },
   {
     "name": "Spot Via Giovanni Prati",
@@ -206,9 +178,7 @@
     "difficulty": 3,
     "description": "Quartiere XXVII Primavalle, Roma.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Roma_Primavalle_cortile_casa_popolare.jpg/1280px-Roma_Primavalle_cortile_casa_popolare.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Largo_borromeo_primavalle_roma.jpg/1280px-Largo_borromeo_primavalle_roma.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Piazza_clemente_xi_primavalle_roma.jpg/1280px-Piazza_clemente_xi_primavalle_roma.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Roma_Primavalle_cortile_casa_popolare.jpg/1280px-Roma_Primavalle_cortile_casa_popolare.jpg"
     ]
   },
   {
@@ -218,9 +188,7 @@
     "difficulty": 3,
     "description": "Villa Carpegna, Municipio Roma XIII, 00165 Roma.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Villa_Carpegna_-_la_villa_P1000740.JPG/1280px-Villa_Carpegna_-_la_villa_P1000740.JPG",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Villa_Carpegna_-_la_vasca_P1000747.JPG/1280px-Villa_Carpegna_-_la_vasca_P1000747.JPG",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Villa_Carpegna_P1000749.JPG/1280px-Villa_Carpegna_P1000749.JPG"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Villa_Carpegna_-_la_vasca_P1000747.JPG/1280px-Villa_Carpegna_-_la_vasca_P1000747.JPG"
     ]
   },
   {
@@ -230,9 +198,7 @@
     "difficulty": 3,
     "description": "Viale del Monte Oppio, 00184 Roma.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Parco_di_Traiano_-_panoramio.jpg/1280px-Parco_di_Traiano_-_panoramio.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_3.jpg/1280px-Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_3.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg/1280px-Fontaine_Nymph%C3%A9e_Parc_Colle_Oppio_-_Rome_%28IT62%29_-_2021-08-29_-_1.jpg"
     ]
   },
   {
@@ -249,11 +215,7 @@
     "lng": 12.494949,
     "difficulty": 3,
     "description": "Le colonne vicino al Colosseo.",
-    "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG/1280px-Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Rome_%282596093629%29.jpg/1280px-Rome_%282596093629%29.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg/1280px-%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg"
-    ]
+    "photo_urls": []
   },
   {
     "name": "Colle Oppio Park",
@@ -262,9 +224,7 @@
     "difficulty": 1,
     "description": "Muretti, scalinate e rail nel parco sopra il Colosseo. Ottimo per precision e vault di base.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Il_Colosseo_dal_parco_di_Colle_Oppio.JPG/1280px-Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg/1280px-Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Terme_di_traiano_01.JPG/1280px-Terme_di_traiano_01.JPG"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg/1280px-Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg"
     ]
   },
   {
@@ -274,9 +234,7 @@
     "difficulty": 1,
     "description": "Spot con fontanella nella zona Trastevere/Gianicolo: acqua sempre disponibile durante gli allenamenti.",
     "photo_urls": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Gianicolo_%28Rome%29_in_2018.14.jpg/1280px-Gianicolo_%28Rome%29_in_2018.14.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg/1280px-Basilica_di_S._Pietro_vista_da_Piazzale_Giuseppe_Garibaldi.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Gianicolo_%28Rome%29_in_2018.03.jpg/1280px-Gianicolo_%28Rome%29_in_2018.03.jpg"
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Gianicolo_%28Rome%29_in_2018.14.jpg/1280px-Gianicolo_%28Rome%29_in_2018.14.jpg"
     ]
   }
 ]

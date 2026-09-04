@@ -2,22 +2,37 @@
  {
   "file": "01.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3ARom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG/1600px-Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG/1280px-Rom%2C_der_Platz_Largo_Gaetana_Agnesi.JPG",
   "author": "Dguendel",
-  "license": "CC BY 3.0"
+  "license": "CC BY 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "largo con traffico e moto parcheggiate",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "02.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3ARome_%282596093629%29.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Rome_%282596093629%29.jpg/1600px-Rome_%282596093629%29.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Rome_%282596093629%29.jpg/1280px-Rome_%282596093629%29.jpg",
   "author": "Joe Shlabotnik from Forest Hills, Queens, USA",
-  "license": "CC BY 2.0"
+  "license": "CC BY 2.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "resto monumentale all'incrocio: non sono le colonne dello spot",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "03.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3A%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg",
   "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/88/%D0%A0%D0%98%D0%9C_Colosseo_-_panoramio.jpg",
   "author": "Nikolai Karaneschev",
-  "license": "CC BY 3.0"
+  "license": "CC BY 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "Colosseo da via dei Fori con data impressa: cartolina",
+   "checked": "2026-09-04"
+  }
  }
 ]

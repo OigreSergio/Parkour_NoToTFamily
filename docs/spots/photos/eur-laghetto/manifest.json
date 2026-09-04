@@ -2,22 +2,37 @@
  {
   "file": "01.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3ARoma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg/1600px-Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg/1280px-Roma_Cascate_Laghetto_EUR_Palazzo_dello_Sport.jpg",
   "author": "Blackcat",
-  "license": "Public domain"
+  "license": "Public domain",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "cascata e Palazzo dello Sport: veduta turistica, niente muretti",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "02.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3ARoma_Laghetto_EUR_e_Palazzo_ENI.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Roma_Laghetto_EUR_e_Palazzo_ENI.jpg/1600px-Roma_Laghetto_EUR_e_Palazzo_ENI.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Roma_Laghetto_EUR_e_Palazzo_ENI.jpg/1280px-Roma_Laghetto_EUR_e_Palazzo_ENI.jpg",
   "author": "Blackcat",
-  "license": "CC BY-SA 3.0 it"
+  "license": "CC BY-SA 3.0 it",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "il laghetto e il palazzo ENI dall'acqua: nessun ostacolo",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "03.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3ARoma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg/1600px-Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg/1280px-Roma_EUR_Cascata_del_Laghetto_e_Palazzo_dello_Sport.jpg",
   "author": "Blackcat",
-  "license": "CC BY-SA 3.0"
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "cascata del laghetto: nessun ostacolo",
+   "checked": "2026-09-04"
+  }
  }
 ]

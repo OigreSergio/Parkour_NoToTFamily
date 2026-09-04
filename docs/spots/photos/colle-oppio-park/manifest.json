@@ -4,20 +4,35 @@
   "source_page": "https://commons.wikimedia.org/wiki/File%3AIl_Colosseo_dal_parco_di_Colle_Oppio.JPG",
   "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/75/Il_Colosseo_dal_parco_di_Colle_Oppio.JPG",
   "author": "Shardan",
-  "license": "CC BY-SA 3.0"
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "cartolina del Colosseo visto dal parco: non si vede nessun ostacolo",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "02.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3AFontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg/1600px-Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/72/Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg/1280px-Fontana_delle_Anfore%2C_Parco_del_Colle_Oppio%2C_Roma%2C_Italia_Oct_03%2C_2025_10-58-42_AM.jpeg",
   "author": "Dieterdreist",
-  "license": "CC BY-SA 4.0"
+  "license": "CC BY-SA 4.0",
+  "review": {
+   "verdict": "debole",
+   "note": "la Fontana delle Anfore con gradini e bordi: posto giusto, ostacoli marginali",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "03.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3ATerme_di_traiano_01.JPG",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Terme_di_traiano_01.JPG/1600px-Terme_di_traiano_01.JPG",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2c/Terme_di_traiano_01.JPG/1280px-Terme_di_traiano_01.JPG",
   "author": "sailko",
-  "license": "CC BY-SA 3.0"
+  "license": "CC BY-SA 3.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "muro delle Terme di Traiano e prato, non è lo spot",
+   "checked": "2026-09-04"
+  }
  }
 ]

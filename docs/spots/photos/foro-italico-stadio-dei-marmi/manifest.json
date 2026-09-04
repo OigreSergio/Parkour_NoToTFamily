@@ -2,22 +2,37 @@
  {
   "file": "01.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3AStadio_dei_Marmi.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Stadio_dei_Marmi.jpg/1600px-Stadio_dei_Marmi.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Stadio_dei_Marmi.jpg/1280px-Stadio_dei_Marmi.jpg",
   "author": "Anthony Majanlahti from Rome, Italy",
-  "license": "CC BY 2.0"
+  "license": "CC BY 2.0",
+  "review": {
+   "verdict": "debole",
+   "note": "pista e gradinate da lontano: si intuiscono i gradoni, spot poco leggibile",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "02.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3AStadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg/1600px-Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg/1280px-Stadio_Dei_Marmi_-_Foro_Italico_-_panoramio.jpg",
   "author": "giorgio minga",
-  "license": "CC BY 3.0"
+  "license": "CC BY 3.0",
+  "review": {
+   "verdict": "ok",
+   "note": "gradoni in marmo e statue ravvicinati: lo spot è riconoscibile",
+   "checked": "2026-09-04"
+  }
  },
  {
   "file": "03.jpg",
   "source_page": "https://commons.wikimedia.org/wiki/File%3AStadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg",
-  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg/1600px-Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg",
+  "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg/1280px-Stadio_dei_Marmi_e_Palazzo_della_Farnesina_%2834393342414%29.jpg",
   "author": "Simone Ramella from Roma, Italy",
-  "license": "CC BY 2.0"
+  "license": "CC BY 2.0",
+  "review": {
+   "verdict": "da-sostituire",
+   "note": "veduta dello stadio con la Farnesina: cartolina",
+   "checked": "2026-09-04"
+  }
  }
 ]
