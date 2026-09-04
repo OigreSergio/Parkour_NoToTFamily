@@ -31,13 +31,14 @@ così non vengono ripescate per sbaglio (`--tutte` le ricollega comunque).
 ## Il risultato in numeri
 
 - 68 foto controllate: **9 ok**, **19 deboli**, **40 da sostituire** (59%).
-- Le foto collegate all'app passano da 68 a **28**.
+- Le foto collegate all'app passano da 68 a **28**, più il primo scatto
+  proprio (MA Spot Ruspoli, vedi in fondo): **29**.
 - 5 spot restano **senza nessuna foto**: EUR Laghetto, Spot EUR, Spot Metro
   Colosseo, Spot Colonne Colosseo, Spot Tufello.
-- Altri 8 spot **non hanno mai avuto foto** (MA Spot Ruspoli, Rooftop Casal
-  Lumbroso, Pizzeria Massimina, Scuola Massimina, Massimina Parco Nord,
-  Massimina Parco Sud, Via Giovanni Prati, NoToT Game).
-- In totale **13 spot su 26 sono senza foto** e aspettano scatti tuoi.
+- Altri 8 spot **non avevano mai avuto foto** (MA Spot Ruspoli — ora sistemato
+  —, Rooftop Casal Lumbroso, Pizzeria Massimina, Scuola Massimina, Massimina
+  Parco Nord, Massimina Parco Sud, Via Giovanni Prati, NoToT Game).
+- Restano **12 spot su 26 senza foto**, e aspettano scatti tuoi.
 
 La causa è nel modo in cui erano state raccolte: cercando su Wikimedia Commons
 il *nome del posto*. Su Commons le foto di "Colosseo", "EUR" o "Tufello" sono
@@ -64,13 +65,18 @@ ultimi cinque.
 | Spot | Street View di ripiego |
 | --- | --- |
 | **Spot Rooftop Casal Lumbroso** | inutile: panorama a 83 m su una siepe, il tetto non si vede — è il secondo caso che avevi segnalato |
-| **MA Spot — Largo Emanuele Ruspoli** | inutile: parcheggio e recinzione della palestra |
 | **Spot Scuola Massimina** | inutile: siepe e cancellata, lo spot è oltre |
 | **Spot Massimina Parco Nord** | debole: parcheggio davanti alla recinzione del parco |
 | **Spot Massimina Parco Sud** | debole: recinzione e campetto sullo sfondo |
 | **Spot Pizzeria Massimina** | debole: strada residenziale con ringhiere |
 | **Spot Via Giovanni Prati** | parziale: la rampa del garage con i muretti |
 | **Spot NoToT Game** | parziale: la piazzetta coi muretti in mattoni, ma auto in primo piano |
+
+### Sistemati con foto proprie
+
+| Spot | Foto |
+| --- | --- |
+| **MA Spot — Largo Emanuele Ruspoli** | 1 `ok` — il piazzale dall'alto: muretti, fioriere, gradoni e campo ribassato. Scatto tuo del 4 settembre 2026, ripulito dall'emoji e dalle barre dello screenshot. Manca ancora un dettaglio ravvicinato dei muretti. |
 
 ### Restano con una foto debole (priorità 3)
 

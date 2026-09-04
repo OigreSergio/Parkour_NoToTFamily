@@ -56,7 +56,9 @@
     "lng": 12.455528,
     "difficulty": 3,
     "description": "Largo Emanuele Ruspoli 16, Roma.",
-    "photo_urls": []
+    "photo_urls": [
+      "https://raw.githubusercontent.com/OigreSergio/Parkour_NoToTFamily/main/docs/spots/photos/ma-spot-largo-emanuele-ruspoli/01.jpg"
+    ]
   },
   {
     "name": "Spot Metro Colosseo",
