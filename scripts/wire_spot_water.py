@@ -15,7 +15,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from fetch_water_points import AREAS, area_of
+
 REPO = Path(__file__).resolve().parents[1]
+SPOTS = REPO / "scripts" / "data" / "webapp_fixed_spots.json"
 SOURCE = REPO / "scripts" / "data" / "spot_water.json"
 TARGET = REPO / "mobile" / "assets" / "water" / "spot_water.json"
 
@@ -47,6 +50,36 @@ def main() -> None:
         f"{len(compact)} spot ({with_water} con acqua entro 400 m, {points} punti) "
         f"-> {TARGET.relative_to(REPO)} ({size_kb} KB)"
     )
+    _report_by_area(compact)
+
+
+def _report_by_area(compact: dict[str, list]) -> None:
+    """Quanto è coperta ogni area: Roma prima, poi l'Italia, l'Europa, il resto.
+
+    È l'ordine in cui è stato chiesto di allargarsi, e serve a vedere a colpo
+    d'occhio dove il dataset è già completo e dove l'app ripiega su Overpass.
+    """
+    spots = json.loads(SPOTS.read_text(encoding="utf-8"))
+    total: dict[str, int] = {}
+    done: dict[str, int] = {}
+    wet: dict[str, int] = {}
+    for spot in spots:
+        area = area_of(float(spot["lat"]), float(spot["lng"]))
+        total[area] = total.get(area, 0) + 1
+        points = compact.get(str(spot["id"]))
+        if points is None:
+            continue
+        done[area] = done.get(area, 0) + 1
+        if points:
+            wet[area] = wet.get(area, 0) + 1
+
+    for area, _ in AREAS:
+        if not total.get(area):
+            continue
+        print(
+            f"  {area}: {done.get(area, 0)}/{total[area]} spot interrogati, "
+            f"{wet.get(area, 0)} con acqua vicina"
+        )
 
 
 if __name__ == "__main__":
