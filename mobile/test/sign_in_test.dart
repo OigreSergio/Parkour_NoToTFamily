@@ -30,7 +30,7 @@ MockClient _authBackend(List<String> calls, {String? refuseName}) =>
               jsonEncode({
                 'error': {
                   'code': 'validation_failed',
-                  'message': 'Questo nome contiene un insulto: scegline un altro.',
+                  'message': 'That name contains a slur. Please pick another one.',
                 },
               }),
               422,
@@ -146,7 +146,7 @@ void main() {
       expect(container.read(sessionProvider).isSignedIn, isFalse);
       expect(
         container.read(sessionProvider).error,
-        contains('insulto'),
+        contains('contains a slur'),
         reason: 'the reason from the policy is shown, not a status code',
       );
     });
@@ -217,6 +217,37 @@ void main() {
       expect(find.text('Write a valid email address'), findsOneWidget);
       expect(find.text('At least 8 characters'), findsOneWidget);
       expect(calls, isEmpty, reason: 'nothing is sent until the form is sound');
+    });
+
+    testWidgets('rewriting the name puts the refusal away', (tester) async {
+      final container = _container(
+        _authBackend(<String>[], refuseName: 'frocio'),
+      );
+      await _pump(tester, container);
+
+      final nameField = find.widgetWithText(TextFormField, 'Your name here');
+      await tester.enterText(nameField, 'frocio');
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Email'),
+        'x@example.com',
+      );
+      await tester.enterText(
+        find.widgetWithText(TextFormField, 'Password'),
+        'una-password-lunga',
+      );
+      await tester.tap(find.text('Create my account'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('contains a slur'), findsOneWidget);
+
+      await tester.enterText(nameField, 'Sergio');
+      await tester.pumpAndSettle();
+
+      expect(
+        find.textContaining('contains a slur'),
+        findsNothing,
+        reason: 'a refusal about a name that is no longer written only confuses',
+      );
     });
   });
 }

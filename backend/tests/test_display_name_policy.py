@@ -103,5 +103,5 @@ def test_the_message_says_what_is_wrong_without_repeating_it() -> None:
         check("HeilHitler")
 
     message = str(rejected.value)
-    assert "odio" in message
+    assert "hatred" in message
     assert "hitler" not in message.lower()

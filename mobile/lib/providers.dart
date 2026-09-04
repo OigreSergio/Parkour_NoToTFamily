@@ -277,6 +277,14 @@ class SessionController extends StateNotifier<SessionState> {
     await _refreshAccount();
   }
 
+  /// Put away a refusal the person is already fixing.
+  ///
+  /// A "that name contains a slur" sitting next to a name that has since been
+  /// rewritten only confuses: the message goes as soon as the typing starts.
+  void dismissError() {
+    if (state.error != null) state = state.copyWith(clearError: true);
+  }
+
   /// Create an account with an email and the name the person picked, then
   /// sign in with it.
   ///

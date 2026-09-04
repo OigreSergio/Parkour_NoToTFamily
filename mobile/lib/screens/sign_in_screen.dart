@@ -86,6 +86,9 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
               TextFormField(
                 controller: _displayName,
                 textCapitalization: TextCapitalization.words,
+                // Correggere il nome fa sparire il rifiuto di quello di prima.
+                onChanged: (_) =>
+                    ref.read(sessionProvider.notifier).dismissError(),
                 decoration: const InputDecoration(
                   labelText: 'Your name here',
                   hintText: 'How the family will see you',

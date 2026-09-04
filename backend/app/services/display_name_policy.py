@@ -134,11 +134,11 @@ def check(name: str) -> str:
     cleaned = re.sub(r"\s+", " ", name).strip()
 
     if len(cleaned) < MIN_LENGTH:
-        raise DisplayNameRejected("Il nome è troppo corto.")
+        raise DisplayNameRejected("That name is too short.")
     if len(cleaned) > MAX_LENGTH:
-        raise DisplayNameRejected(f"Il nome può essere lungo al massimo {MAX_LENGTH} caratteri.")
+        raise DisplayNameRejected(f"A name can be at most {MAX_LENGTH} characters long.")
     if not any(ch.isalnum() for ch in cleaned):
-        raise DisplayNameRejected("Il nome deve contenere almeno una lettera o un numero.")
+        raise DisplayNameRejected("A name needs at least one letter or number.")
 
     flat = normalise(cleaned)
     raw = compact(cleaned)
@@ -155,28 +155,28 @@ def check(name: str) -> str:
     for root in SLUR_ROOTS:
         if root in flat or root in raw:
             raise DisplayNameRejected(
-                "Questo nome contiene un insulto: scegline un altro."
+                "That name contains a slur. Please pick another one."
             )
 
     if disguised:
         for root in DISGUISED_ONLY_ROOTS:
             if root in flat:
                 raise DisplayNameRejected(
-                    "Questo nome sembra un insulto mascherato: scrivilo per esteso "
-                    "o scegline un altro."
+                    "That name looks like a slur in disguise. Write it out plainly "
+                    "or pick another one."
                 )
 
     for pattern in HATE_PATTERNS:
         # `raw` conserva le cifre (1488), `flat` scioglie il leet (h3il -> heil).
         if re.search(pattern, flat) or re.search(pattern, raw):
             raise DisplayNameRejected(
-                "Questo nome richiama odio o violenza: scegline un altro."
+                "That name calls up hatred or violence. Please pick another one."
             )
 
     name_words = set(words(cleaned))
     if name_words & set(WHOLE_WORD_INSULTS):
         raise DisplayNameRejected(
-            "Questo nome contiene una parolaccia: scegline un altro."
+            "That name contains an insult. Please pick another one."
         )
 
     if name_words & set(RESERVED) or any(
@@ -184,7 +184,8 @@ def check(name: str) -> str:
         for r in RESERVED
     ):
         raise DisplayNameRejected(
-            "Questo nome è riservato a chi gestisce l'app: scegline un altro."
+            "That name is reserved for the people who run the app. "
+            "Please pick another one."
         )
 
     return cleaned
