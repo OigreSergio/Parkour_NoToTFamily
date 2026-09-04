@@ -22,6 +22,7 @@ distance_m, osm_id}, ... ] }, ordinato per distanza.
 Uso::
 
     python3 scripts/fetch_water_points.py [--radius 400] [--cell 0.25] [--area roma]
+                                          [--out altrove.json]
 """
 
 from __future__ import annotations
@@ -227,10 +228,18 @@ def main() -> None:
     parser.add_argument("--cell", type=float, default=0.25, help="lato del riquadro, in gradi")
     parser.add_argument("--area", choices=[a for a, _ in AREAS], help="ferma dopo quest'area")
     parser.add_argument("--pause", type=float, default=2.0, help="secondi fra le interrogazioni")
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=OUT,
+        help="dove scrivere (di suo il file nel repo; una corsa lunga può "
+        "tenerlo fuori, così l'albero di git non cambia sotto i piedi)",
+    )
     args = parser.parse_args()
 
+    out: Path = args.out
     spots = json.loads(SPOTS.read_text(encoding="utf-8"))
-    found: dict[str, list] = json.loads(OUT.read_text(encoding="utf-8")) if OUT.exists() else {}
+    found: dict[str, list] = json.loads(out.read_text(encoding="utf-8")) if out.exists() else {}
 
     order = {name: i for i, (name, _) in enumerate(AREAS)}
     todo = [s for s in spots if str(s["id"]) not in found]
@@ -271,7 +280,7 @@ def main() -> None:
             f"  [{area}] {asked}/{len(todo)} — spot con acqua vicina: {with_water}",
             flush=True,
         )
-        OUT.write_text(json.dumps(found, ensure_ascii=False) + "\n", encoding="utf-8")
+        out.write_text(json.dumps(found, ensure_ascii=False) + "\n", encoding="utf-8")
         time.sleep(args.pause)
 
     with_water = sum(1 for v in found.values() if v)
