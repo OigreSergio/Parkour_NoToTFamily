@@ -10,12 +10,18 @@ L'ordine è quello chiesto: **prima Roma**, poi il resto d'Italia, poi l'Europa,
 infine gli altri continenti. Il file cresce man mano, quindi interrompere lo
 script lascia comunque i dati delle aree già fatte.
 
+Non si chiede uno spot per volta. Gli spot si addensano nelle città, e chiedere
+"tutta l'acqua dentro questo riquadro" costa a Overpass molto meno di trenta
+cerchi separati: gli spot vengono raggruppati per riquadro (vedi [cells]) e per
+ognuno parte una domanda sola, poi le distanze si calcolano qui. In Italia un
+riquadro copre in media una decina di spot, e la corsa passa da ore a minuti.
+
 Output: ``scripts/data/spot_water.json`` — { spot_id: [ {lat, lng, kind, name,
 distance_m, osm_id}, ... ] }, ordinato per distanza.
 
 Uso::
 
-    python3 scripts/fetch_water_points.py [--radius 400] [--batch 20] [--area roma]
+    python3 scripts/fetch_water_points.py [--radius 400] [--cell 0.25] [--area roma]
 """
 
 from __future__ import annotations
@@ -33,8 +39,13 @@ REPO = Path(__file__).resolve().parents[1]
 SPOTS = REPO / "scripts" / "data" / "webapp_fixed_spots.json"
 OUT = REPO / "scripts" / "data" / "spot_water.json"
 
+# Solo mirror **globali**. Ce ne sono di regionali (overpass.osm.ch tiene la
+# sola Svizzera) che rispondono 200 con zero risultati per il resto del mondo:
+# entrerebbero nel file come "qui non c'è acqua" senza che nulla segnali
+# l'errore. Prima di aggiungerne uno, chiedigli un nodo lontano da casa sua.
 MIRRORS = (
     "https://overpass-api.de/api/interpreter",
+    "https://overpass.openstreetmap.fr/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
     "https://overpass.private.coffee/api/interpreter",
 )
@@ -44,10 +55,6 @@ USER_AGENT = "PkFAMILY/1.0 (mappa spot parkour; fontanelle da OpenStreetMap)"
 # I mirror rispondono 429 o 504 spesso: si insiste a lungo, con attese che
 # crescono, perché una corsa intera dura ore e ricominciarla costa di più.
 MAX_ATTEMPTS = 8
-
-
-class SpotSkipped(RuntimeError):
-    """Un gruppo che i mirror non hanno voluto servire: si va avanti."""
 
 
 def _backoff(attempt: int) -> float:
@@ -111,52 +118,103 @@ def overpass(query: str, attempt: int = 0) -> dict:
         return overpass(query, attempt + 1)
 
 
-def ask_about(batch: list[dict], radius: int) -> list[dict]:
-    """Nodi d'acqua attorno a un gruppo di spot, spezzandolo quando serve.
+def cells(spots: list[dict], size: float) -> list[list[dict]]:
+    """Raggruppa gli spot in riquadri di ``size`` gradi, nell'ordine dato.
 
-    Un gruppo può fallire per due motivi: l'URL è troppo lungo (414) oppure il
-    mirror non ce la fa in tempo (429/504, dopo tutti i tentativi). In
-    entrambi i casi la risposta è la stessa — chiedere di meno per volta —
-    fino a un solo spot, che se proprio non passa viene lasciato indietro:
-    la raccolta dura ore e non deve morire per un gruppo sfortunato. Chi
-    resta indietro non finisce nel file, quindi la corsa successiva lo
-    ripesca da sé.
+    Il riquadro serve solo a mettere insieme spot vicini: la domanda vera usa
+    l'ingombro degli spot che ci sono finiti dentro, che in città è molto più
+    piccolo della cella.
+    """
+    groups: dict[tuple[int, int], list[dict]] = {}
+    for spot in spots:
+        key = (
+            math.floor(float(spot["lat"]) / size),
+            math.floor(float(spot["lng"]) / size),
+        )
+        groups.setdefault(key, []).append(spot)
+    return list(groups.values())
+
+
+def bbox_of(group: list[dict], radius: int) -> tuple[float, float, float, float]:
+    """Ingombro degli spot, allargato di ``radius`` metri per non tagliare nulla."""
+    lats = [float(s["lat"]) for s in group]
+    lngs = [float(s["lng"]) for s in group]
+    pad_lat = radius / 111_320
+    # Ai poli un grado di longitudine vale pochi metri: il coseno lo tiene conto,
+    # con un minimo per non far esplodere il riquadro (o dividere per zero).
+    widest = max(abs(min(lats)), abs(max(lats)))
+    pad_lng = radius / (111_320 * max(math.cos(math.radians(widest)), 0.05))
+    return (
+        min(lats) - pad_lat,
+        min(lngs) - pad_lng,
+        max(lats) + pad_lat,
+        max(lngs) + pad_lng,
+    )
+
+
+def collect(group: list[dict], radius: int) -> list[tuple[list[dict], list[dict]]]:
+    """Coppie (spot, nodi del loro riquadro), spezzando il gruppo quando serve.
+
+    Un riquadro può non passare per due motivi: è troppo grande e il mirror non
+    ce la fa in tempo (429/504, dopo tutti i tentativi), oppure l'URL è troppo
+    lungo (414). In entrambi i casi la risposta è la stessa — chiedere di meno
+    per volta — fino a un solo spot, che se proprio non passa viene lasciato
+    indietro: la raccolta è lunga e non deve morire per un riquadro sfortunato.
+
+    Le metà tornano separate, ognuna con i *suoi* nodi. È la parte che conta:
+    mettendole in un mucchio solo, gli spot di una metà rimasta senza risposta
+    verrebbero misurati sui nodi dell'altra e finirebbero nel file come "poca
+    acqua qui" senza che nessuno se ne accorga. Chi non ha risposta non compare
+    affatto, così non entra nel file e la corsa successiva lo ripesca.
     """
     try:
-        data = overpass(build_query(batch, radius))
+        data = overpass(build_query(bbox_of(group, radius)))
     except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as error:
-        if len(batch) == 1:
-            raise SpotSkipped(str(error)) from error
-        half = len(batch) // 2
-        left = _ask_or_skip(batch[:half], radius)
-        right = _ask_or_skip(batch[half:], radius)
-        if left is None and right is None:
-            raise SpotSkipped(str(error)) from error
-        return (left or []) + (right or [])
-    return [e for e in data.get("elements", []) if "lat" in e and "lon" in e]
+        if len(group) == 1:
+            print(f"  lasciato indietro 1 spot ({error})", flush=True)
+            return []
+        half = len(group) // 2
+        return collect(group[:half], radius) + collect(group[half:], radius)
+    nodes = [e for e in data.get("elements", []) if "lat" in e and "lon" in e]
+    return [(group, nodes)]
 
 
-def _ask_or_skip(batch: list[dict], radius: int) -> list[dict] | None:
-    """[ask_about] su metà gruppo; ``None`` se quella metà va lasciata indietro."""
-    try:
-        return ask_about(batch, radius)
-    except SpotSkipped:
-        return None
+def build_query(bbox: tuple[float, float, float, float]) -> str:
+    south, west, north, east = bbox
+    box = f"({south:.6f},{west:.6f},{north:.6f},{east:.6f})"
+    return (
+        "[out:json][timeout:180];("
+        f'node["amenity"="drinking_water"]{box};'
+        f'node["man_made"="water_tap"]{box};'
+        f'node["natural"="spring"]["drinking_water"="yes"]{box};'
+        f'node["amenity"="fountain"]["drinking_water"="yes"]{box};'
+        ");out body;"
+    )
 
 
-def build_query(batch: list[dict], radius: int) -> str:
-    parts = []
-    for spot in batch:
-        lat, lng = float(spot["lat"]), float(spot["lng"])
-        parts.append(f'node(around:{radius},{lat},{lng})["amenity"="drinking_water"];')
-        parts.append(f'node(around:{radius},{lat},{lng})["man_made"="water_tap"];')
-        parts.append(
-            f'node(around:{radius},{lat},{lng})["natural"="spring"]["drinking_water"="yes"];'
+def water_near(spot: dict, nodes: list[dict], radius: int) -> list[dict]:
+    """Le fontanelle entro ``radius`` metri dallo spot, dalla più vicina."""
+    lat, lng = float(spot["lat"]), float(spot["lng"])
+    near = []
+    for node in nodes:
+        tags = node.get("tags", {})
+        if tags.get("drinking_water") == "no":
+            continue
+        distance = distance_m(lat, lng, node["lat"], node["lon"])
+        if distance > radius:
+            continue
+        near.append(
+            {
+                "osm_id": node["id"],
+                "lat": round(node["lat"], 6),
+                "lng": round(node["lon"], 6),
+                "kind": kind_of(tags),
+                "name": tags.get("name"),
+                "distance_m": round(distance),
+            }
         )
-        parts.append(
-            f'node(around:{radius},{lat},{lng})["amenity"="fountain"]["drinking_water"="yes"];'
-        )
-    return "[out:json][timeout:180];(" + "".join(parts) + ");out body;"
+    near.sort(key=lambda w: w["distance_m"])
+    return near
 
 
 def kind_of(tags: dict) -> str:
@@ -166,7 +224,7 @@ def kind_of(tags: dict) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--radius", type=int, default=400, help="metri attorno allo spot")
-    parser.add_argument("--batch", type=int, default=12, help="spot per interrogazione")
+    parser.add_argument("--cell", type=float, default=0.25, help="lato del riquadro, in gradi")
     parser.add_argument("--area", choices=[a for a, _ in AREAS], help="ferma dopo quest'area")
     parser.add_argument("--pause", type=float, default=2.0, help="secondi fra le interrogazioni")
     args = parser.parse_args()
@@ -189,46 +247,28 @@ def main() -> None:
         )
     print("  per area:", ", ".join(f"{k}={v}" for k, v in by_area.items()))
 
+    groups = cells(todo, args.cell)
+    print(f"  {len(groups)} riquadri da interrogare")
+
     skipped_spots = 0
-    for start in range(0, len(todo), args.batch):
-        batch = todo[start : start + args.batch]
-        try:
-            nodes = ask_about(batch, args.radius)
-        except SpotSkipped as skipped:
-            skipped_spots += len(batch)
-            print(f"  saltati {len(batch)} spot ({skipped}); li riprende la corsa dopo",
-                  flush=True)
+    asked = 0
+    for group in groups:
+        answered = collect(group, args.radius)
+        answered_spots = [spot for sub, _ in answered for spot in sub]
+        skipped_spots += len(group) - len(answered_spots)
+        if not answered:
             time.sleep(args.pause)
             continue
 
-        for spot in batch:
-            lat, lng = float(spot["lat"]), float(spot["lng"])
-            near = []
-            for node in nodes:
-                tags = node.get("tags", {})
-                if tags.get("drinking_water") == "no":
-                    continue
-                distance = distance_m(lat, lng, node["lat"], node["lon"])
-                if distance > args.radius:
-                    continue
-                near.append(
-                    {
-                        "osm_id": node["id"],
-                        "lat": round(node["lat"], 6),
-                        "lng": round(node["lon"], 6),
-                        "kind": kind_of(tags),
-                        "name": tags.get("name"),
-                        "distance_m": round(distance),
-                    }
-                )
-            near.sort(key=lambda w: w["distance_m"])
-            found[str(spot["id"])] = near
+        for sub, nodes in answered:
+            for spot in sub:
+                found[str(spot["id"])] = water_near(spot, nodes, args.radius)
 
+        asked += len(answered_spots)
         with_water = sum(1 for v in found.values() if v)
-        area = area_of(float(batch[0]["lat"]), float(batch[0]["lng"]))
+        area = area_of(float(answered_spots[0]["lat"]), float(answered_spots[0]["lng"]))
         print(
-            f"  [{area}] {min(start + args.batch, len(todo))}/{len(todo)} — "
-            f"spot con acqua vicina: {with_water}",
+            f"  [{area}] {asked}/{len(todo)} — spot con acqua vicina: {with_water}",
             flush=True,
         )
         OUT.write_text(json.dumps(found, ensure_ascii=False) + "\n", encoding="utf-8")

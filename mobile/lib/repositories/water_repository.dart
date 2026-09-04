@@ -25,17 +25,23 @@ class WaterRepository {
   final List<String> _endpoints;
   final Future<String> Function(String key) _loadAsset;
 
-  /// Fountains harvested from OpenStreetMap for every spot on the map — Rome
-  /// first, then Italy, Europe and the rest (`scripts/fetch_water_points.py`).
-  /// Shipped with the app so the answer is instant and works with no signal.
+  /// Fountains harvested from OpenStreetMap, area by area — Rome first, then
+  /// Italy, Europe and the rest (`scripts/fetch_water_points.py`). Shipped
+  /// with the app so the answer is instant and works with no signal. It does
+  /// not cover every spot yet: whatever it has not seen goes to Overpass.
   static const String bundledAsset = 'assets/water/spot_water.json';
 
   Map<String, List<dynamic>>? _bundled;
 
   /// Public Overpass mirrors, tried in order: they rate-limit, and one being
   /// busy should not cost the user the answer.
+  ///
+  /// All of them serve the whole planet. Some public mirrors only hold one
+  /// country (overpass.osm.ch is Switzerland) and answer "nothing here" for
+  /// everywhere else — which would read as "no water near this spot".
   static const List<String> defaultEndpoints = [
     'https://overpass-api.de/api/interpreter',
+    'https://overpass.openstreetmap.fr/api/interpreter',
     'https://overpass.kumi.systems/api/interpreter',
     'https://overpass.private.coffee/api/interpreter',
   ];
@@ -66,8 +72,8 @@ class WaterRepository {
 );
 out body;''';
 
-    // The bundled harvest answers first: no wait, no network, and it already
-    // covers every spot on the map.
+    // The bundled harvest answers first: no wait, no network. Where it has
+    // nothing to say the live lookup below takes over.
     final harvested = await _fromBundle(spot);
     if (harvested != null) return harvested;
 
