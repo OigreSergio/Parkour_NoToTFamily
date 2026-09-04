@@ -41,6 +41,18 @@ MIRRORS = (
 
 USER_AGENT = "PkFAMILY/1.0 (mappa spot parkour; fontanelle da OpenStreetMap)"
 
+# I mirror rispondono 429 o 504 spesso: si insiste a lungo, con attese che
+# crescono, perché una corsa intera dura ore e ricominciarla costa di più.
+MAX_ATTEMPTS = 8
+
+
+class SpotSkipped(RuntimeError):
+    """Un gruppo che i mirror non hanno voluto servire: si va avanti."""
+
+
+def _backoff(attempt: int) -> float:
+    return min(5 * 2**attempt, 120)
+
 # Roma prima, poi l'Italia, poi l'Europa, poi tutto il resto: riquadri
 # (sud, ovest, nord, est) usati solo per decidere l'ordine di lavoro.
 AREAS: tuple[tuple[str, tuple[float, float, float, float] | None], ...] = (
@@ -87,28 +99,49 @@ def overpass(query: str, attempt: int = 0) -> dict:
     except urllib.error.HTTPError as error:
         if error.code == 414:  # URL troppo lungo: lo risolve chi chiama
             raise
-        if attempt >= 5:
+        if attempt >= MAX_ATTEMPTS:
             raise
-        time.sleep(5 * (attempt + 1))
+        time.sleep(_backoff(attempt))
         return overpass(query, attempt + 1)
     except (urllib.error.URLError, TimeoutError, OSError):
-        if attempt >= 5:
+        if attempt >= MAX_ATTEMPTS:
             raise
         # 429/504 sono la norma su Overpass: si aspetta e si cambia specchio.
-        time.sleep(5 * (attempt + 1))
+        time.sleep(_backoff(attempt))
         return overpass(query, attempt + 1)
 
 
 def ask_about(batch: list[dict], radius: int) -> list[dict]:
-    """Nodi d'acqua attorno a un gruppo di spot, spezzandolo se l'URL è lungo."""
+    """Nodi d'acqua attorno a un gruppo di spot, spezzandolo quando serve.
+
+    Un gruppo può fallire per due motivi: l'URL è troppo lungo (414) oppure il
+    mirror non ce la fa in tempo (429/504, dopo tutti i tentativi). In
+    entrambi i casi la risposta è la stessa — chiedere di meno per volta —
+    fino a un solo spot, che se proprio non passa viene lasciato indietro:
+    la raccolta dura ore e non deve morire per un gruppo sfortunato. Chi
+    resta indietro non finisce nel file, quindi la corsa successiva lo
+    ripesca da sé.
+    """
     try:
         data = overpass(build_query(batch, radius))
-    except urllib.error.HTTPError as error:
-        if error.code != 414 or len(batch) == 1:
-            raise
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, OSError) as error:
+        if len(batch) == 1:
+            raise SpotSkipped(str(error)) from error
         half = len(batch) // 2
-        return ask_about(batch[:half], radius) + ask_about(batch[half:], radius)
+        left = _ask_or_skip(batch[:half], radius)
+        right = _ask_or_skip(batch[half:], radius)
+        if left is None and right is None:
+            raise SpotSkipped(str(error)) from error
+        return (left or []) + (right or [])
     return [e for e in data.get("elements", []) if "lat" in e and "lon" in e]
+
+
+def _ask_or_skip(batch: list[dict], radius: int) -> list[dict] | None:
+    """[ask_about] su metà gruppo; ``None`` se quella metà va lasciata indietro."""
+    try:
+        return ask_about(batch, radius)
+    except SpotSkipped:
+        return None
 
 
 def build_query(batch: list[dict], radius: int) -> str:
@@ -156,9 +189,17 @@ def main() -> None:
         )
     print("  per area:", ", ".join(f"{k}={v}" for k, v in by_area.items()))
 
+    skipped_spots = 0
     for start in range(0, len(todo), args.batch):
         batch = todo[start : start + args.batch]
-        nodes = ask_about(batch, args.radius)
+        try:
+            nodes = ask_about(batch, args.radius)
+        except SpotSkipped as skipped:
+            skipped_spots += len(batch)
+            print(f"  saltati {len(batch)} spot ({skipped}); li riprende la corsa dopo",
+                  flush=True)
+            time.sleep(args.pause)
+            continue
 
         for spot in batch:
             lat, lng = float(spot["lat"]), float(spot["lng"])
@@ -196,6 +237,8 @@ def main() -> None:
     with_water = sum(1 for v in found.values() if v)
     points = sum(len(v) for v in found.values())
     print(f"fatto: {with_water}/{len(found)} spot hanno acqua entro {args.radius} m ({points} punti)")
+    if skipped_spots:
+        print(f"  {skipped_spots} spot lasciati indietro: rilancia lo script per riprenderli")
 
 
 if __name__ == "__main__":
