@@ -73,11 +73,17 @@ class ApiClient {
 
   /// Throw on a non-2xx response, otherwise decode the body (`null` when it is
   /// empty, e.g. `204 No Content`).
+  ///
+  /// The bytes are read as UTF-8 rather than through `response.body`: without a
+  /// `charset` in the content type — which FastAPI does not send — `http`
+  /// falls back to latin-1 and every accent in a message the user is meant to
+  /// read ("Questo nome non è ammesso") comes out broken.
   dynamic _decode(http.Response res, Uri uri) {
+    final body = res.bodyBytes.isEmpty ? '' : utf8.decode(res.bodyBytes, allowMalformed: true);
     if (res.statusCode < 200 || res.statusCode >= 300) {
-      throw ApiException(res.statusCode, res.body, uri);
+      throw ApiException(res.statusCode, body, uri);
     }
-    return res.body.isEmpty ? null : jsonDecode(res.body);
+    return body.isEmpty ? null : jsonDecode(body);
   }
 
   /// Release the underlying connection pool.
