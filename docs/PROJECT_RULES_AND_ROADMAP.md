@@ -110,6 +110,8 @@ before they go public.
 | Guest sign-in (no email)| ✅     | ⏳ planned          | —         | In progress   |
 | Premium gating (subscription) | ✅ | ✅ paywall UI    | —         | **Shipped**   |
 | Landed tricks          | ⏳      | ✅ client-side stub | —         | Client-first  |
+| Gym partnerships / member bonus | ⏳ | ⏳            | ⏳        | Planned (M7)  |
+| Instructor verification queue | ⏳ (role endpoint ✅) | ⏳ | ⏳ | Planned (M7)  |
 
 > **Client-first** means the mobile model already carries the field (optional,
 > defaulted) so the UI can be built, but the backend does not persist it yet.
@@ -148,6 +150,20 @@ WebSocket `/api/v1/ws/chat`, conversation list + room on mobile.
 ### Milestone 6 — Videos
 Category tabs (recovery / practice / conditioning) backed by
 `GET /api/v1/videos`; web-admin CMS to curate them.
+
+### Milestone 7 — Gym partnerships & verified instructors
+Business layer on top of the existing roles and premium gate, specified in
+[`BUSINESS_MODEL.md`](BUSINESS_MODEL.md):
+- **Backend:** `gyms` (geo, like spots) and `gym_memberships`; `GET /gyms`
+  near a point; membership confirmation by gym code; `instructor_applications`
+  queue whose approval calls the existing `POST /admin/users/{id}/role`;
+  `entitlements` with a `source` so a gym bonus can set `is_subscribed`
+  without touching paid subscriptions.
+- **Admin console:** "Palestre" and "Istruttori" tabs next to the spot queue.
+- **Mobile / web:** gym pin on the map, "La mia palestra" screen with code
+  entry, safety line on spots with difficulty ≥ 3 pointing to nearby partner
+  gyms, "become a verified instructor" form (proofs, never quizzes).
+- **Depends on:** Milestone 3 auth (a membership belongs to an email account).
 
 ---
 

@@ -59,6 +59,8 @@ docker compose up --build
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
 
+Business model (gym partnerships, member bonus, verified instructors): [docs/BUSINESS_MODEL.md](docs/BUSINESS_MODEL.md) (in Italian).
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Security reports: [SECURITY.md](SECURITY.md).
