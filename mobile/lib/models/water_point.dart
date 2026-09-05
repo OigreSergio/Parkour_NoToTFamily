@@ -19,7 +19,10 @@ class WaterPoint {
   final double lat;
   final double lng;
 
-  /// `drinking_water`, `water_tap`, `spring`, `fountain`.
+  /// What OpenStreetMap calls it: `drinking_water`, `water_tap`, `water_well`,
+  /// `drinking_fountain`, `fountain`, `spring`, `standpipe`… Anything not in
+  /// [label] below still reads as plain drinking water, which is true of all
+  /// of them — the name only says what you will be standing in front of.
   final String kind;
 
   /// Straight-line distance from the spot, in metres.
@@ -34,7 +37,9 @@ class WaterPoint {
   String get label => switch (kind) {
         'water_tap' => 'Tap',
         'spring' => 'Spring',
-        'fountain' => 'Fountain',
+        'fountain' || 'drinking_fountain' => 'Fountain',
+        'water_well' => 'Well',
+        'standpipe' => 'Standpipe',
         _ => 'Drinking water',
       };
 }

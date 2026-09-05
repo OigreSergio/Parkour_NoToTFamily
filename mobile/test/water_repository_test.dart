@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
 import 'package:parkour_notot/models/spot.dart';
+import 'package:parkour_notot/models/water_point.dart';
 import 'package:parkour_notot/repositories/water_repository.dart';
 
 Spot _spot() => Spot(
@@ -114,6 +115,29 @@ void main() {
 
     expect(tried, ['busy.example', 'spare.example']);
     expect(points.single.label, 'Tap');
+  });
+
+  test('every kind the harvest found reads as something, never as a tag', () {
+    // Nomi presi dal dataset vero (`mobile/assets/water/spot_water.json`):
+    // sono le forme che OpenStreetMap usa attorno agli spot, continenti
+    // compresi. Quel che non è in elenco deve comunque dire "acqua potabile",
+    // mai il nome del tag.
+    String labelOf(String kind) => WaterPoint(
+          id: 1,
+          lat: 0,
+          lng: 0,
+          kind: kind,
+          distanceMeters: 10,
+        ).label;
+
+    expect(labelOf('drinking_water'), 'Drinking water');
+    expect(labelOf('water_tap'), 'Tap');
+    expect(labelOf('fountain'), 'Fountain');
+    expect(labelOf('drinking_fountain'), 'Fountain');
+    expect(labelOf('water_well'), 'Well');
+    expect(labelOf('spring'), 'Spring');
+    expect(labelOf('standpipe'), 'Standpipe');
+    expect(labelOf('something_new_in_osm'), 'Drinking water');
   });
 
   test('when no mirror answers the caller is told, not fed an empty list',
