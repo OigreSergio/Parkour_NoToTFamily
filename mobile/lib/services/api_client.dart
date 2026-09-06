@@ -23,18 +23,45 @@ class ApiClient {
   final String baseUrl;
   final http.Client _http;
 
+  /// Bearer token sent with every request once someone is signed in.
+  ///
+  /// Held here rather than passed at every call site: the app has exactly one
+  /// signed-in account at a time, and threading it through would mean every
+  /// repository knowing about sessions.
+  String? authToken;
+
+  Map<String, String> _headers({bool json = false}) => {
+        'Accept': 'application/json',
+        if (json) 'Content-Type': 'application/json',
+        if (authToken != null) 'Authorization': 'Bearer $authToken',
+      };
+
   /// `GET` [path] (relative to [baseUrl]) with optional query parameters and
   /// return the decoded JSON body.
   Future<dynamic> getJson(String path, {Map<String, dynamic>? query}) async {
     final uri = Uri.parse('$baseUrl$path').replace(
       queryParameters: query?.map((k, v) => MapEntry(k, '$v')),
     );
-    final res = await _http.get(uri, headers: const {
-      'Accept': 'application/json',
-    });
+    final res = await _http.get(uri, headers: _headers());
+    return _decode(res, uri);
+  }
+
+  /// `POST` [body] as JSON to [path] and return the decoded JSON body.
+  Future<dynamic> postJson(String path, {Object? body}) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final res = await _http.post(
+      uri,
+      headers: _headers(json: true),
+      body: jsonEncode(body ?? const <String, dynamic>{}),
+    );
+    return _decode(res, uri);
+  }
+
+  dynamic _decode(http.Response res, Uri uri) {
     if (res.statusCode < 200 || res.statusCode >= 300) {
       throw ApiException(res.statusCode, res.body, uri);
     }
+    if (res.body.isEmpty) return null;
     return jsonDecode(res.body);
   }
 
@@ -49,6 +76,20 @@ class ApiException implements Exception {
   final int statusCode;
   final String body;
   final Uri uri;
+
+  /// The `message` the API puts inside `{"error": {...}}`, when there is one.
+  String? get detail {
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map && decoded['error'] is Map) {
+        final message = (decoded['error'] as Map)['message'];
+        if (message is String) return message;
+      }
+    } catch (_) {
+      // Not JSON, or not shaped like an API error: fall through.
+    }
+    return null;
+  }
 
   @override
   String toString() => 'ApiException($statusCode) for $uri: $body';
