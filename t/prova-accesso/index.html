@@ -216,7 +216,7 @@
       degli scavalcamenti e le regole dei livelli sono presi dal codice, non
       riscritti a mano.
     </p>
-    <p class="avviso" style="margin-top:14px">
+    <p class="avviso" id="avviso" style="margin-top:14px">
       Nessun dato esce da qui e nessuna email viene spedita: il server è una
       funzione dentro questa pagina. Per provare l'app vera contro un backend
       vero, c'è <code>docs/PROVA_DA_TELEFONO.md</code> nel repo.
@@ -228,7 +228,7 @@
   <section>
     <div>
       <p class="occhiello">Provalo</p>
-      <h2>Entra come entrerebbe un utente</h2>
+      <h2 id="titolo-prova">Entra come entrerebbe un utente</h2>
     </div>
     <div class="azioni">
       <button class="primario" id="btn-accesso">
@@ -343,6 +343,23 @@
   'use strict';
 
   var DATA = globalThis.__PK_DEMO_DATA__;
+
+  // Con ?api=http://... la pagina parla con un backend vero e il finto server
+  // non si installa affatto: è così che la mail parte davvero, con il provider
+  // configurato lato backend. Senza, resta tutto qui dentro.
+  var LIVE = new URLSearchParams(location.search).get('api');
+  if (LIVE) {
+    globalThis.__PK_API__ = LIVE.replace(/\/$/, '');
+    globalThis.PkDemoServer = {
+      live: true,
+      url: globalThis.__PK_API__,
+      state: function () { return { account: null, log: [], mail: null }; },
+      access: function () { return { max_level: 'advanced', max_difficulty: 10 }; },
+      reset: function () {}
+    };
+    return;
+  }
+
   var API = 'https://demo.pkfamily.invalid';
   globalThis.__PK_API__ = API;
 
@@ -1702,7 +1719,37 @@
     el('conteggio').textContent = visibili + ' tutorial su ' + CATALOGO.length + ' visibili';
   }
 
+  // Collegati a un backend vero, i pannelli di debug non hanno niente da
+  // leggere: quello che il server sa resta sul server, che è il punto. Al loro
+  // posto si dice a chi si sta parlando.
+  function modalitaLive() {
+    var avvisoTesto = el('avviso');
+    if (avvisoTesto) {
+      avvisoTesto.textContent = 'Collegata a un backend vero: la mail di ' +
+        'conferma parte davvero, dal mittente no-reply configurato lì. ' +
+        'Niente di quello che scrivi resta in questa pagina.';
+    }
+    ['registro', 'profilo', 'catalogo'].forEach(function (id) {
+      var nodo = el(id);
+      if (nodo) nodo.textContent = '';
+    });
+    var avviso = el('registro');
+    if (avviso) {
+      var li = document.createElement('li');
+      li.className = 'vuoto';
+      li.style.gridTemplateColumns = '1fr';
+      li.textContent = 'Collegata al backend ' + globalThis.PkDemoServer.url +
+        ': qui non c’è più un server finto da spiare, e la mail parte davvero.';
+      avviso.appendChild(li);
+    }
+    var conteggio = el('conteggio');
+    if (conteggio) conteggio.textContent = 'Il catalogo lo decide il server';
+    var profilo = el('profilo');
+    if (profilo) riga(profilo, 'Backend', globalThis.PkDemoServer.url);
+  }
+
   function refresh() {
+    if (globalThis.PkDemoServer.live) { modalitaLive(); return; }
     renderRegistro();
     renderProfilo();
     renderCatalogo();
