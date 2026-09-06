@@ -195,25 +195,38 @@ async def verify_code(
 ) -> tuple[TokenPair, bool, OnboardingStep]:
     """Check the code; sign in, or create the account and its profile.
 
+    The risk notice is required on every call and checked before the code is
+    spent — the comment below says why both halves of that matter.
+
     Returns ``(tokens, created, next_step)``.
     """
     address = str(data.email).lower()
+
+    # Checked before the code is touched, and for everybody — not only for a
+    # sign-up.
+    #
+    # Before: a call that fails here has spent nothing, so declining the notice
+    # and then changing your mind does not cost a minute of rate limiting and a
+    # second email.
+    #
+    # For everybody: running it only when the account is new would make the two
+    # cases answer differently, and that difference is exactly "does this
+    # address have an account here". Clients already hold the current notice —
+    # they fetch it to render the pop-up — so sending it back every time costs
+    # them nothing, and a client too old to know the current version is one
+    # that cannot have shown it.
+    missing = legal_service.missing_required(data.accepted_documents, is_minor=False)
+    if missing:
+        raise ValidationFailed(
+            "these notices must be accepted before signing in: " + ", ".join(missing)
+        )
+
     await _consume(session, email=address, code=data.code, purpose=VerificationPurpose.email_login)
 
     user = await users_repo.get_by_email(session, address)
     created = False
 
     if user is None:
-        # Creating the account is what the notices gate: no acceptance, no
-        # profile. Only the signup notice is required here — the guardian
-        # consent is asked at the birth-date step, which is where the app
-        # first knows the age.
-        missing = legal_service.missing_required(data.accepted_documents, is_minor=False)
-        if missing:
-            raise ValidationFailed(
-                "these notices must be accepted before the account can be created: "
-                + ", ".join(missing)
-            )
         user = await users_repo.create(
             session,
             email=address,

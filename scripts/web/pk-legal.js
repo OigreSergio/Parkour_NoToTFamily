@@ -215,6 +215,13 @@
 
   globalThis.PkLegal = {
     gate: gate,
+    // La versione già accettata in questo browser, o null. Serve a chi deve
+    // *dichiarare* l'accettazione al server senza rimostrare il pop-up a chi
+    // l'ha già letto.
+    acceptedVersion: function (documentId) {
+      var seen = read(STORE) || {};
+      return Object.prototype.hasOwnProperty.call(seen, documentId) ? seen[documentId] : null;
+    },
     gateSpot: function () { return gate('spot_risk'); },
     gateTutorial: function () { return gate('tutorial_risk'); },
     documents: loadDocuments,

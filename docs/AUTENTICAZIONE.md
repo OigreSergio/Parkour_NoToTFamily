@@ -46,8 +46,21 @@ Fuori da produzione (`MAIL_BACKEND=console`) il codice torna anche nel campo
 il campo è sempre `null` e `MAIL_BACKEND` deve valere `smtp`, altrimenti l'app
 non parte.
 
-L'account nasce solo se `accepted_documents` contiene l'informativa
-`liability_waiver` alla versione corrente — vedi [LEGALE.md](./LEGALE.md).
+`accepted_documents` deve contenere l'informativa `liability_waiver` alla
+versione corrente — vedi [LEGALE.md](./LEGALE.md). Il controllo avviene
+**prima** che il codice venga speso, e **a ogni accesso**, non solo alla
+creazione dell'account:
+
+- prima, perché chi rifiuta l'informativa e poi ci ripensa non deve
+  ritrovarsi il codice bruciato e un minuto di attesa prima di poterne
+  chiedere un altro;
+- sempre, perché controllarlo solo per gli account nuovi farebbe rispondere
+  diversamente i due casi, e quella differenza è esattamente «questo indirizzo
+  ha un account qui».
+
+Ai client non costa nulla: l'informativa la scaricano già per disegnare il
+pop-up, e a chi l'ha letta non viene rimostrata — si dichiara la versione e si
+va avanti.
 
 I vecchi `POST /auth/register` e `/auth/login` con password restano al loro
 posto per non rompere i client esistenti, ma la via nuova è questa.
@@ -242,4 +255,8 @@ L'indirizzo del backend si sovrascrive con `globalThis.__PK_API__`.
 
 Nell'app Flutter i pop-up sono in `mobile/lib/widgets/risk_notice.dart`, e
 `pushBehindRiskNotice` li mette davanti alla scheda spot e al tutorial in
-tutti e quattro i punti da cui si aprono.
+tutti e quattro i punti da cui si aprono. L'accesso come ospite è in
+`screens/welcome_screen.dart`, le domande in `screens/onboarding_screen.dart`,
+e il gate all'avvio in `main.dart`.
+
+Per provare tutto dal telefono: [PROVA_DA_TELEFONO.md](./PROVA_DA_TELEFONO.md).

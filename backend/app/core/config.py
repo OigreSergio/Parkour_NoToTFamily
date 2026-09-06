@@ -1,8 +1,8 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field, PostgresDsn, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -19,7 +19,11 @@ class Settings(BaseSettings):
     jwt_access_ttl_minutes: int = 15
     jwt_refresh_ttl_days: int = 30
 
-    cors_origins: list[str] = Field(default_factory=list)
+    # `NoDecode` keeps pydantic-settings from trying to JSON-parse the value
+    # first: without it, the comma-separated form that `.env.example` documents
+    # (`CORS_ORIGINS=http://a,http://b`) fails to parse before the validator
+    # below ever runs, and the app will not start.
+    cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
 
     s3_endpoint: str | None = None
     s3_bucket: str = "parkour-spots"

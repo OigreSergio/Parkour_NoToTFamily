@@ -1,6 +1,8 @@
 import pytest
 
+from app.core.exceptions import ValidationFailed
 from app.legal import LIABILITY_WAIVER
+from app.schemas.auth import EmailCodeVerifyRequest
 from app.schemas.legal import AcceptedDocument
 from app.services import email_verification_service as codes
 from app.services import legal_service, mailer
@@ -85,3 +87,33 @@ def test_minors_additionally_need_guardian_consent() -> None:
 )
 def test_stored_addresses_are_truncated(raw: str | None, expected: str | None) -> None:
     assert legal_service.anonymise_ip(raw) == expected
+
+
+async def test_a_refused_notice_does_not_burn_the_code() -> None:
+    """The notice is checked before the code is spent, and before any query.
+
+    Passing `None` for the session is the assertion: if the check ran after
+    `_consume`, this would fail on the missing database rather than raise.
+    Someone who declines the notice and changes their mind must not be sent
+    back to the start, a minute of rate limiting and a second email later.
+    """
+    with pytest.raises(ValidationFailed):
+        await codes.verify_code(
+            None,
+            EmailCodeVerifyRequest(email=EMAIL, code="123456", accepted_documents=[]),
+        )
+
+
+async def test_the_notice_is_required_whether_or_not_the_account_exists() -> None:
+    # Asking for it only on sign-up would make the two cases answer
+    # differently, and that difference is exactly "does this address have an
+    # account here" — which is what the whole flow is careful not to say.
+    import inspect
+
+    source = inspect.getsource(codes.verify_code)
+    check = source.index("missing_required")
+    consume = source.index("_consume(")
+    assert check < consume, "the notice check must come before the code is spent"
+    assert "if user is None" not in source[:check], (
+        "the notice check must not sit inside the new-account branch"
+    )

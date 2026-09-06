@@ -253,7 +253,17 @@
         globalThis.PkLegal.documents()
           .then(function (docs) {
             var waiver = docs.filter(function (d) { return d.id === 'liability_waiver'; })[0];
-            if (!waiver) return globalThis.PkLegal.gate('liability_waiver').then(function (ok) { return ok ? [] : null; });
+            if (!waiver) {
+              return globalThis.PkLegal.gate('liability_waiver').then(function (ok) {
+                return ok ? [] : null;
+              });
+            }
+            // Il server vuole l'informativa a ogni accesso, non solo alla
+            // creazione. A chi l'ha già letta in questo browser non si
+            // rimostra: si dichiara la versione e si va avanti.
+            if (globalThis.PkLegal.acceptedVersion(waiver.id) === waiver.version) {
+              return [{ id: waiver.id, version: waiver.version }];
+            }
             return globalThis.PkLegal.show(waiver).then(function (ok) {
               return ok ? [{ id: waiver.id, version: waiver.version }] : null;
             });

@@ -81,7 +81,9 @@ an athlete: qualifying as an instructor means mailing a certificate and an
 identity document to a human, which is the opposite of staying anonymous.
 
 See [docs/AUTENTICAZIONE.md](docs/AUTENTICAZIONE.md) and
-[docs/LEGALE.md](docs/LEGALE.md).
+[docs/LEGALE.md](docs/LEGALE.md). To try the flow on a phone —
+either a hosted preview or the real app against a backend on your machine —
+see [docs/PROVA_DA_TELEFONO.md](docs/PROVA_DA_TELEFONO.md).
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
 
