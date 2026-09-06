@@ -215,6 +215,11 @@
 
   globalThis.PkLegal = {
     gate: gate,
+    // Esposta perché pk-onboarding.js disegna le sue schermate con queste
+    // stesse classi: senza, la prima finestra che si apre — l'accesso, per chi
+    // arriva dal QR — uscirebbe senza stile, perché fin lì nessun pop-up è
+    // stato mostrato e il foglio non è mai stato iniettato.
+    injectStyle: injectStyle,
     // La versione già accettata in questo browser, o null. Serve a chi deve
     // *dichiarare* l'accettazione al server senza rimostrare il pop-up a chi
     // l'ha già letto.

@@ -8,6 +8,7 @@ raggiungibile con il QR di test.
 | --- | --- | --- |
 | `webapp-test-qr.png` / `.svg` | percorso riservato `/t/<token>/` | **QR attuale di accesso** all'anteprima |
 | `webapp-qr.png` / `.svg` | URL base (oggi placeholder) | da rigenerare al lancio pubblico |
+| `prova-accesso-qr.png` | `/t/prova-accesso/` | prova del flusso d'accesso dal telefono (vedi [PROVA_DA_TELEFONO.md](../PROVA_DA_TELEFONO.md)) |
 
 ![QR code di accesso all'anteprima](./webapp-test-qr.png)
 

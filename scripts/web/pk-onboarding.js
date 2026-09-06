@@ -68,6 +68,12 @@
   // --- guscio ----------------------------------------------------------------
 
   function injectStyle() {
+    // Il guscio (sfondo scuro, card, pulsanti) è quello di pk-legal.js: va
+    // iniettato anche quando si entra dall'accesso senza aver visto prima un
+    // pop-up, che è il caso normale di chi apre l'app per la prima volta.
+    if (globalThis.PkLegal && globalThis.PkLegal.injectStyle) {
+      globalThis.PkLegal.injectStyle();
+    }
     if (document.getElementById('pk-onb-style')) return;
     var css = [
       '.pk-onb-field{display:block;width:100%;font:inherit;font-size:16px;padding:12px 14px;',

@@ -5,10 +5,14 @@ simulazione; gli altri due parlano con un backend vero.
 
 ## 1. La pagina di anteprima — zero installazioni
 
-<https://claude.ai/code/artifact/956739b7-8281-4119-a7e4-dff34d2c42d7>
+<https://oigresergio.github.io/Parkour_NoToTFamily/t/prova-accesso/>
 
-Anteprima privata legata all'account Claude di chi l'ha pubblicata: si apre dal
-telefono (o si inquadra il QR che la pagina stessa mostra da computer).
+Sta su GitHub Pages accanto all'anteprima della web app, sotto `/t/` che
+`robots.txt` già tiene fuori dai motori di ricerca. Si apre nel browser come
+qualunque sito — niente account, niente app da installare — e all'arrivo parte
+dritta sull'accesso, come farebbe l'app aperta per la prima volta.
+
+Il QR per il telefono è `docs/qr/prova-accesso-qr.png`.
 
 Fa girare **gli stessi due moduli** che finiscono nella web app —
 `scripts/web/pk-legal.js` e `scripts/web/pk-onboarding.js` — con un backend
