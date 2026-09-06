@@ -294,10 +294,16 @@
           .catch(function (err) { go.disabled = false; error.textContent = message(err); });
       });
 
+      // Il server dice chi gestisce la casella (lo legge dall'MX del dominio):
+      // "aprilo su Gmail" fa risparmiare il giro di cercare dove sia finita.
+      var dove = (hint && hint.provider_label && hint.provider_label !== 'il tuo provider')
+        ? ' Aprilo su ' + hint.provider_label + '.'
+        : '';
+
       render(card, [
         el('p', 'pk-onb-step', 'Accesso'),
         el('h2', null, 'Il codice che ti è arrivato'),
-        el('p', 'pk-sum', 'Mandato a ' + email + '. Scade fra dieci minuti.'),
+        el('p', 'pk-sum', 'Mandato a ' + email + '. Scade fra dieci minuti.' + dove),
         input,
         name,
         error,

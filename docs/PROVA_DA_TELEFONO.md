@@ -24,8 +24,28 @@ Il codice di accesso **non si compila da solo**: la pagina mostra la mail
 no-reply che sarebbe partita — mittente, oggetto e corpo veri, presi dal
 servizio — e il codice va letto e ricopiato, come si fa col telefono in mano.
 
-Cosa **non** fa: non manda email davvero (non ha un server), non salva niente
+Cosa **non** fa: da sola non manda email (non ha un server), non salva niente
 da nessuna parte, e non è l'app Flutter.
+
+### La stessa pagina, ma con la mail vera
+
+Aggiungendo `?api=` la pagina smette di usare il server finto e parla con un
+backend vero:
+
+```
+https://oigresergio.github.io/Parkour_NoToTFamily/t/prova-accesso/?api=http://<indirizzo>:8000
+```
+
+Da lì la mail parte davvero, dal mittente no-reply configurato nel backend, e
+il codice esiste solo dentro quel messaggio. Serve il backend in esecuzione
+(punto 2 qui sotto) con un provider configurato ([più avanti](#il-codice-via-email)),
+e l'origine della pagina fra i `CORS_ORIGINS`:
+
+```
+CORS_ORIGINS=https://oigresergio.github.io
+```
+
+Per il QR con il tuo indirizzo: `python3 scripts/make_qr.py "<url>" prova-lan.png`.
 
 Da provare almeno una volta: entra come ospite, metti una data di nascita da
 quindicenne, dichiara «più di 10 anni». Il catalogo in fondo si accorcia, e in
@@ -119,12 +139,39 @@ email, anche fuori produzione. È la parte che conta: se il codice arrivasse
 comunque nella risposta, aprire la casella non sarebbe mai necessario e la
 mail non proverebbe niente sull'indirizzo.
 
-Per provare la mail vera:
+### Far partire la mail per davvero
+
+Ci sono due strade. **Parti dalla prima.**
+
+**API HTTPS (consigliata).** Le porte SMTP sono la prima cosa che viene
+bloccata: dalle reti aziendali, dai proxy, e da quasi tutti gli hosting
+gratuiti — e un invio che fallisce lì fallisce tardi e in silenzio. Una
+chiamata HTTPS passa da qualunque rete che già arriva su internet.
+
+```
+MAIL_BACKEND=api
+MAIL_API_PROVIDER=resend        # oppure brevo
+MAIL_API_KEY=re_...             # la chiave del provider
+MAIL_FROM=noreply@iltuodominio
+MAIL_FROM_NAME=PkFAMILY
+```
+
+Piani gratuiti che bastano abbondantemente:
+
+| Provider | Gratis | Da sapere |
+| -------- | ------ | --------- |
+| [Resend](https://resend.com) | 3.000 mail/mese, 100/giorno | senza dominio verificato spedisce solo al tuo indirizzo di registrazione — per provare va benissimo |
+| [Brevo](https://brevo.com) | 300 mail/giorno | verifica del mittente via email, senza dominio |
+
+Il dominio va verificato dal pannello del provider (di solito due record DNS).
+**`notot.family` oggi non esiste**: finché non lo registri, metti in `MAIL_FROM`
+un dominio che possiedi, o l'indirizzo di prova che il provider ti assegna.
+Un mittente su un dominio inesistente viene rifiutato o finisce nello spam.
+
+**SMTP**, se preferisci o se hai già una casella:
 
 ```
 MAIL_BACKEND=smtp
-MAIL_FROM=noreply@iltuodominio
-MAIL_FROM_NAME=PkFAMILY
 SMTP_HOST=smtp.iltuoprovider
 SMTP_PORT=587
 SMTP_USER=...
@@ -132,13 +179,34 @@ SMTP_PASSWORD=...
 SMTP_STARTTLS=true
 ```
 
-Va bene qualunque SMTP: il tuo provider, oppure una casella di prova tipo
-Mailtrap se non vuoi spedire a indirizzi veri mentre sviluppi. Il mittente è
-no-reply per costruzione — le intestazioni `Auto-Submitted: auto-generated` e
-`X-Auto-Response-Suppress: All` scoraggiano risposte automatiche, e il corpo
-indirizza alla casella che le persone leggono davvero (`MODERATION_EMAIL`).
+Con Gmail serve una *password per le app*, non quella dell'account.
 
-In produzione `MAIL_BACKEND=smtp` è obbligatorio: l'app non parte altrimenti.
+In entrambi i casi il mittente è no-reply per costruzione: le intestazioni
+`Auto-Submitted: auto-generated` e `X-Auto-Response-Suppress: All` scoraggiano
+le risposte automatiche, e il corpo indirizza alla casella che le persone
+leggono davvero (`MODERATION_EMAIL`).
+
+In produzione `MAIL_BACKEND` deve valere `api` o `smtp`: l'app non parte
+altrimenti.
+
+### Prima di spedire, il backend guarda il dominio
+
+`POST /auth/email/request-code` fa una query MX prima di generare il codice:
+
+- un dominio che non esiste o non riceve posta viene rifiutato subito, con il
+  suggerimento quando è un refuso (`gmial.com` → «Forse volevi gmail.com?»).
+  Costa una query e risparmia un codice, uno slot di rate limit e un invio
+  pagato su un indirizzo che non avrebbe mai risposto;
+- chi gestisce la casella si legge dall'MX, non dal dominio: un'azienda su
+  Google Workspace ha il suo dominio e l'MX di Google, ed è a tutti gli effetti
+  una casella Gmail. La risposta lo riporta in `provider` e `provider_label`,
+  così l'app può dire «apri Gmail» invece di «controlla la posta»;
+- se il resolver DNS non risponde si va avanti lo stesso: un minuto storto del
+  DNS non deve impedire a nessuno di entrare.
+
+La casella **non** viene sondata con `VRFY`/`RCPT TO`: i provider non
+rispondono onestamente da anni e dall'altra parte sembra raccolta di
+indirizzi. Che la casella esista lo dimostra il codice, quando viene letto.
 
 Il login guest non usa email: è la via più corta per vedere tutto il resto.
 

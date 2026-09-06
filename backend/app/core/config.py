@@ -36,8 +36,13 @@ class Settings(BaseSettings):
 
     # --- Outbound email (verification codes, instructor dossiers) -----------
     # `console` prints the message (development), `memory` keeps it in a list
-    # (tests), `smtp` actually sends it. Production must use `smtp`.
-    mail_backend: Literal["console", "memory", "smtp"] = "console"
+    # (tests), `smtp` sends it over SMTP, `api` sends it through a provider's
+    # HTTPS API. Production must use one that really delivers.
+    #
+    # `api` exists because SMTP ports are the first thing blocked: by office
+    # networks, by proxies, and by most free hosting tiers. An HTTPS call goes
+    # through all of them, and every provider with a free plan offers one.
+    mail_backend: Literal["console", "memory", "smtp", "api"] = "console"
     # Sender of every automated message. It is a *no-reply* address: replies
     # are not read, so the body always points people at a monitored mailbox.
     mail_from: str = "noreply@notot.family"
@@ -47,6 +52,11 @@ class Settings(BaseSettings):
     smtp_user: str | None = None
     smtp_password: str | None = None
     smtp_starttls: bool = True
+    #: Which provider's HTTPS API to speak, when MAIL_BACKEND=api.
+    mail_api_provider: Literal["resend", "brevo"] = "resend"
+    mail_api_key: str | None = None
+    #: Overridable so tests can point at a local server instead of the internet.
+    mail_api_base_url: str | None = None
     # Mailbox that already receives spot-verification traffic; instructor
     # certificates and ID documents are forwarded here for manual review.
     moderation_email: str | None = None
@@ -69,11 +79,11 @@ class Settings(BaseSettings):
         """Whether a message actually leaves the machine.
 
         `console` and `memory` do not deliver anything, so a sign-in code has
-        to reach the developer some other way. `smtp` does — and from that
-        moment the code must travel only by email, or the whole point of
+        to reach the developer some other way. `smtp` and `api` do — and from
+        that moment the code must travel only by email, or the whole point of
         emailing it (proving the address belongs to whoever typed it) is gone.
         """
-        return self.mail_backend == "smtp"
+        return self.mail_backend in {"smtp", "api"}
 
     @field_validator("cors_origins", mode="before")
     @classmethod
@@ -84,9 +94,9 @@ class Settings(BaseSettings):
 
     @field_validator("mail_backend")
     @classmethod
-    def require_smtp_in_prod(cls, v: str, info) -> str:
-        if info.data.get("env") == "production" and v != "smtp":
-            raise ValueError("MAIL_BACKEND must be 'smtp' in production")
+    def require_real_delivery_in_prod(cls, v: str, info) -> str:
+        if info.data.get("env") == "production" and v not in {"smtp", "api"}:
+            raise ValueError("MAIL_BACKEND must be 'smtp' or 'api' in production")
         return v
 
     @field_validator("jwt_secret")

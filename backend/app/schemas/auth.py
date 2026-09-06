@@ -72,6 +72,12 @@ class EmailCodeSent(BaseModel):
 
     sent: bool = True
     expires_in_seconds: int
+    #: Who runs the mailbox, worked out from the domain's MX record: `gmail`,
+    #: `icloud`, `outlook`, ... Says nothing about whether an account exists —
+    #: it is derived from the domain the caller just typed — and lets the app
+    #: say "apri Gmail" instead of "controlla la posta".
+    provider: str = "unknown"
+    provider_label: str = "il tuo provider"
     #: Only populated while nothing is actually being sent (MAIL_BACKEND
     #: `console` or `memory`, outside production), so a developer without a
     #: mail server can still sign in. `None` as soon as SMTP is configured:

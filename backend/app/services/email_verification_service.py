@@ -37,7 +37,7 @@ from app.repositories import verification as codes_repo
 from app.schemas.auth import EmailCodeSent, EmailCodeVerifyRequest, TokenPair
 from app.schemas.legal import AcceptedDocument
 from app.schemas.onboarding import OnboardingStep
-from app.services import auth_service, legal_service, mailer
+from app.services import auth_service, email_validation, legal_service, mailer
 from app.services.mailer import Email
 
 CODE_DIGITS = 6
@@ -102,6 +102,17 @@ async def request_code(
     address = email.lower()
     now = datetime.now(timezone.utc)
 
+    # Ask DNS first. A domain that cannot receive mail is worth catching here:
+    # it costs one lookup, and otherwise it burns a code, a rate-limit slot and
+    # a send at the provider on an address that was never going to answer. A
+    # near-miss domain gets told what it probably meant instead of "invalid".
+    #
+    # A resolver that times out returns "deliverable" — nobody should be locked
+    # out of their account because DNS had a bad minute.
+    mailbox = await email_validation.check(address)
+    if not mailbox.deliverable:
+        raise ValidationFailed(mailbox.reason or "questo indirizzo non può ricevere posta")
+
     recent = await codes_repo.count_since(session, email=address, since=now - timedelta(hours=1))
     if recent >= settings.email_code_max_per_hour:
         raise RateLimited("too many codes requested for this address, try again later")
@@ -136,11 +147,17 @@ async def request_code(
             text=_body(code, ttl),
         )
     )
-    log.info("auth.code_requested", email_domain=address.rpartition("@")[2])
+    log.info(
+        "auth.code_requested",
+        email_domain=address.rpartition("@")[2],
+        provider=mailbox.provider,
+    )
 
     return EmailCodeSent(
         sent=True,
         expires_in_seconds=ttl * 60,
+        provider=mailbox.provider,
+        provider_label=mailbox.provider_label,
         # Echoed only while no message actually leaves the machine — the
         # `console` and `memory` backends — so that a developer without a mail
         # server can still sign in.
