@@ -1,0 +1,1717 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#c26a52">
+<link rel="icon" href="../../favicon.ico">
+<title>Prova PkFAMILY</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Karla:wght@400;500;700&display=swap">
+<style>
+  /* Palette del progetto: il lino e i fili della mappa "a ricamo"
+     (scripts/patch-gh-pages-test-free.py), gli stessi colori dei pop-up. */
+  :root {
+    --lino: #f4ece0;
+    --carta: #fbf7ef;
+    --carta-alt: #efe4d2;
+    --inchiostro: #1f1b16;
+    --tenue: #6f6456;
+    --filo: #c26a52;
+    --filo-scuro: #a8543e;
+    --verde: #63864a;
+    --cucitura: #e0d4bd;
+    --ombra: 0 1px 0 rgba(31, 27, 22, .05);
+    --display: "Fraunces", Georgia, "Times New Roman", serif;
+    --testo: "Karla", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --lino: #16130e;
+      --carta: #201b14;
+      --carta-alt: #2a241b;
+      --inchiostro: #f0e7d7;
+      --tenue: #a2947f;
+      --filo: #d98a70;
+      --filo-scuro: #e6a894;
+      --verde: #8fb072;
+      --cucitura: #362e23;
+      --ombra: none;
+    }
+  }
+  :root[data-theme="dark"] {
+    --lino: #16130e;
+    --carta: #201b14;
+    --carta-alt: #2a241b;
+    --inchiostro: #f0e7d7;
+    --tenue: #a2947f;
+    --filo: #d98a70;
+    --filo-scuro: #e6a894;
+    --verde: #8fb072;
+    --cucitura: #362e23;
+    --ombra: none;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--lino);
+    color: var(--inchiostro);
+    font-family: var(--testo);
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .foglio {
+    max-width: 430px;
+    margin: 0 auto;
+    padding: 28px 20px 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+  }
+  h1, h2, h3 { font-family: var(--display); font-weight: 600; margin: 0; text-wrap: balance; }
+  h1 { font-size: 30px; line-height: 1.1; letter-spacing: -.01em; }
+  h2 { font-size: 19px; line-height: 1.2; }
+  h3 { font-size: 15px; line-height: 1.25; }
+  p { margin: 0; }
+  .occhiello {
+    font-size: 11px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--tenue);
+    font-weight: 700;
+  }
+  .sottile { color: var(--tenue); font-size: 14px; }
+  section { display: flex; flex-direction: column; gap: 14px; }
+
+  /* La cucitura: unico ornamento, ripreso dai punti filza della mappa. */
+  .cucitura {
+    border: 0;
+    height: 0;
+    border-top: 2px dashed var(--cucitura);
+    margin: 0;
+  }
+
+  .avviso {
+    background: var(--carta-alt);
+    border-left: 3px solid var(--filo);
+    padding: 12px 14px;
+    font-size: 14px;
+    color: var(--inchiostro);
+  }
+
+  .azioni { display: flex; flex-direction: column; gap: 10px; }
+  button {
+    font: inherit;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-align: left;
+    border: 1px solid var(--cucitura);
+    background: var(--carta);
+    color: var(--inchiostro);
+    box-shadow: var(--ombra);
+  }
+  button:hover { border-color: var(--filo); }
+  button:focus-visible { outline: 2px solid var(--filo); outline-offset: 2px; }
+  button.primario {
+    background: var(--filo);
+    border-color: var(--filo);
+    color: #fff;
+    font-weight: 700;
+  }
+  button.primario:hover { background: var(--filo-scuro); border-color: var(--filo-scuro); }
+  button.minuto { padding: 9px 12px; font-size: 14px; text-align: center; }
+  .riga { display: flex; gap: 8px; flex-wrap: wrap; }
+  .riga button { flex: 1 1 auto; }
+  button .desc { display: block; font-weight: 400; font-size: 13px; color: var(--tenue); margin-top: 2px; }
+  button.primario .desc { color: rgba(255,255,255,.82); }
+
+  .scheda {
+    background: var(--carta);
+    border: 1px solid var(--cucitura);
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: var(--ombra);
+  }
+  .campi { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
+  .campi dt { color: var(--tenue); }
+  .campi dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .chiave { font-family: var(--mono); font-size: 12px; word-break: break-all; }
+
+  /* Registro delle chiamate: è il motivo per cui questa pagina esiste. */
+  .registro { display: flex; flex-direction: column; gap: 0; font-family: var(--mono); font-size: 12px; }
+  .registro li {
+    display: grid;
+    grid-template-columns: 46px 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--cucitura);
+    align-items: baseline;
+  }
+  .registro li:last-child { border-bottom: 0; }
+  .verbo { color: var(--filo); font-weight: 700; }
+  .registro .nota { display: block; font-family: var(--testo); font-size: 13px; color: var(--tenue); margin-top: 2px; }
+  ol.registro { list-style: none; margin: 0; padding: 0; }
+  .vuoto { color: var(--tenue); font-size: 14px; font-style: italic; }
+
+  .catalogo { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .catalogo li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--cucitura);
+  }
+  .catalogo li:last-child { border-bottom: 0; }
+  .catalogo .grado { font-size: 12px; color: var(--tenue); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .catalogo li.fuori { display: none; }
+
+  .conteggio {
+    font-family: var(--display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .qr { display: none; }
+  @media (min-width: 720px) {
+    .qr { display: flex; flex-direction: column; gap: 10px; align-items: flex-start; }
+    .qr canvas, .qr img { border: 8px solid #fff; border-radius: 6px; }
+  }
+  a { color: var(--filo-scuro); }
+  code { font-family: var(--mono); font-size: 13px; background: var(--carta-alt); padding: 1px 5px; border-radius: 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+</head>
+<body>
+<div class="foglio">
+
+  <header>
+    <p class="occhiello">Anteprima del flusso d'accesso</p>
+    <h1>Prova PkFAMILY dal telefono</h1>
+    <p class="sottile" style="margin-top:10px">
+      Questa pagina fa girare gli stessi due moduli che finiscono nella web app
+      — <code>pk-legal.js</code> e <code>pk-onboarding.js</code> — con un
+      backend finto al posto di quello vero. I testi delle informative, i nomi
+      degli scavalcamenti e le regole dei livelli sono presi dal codice, non
+      riscritti a mano.
+    </p>
+    <p class="avviso" style="margin-top:14px">
+      Nessun dato esce da qui e nessuna email viene spedita: il server è una
+      funzione dentro questa pagina. Per provare l'app vera contro un backend
+      vero, c'è <code>docs/PROVA_DA_TELEFONO.md</code> nel repo.
+    </p>
+  </header>
+
+  <hr class="cucitura">
+
+  <section>
+    <div>
+      <p class="occhiello">Provalo</p>
+      <h2>Entra come entrerebbe un utente</h2>
+    </div>
+    <div class="azioni">
+      <button class="primario" id="btn-accesso">
+        Apri l'accesso
+        <span class="desc">Ospite o email — poi data di nascita, esperienza e il gioco</span>
+      </button>
+      <div class="riga">
+        <button id="btn-spot" class="minuto">Pop-up spot</button>
+        <button id="btn-tutorial" class="minuto">Pop-up tutorial</button>
+      </div>
+      <button id="btn-reset" class="minuto">Ricomincia da zero</button>
+    </div>
+    <p class="sottile">
+      Da provare almeno una volta: entra come ospite e metti una data di
+      nascita da quindicenne, poi dichiara «più di 10 anni». Il catalogo qui
+      sotto si accorcia, e non compare nulla che dica perché.
+    </p>
+  </section>
+
+  <hr class="cucitura">
+
+  <section>
+    <div>
+      <p class="occhiello">Vista di debug</p>
+      <h2>Cosa ha ricevuto il server</h2>
+      <p class="sottile" style="margin-top:6px">
+        Ogni chiamata che i moduli hanno fatto, in ordine. Serve a verificare
+        due cose: che un ospite non manda né email né nome, e che nessun
+        account nasce prima dell'informativa.
+      </p>
+    </div>
+    <div class="scheda">
+      <ol class="registro" id="registro"></ol>
+    </div>
+  </section>
+
+  <hr class="cucitura">
+
+  <section>
+    <div>
+      <p class="occhiello">Vista di debug</p>
+      <h2>Il profilo e il tetto</h2>
+      <p class="sottile" style="margin-top:6px">
+        Quello che il server sa. Nell'app queste righe non esistono: il tetto
+        non viene mai spedito ai client, ed è per questo che nessuna schermata
+        può far capire a un minorenne di essere in una versione ridotta.
+      </p>
+    </div>
+    <div class="scheda">
+      <dl class="campi" id="profilo"></dl>
+    </div>
+  </section>
+
+  <section>
+    <div>
+      <h3 id="conteggio" class="conteggio">Tutorial visibili</h3>
+      <p class="sottile" style="margin-top:6px">
+        Quelli oltre il tetto non compaiono: niente riga grigia, niente
+        lucchetto, niente contatore che non torna. Anche il numero qui sopra è
+        solo di questa pagina.
+      </p>
+    </div>
+    <div class="scheda">
+      <ul class="catalogo" id="catalogo"></ul>
+    </div>
+  </section>
+
+  <hr class="cucitura">
+
+  <section class="qr">
+    <div>
+      <p class="occhiello">Dal telefono</p>
+      <h2>Inquadra e apri</h2>
+    </div>
+    <div id="qr-box"></div>
+    <p class="sottile">Stesso indirizzo di questa pagina.</p>
+  </section>
+
+  <footer class="sottile">
+    <p>
+      Simulazione del flusso descritto in <code>docs/AUTENTICAZIONE.md</code>.
+      Le informative integrali sono quelle di <code>backend/app/legal/</code>,
+      e vanno fatte rivedere da un avvocato prima del lancio — il perché è in
+      <code>docs/LEGALE.md</code>.
+    </p>
+  </footer>
+
+</div>
+
+<script id="pk-demo-data" type="application/json">{"documents": [{"id": "liability_waiver", "version": 1, "title": "Rischi del parkour e responsabilità", "summary": "Prima di creare l'account: leggi come funziona questa piattaforma e di chi è la responsabilità durante l'allenamento.", "bullets": ["Il parkour è un'attività ad alto impatto: comporta un rischio reale e non eliminabile di infortunio, anche grave o mortale.", "Se ti fai male allenandoti in uno spot segnalato qui o seguendo un tutorial pubblicato qui, la responsabilità è esclusivamente tua.", "Gli spot sono luoghi di terzi: non li gestiamo, non li controlliamo, non li manteniamo e non garantiamo che siano sicuri o accessibili.", "I tutorial sono divulgativi: non sostituiscono un istruttore qualificato né il parere di un medico.", "Ci impegniamo solo a rendere queste informazioni disponibili gratuitamente e in modo facilmente accessibile.", "Allenati nei tuoi limiti, con progressione, e fermati prima che il corpo te lo imponga."], "body": "## Informativa sui rischi, assunzione del rischio e limitazione di responsabilità\n\nVersione 1 — da accettare prima della creazione dell'account.\n\n### 1. Natura dell'attività\n\nIl parkour (e ogni disciplina affine: freerunning, movimento naturale,\nallenamento a corpo libero in ambiente urbano o naturale) è un'attività\nsportiva ad alto impatto che si svolge su superfici non attrezzate, non\nomologate e non sorvegliate. Comporta un rischio **intrinseco e non\neliminabile** di caduta, urto, distorsione, frattura, trauma cranico, lesione\npermanente e, in casi estremi, di morte. Nessuna precauzione, nessun\ncontenuto informativo e nessuna verifica redazionale può azzerare questo\nrischio.\n\n### 2. Assunzione volontaria del rischio\n\nUtilizzando la piattaforma l'utente dichiara di conoscere e comprendere i\nrischi descritti al punto 1 e di **assumerli volontariamente e integralmente**\nsu di sé. L'utente sceglie autonomamente se, dove, quando, con chi, in quali\ncondizioni fisiche e con quale intensità allenarsi: nessuna di queste scelte è\nsuggerita, richiesta, approvata o supervisionata dalla piattaforma.\n\n### 3. Idoneità personale\n\nL'utente dichiara di essere in condizioni psicofisiche idonee alla pratica e\nsi impegna a valutare autonomamente, e se necessario con l'assistenza di un\nmedico, la propria idoneità. La piattaforma non richiede, non raccoglie e non\nvaluta certificati di idoneità sportiva e non è in grado di conoscere le\ncondizioni di salute dell'utente.\n\n### 4. Spot segnalati sulla mappa\n\nGli spot pubblicati sono luoghi fisici appartenenti a soggetti terzi\n(amministrazioni, enti, privati). La revisione redazionale che precede la\npubblicazione di una segnalazione verifica soltanto la **plausibilità e la\npubblicabilità della segnalazione** (che il luogo esista, che le foto siano\npertinenti, che non vi siano dati personali, che non si tratti di un\nduplicato): **non è, e non deve essere intesa come, una verifica di sicurezza,\ndi agibilità, di manutenzione, di idoneità all'uso sportivo o di liceità\ndell'accesso.**\n\nPrima di allenarsi in un luogo indicato sulla piattaforma, è onere esclusivo\ndell'utente:\n\n1. verificare di persona lo stato delle superfici, degli appigli, degli\n   atterraggi e dell'ambiente circostante;\n2. accertarsi di avere il diritto di accedere e di praticare in quel luogo, e\n   rispettare eventuali divieti, ordinanze, regolamenti e diritti di proprietà;\n3. valutare condizioni meteo, illuminazione, presenza di terzi e ogni altro\n   fattore di rischio.\n\n### 5. Contenuti didattici e tutorial\n\nI tutorial, i video, le descrizioni delle tecniche, le progressioni, i livelli\ndi difficoltà e ogni altro contenuto didattico hanno finalità **puramente\ninformativa e divulgativa**. Non costituiscono un programma di allenamento\npersonalizzato, non sono adattati alle caratteristiche del singolo utente e\n**non sostituiscono in alcun modo l'insegnamento diretto di un istruttore\nqualificato né una valutazione medica**. La difficoltà indicata è una stima\norientativa e non una garanzia di adeguatezza.\n\n### 6. Contenuti della community\n\nSegnalazioni, commenti, foto e valutazioni provengono dagli utenti. La\npiattaforma non ne garantisce l'esattezza, l'aggiornamento o la completezza e\nnon risponde di decisioni prese dall'utente sulla base di tali contenuti.\n\n### 7. Gratuità e disponibilità del servizio\n\nIl servizio informativo è offerto gratuitamente. La piattaforma si impegna a\nmantenerlo disponibile e facilmente accessibile con la diligenza ragionevole,\nma **non garantisce continuità, assenza di interruzioni, completezza o\nesattezza delle informazioni** e può modificare, sospendere o rimuovere\ncontenuti in qualsiasi momento.\n\n### 8. Manleva\n\nL'utente tiene indenne la piattaforma, i suoi gestori, collaboratori e\nvolontari da ogni pretesa di terzi che derivi da una condotta dell'utente in\nviolazione della legge, dei diritti altrui o delle presenti condizioni\n(a titolo di esempio: accesso a proprietà privata senza titolo, danni a cose\no persone, violazione di divieti).\n\n### 9. Minori\n\nL'uso da parte di persone di età inferiore a 18 anni è consentito soltanto con\nil consenso e sotto la sorveglianza di chi esercita la responsabilità\ngenitoriale, che risponde delle scelte di allenamento del minore.\n\n### 10. Legge applicabile\n\nIl rapporto è regolato dalla legge italiana. Per l'utente che agisce come\nconsumatore resta ferma la competenza del foro del luogo di residenza o\ndomicilio elettivo, e restano impregiudicati i diritti inderogabili\nriconosciuti dal Codice del Consumo.\n\n### Chi risponde di un infortunio\n\n**La responsabilità di ogni infortunio, danno o conseguenza di qualsiasi\nnatura occorso durante o in conseguenza di un allenamento svolto in uno spot\nsegnalato sulla piattaforma, oppure mentre si segue o si riproduce un\ntutorial, un video o qualsiasi altro contenuto pubblicato sulla piattaforma,\nè esclusivamente dell'utente.**\n\nL'utente pratica il parkour di propria iniziativa, nel luogo, nel momento, nel\nmodo e con l'intensità che sceglie autonomamente, e assume su di sé ogni\nrischio connesso.\n\n### Che cosa fa questa piattaforma, e che cosa non fa\n\nLa piattaforma **si impegna esclusivamente a rendere disponibili informazioni\nin modo gratuito e facilmente accessibile**: la posizione di spot segnalati\ndalla community, contenuti didattici e divulgativi, e uno spazio in cui la\ncommunity si scambia esperienze. Nient'altro.\n\nIn particolare la piattaforma **non**:\n\n- organizza, promuove, dirige, pianifica, supervisiona o sorveglia alcun\n  allenamento, evento, sessione o attività sportiva;\n- è una scuola, una palestra, una associazione sportiva, un centro di\n  formazione né un fornitore di servizi di allenamento o di istruzione;\n- mette a disposizione, gestisce, controlla, ispeziona o mantiene i luoghi\n  indicati sulla mappa, che sono strutture di terzi (pubbliche o private)\n  sulle quali la piattaforma non ha alcun potere né alcun titolo;\n- garantisce che un luogo indicato sia sicuro, praticabile, idoneo,\n  manutenuto, aperto o legalmente accessibile;\n- garantisce che un esercizio, una tecnica o una progressione sia adatta a\n  chi la sta guardando;\n- sostituisce l'insegnamento di un istruttore qualificato, la valutazione di\n  un medico o il parere di un professionista.\n\n### Limiti di questa clausola\n\nNulla in questo testo esclude o limita la responsabilità della piattaforma per\ndolo o colpa grave, né le responsabilità che la legge applicabile dichiara\ninderogabili, comprese quelle previste a tutela dei consumatori. Le\nlimitazioni qui previste operano nella massima misura consentita dalla legge\nitaliana e, ove una singola clausola risultasse invalida, le restanti\nrestano pienamente efficaci.", "trigger": "signup", "blocking": true, "accept_label": "Ho letto, accetto e mi assumo il rischio", "decline_label": "Non accetto"}, {"id": "minor_guardian", "version": 1, "title": "Consenso di chi esercita la responsabilità genitoriale", "summary": "Per i minori di 18 anni serve il consenso e la sorveglianza di un genitore o tutore.", "bullets": ["Un genitore o tutore deve conoscere e approvare l'uso della piattaforma e la pratica del parkour.", "La sorveglianza sull'allenamento del minore spetta a chi esercita la responsabilità genitoriale.", "Valgono integralmente l'informativa sui rischi e la limitazione di responsabilità già accettate."], "body": "## Uso da parte di minori\n\nL'accesso di persone di età inferiore a 18 anni è consentito soltanto con il\nconsenso di chi esercita la responsabilità genitoriale, che dichiara di aver\nletto l'informativa sui rischi e la limitazione di responsabilità e di\nassumersi la sorveglianza sull'attività del minore.\n\nLa piattaforma resta un servizio informativo gratuito: non organizza né\nsupervisiona l'allenamento di nessun utente, minorenne o maggiorenne.\n\n### Chi risponde di un infortunio\n\n**La responsabilità di ogni infortunio, danno o conseguenza di qualsiasi\nnatura occorso durante o in conseguenza di un allenamento svolto in uno spot\nsegnalato sulla piattaforma, oppure mentre si segue o si riproduce un\ntutorial, un video o qualsiasi altro contenuto pubblicato sulla piattaforma,\nè esclusivamente dell'utente.**\n\nL'utente pratica il parkour di propria iniziativa, nel luogo, nel momento, nel\nmodo e con l'intensità che sceglie autonomamente, e assume su di sé ogni\nrischio connesso.\n\n### Che cosa fa questa piattaforma, e che cosa non fa\n\nLa piattaforma **si impegna esclusivamente a rendere disponibili informazioni\nin modo gratuito e facilmente accessibile**: la posizione di spot segnalati\ndalla community, contenuti didattici e divulgativi, e uno spazio in cui la\ncommunity si scambia esperienze. Nient'altro.\n\nIn particolare la piattaforma **non**:\n\n- organizza, promuove, dirige, pianifica, supervisiona o sorveglia alcun\n  allenamento, evento, sessione o attività sportiva;\n- è una scuola, una palestra, una associazione sportiva, un centro di\n  formazione né un fornitore di servizi di allenamento o di istruzione;\n- mette a disposizione, gestisce, controlla, ispeziona o mantiene i luoghi\n  indicati sulla mappa, che sono strutture di terzi (pubbliche o private)\n  sulle quali la piattaforma non ha alcun potere né alcun titolo;\n- garantisce che un luogo indicato sia sicuro, praticabile, idoneo,\n  manutenuto, aperto o legalmente accessibile;\n- garantisce che un esercizio, una tecnica o una progressione sia adatta a\n  chi la sta guardando;\n- sostituisce l'insegnamento di un istruttore qualificato, la valutazione di\n  un medico o il parere di un professionista.\n\n### Limiti di questa clausola\n\nNulla in questo testo esclude o limita la responsabilità della piattaforma per\ndolo o colpa grave, né le responsabilità che la legge applicabile dichiara\ninderogabili, comprese quelle previste a tutela dei consumatori. Le\nlimitazioni qui previste operano nella massima misura consentita dalla legge\nitaliana e, ove una singola clausola risultasse invalida, le restanti\nrestano pienamente efficaci.", "trigger": "signup_minor", "blocking": true, "accept_label": "Confermo il consenso di un genitore o tutore", "decline_label": "Non confermo"}, {"id": "spot_risk", "version": 1, "title": "Prima di andare in questo spot", "summary": "Lo spot è un luogo di terzi. Ci vai sotto la tua esclusiva responsabilità.", "bullets": ["Non gestiamo, non controlliamo e non manteniamo questo luogo: la segnalazione dice che esiste, non che è sicuro.", "Controlla di persona superfici, atterraggi, appigli e ambiente prima di muoverti.", "Accertati di poter accedere legittimamente: rispetta divieti, ordinanze e proprietà privata.", "Se ti infortuni qui, la responsabilità è esclusivamente tua."], "body": "## Spot segnalati: cosa significa (e cosa non significa) la verifica\n\nUno spot pubblicato sulla mappa è una **segnalazione della community**. La\nrevisione che precede la pubblicazione controlla che il luogo esista, che le\nfoto siano pertinenti e che la segnalazione sia pubblicabile. **Non controlla\nla sicurezza del luogo**, non ne verifica la manutenzione, non ne accerta\nl'agibilità e non attesta il diritto di accedervi o di praticarvi sport.\n\nI luoghi indicati appartengono a soggetti terzi. La piattaforma non ha su di\nessi alcun potere di gestione, controllo, ispezione o manutenzione, e le loro\ncondizioni possono cambiare in qualsiasi momento senza che la piattaforma ne\nabbia notizia.\n\nPrima di allenarti in un luogo segnalato è onere tuo, ed esclusivamente tuo,\nverificarne di persona le condizioni, valutare i rischi e accertarti di avere\ntitolo per accedervi.\n\n### Chi risponde di un infortunio\n\n**La responsabilità di ogni infortunio, danno o conseguenza di qualsiasi\nnatura occorso durante o in conseguenza di un allenamento svolto in uno spot\nsegnalato sulla piattaforma, oppure mentre si segue o si riproduce un\ntutorial, un video o qualsiasi altro contenuto pubblicato sulla piattaforma,\nè esclusivamente dell'utente.**\n\nL'utente pratica il parkour di propria iniziativa, nel luogo, nel momento, nel\nmodo e con l'intensità che sceglie autonomamente, e assume su di sé ogni\nrischio connesso.\n\n### Che cosa fa questa piattaforma, e che cosa non fa\n\nLa piattaforma **si impegna esclusivamente a rendere disponibili informazioni\nin modo gratuito e facilmente accessibile**: la posizione di spot segnalati\ndalla community, contenuti didattici e divulgativi, e uno spazio in cui la\ncommunity si scambia esperienze. Nient'altro.\n\nIn particolare la piattaforma **non**:\n\n- organizza, promuove, dirige, pianifica, supervisiona o sorveglia alcun\n  allenamento, evento, sessione o attività sportiva;\n- è una scuola, una palestra, una associazione sportiva, un centro di\n  formazione né un fornitore di servizi di allenamento o di istruzione;\n- mette a disposizione, gestisce, controlla, ispeziona o mantiene i luoghi\n  indicati sulla mappa, che sono strutture di terzi (pubbliche o private)\n  sulle quali la piattaforma non ha alcun potere né alcun titolo;\n- garantisce che un luogo indicato sia sicuro, praticabile, idoneo,\n  manutenuto, aperto o legalmente accessibile;\n- garantisce che un esercizio, una tecnica o una progressione sia adatta a\n  chi la sta guardando;\n- sostituisce l'insegnamento di un istruttore qualificato, la valutazione di\n  un medico o il parere di un professionista.\n\n### Limiti di questa clausola\n\nNulla in questo testo esclude o limita la responsabilità della piattaforma per\ndolo o colpa grave, né le responsabilità che la legge applicabile dichiara\ninderogabili, comprese quelle previste a tutela dei consumatori. Le\nlimitazioni qui previste operano nella massima misura consentita dalla legge\nitaliana e, ove una singola clausola risultasse invalida, le restanti\nrestano pienamente efficaci.", "trigger": "spot_open", "blocking": true, "accept_label": "Ho capito, ci vado sotto la mia responsabilità", "decline_label": "Torna indietro"}, {"id": "tutorial_risk", "version": 1, "title": "Prima di provare questo movimento", "summary": "Il tutorial è informativo. Provarlo è una tua scelta e una tua responsabilità.", "bullets": ["Questo contenuto è divulgativo: non è un programma di allenamento fatto su di te.", "Non sostituisce un istruttore qualificato né il parere di un medico.", "Vai per gradi: scala il movimento, usa altezze basse, atterraggi morbidi e, se puoi, qualcuno che ti assista.", "Se ti infortuni provando quello che vedi, la responsabilità è esclusivamente tua."], "body": "## Contenuti didattici: come vanno usati\n\nOgni tutorial pubblicato ha finalità informativa e divulgativa. Mostra come un\nmovimento viene eseguito; **non stabilisce che quel movimento sia adatto a\nte**, al tuo livello, alla tua condizione fisica, al tuo stato di\naffaticamento o al luogo in cui ti trovi.\n\nIl livello e la difficoltà indicati sono una stima orientativa fornita per\naiutarti a scegliere, non una garanzia di adeguatezza né una certificazione.\n\nLa progressione, il numero di ripetizioni, l'altezza, la superficie e la\ndecisione stessa di provare o non provare un movimento restano scelte tue.\nUn contenuto pubblicato qui non sostituisce l'insegnamento diretto di un\nistruttore qualificato né una valutazione medica.\n\n### Chi risponde di un infortunio\n\n**La responsabilità di ogni infortunio, danno o conseguenza di qualsiasi\nnatura occorso durante o in conseguenza di un allenamento svolto in uno spot\nsegnalato sulla piattaforma, oppure mentre si segue o si riproduce un\ntutorial, un video o qualsiasi altro contenuto pubblicato sulla piattaforma,\nè esclusivamente dell'utente.**\n\nL'utente pratica il parkour di propria iniziativa, nel luogo, nel momento, nel\nmodo e con l'intensità che sceglie autonomamente, e assume su di sé ogni\nrischio connesso.\n\n### Che cosa fa questa piattaforma, e che cosa non fa\n\nLa piattaforma **si impegna esclusivamente a rendere disponibili informazioni\nin modo gratuito e facilmente accessibile**: la posizione di spot segnalati\ndalla community, contenuti didattici e divulgativi, e uno spazio in cui la\ncommunity si scambia esperienze. Nient'altro.\n\nIn particolare la piattaforma **non**:\n\n- organizza, promuove, dirige, pianifica, supervisiona o sorveglia alcun\n  allenamento, evento, sessione o attività sportiva;\n- è una scuola, una palestra, una associazione sportiva, un centro di\n  formazione né un fornitore di servizi di allenamento o di istruzione;\n- mette a disposizione, gestisce, controlla, ispeziona o mantiene i luoghi\n  indicati sulla mappa, che sono strutture di terzi (pubbliche o private)\n  sulle quali la piattaforma non ha alcun potere né alcun titolo;\n- garantisce che un luogo indicato sia sicuro, praticabile, idoneo,\n  manutenuto, aperto o legalmente accessibile;\n- garantisce che un esercizio, una tecnica o una progressione sia adatta a\n  chi la sta guardando;\n- sostituisce l'insegnamento di un istruttore qualificato, la valutazione di\n  un medico o il parere di un professionista.\n\n### Limiti di questa clausola\n\nNulla in questo testo esclude o limita la responsabilità della piattaforma per\ndolo o colpa grave, né le responsabilità che la legge applicabile dichiara\ninderogabili, comprese quelle previste a tutela dei consumatori. Le\nlimitazioni qui previste operano nella massima misura consentita dalla legge\nitaliana e, ove una singola clausola risultasse invalida, le restanti\nrestano pienamente efficaci.", "trigger": "tutorial_open", "blocking": true, "accept_label": "Ho capito, provo sotto la mia responsabilità", "decline_label": "Torna indietro"}], "vaults": [{"slug": "safety_vault", "name": "Safety vault", "tier": 1, "clue": "Una mano sull'ostacolo e un piede che si appoggia sopra, tra la mano e il corpo. È il passaggio più controllato: puoi fermarti a metà e restare in piedi sull'ostacolo."}, {"slug": "side_vault", "name": "Side vault", "tier": 1, "clue": "Il corpo resta di fianco all'ostacolo e le gambe passano insieme da un solo lato, con una o due mani in appoggio. Il primo che quasi tutti fanno senza che nessuno glielo insegni."}, {"slug": "speed_vault", "name": "Speed vault", "tier": 1, "clue": "Arrivi di lato in corsa, le gambe passano sopra l'ostacolo e una sola mano lo tocca dopo di loro, come per accompagnare. La corsa non si interrompe mai."}, {"slug": "kong_vault", "name": "Kong vault", "tier": 1, "clue": "Arrivi frontalmente, tuffi le mani in avanti sull'ostacolo e fai passare le ginocchia in mezzo alle braccia."}, {"slug": "lazy_vault", "name": "Lazy vault", "tier": 2, "clue": "Entri di lato e le gambe passano una dopo l'altra mentre le mani si alternano: la prima spinge, la seconda accompagna l'uscita. Fluido, poco dispendioso, per niente spettacolare."}, {"slug": "dash_vault", "name": "Dash vault", "tier": 2, "clue": "Le gambe passano per prime, davanti a te, e le mani toccano l'ostacolo solo alla fine, dietro il bacino, per darti la spinta d'uscita."}, {"slug": "turn_vault", "name": "Turn vault", "tier": 2, "clue": "Scavalchi e nel farlo ruoti di 180°, finendo appeso al bordo con il viso rivolto da dove sei arrivato, pronto a lasciarti scendere."}, {"slug": "thief_vault", "name": "Thief vault", "tier": 2, "clue": "Somiglia a uno speed, ma a toccare l'ostacolo è la mano che resta dietro, quella dal lato da cui sei arrivato: il corpo passa 'rubando' l'appoggio all'ultimo."}, {"slug": "reverse_vault", "name": "Reverse vault", "tier": 2, "clue": "Attraversi ruotando su te stesso di 360°, con la schiena che per un istante guarda l'ostacolo e il bacino che sale sopra le mani."}, {"slug": "kash_vault", "name": "Kash vault", "tier": 3, "clue": "Comincia come un kong — mani avanti, ginocchia in mezzo alle braccia — e finisce come un dash: dopo che le gambe sono passate, la seconda mano spinge da dietro. Serve un ostacolo largo."}, {"slug": "dive_kong", "name": "Dive kong", "tier": 3, "clue": "Il corpo si distende in volo, quasi orizzontale, prima che le mani arrivino sull'ostacolo. Si usa quando c'è distanza da coprire prima dell'appoggio."}, {"slug": "palm_spin", "name": "Palm spin", "tier": 3, "clue": "Le mani restano incollate all'ostacolo e il corpo gli ruota sopra di 360° in orizzontale, come una lancetta."}, {"slug": "double_kong", "name": "Double kong", "tier": 3, "clue": "Un kong su un ostacolo lungo: le mani si appoggiano una prima volta, il corpo avanza e le mani spingono una seconda volta prima dell'atterraggio."}], "experience_options": [{"value": "less_than_month", "label": "Meno di un mese"}, {"value": "few_months", "label": "Un paio di mesi"}, {"value": "six_months", "label": "Sei mesi"}, {"value": "one_year", "label": "Un anno"}, {"value": "couple_years", "label": "Un paio d'anni"}, {"value": "over_5_years", "label": "Più di 5 anni"}, {"value": "over_10_years", "label": "Più di 10 anni"}], "practitioner_options": [{"value": "athlete", "label": "Sono un atleta: pratico parkour"}, {"value": "instructor", "label": "Sono un istruttore di parkour"}], "band_access": {"less_than_month": {"max_level": "beginner", "max_difficulty": 2}, "few_months": {"max_level": "beginner", "max_difficulty": 3}, "six_months": {"max_level": "intermediate", "max_difficulty": 5}, "one_year": {"max_level": "intermediate", "max_difficulty": 6}, "couple_years": {"max_level": "advanced", "max_difficulty": 8}, "over_5_years": {"max_level": "advanced", "max_difficulty": 10}, "over_10_years": {"max_level": "advanced", "max_difficulty": 10}}, "minor_ceilings": [{"max_age": 11, "max_level": "beginner", "max_difficulty": 2}, {"max_age": 13, "max_level": "beginner", "max_difficulty": 3}, {"max_age": 15, "max_level": "intermediate", "max_difficulty": 4}, {"max_age": 17, "max_level": "intermediate", "max_difficulty": 6}], "band_order": ["less_than_month", "few_months", "six_months", "one_year", "couple_years", "over_5_years", "over_10_years"], "level_order": ["beginner", "intermediate", "advanced"], "quiz": {"question_count": 6, "options_per_question": 4, "pass_ratio": 0.7, "max_tier": {"less_than_month": 1, "few_months": 1, "six_months": 2, "one_year": 2, "couple_years": 3, "over_5_years": 3, "over_10_years": 3}, "title": "Come si chiama questo scavalcamento?", "intro": "Sei movimenti, quattro nomi per ognuno. Serve a capire con che livello partire: non c'è niente da saltare e niente da dimostrare a nessuno."}, "guest_words": ["Muretto", "Corrimano", "Cornicione", "Gradino", "Ponteggio", "Tetto", "Parapetto", "Ringhiera", "Palo", "Dislivello", "Sottopasso", "Lampione", "Portico", "Cordolo", "Balaustra", "Marciapiede", "Scalone", "Terrazzo", "Pilastro", "Guardrail"]}</script>
+<script>
+  globalThis.__PK_DEMO_DATA__ = JSON.parse(
+    document.getElementById('pk-demo-data').textContent
+  );
+</script>
+<script>
+/* Il backend finto.
+ *
+ * Implementa gli stessi endpoint e le stesse regole di
+ * backend/app/services/access_policy.py, quiz_service.py e
+ * onboarding_service.py — tabelle e testi arrivano da __PK_DEMO_DATA__, che è
+ * generato dal codice Python, non ricopiato. Deve essere definito prima dei
+ * moduli veri: li carichiamo subito dopo e leggono __PK_API__ all'avvio.
+ */
+(function () {
+  'use strict';
+
+  var DATA = globalThis.__PK_DEMO_DATA__;
+  var API = 'https://demo.pkfamily.invalid';
+  globalThis.__PK_API__ = API;
+
+  var STORE = 'pkdemo.server';
+  var ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+  function fresh() {
+    return { account: null, accepted: [], code: null, quiz: null, log: [] };
+  }
+
+  var server = (function () {
+    try { return JSON.parse(localStorage.getItem(STORE) || 'null') || fresh(); }
+    catch (e) { return fresh(); }
+  })();
+
+  function save() {
+    try { localStorage.setItem(STORE, JSON.stringify(server)); } catch (e) { /* privata */ }
+  }
+
+  function note(method, path, text) {
+    server.log.push({ method: method, path: path, note: text });
+    save();
+    if (globalThis.PkDemo && globalThis.PkDemo.refresh) globalThis.PkDemo.refresh();
+  }
+
+  // --- utilità ---------------------------------------------------------------
+
+  function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
+
+  function shuffle(list) {
+    for (var i = list.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = list[i]; list[i] = list[j]; list[j] = tmp;
+    }
+    return list;
+  }
+
+  function guestName() {
+    var suffix = '';
+    for (var i = 0; i < 4; i++) suffix += pick(ALPHABET.split(''));
+    return pick(DATA.guest_words) + '-' + suffix;
+  }
+
+  function guestKey() {
+    var key = 'pkg_';
+    var chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    for (var i = 0; i < 32; i++) key += pick(chars.split(''));
+    return key;
+  }
+
+  // --- le regole (specchio di access_policy.py) ------------------------------
+
+  function ageOn(iso) {
+    var born = new Date(iso + 'T00:00:00');
+    var now = new Date();
+    var years = now.getFullYear() - born.getFullYear();
+    var before = now.getMonth() < born.getMonth() ||
+      (now.getMonth() === born.getMonth() && now.getDate() < born.getDate());
+    return before ? years - 1 : years;
+  }
+
+  function minorCeiling(age) {
+    for (var i = 0; i < DATA.minor_ceilings.length; i++) {
+      if (age <= DATA.minor_ceilings[i].max_age) {
+        return {
+          max_level: DATA.minor_ceilings[i].max_level,
+          max_difficulty: DATA.minor_ceilings[i].max_difficulty
+        };
+      }
+    }
+    return { max_level: 'advanced', max_difficulty: 10 };
+  }
+
+  function bandAccess(band) {
+    if (!band) return { max_level: 'beginner', max_difficulty: 3 };
+    return DATA.band_access[band];
+  }
+
+  function narrower(a, b) {
+    var order = DATA.level_order;
+    return {
+      max_level: order.indexOf(a.max_level) <= order.indexOf(b.max_level) ? a.max_level : b.max_level,
+      max_difficulty: Math.min(a.max_difficulty, b.max_difficulty)
+    };
+  }
+
+  function accessFor(account) {
+    if (!account || !account.birth_date) return { max_level: 'advanced', max_difficulty: 10 };
+    var access = bandAccess(account.verified_band || account.experience_band);
+    var age = ageOn(account.birth_date);
+    if (age < 18) access = narrower(access, minorCeiling(age));
+    return access;
+  }
+
+  function nextStep(account) {
+    if (!account || !account.birth_date) return 'birth_date';
+    var adult = ageOn(account.birth_date) >= 18;
+    if (adult && !account.is_guest && !account.practitioner_type) return 'practitioner_type';
+    if (account.practitioner_type === 'instructor') return 'instructor_certificate';
+    if (!account.experience_band) return 'experience';
+    if (!account.verified_band) return 'experience_quiz';
+    return 'done';
+  }
+
+  function stateBody() {
+    var account = server.account;
+    var step = nextStep(account);
+    return {
+      next_step: step,
+      completed: step === 'done',
+      practitioner_options: step === 'practitioner_type' ? DATA.practitioner_options : [],
+      experience_options: step === 'experience' ? DATA.experience_options : [],
+      pending_documents: []
+    };
+  }
+
+  // --- il gioco (specchio di quiz_service.py) --------------------------------
+
+  function buildQuestions(band) {
+    var maxTier = band ? DATA.quiz.max_tier[band] : 2;
+    var pool = DATA.vaults.filter(function (v) { return v.tier <= maxTier; });
+    var top = pool.filter(function (v) { return v.tier === maxTier; });
+    var chosen = [];
+    // Chi dichiara molti anni riceve sempre almeno una domanda del tier più
+    // alto: altrimenti dieci anni si confermerebbero con dei passamano.
+    if (top.length && maxTier > 1) chosen.push(pick(top));
+    var rest = shuffle(pool.filter(function (v) { return chosen.indexOf(v) < 0; }));
+    chosen = shuffle(chosen.concat(rest.slice(0, DATA.quiz.question_count - chosen.length)));
+
+    return chosen.slice(0, DATA.quiz.question_count).map(function (vault) {
+      var same = shuffle(pool.filter(function (v) {
+        return v.slug !== vault.slug && v.tier === vault.tier;
+      }));
+      var other = shuffle(pool.filter(function (v) {
+        return v.slug !== vault.slug && v.tier !== vault.tier;
+      }));
+      var options = same.concat(other)
+        .slice(0, DATA.quiz.options_per_question - 1)
+        .map(function (v) { return v.name; });
+      return {
+        slug: vault.slug,
+        clue: vault.clue,
+        options: shuffle([vault.name].concat(options))
+      };
+    });
+  }
+
+  function nameOf(slug) {
+    for (var i = 0; i < DATA.vaults.length; i++) {
+      if (DATA.vaults[i].slug === slug) return DATA.vaults[i].name;
+    }
+    return '';
+  }
+
+  function resolveBand(claimed, score, total) {
+    if (!total) return claimed;
+    var order = DATA.band_order;
+    var ratio = score / total;
+    if (!claimed) {
+      var ceiling = order.indexOf('one_year');
+      return order[Math.max(0, Math.min(ceiling, Math.floor(ratio * (ceiling + 1))))];
+    }
+    if (ratio >= DATA.quiz.pass_ratio) return claimed;
+    var claimedIndex = order.indexOf(claimed);
+    // Una prova andata male non lascia mai il tetto dov'era.
+    var scaled = Math.floor(claimedIndex * (ratio / DATA.quiz.pass_ratio));
+    return order[Math.max(0, Math.min(scaled, claimedIndex - 1))];
+  }
+
+  // --- le rotte --------------------------------------------------------------
+
+  function ok(body) {
+    return Promise.resolve(new Response(JSON.stringify(body), {
+      status: 200, headers: { 'Content-Type': 'application/json' }
+    }));
+  }
+
+  function fail(status, code, message) {
+    return Promise.resolve(new Response(
+      JSON.stringify({ error: { code: code, message: message } }),
+      { status: status, headers: { 'Content-Type': 'application/json' } }
+    ));
+  }
+
+  function waiverAccepted(docs) {
+    return (docs || []).some(function (d) {
+      return d.id === 'liability_waiver' && d.version === 1;
+    });
+  }
+
+  function route(path, method, body, query) {
+    if (path === '/legal/documents') {
+      var docs = query.trigger
+        ? DATA.documents.filter(function (d) { return d.trigger === query.trigger; })
+        : DATA.documents;
+      return ok(docs);
+    }
+
+    if (path === '/legal/accept') {
+      server.accepted = server.accepted.concat(body.documents || []);
+      note('POST', '/legal/accept', 'accettata: ' + (body.documents || []).map(function (d) {
+        return d.id + ' v' + d.version;
+      }).join(', '));
+      return ok({ accepted: server.accepted, pending: [] });
+    }
+
+    if (path === '/auth/guest') {
+      if (!waiverAccepted(body.accepted_documents)) {
+        note('POST', '/auth/guest', 'rifiutato: informativa non accettata');
+        return fail(422, 'validation_failed', 'informativa non accettata');
+      }
+      var name = guestName();
+      var key = guestKey();
+      server.account = {
+        is_guest: true, email: null, display_name: name, guest_key: key,
+        // Il profilo di un ospite nasce atleta: la domanda non gli viene posta.
+        practitioner_type: 'athlete',
+        birth_date: null, experience_band: null, verified_band: null
+      };
+      server.accepted = (body.accepted_documents || []).slice();
+      note('POST', '/auth/guest',
+        'creato ' + name + ' — nel corpo solo accepted_documents: nessuna email, nessun nome');
+      return ok({
+        tokens: { access_token: 'demo', refresh_token: 'demo', token_type: 'Bearer' },
+        display_name: name, guest_key: key, created: true, next_step: 'birth_date'
+      });
+    }
+
+    if (path === '/auth/guest/resume') {
+      if (!server.account || server.account.guest_key !== body.guest_key) {
+        note('POST', '/auth/guest/resume', 'chiave non valida');
+        return fail(401, 'unauthorized', 'chiave non valida');
+      }
+      note('POST', '/auth/guest/resume', 'rientrato con la chiave, senza password');
+      return ok({
+        tokens: { access_token: 'demo', refresh_token: 'demo', token_type: 'Bearer' },
+        display_name: server.account.display_name, guest_key: null,
+        created: false, next_step: nextStep(server.account)
+      });
+    }
+
+    if (path === '/auth/email/request-code') {
+      var code = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
+      server.code = { email: body.email, code: code };
+      note('POST', '/auth/email/request-code',
+        'codice ' + code + ' generato ora — la risposta non dice se l’indirizzo è già iscritto');
+      return ok({ sent: true, expires_in_seconds: 600, debug_code: code });
+    }
+
+    if (path === '/auth/email/verify-code') {
+      // L'informativa si controlla prima del codice, e sempre: chi rifiuta e
+      // poi ci ripensa non ha speso niente, e la risposta non cambia a seconda
+      // che l'indirizzo sia già iscritto o no.
+      if (!waiverAccepted(body.accepted_documents)) {
+        note('POST', '/auth/email/verify-code', 'rifiutato: informativa non accettata — il codice non è stato speso');
+        return fail(422, 'validation_failed', 'informativa non accettata');
+      }
+      if (!server.code || server.code.code !== body.code) {
+        note('POST', '/auth/email/verify-code', 'codice sbagliato o scaduto');
+        return fail(401, 'unauthorized', 'codice non valido o scaduto');
+      }
+      var display = body.display_name || String(body.email).split('@')[0];
+      server.account = {
+        is_guest: false, email: body.email, display_name: display, guest_key: null,
+        practitioner_type: null, birth_date: null,
+        experience_band: null, verified_band: null
+      };
+      server.accepted = (body.accepted_documents || []).slice();
+      note('POST', '/auth/email/verify-code', 'account creato per ' + body.email);
+      return ok({
+        tokens: { access_token: 'demo', refresh_token: 'demo', token_type: 'Bearer' },
+        created: true, next_step: 'birth_date'
+      });
+    }
+
+    if (!server.account) return fail(401, 'unauthorized', 'nessuna sessione');
+
+    if (path === '/onboarding/state') return ok(stateBody());
+
+    if (path === '/onboarding/birth-date') {
+      var age = ageOn(body.birth_date);
+      if (age < 18) {
+        var consent = (body.accepted_documents || []).some(function (d) {
+          return d.id === 'minor_guardian';
+        });
+        if (!consent) {
+          note('POST', '/onboarding/birth-date', 'rifiutato: manca il consenso di un genitore');
+          return fail(422, 'validation_failed', 'serve il consenso di chi esercita la responsabilità genitoriale');
+        }
+      }
+      server.account.birth_date = body.birth_date;
+      server.accepted = server.accepted.concat(body.accepted_documents || []);
+      note('POST', '/onboarding/birth-date',
+        'salvata. Da qui scende il tetto per età, e non esce più dal server');
+      return ok(stateBody());
+    }
+
+    if (path === '/onboarding/practitioner-type') {
+      if (server.account.is_guest) {
+        note('POST', '/onboarding/practitioner-type', '403: un ospite non può qualificarsi');
+        return fail(403, 'forbidden', 'questa domanda non vale per questo account');
+      }
+      server.account.practitioner_type = body.practitioner_type;
+      note('POST', '/onboarding/practitioner-type', body.practitioner_type);
+      return ok(stateBody());
+    }
+
+    if (path === '/onboarding/experience') {
+      server.account.experience_band = body.experience_band;
+      server.account.verified_band = null;
+      note('POST', '/onboarding/experience',
+        body.experience_band + ' — i livelli si aprono subito, il gioco li conferma dopo');
+      return ok(stateBody());
+    }
+
+    if (path === '/onboarding/quiz') {
+      var questions = buildQuestions(server.account.experience_band);
+      server.quiz = {
+        attempt_id: 'demo-' + Date.now(),
+        claimed: server.account.experience_band,
+        questions: questions
+      };
+      note('POST', '/onboarding/quiz',
+        questions.length + ' movimenti estratti; le risposte giuste restano qui');
+      return ok({
+        attempt_id: server.quiz.attempt_id,
+        title: DATA.quiz.title,
+        intro: DATA.quiz.intro,
+        pass_ratio: DATA.quiz.pass_ratio,
+        questions: questions.map(function (q, i) {
+          return { index: i, clue: q.clue, media_url: null, options: q.options };
+        })
+      });
+    }
+
+    if (path === '/onboarding/quiz/answers') {
+      if (!server.quiz) return fail(404, 'not_found', 'nessuna partita in corso');
+      var qs = server.quiz.questions;
+      var score = 0;
+      var corrections = qs.map(function (q, i) {
+        var given = body.answers[i];
+        var chosen = (given === null || given === undefined) ? null : q.options[given];
+        var right = nameOf(q.slug);
+        if (chosen === right) score += 1;
+        return { index: i, correct_answer: right, given_answer: chosen, is_correct: chosen === right };
+      });
+      var passed = score / qs.length >= DATA.quiz.pass_ratio;
+      var granted = resolveBand(server.quiz.claimed, score, qs.length);
+      server.account.verified_band = granted;
+      var adjusted = granted !== server.quiz.claimed;
+      note('POST', '/onboarding/quiz/answers',
+        score + '/' + qs.length + (passed ? ' — dichiarazione confermata' : ' — tetto abbassato a ' + granted));
+      server.quiz = null;
+      return ok({
+        score: score, total: qs.length, passed: passed, granted_band: granted,
+        adjusted: adjusted, corrections: corrections,
+        message: passed
+          ? 'Nomi giusti: il livello che hai indicato resta com’è.'
+          : 'Qualche nome è scappato. Si riparte da un gradino più sotto — puoi rifare il gioco quando vuoi e recuperarlo.'
+      });
+    }
+
+    return fail(404, 'not_found', 'rotta sconosciuta: ' + path);
+  }
+
+  var realFetch = globalThis.fetch.bind(globalThis);
+
+  globalThis.fetch = function (input, options) {
+    var url = String(input);
+    if (url.indexOf(API) !== 0) return realFetch(input, options);
+    options = options || {};
+    var parsed = new URL(url);
+    var path = parsed.pathname.replace('/api/v1', '');
+    var query = {};
+    parsed.searchParams.forEach(function (value, key) { query[key] = value; });
+    var body = null;
+    if (options.body && !(options.body instanceof FormData)) {
+      try { body = JSON.parse(options.body); } catch (e) { body = null; }
+    }
+    var answer = route(path, options.method || 'GET', body || {}, query);
+    save();
+    return answer;
+  };
+
+  globalThis.PkDemoServer = {
+    state: function () { return server; },
+    access: function () { return accessFor(server.account); },
+    reset: function () { server = fresh(); save(); }
+  };
+})();
+
+</script>
+
+<!-- Da qui in giù: i due moduli veri, copiati da scripts/web/ senza modifiche. -->
+<script>
+/* PkFAMILY — pop-up informativi sui rischi.
+ *
+ * Caricato accanto al bundle Expo, come pk-route.js. Non dipende da niente:
+ * niente framework, niente CSS esterno, nessuna build.
+ *
+ * I testi arrivano da GET /api/v1/legal/documents e sono versionati lato
+ * server: alzare la versione di un documento lo rimette davanti a tutti senza
+ * toccare una riga di questo file. L'accettazione si registra su
+ * POST /api/v1/legal/accept quando c'è una sessione, e comunque in
+ * localStorage — così un utente non si ritrova lo stesso pop-up a ogni tap.
+ *
+ *   PkLegal.gate('spot_risk')      → Promise<boolean>, blocca finché non si sceglie
+ *   PkLegal.gateSpot()             → prima di aprire la scheda di uno spot
+ *   PkLegal.gateTutorial()         → prima di far partire un tutorial
+ *   PkLegal.reset()                → dimentica le accettazioni locali (debug)
+ *
+ * Se il backend non risponde il pop-up compare lo stesso, con il testo minimo
+ * qui sotto: un avviso sui rischi che fallisce in silenzio non è un avviso.
+ */
+(function () {
+  'use strict';
+
+  var API = globalThis.__PK_API__ || 'https://api.notot.family';
+  var STORE = 'pkfam.notices';
+  var SESSION = 'pkfam.session';
+
+  // Rete irraggiungibile: si mostra questo. Dice solo la frase che conta, così
+  // non può divergere dal testo vero — che resta quello servito dall'API.
+  var FALLBACK = {
+    id: 'liability_offline',
+    version: 0,
+    title: 'Prima di allenarti',
+    summary: 'Non riusciamo a caricare l’informativa completa. Il punto, però, è questo.',
+    bullets: [
+      'Il parkour comporta un rischio reale e non eliminabile di infortunio, anche grave.',
+      'La responsabilità di un infortunio in uno spot segnalato qui, o mentre segui un tutorial pubblicato qui, è esclusivamente tua.',
+      'Gli spot sono luoghi di terzi: non li gestiamo, non li controlliamo e non garantiamo che siano sicuri.',
+      'La piattaforma si impegna solo a rendere disponibili le informazioni in modo gratuito e facilmente accessibile.'
+    ],
+    body: '',
+    blocking: true,
+    accept_label: 'Ho capito, procedo sotto la mia responsabilità',
+    decline_label: 'Torna indietro'
+  };
+
+  var docsPromise = null;
+
+  // --- storage ---------------------------------------------------------------
+
+  function read(key) {
+    try { return JSON.parse(localStorage.getItem(key) || 'null'); } catch (e) { return null; }
+  }
+
+  function write(key, value) {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { /* modalità privata */ }
+  }
+
+  function accepted(id, version) {
+    var seen = read(STORE) || {};
+    return seen[id] === version;
+  }
+
+  function remember(id, version) {
+    var seen = read(STORE) || {};
+    seen[id] = version;
+    write(STORE, seen);
+  }
+
+  function token() {
+    var s = read(SESSION);
+    return (s && s.access_token) || null;
+  }
+
+  // --- rete ------------------------------------------------------------------
+
+  function loadDocuments() {
+    if (docsPromise) return docsPromise;
+    docsPromise = fetch(API + '/api/v1/legal/documents')
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .catch(function () { return []; });
+    return docsPromise;
+  }
+
+  function reportAcceptance(doc) {
+    var t = token();
+    if (!t || !doc.version) return;
+    fetch(API + '/api/v1/legal/accept', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + t },
+      body: JSON.stringify({ documents: [{ id: doc.id, version: doc.version }] })
+    }).catch(function () { /* riprova al prossimo avvio: la copia locale c'è */ });
+  }
+
+  // --- interfaccia -----------------------------------------------------------
+
+  function injectStyle() {
+    if (document.getElementById('pk-legal-style')) return;
+    var css = [
+      '.pk-legal-backdrop{position:fixed;inset:0;z-index:99999;background:rgba(8,8,10,.72);',
+      'display:flex;align-items:flex-end;justify-content:center;padding:0;',
+      'font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}',
+      '@media (min-width:560px){.pk-legal-backdrop{align-items:center;padding:24px}}',
+      '.pk-legal-card{background:#fbf7ef;color:#1c1a17;width:100%;max-width:520px;max-height:88vh;',
+      'overflow:auto;border-radius:18px 18px 0 0;padding:22px 20px 20px;box-shadow:0 -8px 40px rgba(0,0,0,.4)}',
+      '@media (min-width:560px){.pk-legal-card{border-radius:18px}}',
+      '.pk-legal-card h2{margin:0 0 6px;font-size:19px;line-height:1.25}',
+      '.pk-legal-card p.pk-sum{margin:0 0 14px;color:#5c554a;font-size:14px;line-height:1.45}',
+      '.pk-legal-card ul{margin:0 0 16px;padding-left:20px}',
+      '.pk-legal-card li{margin:0 0 9px;font-size:14px;line-height:1.5}',
+      '.pk-legal-full{border-top:1px solid #e4dccb;margin-top:6px;padding-top:12px}',
+      '.pk-legal-full summary{cursor:pointer;font-size:13px;color:#8a6a3d;font-weight:600}',
+      '.pk-legal-body{font-size:13px;line-height:1.6;white-space:pre-wrap;color:#3a352e;margin-top:10px}',
+      '.pk-legal-actions{display:flex;flex-direction:column;gap:9px;margin-top:18px}',
+      '.pk-legal-actions button{font:inherit;font-size:15px;padding:13px 16px;border-radius:12px;border:0;cursor:pointer}',
+      '.pk-legal-accept{background:#cd7862;color:#fff;font-weight:600}',
+      '.pk-legal-accept:active{background:#b96a55}',
+      '.pk-legal-decline{background:transparent;color:#6b645a;text-decoration:underline}'
+    ].join('');
+    var el = document.createElement('style');
+    el.id = 'pk-legal-style';
+    el.textContent = css;
+    document.head.appendChild(el);
+  }
+
+  function show(doc) {
+    injectStyle();
+    return new Promise(function (resolve) {
+      var backdrop = document.createElement('div');
+      backdrop.className = 'pk-legal-backdrop';
+      backdrop.setAttribute('role', 'dialog');
+      backdrop.setAttribute('aria-modal', 'true');
+
+      var card = document.createElement('div');
+      card.className = 'pk-legal-card';
+
+      var h = document.createElement('h2');
+      h.textContent = doc.title;
+      card.appendChild(h);
+
+      var sum = document.createElement('p');
+      sum.className = 'pk-sum';
+      sum.textContent = doc.summary;
+      card.appendChild(sum);
+
+      var ul = document.createElement('ul');
+      (doc.bullets || []).forEach(function (b) {
+        var li = document.createElement('li');
+        li.textContent = b;
+        ul.appendChild(li);
+      });
+      card.appendChild(ul);
+
+      if (doc.body) {
+        var details = document.createElement('details');
+        details.className = 'pk-legal-full';
+        var summary = document.createElement('summary');
+        summary.textContent = 'Leggi il testo completo';
+        var body = document.createElement('div');
+        body.className = 'pk-legal-body';
+        body.textContent = doc.body;
+        details.appendChild(summary);
+        details.appendChild(body);
+        card.appendChild(details);
+      }
+
+      var actions = document.createElement('div');
+      actions.className = 'pk-legal-actions';
+
+      var ok = document.createElement('button');
+      ok.className = 'pk-legal-accept';
+      ok.textContent = doc.accept_label || 'Ho letto e accetto';
+
+      var no = document.createElement('button');
+      no.className = 'pk-legal-decline';
+      no.textContent = doc.decline_label || 'Non accetto';
+
+      function close(result) {
+        backdrop.remove();
+        resolve(result);
+      }
+
+      ok.addEventListener('click', function () {
+        if (doc.version) {
+          remember(doc.id, doc.version);
+          reportAcceptance(doc);
+        }
+        close(true);
+      });
+      no.addEventListener('click', function () { close(false); });
+
+      // Niente chiusura con Esc o tap fuori: è un avviso da leggere, non un
+      // banner cookie. L'unica via d'uscita è una delle due scelte.
+      actions.appendChild(ok);
+      actions.appendChild(no);
+      card.appendChild(actions);
+      backdrop.appendChild(card);
+      document.body.appendChild(backdrop);
+      ok.focus();
+    });
+  }
+
+  // --- API pubblica ----------------------------------------------------------
+
+  function gate(documentId) {
+    return loadDocuments().then(function (docs) {
+      var doc = null;
+      for (var i = 0; i < docs.length; i++) {
+        if (docs[i].id === documentId) { doc = docs[i]; break; }
+      }
+      if (!doc) doc = FALLBACK;
+      if (doc.version && accepted(doc.id, doc.version)) return true;
+      return show(doc);
+    });
+  }
+
+  globalThis.PkLegal = {
+    gate: gate,
+    // La versione già accettata in questo browser, o null. Serve a chi deve
+    // *dichiarare* l'accettazione al server senza rimostrare il pop-up a chi
+    // l'ha già letto.
+    acceptedVersion: function (documentId) {
+      var seen = read(STORE) || {};
+      return Object.prototype.hasOwnProperty.call(seen, documentId) ? seen[documentId] : null;
+    },
+    gateSpot: function () { return gate('spot_risk'); },
+    gateTutorial: function () { return gate('tutorial_risk'); },
+    documents: loadDocuments,
+    show: show,
+    reset: function () { write(STORE, {}); },
+    FALLBACK: FALLBACK
+  };
+})();
+
+</script>
+<script>
+/* PkFAMILY — accesso con codice via email e domande di profilo.
+ *
+ * Va caricato dopo pk-legal.js (ne riusa lo stile e i pop-up dei rischi).
+ *
+ *   PkOnboarding.open()      → apre il flusso e risolve true quando è completo
+ *   PkOnboarding.session()/signOut()
+ *   PkOnboarding.guestKey()  → la chiave dell'account anonimo, se ce n'è uno
+ *
+ * Si entra in due modi: con l'email (codice a sei cifre) oppure senza dire
+ * niente. Il guest non fornisce email né nome — glieli dà il server — ma
+ * risponde alle stesse domande, perché vede gli stessi spot e gli stessi
+ * tutorial. La chiave che riceve alla creazione è l'unico modo per ritrovare
+ * quell'account: senza, le risposte e i livelli sbloccati morirebbero con la
+ * scheda del browser.
+ *
+ * Il flusso lo decide il server: si chiede GET /onboarding/state, si disegna
+ * la schermata per `next_step` con le opzioni che arrivano, si manda la
+ * risposta, si ripete. Le etichette dei pulsanti non sono scritte qui — così
+ * una build vecchia non può proporre scelte che il server non riconosce più,
+ * né saltare un passaggio.
+ */
+(function () {
+  'use strict';
+
+  var API = globalThis.__PK_API__ || 'https://api.notot.family';
+  var SESSION = 'pkfam.session';
+  var GUEST_KEY = 'pkfam.guestKey';
+
+  function read(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
+  function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* privata */ } }
+  function session() { return read(SESSION); }
+  function guestKey() { return read(GUEST_KEY); }
+  function token() { var s = session(); return (s && s.access_token) || null; }
+
+  function api(path, options) {
+    options = options || {};
+    var headers = options.headers || {};
+    if (!(options.body instanceof FormData)) headers['Content-Type'] = 'application/json';
+    var t = token();
+    if (t) headers.Authorization = 'Bearer ' + t;
+    return fetch(API + '/api/v1' + path, {
+      method: options.method || 'GET',
+      headers: headers,
+      body: options.body instanceof FormData ? options.body : (options.body ? JSON.stringify(options.body) : undefined)
+    }).then(function (r) {
+      return r.text().then(function (text) {
+        var payload = null;
+        try { payload = text ? JSON.parse(text) : null; } catch (e) { payload = null; }
+        if (!r.ok) {
+          var err = new Error('http ' + r.status);
+          err.status = r.status;
+          err.payload = payload;
+          throw err;
+        }
+        return payload;
+      });
+    });
+  }
+
+  function message(err) {
+    if (err && err.payload && err.payload.error && err.payload.error.message) {
+      return err.payload.error.message;
+    }
+    if (err && err.status === 429) return 'Troppi tentativi. Riprova fra un minuto.';
+    return 'Qualcosa non ha funzionato. Riprova.';
+  }
+
+  // --- guscio ----------------------------------------------------------------
+
+  function injectStyle() {
+    if (document.getElementById('pk-onb-style')) return;
+    var css = [
+      '.pk-onb-field{display:block;width:100%;font:inherit;font-size:16px;padding:12px 14px;',
+      'border:1px solid #d9cfba;border-radius:12px;background:#fff;color:#1c1a17;margin:0 0 12px;box-sizing:border-box}',
+      '.pk-onb-code{letter-spacing:.4em;text-align:center;font-size:24px}',
+      '.pk-onb-label{display:block;font-size:13px;color:#5c554a;margin:0 0 6px}',
+      '.pk-onb-choice{display:block;width:100%;text-align:left;font:inherit;font-size:15px;padding:14px 16px;',
+      'margin:0 0 9px;border:1px solid #e0d6c2;border-radius:12px;background:#fff;color:#1c1a17;cursor:pointer}',
+      '.pk-onb-choice:hover{border-color:#cd7862}',
+      '.pk-onb-choice[aria-pressed="true"]{border-color:#cd7862;background:#fdeee9}',
+      '.pk-onb-error{color:#a8392a;font-size:13px;margin:0 0 12px;min-height:1em}',
+      '.pk-onb-note{color:#6b645a;font-size:12px;line-height:1.5;margin:12px 0 0}',
+      '.pk-onb-clue{font-size:15px;line-height:1.5;margin:0 0 14px}',
+      '.pk-onb-step{font-size:12px;color:#8a8378;margin:0 0 4px;text-transform:uppercase;letter-spacing:.08em}'
+    ].join('');
+    var el = document.createElement('style');
+    el.id = 'pk-onb-style';
+    el.textContent = css;
+    document.head.appendChild(el);
+  }
+
+  function shell() {
+    injectStyle();
+    var backdrop = document.createElement('div');
+    backdrop.className = 'pk-legal-backdrop';
+    backdrop.setAttribute('role', 'dialog');
+    backdrop.setAttribute('aria-modal', 'true');
+    var card = document.createElement('div');
+    card.className = 'pk-legal-card';
+    backdrop.appendChild(card);
+    document.body.appendChild(backdrop);
+    return {
+      card: card,
+      close: function () { backdrop.remove(); }
+    };
+  }
+
+  function render(card, parts) {
+    card.textContent = '';
+    parts.forEach(function (node) { if (node) card.appendChild(node); });
+  }
+
+  function el(tag, className, text) {
+    var node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined && text !== null) node.textContent = text;
+    return node;
+  }
+
+  function button(label, onClick, className) {
+    var b = el('button', className || 'pk-legal-accept', label);
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function actions(children) {
+    var wrap = el('div', 'pk-legal-actions');
+    children.forEach(function (c) { if (c) wrap.appendChild(c); });
+    return wrap;
+  }
+
+  // --- passaggi --------------------------------------------------------------
+
+  function askEntry(card) {
+    return new Promise(function (resolve, reject) {
+      render(card, [
+        el('p', 'pk-onb-step', 'Accesso'),
+        el('h2', null, 'Come vuoi entrare?'),
+        el('p', 'pk-sum', 'In entrambi i casi ti facciamo le stesse domande: servono a proporti esercizi adatti.'),
+        button('Con la mia email', function () { resolve('email'); }, 'pk-onb-choice'),
+        button('Senza account, resto anonimo', function () { resolve('guest'); }, 'pk-onb-choice'),
+        actions([button('Annulla', function () { reject(new Error('cancelled')); }, 'pk-legal-decline')]),
+        el('p', 'pk-onb-note', 'Senza account non chiediamo né email né nome: te ne diamo uno noi. Ti daremo una chiave da conservare, perché è l’unico modo per ritrovare questo profilo.')
+      ]);
+    });
+  }
+
+  function startGuest(card) {
+    return globalThis.PkLegal.documents()
+      .then(function (docs) {
+        var waiver = docs.filter(function (d) { return d.id === 'liability_waiver'; })[0];
+        if (!waiver) return null;
+        // Stesso gate dell'email: un guest vede gli stessi spot, quindi corre
+        // lo stesso rischio.
+        return globalThis.PkLegal.show(waiver).then(function (ok) {
+          return ok ? [{ id: waiver.id, version: waiver.version }] : null;
+        });
+      })
+      .then(function (acceptedDocs) {
+        if (acceptedDocs === null) return null;
+        return api('/auth/guest', { method: 'POST', body: { accepted_documents: acceptedDocs } });
+      })
+      .then(function (res) {
+        if (!res) return null;
+        write(SESSION, res.tokens);
+        if (res.guest_key) write(GUEST_KEY, res.guest_key);
+        return showGuestKey(card, res);
+      });
+  }
+
+  function showGuestKey(card, res) {
+    return new Promise(function (resolve) {
+      var key = el('input', 'pk-onb-field');
+      key.readOnly = true;
+      key.value = res.guest_key || '';
+      var note = el('p', 'pk-onb-note', '');
+
+      render(card, [
+        el('p', 'pk-onb-step', 'Account anonimo'),
+        el('h2', null, 'Da qui in poi sei ' + res.display_name),
+        el('p', 'pk-sum', 'Nome generato: non dice niente di te. Questa è la tua chiave — la vedi una volta sola.'),
+        key,
+        actions([
+          button('Copia la chiave', function () {
+            key.select();
+            var copied = navigator.clipboard
+              ? navigator.clipboard.writeText(key.value)
+              : Promise.reject();
+            copied.then(
+              function () { note.textContent = 'Copiata. Incollala dove non la perdi.'; },
+              function () { note.textContent = 'Selezionala e copiala a mano.'; }
+            );
+          }, 'pk-onb-choice'),
+          button('L’ho salvata, continua', function () { resolve(res); })
+        ]),
+        note,
+        el('p', 'pk-onb-note', 'Serve a ritrovare questo profilo su un altro dispositivo, o se cancelli i dati del browser. Senza, l’avanzamento resta solo qui.')
+      ]);
+    });
+  }
+
+  function askEmail(card) {
+    return new Promise(function (resolve, reject) {
+      var input = el('input', 'pk-onb-field');
+      input.type = 'email';
+      input.autocomplete = 'email';
+      input.placeholder = 'nome@esempio.it';
+      var error = el('p', 'pk-onb-error', '');
+      var go = button('Mandami il codice', function () {
+        var value = (input.value || '').trim();
+        if (!value || value.indexOf('@') < 0) { error.textContent = 'Serve un indirizzo email valido.'; return; }
+        go.disabled = true;
+        error.textContent = '';
+        api('/auth/email/request-code', { method: 'POST', body: { email: value } })
+          .then(function (res) { resolve({ email: value, sent: res }); })
+          .catch(function (err) { go.disabled = false; error.textContent = message(err); });
+      });
+
+      render(card, [
+        el('p', 'pk-onb-step', 'Accesso'),
+        el('h2', null, 'Entra con la tua email'),
+        el('p', 'pk-sum', 'Niente password: ti mandiamo un codice di sei cifre, valido dieci minuti.'),
+        el('label', 'pk-onb-label', 'Email'),
+        input,
+        error,
+        actions([go, button('Annulla', function () { reject(new Error('cancelled')); }, 'pk-legal-decline')]),
+        el('p', 'pk-onb-note', 'Il codice arriva da un indirizzo che non legge le risposte. Se non lo vedi, controlla lo spam.')
+      ]);
+      input.focus();
+    });
+  }
+
+  function askCode(card, email, hint) {
+    return new Promise(function (resolve, reject) {
+      var input = el('input', 'pk-onb-field pk-onb-code');
+      input.inputMode = 'numeric';
+      input.autocomplete = 'one-time-code';
+      input.maxLength = 6;
+      input.placeholder = '000000';
+      if (hint && hint.debug_code) input.value = hint.debug_code; // solo fuori produzione
+      var error = el('p', 'pk-onb-error', '');
+      var name = el('input', 'pk-onb-field');
+      name.placeholder = 'Come ti chiamiamo? (facoltativo)';
+      name.maxLength = 80;
+
+      var go = button('Entra', function () {
+        var code = (input.value || '').trim();
+        if (code.length < 4) { error.textContent = 'Inserisci il codice che ti è arrivato.'; return; }
+        go.disabled = true;
+        error.textContent = '';
+        // L'account nasce solo dopo l'informativa: il pop-up è il gate, non
+        // una casella da spuntare in fondo a un modulo.
+        globalThis.PkLegal.documents()
+          .then(function (docs) {
+            var waiver = docs.filter(function (d) { return d.id === 'liability_waiver'; })[0];
+            if (!waiver) {
+              return globalThis.PkLegal.gate('liability_waiver').then(function (ok) {
+                return ok ? [] : null;
+              });
+            }
+            // Il server vuole l'informativa a ogni accesso, non solo alla
+            // creazione. A chi l'ha già letta in questo browser non si
+            // rimostra: si dichiara la versione e si va avanti.
+            if (globalThis.PkLegal.acceptedVersion(waiver.id) === waiver.version) {
+              return [{ id: waiver.id, version: waiver.version }];
+            }
+            return globalThis.PkLegal.show(waiver).then(function (ok) {
+              return ok ? [{ id: waiver.id, version: waiver.version }] : null;
+            });
+          })
+          .then(function (acceptedDocs) {
+            if (acceptedDocs === null) { go.disabled = false; return null; }
+            return api('/auth/email/verify-code', {
+              method: 'POST',
+              body: {
+                email: email,
+                code: code,
+                display_name: (name.value || '').trim() || null,
+                accepted_documents: acceptedDocs
+              }
+            });
+          })
+          .then(function (res) {
+            if (!res) return;
+            write(SESSION, res.tokens);
+            resolve(res);
+          })
+          .catch(function (err) { go.disabled = false; error.textContent = message(err); });
+      });
+
+      render(card, [
+        el('p', 'pk-onb-step', 'Accesso'),
+        el('h2', null, 'Il codice che ti è arrivato'),
+        el('p', 'pk-sum', 'Mandato a ' + email + '. Scade fra dieci minuti.'),
+        input,
+        name,
+        error,
+        actions([go, button('Cambia indirizzo', function () { reject(new Error('back')); }, 'pk-legal-decline')])
+      ]);
+      input.focus();
+    });
+  }
+
+  function askBirthDate(card) {
+    return new Promise(function (resolve) {
+      var input = el('input', 'pk-onb-field');
+      input.type = 'date';
+      var error = el('p', 'pk-onb-error', '');
+
+      var go = button('Continua', function () {
+        var value = input.value;
+        if (!value) { error.textContent = 'Serve la data di nascita.'; return; }
+        go.disabled = true;
+        error.textContent = '';
+        var minor = ageFrom(value) < 18;
+        var consent = minor
+          ? globalThis.PkLegal.documents().then(function (docs) {
+              var doc = docs.filter(function (d) { return d.id === 'minor_guardian'; })[0];
+              if (!doc) return null;
+              return globalThis.PkLegal.show(doc).then(function (ok) {
+                return ok ? [{ id: doc.id, version: doc.version }] : null;
+              });
+            })
+          : Promise.resolve([]);
+
+        consent.then(function (docs) {
+          if (docs === null) { go.disabled = false; return null; }
+          return api('/onboarding/birth-date', {
+            method: 'POST',
+            body: { birth_date: value, accepted_documents: docs }
+          });
+        }).then(function (state) {
+          if (state) resolve(state);
+        }).catch(function (err) { go.disabled = false; error.textContent = message(err); });
+      });
+
+      render(card, [
+        el('p', 'pk-onb-step', 'Profilo'),
+        el('h2', null, 'Quando sei nato?'),
+        el('p', 'pk-sum', 'Serve a proporti esercizi adatti. Resta sul server: non viene mostrato a nessuno, nemmeno a te.'),
+        input,
+        error,
+        actions([go])
+      ]);
+      input.focus();
+    });
+  }
+
+  function ageFrom(iso) {
+    var d = new Date(iso + 'T00:00:00');
+    var now = new Date();
+    var years = now.getFullYear() - d.getFullYear();
+    var before = now.getMonth() < d.getMonth() ||
+      (now.getMonth() === d.getMonth() && now.getDate() < d.getDate());
+    return before ? years - 1 : years;
+  }
+
+  function askChoice(card, opts) {
+    return new Promise(function (resolve) {
+      var error = el('p', 'pk-onb-error', '');
+      var nodes = opts.options.map(function (option) {
+        return button(option.label, function () {
+          api(opts.path, { method: 'POST', body: opts.payload(option.value) })
+            .then(resolve)
+            .catch(function (err) { error.textContent = message(err); });
+        }, 'pk-onb-choice');
+      });
+      render(card, [
+        el('p', 'pk-onb-step', 'Profilo'),
+        el('h2', null, opts.title),
+        opts.summary ? el('p', 'pk-sum', opts.summary) : null,
+        error
+      ].concat(nodes));
+    });
+  }
+
+  function askCertificate(card) {
+    return new Promise(function (resolve) {
+      var body = el('input', 'pk-onb-field');
+      body.placeholder = 'Ente che ha rilasciato il certificato';
+      var cert = el('input', 'pk-onb-field');
+      cert.type = 'file';
+      cert.accept = 'application/pdf,image/*';
+      var doc = el('input', 'pk-onb-field');
+      doc.type = 'file';
+      doc.accept = 'application/pdf,image/*';
+      var error = el('p', 'pk-onb-error', '');
+
+      var go = button('Invia per la verifica', function () {
+        if (!body.value.trim() || !cert.files[0] || !doc.files[0]) {
+          error.textContent = 'Servono l’ente, il certificato e il documento.';
+          return;
+        }
+        go.disabled = true;
+        error.textContent = '';
+        var form = new FormData();
+        form.append('issuing_body', body.value.trim());
+        form.append('certificate', cert.files[0]);
+        form.append('identity_document', doc.files[0]);
+        api('/onboarding/instructor-certificate', { method: 'POST', body: form })
+          .then(function () { return api('/onboarding/state'); })
+          .then(resolve)
+          .catch(function (err) { go.disabled = false; error.textContent = message(err); });
+      });
+
+      render(card, [
+        el('p', 'pk-onb-step', 'Profilo'),
+        el('h2', null, 'Il tuo certificato'),
+        el('p', 'pk-sum', 'Certificato rilasciato da un ente riconosciuto a livello nazionale, più un documento che confermi che è intestato a te.'),
+        el('label', 'pk-onb-label', 'Ente'),
+        body,
+        el('label', 'pk-onb-label', 'Certificato (PDF o foto)'),
+        cert,
+        el('label', 'pk-onb-label', 'Documento d’identità (PDF o foto)'),
+        doc,
+        error,
+        actions([go]),
+        el('p', 'pk-onb-note', 'I due file vengono inoltrati alla casella che verifica gli spot e non restano sui nostri server. La qualifica la approva una persona.')
+      ]);
+      body.focus();
+    });
+  }
+
+  function playQuiz(card) {
+    return api('/onboarding/quiz', { method: 'POST' }).then(function (quiz) {
+      return new Promise(function (resolve, reject) {
+        var answers = quiz.questions.map(function () { return null; });
+        var index = 0;
+
+        function draw() {
+          var q = quiz.questions[index];
+          var nodes = q.options.map(function (option, i) {
+            var b = button(option, function () {
+              answers[index] = i;
+              if (index < quiz.questions.length - 1) { index += 1; draw(); }
+              else { finish(); }
+            }, 'pk-onb-choice');
+            b.setAttribute('aria-pressed', answers[index] === i ? 'true' : 'false');
+            return b;
+          });
+          render(card, [
+            el('p', 'pk-onb-step', 'Movimento ' + (index + 1) + ' di ' + quiz.questions.length),
+            el('h2', null, quiz.title),
+            index === 0 ? el('p', 'pk-sum', quiz.intro) : null,
+            el('p', 'pk-onb-clue', q.clue)
+          ].concat(nodes).concat([
+            index > 0 ? actions([button('Indietro', function () { index -= 1; draw(); }, 'pk-legal-decline')]) : null
+          ]));
+        }
+
+        function finish() {
+          render(card, [el('h2', null, 'Un attimo…')]);
+          api('/onboarding/quiz/answers', {
+            method: 'POST',
+            body: { attempt_id: quiz.attempt_id, answers: answers }
+          }).then(showResult).catch(reject);
+        }
+
+        function showResult(result) {
+          // Le correzioni si vedono sempre: chi sbaglia esce sapendo i nomi,
+          // che è metà del motivo per cui il gioco esiste.
+          var list = el('ul');
+          result.corrections.forEach(function (c) {
+            var suffix = c.is_correct
+              ? ''
+              : (c.given_answer ? ' — avevi detto ' + c.given_answer : ' — saltata');
+            list.appendChild(el('li', null, (c.is_correct ? '\u2713 ' : '\u2717 ') + c.correct_answer + suffix));
+          });
+          render(card, [
+            el('p', 'pk-onb-step', result.score + ' su ' + result.total),
+            el('h2', null, result.passed ? 'Ci siamo.' : 'Ci sta.'),
+            el('p', 'pk-sum', result.message),
+            list,
+            actions([
+              button('Continua', function () { api('/onboarding/state').then(resolve, reject); }),
+              button('Rigioca', function () { playQuiz(card).then(resolve, reject); }, 'pk-legal-decline')
+            ])
+          ]);
+        }
+
+        draw();
+      });
+    });
+  }
+
+  // --- ciclo -----------------------------------------------------------------
+
+  function advance(card, state) {
+    switch (state.next_step) {
+      case 'birth_date':
+        return askBirthDate(card).then(function (next) { return advance(card, next); });
+      case 'practitioner_type':
+        return askChoice(card, {
+          title: 'Come ti muovi qui dentro?',
+          summary: null,
+          options: state.practitioner_options,
+          path: '/onboarding/practitioner-type',
+          payload: function (v) { return { practitioner_type: v }; }
+        }).then(function (next) { return advance(card, next); });
+      case 'experience':
+        return askChoice(card, {
+          title: 'Da quanto pratichi parkour?',
+          summary: 'Da qui dipendono i livelli che ti proponiamo. Il gioco dopo serve a tararli.',
+          options: state.experience_options,
+          path: '/onboarding/experience',
+          payload: function (v) { return { experience_band: v }; }
+        }).then(function (next) { return advance(card, next); });
+      case 'instructor_certificate':
+        return askCertificate(card).then(function (next) { return advance(card, next); });
+      case 'experience_quiz':
+        return playQuiz(card).then(function (next) { return advance(card, next || { next_step: 'done' }); });
+      default:
+        return Promise.resolve(true);
+    }
+  }
+
+  function open() {
+    var view = shell();
+
+    function withEmail() {
+      return askEmail(view.card)
+        .then(function (step) {
+          return askCode(view.card, step.email, step.sent)
+            .catch(function (err) {
+              if (err && err.message === 'back') return withEmail();
+              throw err;
+            });
+        });
+    }
+
+    function signIn() {
+      return askEntry(view.card).then(function (mode) {
+        if (mode === 'guest') {
+          return startGuest(view.card).then(function (res) {
+            // Informativa rifiutata: si torna alla scelta, non si prosegue.
+            return res ? res : signIn();
+          });
+        }
+        return withEmail();
+      });
+    }
+
+    var start;
+    if (token()) {
+      start = api('/onboarding/state');
+    } else if (guestKey()) {
+      // Ritorno di un anonimo: la chiave vale al posto della password.
+      start = api('/auth/guest/resume', { method: 'POST', body: { guest_key: guestKey() } })
+        .then(function (res) {
+          write(SESSION, res.tokens);
+          return api('/onboarding/state');
+        })
+        .catch(function () {
+          // Chiave non più valida: si riparte dalla scelta iniziale.
+          write(GUEST_KEY, null);
+          return signIn().then(function () { return api('/onboarding/state'); });
+        });
+    } else {
+      start = signIn().then(function () { return api('/onboarding/state'); });
+    }
+
+    return start
+      .then(function (state) { return advance(view.card, state); })
+      .then(function () {
+        view.close();
+        return true;
+      })
+      .catch(function (err) {
+        view.close();
+        if (err && (err.message === 'cancelled' || err.message === 'back')) return false;
+        throw err;
+      });
+  }
+
+  globalThis.PkOnboarding = {
+    open: open,
+    session: session,
+    guestKey: guestKey,
+    // Non cancella la chiave: uscire non deve voler dire buttare via il
+    // profilo anonimo, che senza chiave non si recupera più.
+    signOut: function () { write(SESSION, null); },
+    forgetGuest: function () { write(GUEST_KEY, null); write(SESSION, null); },
+    api: api
+  };
+})();
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+/* Il guscio della pagina: bottoni, registro delle chiamate, catalogo. */
+(function () {
+  'use strict';
+
+  // Nomi veri di scavalcamenti, con il livello e la difficoltà che avrebbero
+  // sul catalogo dell'app: è il filtro che questa lista serve a mostrare.
+  var CATALOGO = [
+    { titolo: 'Safety vault, dalle basi', livello: 'beginner', diff: 2 },
+    { titolo: 'Side vault pulito', livello: 'beginner', diff: 2 },
+    { titolo: 'Speed vault in corsa', livello: 'beginner', diff: 3 },
+    { titolo: 'Kong vault, primo appoggio', livello: 'beginner', diff: 3 },
+    { titolo: 'Lazy vault fluido', livello: 'intermediate', diff: 4 },
+    { titolo: 'Dash vault', livello: 'intermediate', diff: 5 },
+    { titolo: 'Turn vault e uscita', livello: 'intermediate', diff: 6 },
+    { titolo: 'Kash vault', livello: 'advanced', diff: 8 },
+    { titolo: 'Palm spin', livello: 'advanced', diff: 8 },
+    { titolo: 'Dive kong lungo', livello: 'advanced', diff: 9 },
+    { titolo: 'Double kong', livello: 'advanced', diff: 10 }
+  ];
+
+  var LIVELLI = { beginner: 'base', intermediate: 'medio', advanced: 'avanzato' };
+  var ORDINE = ['beginner', 'intermediate', 'advanced'];
+
+  var etichette = {};
+  (globalThis.__PK_DEMO_DATA__.experience_options || []).forEach(function (o) {
+    etichette[o.value] = o.label;
+  });
+
+  function el(id) { return document.getElementById(id); }
+
+  function riga(dl, chiave, valore, mono) {
+    var dt = document.createElement('dt');
+    dt.textContent = chiave;
+    var dd = document.createElement('dd');
+    dd.textContent = valore;
+    if (mono) dd.className = 'chiave';
+    dl.appendChild(dt);
+    dl.appendChild(dd);
+  }
+
+  function renderRegistro() {
+    var lista = el('registro');
+    var voci = globalThis.PkDemoServer.state().log;
+    lista.textContent = '';
+    if (!voci.length) {
+      var vuoto = document.createElement('li');
+      vuoto.className = 'vuoto';
+      vuoto.style.gridTemplateColumns = '1fr';
+      vuoto.textContent = 'Ancora niente. Apri l’accesso qui sopra.';
+      lista.appendChild(vuoto);
+      return;
+    }
+    voci.slice(-14).forEach(function (voce) {
+      var li = document.createElement('li');
+      var verbo = document.createElement('span');
+      verbo.className = 'verbo';
+      verbo.textContent = voce.method;
+      var corpo = document.createElement('span');
+      corpo.textContent = voce.path;
+      var nota = document.createElement('span');
+      nota.className = 'nota';
+      nota.textContent = voce.note;
+      corpo.appendChild(nota);
+      li.appendChild(verbo);
+      li.appendChild(corpo);
+      lista.appendChild(li);
+    });
+  }
+
+  function renderProfilo() {
+    var dl = el('profilo');
+    var account = globalThis.PkDemoServer.state().account;
+    dl.textContent = '';
+    if (!account) {
+      riga(dl, 'Account', 'nessuno: sei un visitatore');
+      riga(dl, 'Tetto', 'nessuno — il catalogo è intero');
+      return;
+    }
+    riga(dl, 'Nome', account.display_name);
+    riga(dl, 'Tipo', account.is_guest ? 'anonimo' : account.email);
+    if (account.guest_key) riga(dl, 'Chiave', account.guest_key, true);
+    riga(dl, 'Nato il', account.birth_date || '—');
+    riga(dl, 'Dichiarato', etichette[account.experience_band] || '—');
+    riga(dl, 'Dopo il gioco', etichette[account.verified_band] || '—');
+    var access = globalThis.PkDemoServer.access();
+    riga(dl, 'Tetto', LIVELLI[access.max_level] + ', difficoltà ' + access.max_difficulty);
+  }
+
+  function renderCatalogo() {
+    var access = globalThis.PkDemoServer.access();
+    var lista = el('catalogo');
+    lista.textContent = '';
+    var visibili = 0;
+    CATALOGO.forEach(function (voce) {
+      var dentro = ORDINE.indexOf(voce.livello) <= ORDINE.indexOf(access.max_level) &&
+        voce.diff <= access.max_difficulty;
+      if (!dentro) return;
+      visibili += 1;
+      var li = document.createElement('li');
+      var titolo = document.createElement('span');
+      titolo.textContent = voce.titolo;
+      var grado = document.createElement('span');
+      grado.className = 'grado';
+      grado.textContent = LIVELLI[voce.livello] + ' · ' + voce.diff + '/10';
+      li.appendChild(titolo);
+      li.appendChild(grado);
+      lista.appendChild(li);
+    });
+    el('conteggio').textContent = visibili + ' tutorial su ' + CATALOGO.length + ' visibili';
+  }
+
+  function refresh() {
+    renderRegistro();
+    renderProfilo();
+    renderCatalogo();
+  }
+
+  globalThis.PkDemo = { refresh: refresh };
+
+  el('btn-accesso').addEventListener('click', function () {
+    globalThis.PkOnboarding.open().then(refresh, refresh);
+  });
+  el('btn-spot').addEventListener('click', function () {
+    globalThis.PkLegal.gateSpot().then(refresh);
+  });
+  el('btn-tutorial').addEventListener('click', function () {
+    globalThis.PkLegal.gateTutorial().then(refresh);
+  });
+  el('btn-reset').addEventListener('click', function () {
+    globalThis.PkDemoServer.reset();
+    globalThis.PkLegal.reset();
+    globalThis.PkOnboarding.forgetGuest();
+    refresh();
+  });
+
+  refresh();
+
+  // Chi arriva qui la prima volta — tipicamente inquadrando il QR — si trova
+  // davanti l'accesso, non una pagina da leggere. È il punto: l'esperienza
+  // deve essere quella di un utente che apre l'app, non quella di chi ispeziona
+  // una demo. I pannelli restano sotto, per dopo.
+  if (!globalThis.PkDemoServer.state().account) {
+    setTimeout(function () {
+      globalThis.PkOnboarding.open().then(refresh, refresh);
+    }, 400);
+  }
+
+  // Il QR compare solo su schermo largo: serve a passare dal computer al
+  // telefono, e su un telefono sarebbe l'indirizzo che si sta già guardando.
+  if (globalThis.QRCode) {
+    try {
+      new globalThis.QRCode(el('qr-box'), {
+        text: location.href,
+        width: 160,
+        height: 160,
+        colorDark: '#1f1b16',
+        colorLight: '#ffffff'
+      });
+    } catch (e) {
+      el('qr-box').textContent = 'Copia l’indirizzo dalla barra del browser.';
+    }
+  }
+})();
+
+</script>
+
+</body>
+</html>
