@@ -939,6 +939,11 @@
 
   globalThis.PkLegal = {
     gate: gate,
+    // Esposta perché pk-onboarding.js disegna le sue schermate con queste
+    // stesse classi: senza, la prima finestra che si apre — l'accesso, per chi
+    // arriva dal QR — uscirebbe senza stile, perché fin lì nessun pop-up è
+    // stato mostrato e il foglio non è mai stato iniettato.
+    injectStyle: injectStyle,
     // La versione già accettata in questo browser, o null. Serve a chi deve
     // *dichiarare* l'accettazione al server senza rimostrare il pop-up a chi
     // l'ha già letto.
@@ -1027,6 +1032,12 @@
   // --- guscio ----------------------------------------------------------------
 
   function injectStyle() {
+    // Il guscio (sfondo scuro, card, pulsanti) è quello di pk-legal.js: va
+    // iniettato anche quando si entra dall'accesso senza aver visto prima un
+    // pop-up, che è il caso normale di chi apre l'app per la prima volta.
+    if (globalThis.PkLegal && globalThis.PkLegal.injectStyle) {
+      globalThis.PkLegal.injectStyle();
+    }
     if (document.getElementById('pk-onb-style')) return;
     var css = [
       '.pk-onb-field{display:block;width:100%;font:inherit;font-size:16px;padding:12px 14px;',
