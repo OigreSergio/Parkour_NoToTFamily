@@ -20,8 +20,12 @@ finto dentro la pagina. Le informative, i nomi degli scavalcamenti, le tabelle
 dei tetti e le regole del gioco sono generate dal codice Python, non riscritte
 a mano.
 
-Cosa **non** fa: non manda email, non salva niente da nessuna parte, e non è
-l'app Flutter.
+Il codice di accesso **non si compila da solo**: la pagina mostra la mail
+no-reply che sarebbe partita — mittente, oggetto e corpo veri, presi dal
+servizio — e il codice va letto e ricopiato, come si fa col telefono in mano.
+
+Cosa **non** fa: non manda email davvero (non ha un server), non salva niente
+da nessuna parte, e non è l'app Flutter.
 
 Da provare almeno una volta: entra come ospite, metti una data di nascita da
 quindicenne, dichiara «più di 10 anni». Il catalogo in fondo si accorcia, e in
@@ -106,11 +110,35 @@ Expo.
 
 ## Il codice via email
 
-Fuori produzione `MAIL_BACKEND=console` (il default): il codice compare nel log
-di uvicorn **e** torna nel campo `debug_code` della risposta, che `prova.html`
-precompila da solo. Per spedirlo davvero servono `MAIL_BACKEND=smtp` e le
-credenziali SMTP in `.env` — e in produzione è obbligatorio, l'app non parte
-altrimenti.
+Il codice torna nella risposta (`debug_code`, che `prova.html` precompila)
+**solo finché nessun messaggio parte davvero**: cioè con `MAIL_BACKEND=console`
+o `memory`. Serve a poter entrare senza un server di posta.
+
+Appena configuri un SMTP il campo diventa `null` e il codice viaggia solo per
+email, anche fuori produzione. È la parte che conta: se il codice arrivasse
+comunque nella risposta, aprire la casella non sarebbe mai necessario e la
+mail non proverebbe niente sull'indirizzo.
+
+Per provare la mail vera:
+
+```
+MAIL_BACKEND=smtp
+MAIL_FROM=noreply@iltuodominio
+MAIL_FROM_NAME=PkFAMILY
+SMTP_HOST=smtp.iltuoprovider
+SMTP_PORT=587
+SMTP_USER=...
+SMTP_PASSWORD=...
+SMTP_STARTTLS=true
+```
+
+Va bene qualunque SMTP: il tuo provider, oppure una casella di prova tipo
+Mailtrap se non vuoi spedire a indirizzi veri mentre sviluppi. Il mittente è
+no-reply per costruzione — le intestazioni `Auto-Submitted: auto-generated` e
+`X-Auto-Response-Suppress: All` scoraggiano risposte automatiche, e il corpo
+indirizza alla casella che le persone leggono davvero (`MODERATION_EMAIL`).
+
+In produzione `MAIL_BACKEND=smtp` è obbligatorio: l'app non parte altrimenti.
 
 Il login guest non usa email: è la via più corta per vedere tutto il resto.
 

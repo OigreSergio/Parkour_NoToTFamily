@@ -64,6 +64,17 @@ class Settings(BaseSettings):
         """Where instructor dossiers go: the spot-verification mailbox."""
         return self.moderation_email or self.initial_admin_email
 
+    @property
+    def mail_is_delivered(self) -> bool:
+        """Whether a message actually leaves the machine.
+
+        `console` and `memory` do not deliver anything, so a sign-in code has
+        to reach the developer some other way. `smtp` does — and from that
+        moment the code must travel only by email, or the whole point of
+        emailing it (proving the address belongs to whoever typed it) is gone.
+        """
+        return self.mail_backend == "smtp"
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def split_origins(cls, v: object) -> object:

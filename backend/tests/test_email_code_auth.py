@@ -117,3 +117,47 @@ async def test_the_notice_is_required_whether_or_not_the_account_exists() -> Non
     assert "if user is None" not in source[:check], (
         "the notice check must not sit inside the new-account branch"
     )
+
+
+# --- when the code may be echoed back ----------------------------------------
+
+
+def _sent(monkeypatch, **overrides):
+    """Build the response the request-code endpoint would return."""
+    from app.core.config import Settings
+    from app.schemas.auth import EmailCodeSent
+
+    env = overrides.pop("env", "development")
+    settings = Settings(
+        env=env,
+        # Production refuses the placeholder secret — that guard is tested
+        # elsewhere; here it just has to be got past.
+        jwt_secret=("s" * 64) if env == "production" else "test-secret-not-used-in-prod",
+        database_url="postgresql+asyncpg://x@localhost/x",
+        **overrides,
+    )
+    monkeypatch.setattr(codes, "get_settings", lambda: settings)
+    return EmailCodeSent(
+        sent=True,
+        expires_in_seconds=600,
+        debug_code=(
+            "123456" if not settings.mail_is_delivered and settings.env != "production" else None
+        ),
+    )
+
+
+def test_the_code_is_echoed_only_while_nothing_is_actually_sent(monkeypatch) -> None:
+    # No mail server: a developer has to get the code somehow.
+    assert _sent(monkeypatch, mail_backend="console").debug_code == "123456"
+    assert _sent(monkeypatch, mail_backend="memory").debug_code == "123456"
+
+
+def test_configuring_smtp_is_enough_to_stop_echoing_the_code(monkeypatch) -> None:
+    # The moment a message really leaves the machine, the code must travel by
+    # email only — otherwise pointing a test deployment at a real mailbox
+    # proves nothing, because the inbox never has to be opened.
+    assert _sent(monkeypatch, mail_backend="smtp").debug_code is None
+
+
+def test_production_never_echoes_the_code(monkeypatch) -> None:
+    assert _sent(monkeypatch, env="production", mail_backend="smtp").debug_code is None

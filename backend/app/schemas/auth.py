@@ -72,8 +72,11 @@ class EmailCodeSent(BaseModel):
 
     sent: bool = True
     expires_in_seconds: int
-    #: Only ever populated outside production, so a developer can sign in
-    #: without a mail server. `None` in production.
+    #: Only populated while nothing is actually being sent (MAIL_BACKEND
+    #: `console` or `memory`, outside production), so a developer without a
+    #: mail server can still sign in. `None` as soon as SMTP is configured:
+    #: from there the code travels by email only, which is what makes it
+    #: proof that the address belongs to whoever typed it.
     debug_code: str | None = None
 
 

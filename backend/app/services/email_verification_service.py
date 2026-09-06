@@ -141,9 +141,18 @@ async def request_code(
     return EmailCodeSent(
         sent=True,
         expires_in_seconds=ttl * 60,
-        # Never in production: the validator on `env` guarantees a real mail
-        # backend there, so nobody needs the code echoed back.
-        debug_code=code if settings.env != "production" else None,
+        # Echoed only while no message actually leaves the machine — the
+        # `console` and `memory` backends — so that a developer without a mail
+        # server can still sign in.
+        #
+        # The moment SMTP is configured the code travels by email only, even
+        # outside production. Otherwise pointing a test deployment at a real
+        # mailbox would prove nothing: the address would never have to be
+        # opened, and "the code arrived at your inbox" is the whole reason the
+        # code exists.
+        debug_code=(
+            code if not settings.mail_is_delivered and settings.env != "production" else None
+        ),
     )
 
 
