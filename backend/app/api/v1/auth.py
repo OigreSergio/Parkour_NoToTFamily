@@ -9,6 +9,8 @@ from app.schemas.auth import (
     EmailCodeSent,
     EmailCodeVerifyRequest,
     GuestLoginRequest,
+    GuestResumeRequest,
+    GuestSession,
     LoginRequest,
     RefreshRequest,
     RegisterRequest,
@@ -25,13 +27,37 @@ async def register(data: RegisterRequest, session: AsyncSession = Depends(db_ses
     return await auth_service.register(session, data)
 
 
-@router.post("/guest", response_model=TokenPair, status_code=status.HTTP_201_CREATED)
+@router.post("/guest", response_model=GuestSession, status_code=status.HTTP_201_CREATED)
 async def login_guest(
-    data: GuestLoginRequest | None = None,
+    data: GuestLoginRequest,
+    request: Request,
     session: AsyncSession = Depends(db_session),
-) -> TokenPair:
-    """Sign in without an email: creates a guest account and returns tokens."""
-    return await auth_service.login_guest(session, data or GuestLoginRequest())
+) -> GuestSession:
+    """Sign in without saying who you are.
+
+    Nothing is asked: the display name is generated, and the `guest_key` in the
+    response is returned **once** — it is the only way back to this account and
+    to the answers stored on it. Clients must persist it.
+
+    From here the onboarding is the same as for anyone else, minus the
+    instructor branch: a guest is an athlete.
+    """
+    return await auth_service.login_guest(
+        session,
+        data,
+        ip_address=request.headers.get("x-forwarded-for")
+        or (request.client.host if request.client else None),
+        user_agent=request.headers.get("user-agent"),
+    )
+
+
+@router.post("/guest/resume", response_model=GuestSession)
+async def resume_guest(
+    data: GuestResumeRequest,
+    session: AsyncSession = Depends(db_session),
+) -> GuestSession:
+    """Sign back into a guest account with the key handed out at sign-up."""
+    return await auth_service.resume_guest(session, data.guest_key)
 
 
 @router.post("/login", response_model=TokenPair)

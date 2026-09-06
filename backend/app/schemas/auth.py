@@ -16,9 +16,21 @@ class LoginRequest(BaseModel):
 
 
 class GuestLoginRequest(BaseModel):
-    """Device-only sign-in: no email required, optional display name."""
+    """Sign in without saying who you are.
 
-    display_name: str | None = Field(default=None, min_length=2, max_length=80)
+    Nothing is asked: no email, no chosen handle. The name is generated, and
+    the notices are the only thing that gates the account — the same gate the
+    email flow has, because a guest gets the same spots and the same tutorials
+    and therefore takes the same risk.
+    """
+
+    accepted_documents: list[AcceptedDocument] = Field(default_factory=list)
+
+
+class GuestResumeRequest(BaseModel):
+    """Come back to a guest account with the key handed out at sign-up."""
+
+    guest_key: str = Field(min_length=8, max_length=128)
 
 
 class RefreshRequest(BaseModel):
@@ -29,6 +41,17 @@ class TokenPair(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str = "Bearer"
+
+
+class GuestSession(BaseModel):
+    tokens: TokenPair
+    #: The name the app generated. Nothing about it is a claim of identity.
+    display_name: str
+    #: Shown **once**, at creation: it is the only way back to this account and
+    #: to the progress on it. `None` when resuming — the key already exists.
+    guest_key: str | None = None
+    created: bool = False
+    next_step: OnboardingStep
 
 
 # --- email code sign-in ------------------------------------------------------

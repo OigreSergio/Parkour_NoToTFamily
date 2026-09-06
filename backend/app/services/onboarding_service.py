@@ -8,7 +8,10 @@ Order of the flow:
    same absence of any badge; only the exercises behind them differ. A minor is
    also asked to confirm a guardian's consent, because that is the one place
    where the law does not let the experience be identical.
-2. **Athlete or instructor** — adults only.
+2. **Athlete or instructor** — adult accounts with an email. A guest skips
+   it: their profile is created as an athlete, because qualifying as an
+   instructor means mailing a certificate and an identity document to a human
+   reviewer, and that is the opposite of staying anonymous.
 3a. **Instructor**: a certificate from a nationally recognised body plus an
     identity document proving the certificate is theirs. Both are forwarded to
     the mailbox that already reviews spots, and are *not* kept on the servers.
@@ -110,7 +113,7 @@ async def next_step(
         return OnboardingStep.birth_date
 
     adult = is_adult(profile)
-    if adult and profile.practitioner_type is None:
+    if adult and not user.is_guest and profile.practitioner_type is None:
         return OnboardingStep.practitioner_type
 
     if profile.practitioner_type is PractitionerType.instructor:
@@ -223,6 +226,12 @@ async def set_practitioner_type(
     profile = await profiles_repo.get_or_create(session, user.id)
     if profile.birth_date is None:
         raise ValidationFailed("answer the date of birth first")
+    if user.is_guest:
+        # An anonymous account cannot be an instructor: qualifying means
+        # sending a certificate and an identity document to a human, which is
+        # the opposite of staying anonymous. A guest is an athlete, and the
+        # question is not asked in the first place.
+        raise Forbidden("this question does not apply to this account")
     if not is_adult(profile):
         # Not a judgement about the member: a certificate from a national body
         # is issued to adults, and an under-18's identity document has no
@@ -303,6 +312,8 @@ async def submit_instructor_certificate(
 ) -> InstructorCertificationOut:
     settings = get_settings()
     profile = await profiles_repo.get_or_create(session, user.id)
+    if user.is_guest:
+        raise Forbidden("an anonymous account cannot be qualified as instructor")
     if not is_adult(profile):
         raise Forbidden("this question does not apply to this account")
     if profile.practitioner_type is not PractitionerType.instructor:

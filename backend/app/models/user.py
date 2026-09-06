@@ -31,6 +31,14 @@ class User(UUIDPKMixin, TimestampMixin, Base):
     is_email_verified: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     is_guest: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
+    # Guests have no email to come back to, so the key handed out at sign-up is
+    # what makes a guest account resumable: without it the profile, the answers
+    # and the unlocked levels would die with the refresh token. Only its HMAC
+    # is stored, and the unique index is what guarantees two guests can never
+    # end up on the same account.
+    guest_key_hash: Mapped[str | None] = mapped_column(
+        String(64), unique=True, index=True, nullable=True
+    )
     is_subscribed: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
 
     refresh_tokens: Mapped[list["RefreshToken"]] = relationship(

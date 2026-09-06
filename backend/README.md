@@ -46,6 +46,10 @@ With `MAIL_BACKEND=console` (the default outside production) the code is
 printed to the log *and* returned as `debug_code`, so the whole flow works
 without a mail server.
 
+`POST /api/v1/auth/guest` is the other way in: no email, no chosen name, and a
+`guest_key` returned once that is the only way back to the account. From there
+the questions are the same, minus the instructor branch.
+
 See [docs/AUTENTICAZIONE.md](../docs/AUTENTICAZIONE.md) for the flow end to
 end and [docs/LEGALE.md](../docs/LEGALE.md) for the notices.
 

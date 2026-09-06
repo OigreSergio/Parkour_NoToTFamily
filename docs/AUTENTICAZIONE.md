@@ -52,6 +52,37 @@ L'account nasce solo se `accepted_documents` contiene l'informativa
 I vecchi `POST /auth/register` e `/auth/login` con password restano al loro
 posto per non rompere i client esistenti, ma la via nuova è questa.
 
+## 1b. Entrare senza dire chi sei
+
+`POST /api/v1/auth/guest` non chiede niente: né email, né nome. Il nome lo
+genera il server (`Cornicione-7K4Q`: solo luoghi su cui ci si allena, così
+nulla nel nome può essere letto come un'affermazione su chi c'è dietro), e la
+risposta contiene una `guest_key` mostrata **una volta sola**.
+
+Quella chiave è l'unico filo che riporta a quell'account. Senza, le risposte
+date, il risultato del gioco e i livelli sbloccati morirebbero con la scheda
+del browser: un anonimo non ha un'email a cui tornare. Il client la conserva e
+la rigioca su `POST /api/v1/auth/guest/resume`, che vale al posto della
+password. In database ne sta solo l'HMAC, con chiave il segreto del server, e
+l'indice unico su quella colonna è ciò che garantisce che **due guest non
+possano mai finire sullo stesso account** — cosa che conta, visto che ogni
+account porta il proprio filtro di età e di esperienza.
+
+L'informativa sui rischi vale identica: un guest vede gli stessi spot e gli
+stessi tutorial, quindi corre lo stesso rischio, e senza accettazione l'account
+non nasce.
+
+Da lì in poi le domande sono **le stesse di tutti gli altri**, con una sola
+esclusione: la domanda atleta/istruttore non viene posta e il profilo nasce
+come atleta. Qualificarsi istruttore significa mandare un certificato e un
+documento d'identità a una persona che li legge, che è l'esatto contrario di
+restare anonimi. `POST /onboarding/practitioner-type` e
+`POST /onboarding/instructor-certificate` rispondono `403` a un guest, non solo
+per l'atleta: la domanda proprio non esiste, per lui.
+
+Effetto collaterale utile: fra un guest minorenne e un guest maggiorenne il
+percorso è **identico schermata per schermata**.
+
 ## 2. Le domande, una alla volta
 
 Le decide il server. Il client chiama `GET /api/v1/onboarding/state`, disegna
@@ -63,7 +94,7 @@ una build vecchia non può scavalcarle.
                        data di nascita
                               │
               ┌───────────────┴───────────────┐
-         maggiorenne                       minorenne
+     maggiorenne con email            minorenne, oppure guest
               │                                │
      atleta o istruttore?                      │
         │            │                         │
@@ -81,10 +112,10 @@ una build vecchia non può scavalcarle.
 | Passo | Endpoint | Chi lo vede |
 | ----- | -------- | ----------- |
 | `birth_date` | `POST /onboarding/birth-date` | tutti |
-| `practitioner_type` | `POST /onboarding/practitioner-type` | solo maggiorenni |
+| `practitioner_type` | `POST /onboarding/practitioner-type` | maggiorenni **con email** |
 | `instructor_certificate` | `POST /onboarding/instructor-certificate` | chi si dichiara istruttore |
-| `experience` | `POST /onboarding/experience` | atleti **e minorenni** |
-| `experience_quiz` | `POST /onboarding/quiz` → `POST /onboarding/quiz/answers` | atleti e minorenni |
+| `experience` | `POST /onboarding/experience` | atleti, minorenni **e guest** |
+| `experience_quiz` | `POST /onboarding/quiz` → `POST /onboarding/quiz/answers` | atleti, minorenni e guest |
 
 ## 3. La versione sicura per i minorenni
 

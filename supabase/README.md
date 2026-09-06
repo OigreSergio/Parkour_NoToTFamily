@@ -36,6 +36,19 @@ Project Settings → Auth → SMTP Settings.
 anche al proprietario — la versione sicura per i minorenni funziona solo se
 nessun client può sapere di esserci dentro.
 
+## 1c. Account anonimi
+
+Dashboard → **SQL Editor** → incolla
+[`migrations/0004_guest_accounts.sql`](migrations/0004_guest_accounts.sql)
+→ **Run**, e attiva Authentication → Providers → **Anonymous sign-ins**.
+
+Su Supabase il guest è un anonymous sign-in: una riga vera in `auth.users` con
+la sua sessione persistente, che è la chiave univoca dell'account. Senza questa
+migrazione l'iscrizione anonima **fallisce**: `handle_new_user()` costruiva il
+nome da `split_part(email, '@', 1)` e per un anonimo l'email è NULL. Da qui in
+poi il nome lo genera il database, e una policy RLS impedisce a un anonimo di
+dichiararsi istruttore o di aprire una pratica di qualifica.
+
 ## 2. Seed (admin + Rome spots)
 
 Requires Node 20+ and the project's **secret** key (Dashboard → Settings →

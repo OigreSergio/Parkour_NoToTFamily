@@ -2,8 +2,16 @@
  *
  * Va caricato dopo pk-legal.js (ne riusa lo stile e i pop-up dei rischi).
  *
- *   PkOnboarding.open()   → apre il flusso e risolve true quando è completo
+ *   PkOnboarding.open()      → apre il flusso e risolve true quando è completo
  *   PkOnboarding.session()/signOut()
+ *   PkOnboarding.guestKey()  → la chiave dell'account anonimo, se ce n'è uno
+ *
+ * Si entra in due modi: con l'email (codice a sei cifre) oppure senza dire
+ * niente. Il guest non fornisce email né nome — glieli dà il server — ma
+ * risponde alle stesse domande, perché vede gli stessi spot e gli stessi
+ * tutorial. La chiave che riceve alla creazione è l'unico modo per ritrovare
+ * quell'account: senza, le risposte e i livelli sbloccati morirebbero con la
+ * scheda del browser.
  *
  * Il flusso lo decide il server: si chiede GET /onboarding/state, si disegna
  * la schermata per `next_step` con le opzioni che arrivano, si manda la
@@ -16,10 +24,12 @@
 
   var API = globalThis.__PK_API__ || 'https://api.notot.family';
   var SESSION = 'pkfam.session';
+  var GUEST_KEY = 'pkfam.guestKey';
 
   function read(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } }
   function write(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* privata */ } }
   function session() { return read(SESSION); }
+  function guestKey() { return read(GUEST_KEY); }
   function token() { var s = session(); return (s && s.access_token) || null; }
 
   function api(path, options) {
@@ -120,6 +130,74 @@
   }
 
   // --- passaggi --------------------------------------------------------------
+
+  function askEntry(card) {
+    return new Promise(function (resolve, reject) {
+      render(card, [
+        el('p', 'pk-onb-step', 'Accesso'),
+        el('h2', null, 'Come vuoi entrare?'),
+        el('p', 'pk-sum', 'In entrambi i casi ti facciamo le stesse domande: servono a proporti esercizi adatti.'),
+        button('Con la mia email', function () { resolve('email'); }, 'pk-onb-choice'),
+        button('Senza account, resto anonimo', function () { resolve('guest'); }, 'pk-onb-choice'),
+        actions([button('Annulla', function () { reject(new Error('cancelled')); }, 'pk-legal-decline')]),
+        el('p', 'pk-onb-note', 'Senza account non chiediamo né email né nome: te ne diamo uno noi. Ti daremo una chiave da conservare, perché è l’unico modo per ritrovare questo profilo.')
+      ]);
+    });
+  }
+
+  function startGuest(card) {
+    return globalThis.PkLegal.documents()
+      .then(function (docs) {
+        var waiver = docs.filter(function (d) { return d.id === 'liability_waiver'; })[0];
+        if (!waiver) return null;
+        // Stesso gate dell'email: un guest vede gli stessi spot, quindi corre
+        // lo stesso rischio.
+        return globalThis.PkLegal.show(waiver).then(function (ok) {
+          return ok ? [{ id: waiver.id, version: waiver.version }] : null;
+        });
+      })
+      .then(function (acceptedDocs) {
+        if (acceptedDocs === null) return null;
+        return api('/auth/guest', { method: 'POST', body: { accepted_documents: acceptedDocs } });
+      })
+      .then(function (res) {
+        if (!res) return null;
+        write(SESSION, res.tokens);
+        if (res.guest_key) write(GUEST_KEY, res.guest_key);
+        return showGuestKey(card, res);
+      });
+  }
+
+  function showGuestKey(card, res) {
+    return new Promise(function (resolve) {
+      var key = el('input', 'pk-onb-field');
+      key.readOnly = true;
+      key.value = res.guest_key || '';
+      var note = el('p', 'pk-onb-note', '');
+
+      render(card, [
+        el('p', 'pk-onb-step', 'Account anonimo'),
+        el('h2', null, 'Da qui in poi sei ' + res.display_name),
+        el('p', 'pk-sum', 'Nome generato: non dice niente di te. Questa è la tua chiave — la vedi una volta sola.'),
+        key,
+        actions([
+          button('Copia la chiave', function () {
+            key.select();
+            var copied = navigator.clipboard
+              ? navigator.clipboard.writeText(key.value)
+              : Promise.reject();
+            copied.then(
+              function () { note.textContent = 'Copiata. Incollala dove non la perdi.'; },
+              function () { note.textContent = 'Selezionala e copiala a mano.'; }
+            );
+          }, 'pk-onb-choice'),
+          button('L’ho salvata, continua', function () { resolve(res); })
+        ]),
+        note,
+        el('p', 'pk-onb-note', 'Serve a ritrovare questo profilo su un altro dispositivo, o se cancelli i dati del browser. Senza, l’avanzamento resta solo qui.')
+      ]);
+    });
+  }
 
   function askEmail(card) {
     return new Promise(function (resolve, reject) {
@@ -429,20 +507,47 @@
   function open() {
     var view = shell();
 
-    function signIn() {
+    function withEmail() {
       return askEmail(view.card)
         .then(function (step) {
           return askCode(view.card, step.email, step.sent)
             .catch(function (err) {
-              if (err && err.message === 'back') return signIn();
+              if (err && err.message === 'back') return withEmail();
               throw err;
             });
         });
     }
 
-    var start = token()
-      ? api('/onboarding/state')
-      : signIn().then(function () { return api('/onboarding/state'); });
+    function signIn() {
+      return askEntry(view.card).then(function (mode) {
+        if (mode === 'guest') {
+          return startGuest(view.card).then(function (res) {
+            // Informativa rifiutata: si torna alla scelta, non si prosegue.
+            return res ? res : signIn();
+          });
+        }
+        return withEmail();
+      });
+    }
+
+    var start;
+    if (token()) {
+      start = api('/onboarding/state');
+    } else if (guestKey()) {
+      // Ritorno di un anonimo: la chiave vale al posto della password.
+      start = api('/auth/guest/resume', { method: 'POST', body: { guest_key: guestKey() } })
+        .then(function (res) {
+          write(SESSION, res.tokens);
+          return api('/onboarding/state');
+        })
+        .catch(function () {
+          // Chiave non più valida: si riparte dalla scelta iniziale.
+          write(GUEST_KEY, null);
+          return signIn().then(function () { return api('/onboarding/state'); });
+        });
+    } else {
+      start = signIn().then(function () { return api('/onboarding/state'); });
+    }
 
     return start
       .then(function (state) { return advance(view.card, state); })
@@ -460,7 +565,11 @@
   globalThis.PkOnboarding = {
     open: open,
     session: session,
+    guestKey: guestKey,
+    // Non cancella la chiave: uscire non deve voler dire buttare via il
+    // profilo anonimo, che senza chiave non si recupera più.
     signOut: function () { write(SESSION, null); },
+    forgetGuest: function () { write(GUEST_KEY, null); write(SESSION, null); },
     api: api
   };
 })();
