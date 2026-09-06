@@ -30,11 +30,48 @@ class Settings(BaseSettings):
     initial_admin_email: str | None = None
     initial_admin_password: str | None = None
 
+    # --- Outbound email (verification codes, instructor dossiers) -----------
+    # `console` prints the message (development), `memory` keeps it in a list
+    # (tests), `smtp` actually sends it. Production must use `smtp`.
+    mail_backend: Literal["console", "memory", "smtp"] = "console"
+    # Sender of every automated message. It is a *no-reply* address: replies
+    # are not read, so the body always points people at a monitored mailbox.
+    mail_from: str = "noreply@notot.family"
+    mail_from_name: str = "PkFAMILY"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = None
+    smtp_starttls: bool = True
+    # Mailbox that already receives spot-verification traffic; instructor
+    # certificates and ID documents are forwarded here for manual review.
+    moderation_email: str | None = None
+
+    # --- Email verification codes ------------------------------------------
+    email_code_ttl_minutes: int = 10
+    email_code_max_attempts: int = 5
+    #: Codes a single address may request per hour.
+    email_code_max_per_hour: int = 5
+    #: Minimum seconds between two code requests for the same address.
+    email_code_min_interval_seconds: int = 60
+
+    @property
+    def review_mailbox(self) -> str | None:
+        """Where instructor dossiers go: the spot-verification mailbox."""
+        return self.moderation_email or self.initial_admin_email
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def split_origins(cls, v: object) -> object:
         if isinstance(v, str):
             return [o.strip() for o in v.split(",") if o.strip()]
+        return v
+
+    @field_validator("mail_backend")
+    @classmethod
+    def require_smtp_in_prod(cls, v: str, info) -> str:
+        if info.data.get("env") == "production" and v != "smtp":
+            raise ValueError("MAIL_BACKEND must be 'smtp' in production")
         return v
 
     @field_validator("jwt_secret")

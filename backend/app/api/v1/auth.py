@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import current_user, db_session
 from app.models.user import User
 from app.schemas.auth import (
+    EmailCodeRequest,
+    EmailCodeResult,
+    EmailCodeSent,
+    EmailCodeVerifyRequest,
     GuestLoginRequest,
     LoginRequest,
     RefreshRequest,
@@ -11,7 +15,7 @@ from app.schemas.auth import (
     TokenPair,
 )
 from app.schemas.user import UserOut
-from app.services import auth_service
+from app.services import auth_service, email_verification_service
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -46,3 +50,46 @@ async def logout(
     session: AsyncSession = Depends(db_session),
 ) -> None:
     await auth_service.revoke_all_user_tokens(session, user.id)
+
+
+# --- email code sign-in ------------------------------------------------------
+#
+# The primary way in. No password: the address is the account. Both endpoints
+# answer identically whether or not the address is already registered — see
+# `app.services.email_verification_service`.
+
+
+@router.post("/email/request-code", response_model=EmailCodeSent)
+async def request_email_code(
+    data: EmailCodeRequest,
+    session: AsyncSession = Depends(db_session),
+) -> EmailCodeSent:
+    """Generate a code now and mail it from the no-reply sender.
+
+    Per-address throttling lives in the service (one code per minute, five per
+    hour): flooding somebody else's inbox costs the sender nothing, so the
+    limit has to follow the address, not the IP.
+    """
+    return await email_verification_service.request_code(session, email=str(data.email))
+
+
+@router.post("/email/verify-code", response_model=EmailCodeResult)
+async def verify_email_code(
+    data: EmailCodeVerifyRequest,
+    request: Request,
+    session: AsyncSession = Depends(db_session),
+) -> EmailCodeResult:
+    """Check the code: sign in, or create the account and save its profile.
+
+    Creating an account requires the risk notice to be accepted at its current
+    version — `accepted_documents` carries what the pop-up showed.
+    """
+    tokens, created, next_step = await email_verification_service.verify_code(
+        session,
+        data,
+        ip_address=request.headers.get("x-forwarded-for") or (
+            request.client.host if request.client else None
+        ),
+        user_agent=request.headers.get("user-agent"),
+    )
+    return EmailCodeResult(tokens=tokens, created=created, next_step=next_step)
