@@ -151,9 +151,9 @@
     gap: 12px;
     box-shadow: var(--ombra);
   }
-  .campi { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 14px; }
-  .campi dt { color: var(--tenue); }
-  .campi dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .campi { display: flex; flex-direction: column; gap: 12px; margin: 0; }
+  .campi dt { color: var(--tenue); font-size: 12.5px; line-height: 1.35; }
+  .campi dd { margin: 2px 0 0; font-size: 15px; font-variant-numeric: tabular-nums; }
   .chiave { font-family: var(--mono); font-size: 12px; word-break: break-all; }
 
   /* Registro delle chiamate: è il motivo per cui questa pagina esiste. */
@@ -270,11 +270,17 @@
   <section>
     <div>
       <p class="occhiello">Vista di debug</p>
-      <h2>Il profilo e il tetto</h2>
+      <h2>Il profilo, come lo vede il server</h2>
       <p class="sottile" style="margin-top:6px">
-        Quello che il server sa. Nell'app queste righe non esistono: il tetto
-        non viene mai spedito ai client, ed è per questo che nessuna schermata
-        può far capire a un minorenne di essere in una versione ridotta.
+        L'ultima riga è il punto d'arrivo di tutte le altre: fin dove l'app si
+        spinge a proporre esercizi. Vale sempre il più basso fra due limiti —
+        quello dell'età, che nessuna risposta può alzare, e quello
+        dell'esperienza, che il gioco conferma o abbassa.
+      </p>
+      <p class="sottile">
+        Nell'app queste righe non esistono: né l'età né questo limite vengono
+        mai spediti ai client, ed è per questo che nessuna schermata può far
+        capire a un minorenne di essere in una versione ridotta.
       </p>
     </div>
     <div class="scheda">
@@ -1657,17 +1663,20 @@
     dl.textContent = '';
     if (!account) {
       riga(dl, 'Account', 'nessuno: sei un visitatore');
-      riga(dl, 'Tetto', 'nessuno — il catalogo è intero');
+      riga(dl, 'Esercizi che l’app propone fino a', 'tutti: il catalogo è intero');
       return;
     }
     riga(dl, 'Nome', account.display_name);
-    riga(dl, 'Tipo', account.is_guest ? 'anonimo' : account.email);
+    riga(dl, 'Mail', account.email || 'nessuna: account anonimo');
     if (account.guest_key) riga(dl, 'Chiave', account.guest_key, true);
-    riga(dl, 'Nato il', account.birth_date || '—');
-    riga(dl, 'Dichiarato', etichette[account.experience_band] || '—');
-    riga(dl, 'Dopo il gioco', etichette[account.verified_band] || '—');
+    riga(dl, 'Nato il', account.birth_date || 'non ancora chiesto');
+    riga(dl, 'Il tracer dichiara di praticare questa disciplina da',
+         etichette[account.experience_band] || 'non ancora chiesto');
+    riga(dl, 'Il gioco degli scavalcamenti conferma',
+         etichette[account.verified_band] || 'non ancora giocato');
     var access = globalThis.PkDemoServer.access();
-    riga(dl, 'Tetto', LIVELLI[access.max_level] + ', difficoltà ' + access.max_difficulty);
+    riga(dl, 'Esercizi che l’app gli propone fino a',
+         LIVELLI[access.max_level] + ', difficoltà ' + access.max_difficulty + ' su 10');
   }
 
   function renderCatalogo() {
