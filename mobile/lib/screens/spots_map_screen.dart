@@ -6,6 +6,7 @@ import '../models/spot.dart';
 import '../providers.dart';
 import '../services/location_service.dart';
 import '../widgets/error_view.dart';
+import '../widgets/risk_notice.dart';
 import 'spot_detail_screen.dart';
 
 /// OpenStreetMap view (via `flutter_map`) with one marker per verified spot.
@@ -83,10 +84,11 @@ class SpotsMapScreen extends ConsumerWidget {
               child: FilledButton(
                 onPressed: () {
                   Navigator.of(sheetContext).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                      builder: (_) => SpotDetailScreen(spot: spot),
-                    ),
+                  pushBehindRiskNotice(
+                    context,
+                    ref,
+                    spotRiskNoticeId,
+                    (_) => SpotDetailScreen(spot: spot),
                   );
                 },
                 child: const Text('Details'),

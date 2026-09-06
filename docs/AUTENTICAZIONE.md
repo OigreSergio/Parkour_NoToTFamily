@@ -1,0 +1,214 @@
+# Accesso e onboarding
+
+Dal codice via email al gioco degli scavalcamenti, cosa succede e perché.
+
+## 1. Il codice via email
+
+Niente password: l'indirizzo *è* l'account.
+
+```
+  app                                   backend                    mailbox
+   │  POST /auth/email/request-code        │                          │
+   │  {email}                              │                          │
+   ├──────────────────────────────────────►│ genera 6 cifre           │
+   │                                       │ salva solo l'HMAC        │
+   │                                       ├─────────────────────────►│ noreply@…
+   │  ◄────────── 202 {expires_in_seconds} │                          │
+   │                                                                  │
+   │  POST /auth/email/verify-code                                    │
+   │  {email, code, display_name?, accepted_documents[]}              │
+   ├──────────────────────────────────────►│ confronta, brucia il codice
+   │                                       │ ┌ nuovo  → crea utente + profilo
+   │                                       │ └ noto   → login
+   │  ◄──── 200 {tokens, created, next_step}                          │
+```
+
+Dettagli che contano:
+
+- **il codice è generato sul momento**, sei cifre dal CSPRNG del sistema;
+- **in database finisce solo un HMAC-SHA256** del codice, con chiave il segreto
+  del server e legato all'indirizzo: un dump non permette di rigiocare un
+  codice vivo, e lo stesso codice non vale per un'altra mailbox;
+- **vale 10 minuti e una volta sola**; cinque tentativi sbagliati lo bruciano,
+  quindi il milione di combinazioni non si percorre;
+- **un indirizzo può chiedere 5 codici all'ora, non più di uno al minuto**. Il
+  limite segue l'indirizzo e non l'IP: intasare la casella di qualcun altro non
+  costa nulla a chi lo fa;
+- **le risposte non dicono se l'indirizzo è già iscritto.** Altrimenti
+  l'endpoint diventerebbe un modo per sapere chi c'è sulla piattaforma;
+- **il mittente è no-reply**: `Auto-Submitted: auto-generated` e
+  `X-Auto-Response-Suppress: All` nelle intestazioni, e il corpo indica la
+  casella vera (quella che verifica gli spot) per chi deve scrivere a una
+  persona.
+
+Fuori da produzione (`MAIL_BACKEND=console`) il codice torna anche nel campo
+`debug_code`: tutto il flusso si prova senza un server di posta. In produzione
+il campo è sempre `null` e `MAIL_BACKEND` deve valere `smtp`, altrimenti l'app
+non parte.
+
+L'account nasce solo se `accepted_documents` contiene l'informativa
+`liability_waiver` alla versione corrente — vedi [LEGALE.md](./LEGALE.md).
+
+I vecchi `POST /auth/register` e `/auth/login` con password restano al loro
+posto per non rompere i client esistenti, ma la via nuova è questa.
+
+## 2. Le domande, una alla volta
+
+Le decide il server. Il client chiama `GET /api/v1/onboarding/state`, disegna
+la schermata per `next_step` con le opzioni che riceve, invia la risposta e
+ripete finché non arriva `done`. Nessun client tiene una copia delle regole, e
+una build vecchia non può scavalcarle.
+
+```
+                       data di nascita
+                              │
+              ┌───────────────┴───────────────┐
+         maggiorenne                       minorenne
+              │                                │
+     atleta o istruttore?                      │
+        │            │                         │
+   istruttore      atleta                      │
+        │            └──────────┬──────────────┘
+  certificato +                 │
+  documento                da quanti anni pratichi?
+  → alla casella                │
+    che verifica          gioco: come si chiama
+    gli spot              questo scavalcamento?
+        │                       │
+      done                    done
+```
+
+| Passo | Endpoint | Chi lo vede |
+| ----- | -------- | ----------- |
+| `birth_date` | `POST /onboarding/birth-date` | tutti |
+| `practitioner_type` | `POST /onboarding/practitioner-type` | solo maggiorenni |
+| `instructor_certificate` | `POST /onboarding/instructor-certificate` | chi si dichiara istruttore |
+| `experience` | `POST /onboarding/experience` | atleti **e minorenni** |
+| `experience_quiz` | `POST /onboarding/quiz` → `POST /onboarding/quiz/answers` | atleti e minorenni |
+
+## 3. La versione sicura per i minorenni
+
+Sotto i 18 anni l'account prende un tetto di contenuti che **nessuna risposta,
+dichiarazione o punteggio può alzare**. Un quindicenne che dichiara dieci anni
+di pratica resta sotto il tetto dei quindicenni.
+
+Quello che rende la cosa una *versione sicura* e non una *modalità per
+bambini*:
+
+- **niente badge, niente banner, niente schermata diversa.** Le stesse
+  schermate, le stesse parole;
+- **i tutorial oltre il tetto non compaiono affatto** nel catalogo — non
+  arrivano nemmeno come `locked`, che sarebbe un segnale visibile: una riga
+  grigia, un contatore che non torna, un vuoto da spiegare. `GET /videos/{id}`
+  su un contenuto fuori portata risponde `404`, la stessa cosa che direbbe per
+  un video inesistente;
+- **nessun campo delle risposte API racconta l'età o il tetto.**
+  `ProfileOut` non ha `birth_date`, non ha un flag "minore", non ha il tetto:
+  un client non può renderizzare una differenza nemmeno per sbaglio. C'è un
+  test che lo verifica;
+- **al minorenne si chiede comunque da quanto pratica.** È quello che dice
+  all'app quali esercizi proporre a un quattordicenne che si allena da tre anni
+  rispetto a uno che ha cominciato la settimana scorsa — dentro il tetto della
+  sua età.
+
+L'unica differenza voluta è la conferma del consenso di un genitore o tutore
+(`minor_guardian`), che la legge non permette di rendere identica.
+
+La domanda sull'istruttore è l'unica schermata saltata: un ente nazionale non
+certifica un quattordicenne, e il documento d'identità di un minore non ha
+motivo di finire in una casella di revisione.
+
+### I tetti
+
+Livelli: `beginner` < `intermediate` < `advanced`. Difficoltà: 1–10, quella
+che l'app già mostra sui tutorial. Vale sempre il più basso fra i due tetti.
+
+| Età | Livello massimo | Difficoltà massima |
+| --- | --------------- | ------------------ |
+| fino a 11 | beginner | 2 |
+| 12–13 | beginner | 3 |
+| 14–15 | intermediate | 4 |
+| 16–17 | intermediate | 6 |
+| 18+ | dipende solo dall'esperienza | |
+
+| Da quanto pratichi | Livello massimo | Difficoltà massima |
+| ------------------ | --------------- | ------------------ |
+| Meno di un mese | beginner | 2 |
+| Un paio di mesi | beginner | 3 |
+| Sei mesi | intermediate | 5 |
+| Un anno | intermediate | 6 |
+| Un paio d'anni | advanced | 8 |
+| Più di 5 anni | advanced | 10 |
+| Più di 10 anni | advanced | 10 |
+
+Non è una misura fisiologica: è la scelta prudente di un'app che non ha mai
+visto la persona di cui sta parlando. I carichi d'impatto del parkour avanzato
+non sono qualcosa in cui spingere un corpo che sta ancora crescendo.
+
+Chi non ha ancora risposto — visitatori, account appena creati — vede il
+catalogo di sempre. Il tetto è la conseguenza di aver detto all'app chi si è,
+non una penalità per non averlo fatto.
+
+## 4. L'istruttore
+
+Chi si dichiara istruttore carica due file: il **certificato** rilasciato da un
+ente riconosciuto a livello nazionale e un **documento d'identità**, che serve a
+verificare che il certificato sia intestato alla persona che ha fatto
+l'accesso.
+
+Entrambi vengono inoltrati alla stessa casella che riceve le verifiche degli
+spot (`MODERATION_EMAIL`, con fallback su `INITIAL_ADMIN_EMAIL`) e **non
+restano sui server**: della richiesta si conserva solo l'ente dichiarato, il
+nome dei file e il loro SHA-256 — abbastanza per dimostrare poi che il
+documento revisionato è quello inviato. Tenere il documento d'identità di
+qualcuno su un server applicativo sarebbe un rischio sproporzionato rispetto a
+quello che la funzione vale.
+
+La qualifica **non è automatica**: la concede una persona, con
+`POST /api/v1/admin/users/{id}/role` — l'endpoint admin che esisteva già.
+Finché la pratica è in revisione lo stato è `pending`.
+
+## 5. Il gioco degli scavalcamenti
+
+Sei movimenti descritti come li descriverebbe un traceur allo spot, quattro
+nomi per ognuno, uno giusto. Si gioca in un minuto, ovunque, e non chiede a
+nessuno di saltare niente per dimostrare qualcosa.
+
+- il pool di domande è più profondo quanto più alta è la dichiarazione, e chi
+  dichiara molti anni riceve **sempre almeno una domanda del tier più alto**:
+  altrimenti dieci anni si confermerebbero con dei passamano;
+- si passa al 70%. Passare conferma la dichiarazione;
+- **non passare non blocca niente**: il tetto scende alla fascia che il
+  punteggio sostiene (almeno un gradino), e il gioco si può rifare;
+- le risposte giuste stanno nella riga del tentativo, lato server: il client
+  non può leggerle dal proprio traffico;
+- alla fine si vedono le correzioni, così il gioco insegna qualcosa anche a chi
+  sbaglia.
+
+Il catalogo dei movimenti è in `backend/app/data/vaults.py`. Il campo
+`media_url` è pronto per quando ci saranno le clip: finché è vuoto il client
+mostra la sola descrizione.
+
+## 6. I pop-up sui rischi
+
+Sono documenti versionati serviti dall'API, non stringhe nei client. Tre
+momenti: iscrizione, apertura di uno spot, avvio di un tutorial. Vedi
+[LEGALE.md](./LEGALE.md).
+
+Sul web ci sono due moduli standalone, senza framework né build, copiati
+accanto al bundle da `scripts/patch-gh-pages-test-free.py`:
+
+- `scripts/web/pk-legal.js` — i pop-up. `PkLegal.gateSpot()` e
+  `PkLegal.gateTutorial()` restituiscono una Promise che si risolve solo dopo
+  una scelta: niente tap fuori, niente Esc, niente X. Se il backend non
+  risponde il pop-up compare lo stesso con un testo minimo, perché un avviso
+  sui rischi che fallisce in silenzio non è un avviso;
+- `scripts/web/pk-onboarding.js` — `PkOnboarding.open()`: email, codice,
+  informativa, e poi le domande guidate dal server.
+
+Vanno caricati in quest'ordine (il secondo usa i pop-up del primo).
+L'indirizzo del backend si sovrascrive con `globalThis.__PK_API__`.
+
+Nell'app Flutter i pop-up sono in `mobile/lib/widgets/risk_notice.dart`, e
+`pushBehindRiskNotice` li mette davanti alla scheda spot e al tutorial in
+tutti e quattro i punti da cui si aprono.

@@ -3,6 +3,7 @@ import 'package:latlong2/latlong.dart';
 
 import 'models/spot.dart';
 import 'models/video.dart';
+import 'repositories/legal_repository.dart';
 import 'repositories/spot_repository.dart';
 import 'repositories/video_repository.dart';
 import 'services/api_client.dart';
@@ -68,4 +69,26 @@ class LandedTricksNotifier extends StateNotifier<Set<String>> {
 final landedTricksProvider =
     StateNotifierProvider<LandedTricksNotifier, Set<String>>(
   (ref) => LandedTricksNotifier(),
+);
+
+/// Risk notices (`GET /api/v1/legal/documents`).
+final legalRepositoryProvider = Provider<LegalRepository>(
+  (ref) => LegalRepository(ref.watch(apiClientProvider)),
+);
+
+/// Notices accepted in this session.
+///
+/// Per session on purpose: the trigger for the spot and tutorial notices is
+/// "the first time, each time the app is opened". The durable record is the
+/// one the backend keeps in `legal_acceptances` — this is only what stops the
+/// same dialog from appearing on every tap.
+class AcceptedNoticesNotifier extends StateNotifier<Set<String>> {
+  AcceptedNoticesNotifier() : super(const {});
+
+  void accept(String noticeId) => state = {...state, noticeId};
+}
+
+final acceptedNoticesProvider =
+    StateNotifierProvider<AcceptedNoticesNotifier, Set<String>>(
+  (ref) => AcceptedNoticesNotifier(),
 );

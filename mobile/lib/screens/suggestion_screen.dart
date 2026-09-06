@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/video.dart';
 import '../providers.dart';
 import '../widgets/difficulty_gauge.dart';
+import '../widgets/risk_notice.dart';
 import 'tutorial_detail_screen.dart';
 
 /// Trick-category filter chips: `null` means "any category".
@@ -192,13 +193,13 @@ class _SuggestionScreenState extends ConsumerState<SuggestionScreen> {
   }
 }
 
-class _SuggestionCard extends StatelessWidget {
+class _SuggestionCard extends ConsumerWidget {
   const _SuggestionCard({required this.video});
 
   final TutorialVideo video;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       child: ListTile(
         leading: DifficultyGauge(difficulty: video.difficulty),
@@ -206,10 +207,11 @@ class _SuggestionCard extends StatelessWidget {
         subtitle:
             Text(video.locked ? 'Premium — subscribe to watch' : video.level),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () => Navigator.of(context).push(
-          MaterialPageRoute<void>(
-            builder: (_) => TutorialDetailScreen(video: video),
-          ),
+        onTap: () => pushBehindRiskNotice(
+          context,
+          ref,
+          tutorialRiskNoticeId,
+          (_) => TutorialDetailScreen(video: video),
         ),
       ),
     );

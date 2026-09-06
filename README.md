@@ -18,7 +18,9 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 
 | Feature             | Backend                                    | Mobile        | Web admin |
 | ------------------- | ------------------------------------------ | ------------- | --------- |
-| Auth (email + JWT)  | `POST /api/v1/auth/*`                      | Login flow    | Login     |
+| Auth (emailed code) | `POST /api/v1/auth/email/*`                | Login flow    | Login     |
+| Onboarding profile  | `GET/POST /api/v1/onboarding/*`            | —             | —         |
+| Risk notices        | `GET /api/v1/legal/documents`              | Blocking dialogs | —      |
 | Map / spots         | `GET /api/v1/spots`, geo search via PostGIS | Map screen    | —         |
 | Submit a spot       | `POST /api/v1/spots` (status = `pending`)  | Submit form   | —         |
 | Verify a spot       | `POST /api/v1/spots/{id}/verify` (admin)   | —             | Queue UI  |
@@ -56,6 +58,22 @@ npm run dev
 # Or bring everything up with Docker
 docker compose up --build
 ```
+
+## Signing in
+
+No password: the address is the account. A six-digit code is generated on the
+spot and mailed from a no-reply sender; typing it back either signs the member
+in or creates the account. Before the account exists, the risk notice has to be
+accepted — it states that responsibility for an injury at a listed spot or
+while following a tutorial is the user's alone, and that the platform only
+undertakes to make the information available free of charge and easy to reach.
+
+What the app asks next (date of birth, athlete or instructor, years of
+practice, the vault-naming game) is driven by the server. Accounts under 18 get
+a content ceiling that no answer can lift, and no client can tell it is there.
+
+See [docs/AUTENTICAZIONE.md](docs/AUTENTICAZIONE.md) and
+[docs/LEGALE.md](docs/LEGALE.md).
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
 

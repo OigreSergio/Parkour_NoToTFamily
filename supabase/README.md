@@ -13,6 +13,29 @@ Level Security enabled — plus the PostGIS extension, the
 `on_auth_user_created` trigger and the `is_admin()` /
 `is_conversation_member()` helper functions.
 
+## 1b. Accesso, profili e informative
+
+Dashboard → **SQL Editor** → incolla
+[`migrations/0003_auth_profiles_and_legal.sql`](migrations/0003_auth_profiles_and_legal.sql)
+→ **Run**.
+
+Aggiunge `member_profiles`, `legal_acceptances`, `instructor_certifications`,
+`experience_quiz_attempts`, la colonna `videos.difficulty` e le funzioni che
+calcolano il tetto dei contenuti. Il tetto lo applica una policy RLS su
+`videos`: un client vecchio, o una chiamata fatta a mano con la publishable
+key, non può scavalcarlo. Vedi [docs/AUTENTICAZIONE.md](../docs/AUTENTICAZIONE.md).
+
+Il codice via email lo manda Supabase Auth: Dashboard → **Authentication** →
+Providers → Email, con "Confirm email" attivo e il template *Magic Link*
+impostato per inviare il codice OTP (`{{ .Token }}`) invece del link. Il
+mittente va configurato su un indirizzo **no-reply** in
+Project Settings → Auth → SMTP Settings.
+
+`birth_date` sta in `member_profiles` e non in `profiles` di proposito:
+`profiles` è leggibile da chiunque. Un `revoke`/`grant` per colonna la nasconde
+anche al proprietario — la versione sicura per i minorenni funziona solo se
+nessun client può sapere di esserci dentro.
+
 ## 2. Seed (admin + Rome spots)
 
 Requires Node 20+ and the project's **secret** key (Dashboard → Settings →
