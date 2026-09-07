@@ -973,7 +973,13 @@
         "source": "wikidata Q6843071 a 300 m"
       },
       "posts": [],
-      "accounts": []
+      "accounts": [
+        {
+          "handle": "parkourspots_atlanta",
+          "name": "Atlanta's Premiere PK Spots",
+          "why": "gli spot di Atlanta"
+        }
+      ]
     },
     "gmaps-7a213ea070a1": {
       "name": "Piazza della Trivulziana",
@@ -1568,6 +1574,755 @@
           "handle": "barriera.di.milanooo",
           "name": "Torino quartiere Barriera di Milano",
           "why": "pagina del quartiere"
+        }
+      ]
+    },
+    "gmaps-52b47bb5993a": {
+      "name": "San Giuliano Mare",
+      "location": {
+        "id": "592789846",
+        "slug": "san-giuliano-mare-rimini",
+        "name": "San Giuliano Mare, Rimini",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-0e2d93a389c2": {
+      "name": "Anfiteatro Romano",
+      "location": {
+        "id": "114139855313304",
+        "slug": "anfiteatro-romano-di-rimini",
+        "name": "Anfiteatro romano di Rimini",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-aef1b1a2b4ee": {
+      "name": "Arena Francesca da Rimini",
+      "location": {
+        "id": "114139855313304",
+        "slug": "anfiteatro-romano-di-rimini",
+        "name": "Anfiteatro romano di Rimini (Arena Francesca da Rimini)",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-d159e255ea2a": {
+      "name": "Flaminio",
+      "location": {
+        "id": "16529376",
+        "slug": "palasport-flaminio",
+        "name": "Palasport Flaminio",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-0a9bbb7c558a": {
+      "name": "Labirinto di Arianna - Fiumara D'arte",
+      "location": {
+        "id": "486830153",
+        "slug": "fiumara-darte",
+        "name": "Fiumara d'Arte",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-e565ff6dc091": {
+      "name": "Villa Comunale",
+      "location": {
+        "id": "8980470",
+        "slug": "sinagra-sicily",
+        "name": "Sinagra",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-24528c03943b": {
+      "name": "Via Vittime di Guerra, 16-18",
+      "location": {
+        "id": "416729980",
+        "slug": "acquedolci",
+        "name": "Acquedolci",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-414964f77d05": {
+      "name": "Ecoplast",
+      "location": {
+        "id": "416729980",
+        "slug": "acquedolci",
+        "name": "Acquedolci",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-c9b0e74c0a64": {
+      "name": "Piazza Martiri delle Foibe",
+      "location": {
+        "id": "235667748",
+        "slug": "crotone-italy",
+        "name": "Crotone",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-6edfc60e21b1": {
+      "name": "Monumento Brigata Sassari",
+      "location": {
+        "id": "545429792230435",
+        "slug": "sassari-monte-rosello",
+        "name": "Sassari Monte Rosello",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-c61580efde58": {
+      "name": "Lecce",
+      "location": {
+        "id": "213052715",
+        "slug": "lecce-italy",
+        "name": "Lecce",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-27412aee8358": {
+      "name": "Giardino a Via Roma piazzale Mario Frustalupi",
+      "location": {
+        "id": "152444",
+        "slug": "orvieto",
+        "name": "Orvieto",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-aa6f51bb6852": {
+      "name": "Villar Perosa",
+      "location": {
+        "id": "262320191",
+        "slug": "villar-perosa",
+        "name": "Villar Perosa",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-5ff8604ab9aa": {
+      "name": "Via Mondovi",
+      "location": {
+        "id": "270899478",
+        "slug": "santalbano-stura",
+        "name": "Sant'Albano Stura",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-9e6c34e5c459": {
+      "name": "Circolo",
+      "location": {
+        "id": "263991369",
+        "slug": "beinasco",
+        "name": "Beinasco",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-6031454014c9": {
+      "name": "Da Family - dance & arts school",
+      "location": {
+        "id": "238851921",
+        "slug": "medole",
+        "name": "Medole",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-a56ed1a8c2d6": {
+      "name": "Villa d'Almè",
+      "location": {
+        "id": "235166231",
+        "slug": "villa-dalme",
+        "name": "Villa d'Almè",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-1ab81f2627d5": {
+      "name": "Centro Sportivo \"Pino Daniele\"",
+      "location": null,
+      "posts": [
+        {
+          "url": "https://www.instagram.com/reel/DEvQN9TOp9u/",
+          "kind": "reel",
+          "topic": "luogo",
+          "title": "Caivano, al centro sportivo Pino Daniele i bambini di Parco …"
+        },
+        {
+          "url": "https://www.instagram.com/reel/DQwI1jxDGXU/",
+          "kind": "reel",
+          "topic": "luogo",
+          "title": "Torna “Alzati” al Centro Sportivo Pino Daniele di Caivano …"
+        }
+      ],
+      "accounts": [
+        {
+          "handle": "centrosportivopinodaniele",
+          "name": "Centro Sportivo Pino Daniele",
+          "why": "il centro sportivo dello spot"
+        }
+      ]
+    },
+    "gmaps-0937922cdcee": {
+      "name": "Fontana dell'Esedra",
+      "location": null,
+      "posts": [
+        {
+          "url": "https://www.instagram.com/p/C7oCN3ysHEZ/",
+          "kind": "post",
+          "topic": "luogo",
+          "title": "Mostra d'Oltremare | ⛲ La Fontana dell'Esedra torna alla …"
+        }
+      ],
+      "accounts": [
+        {
+          "handle": "mostradoltremare",
+          "name": "Mostra d'Oltremare",
+          "why": "il parco della Fontana dell'Esedra"
+        }
+      ]
+    },
+    "gmaps-92a9dfb658f6": {
+      "name": "Bunkers del Carmel",
+      "location": {
+        "id": "217475589",
+        "slug": "bunkers-del-carmel-barcelona",
+        "name": "Bunkers del Carmel, Barcelona",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [
+        {
+          "url": "https://www.instagram.com/p/DVjZUmIjQiU/",
+          "kind": "post",
+          "topic": "luogo",
+          "title": "Bunkers del Carmel – Barcelona."
+        },
+        {
+          "url": "https://www.instagram.com/p/DH1MVDAx3xT/",
+          "kind": "post",
+          "topic": "luogo",
+          "title": "The Bunkers del Carmel, perched atop Turó de la Rovira …"
+        }
+      ],
+      "accounts": []
+    },
+    "gmaps-347ff1c44b75": {
+      "name": "El laberinto de Uribarri",
+      "location": {
+        "id": "926171718",
+        "slug": "uribarri",
+        "name": "Uribarri (Bilbao)",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-32c6197e1296": {
+      "name": "Frank Kitts Park",
+      "location": {
+        "id": "197654",
+        "slug": "frank-kitts-park",
+        "name": "Frank Kitts Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-9c057d74f5ce": {
+      "name": "Freeway Park",
+      "location": {
+        "id": "369915908",
+        "slug": "freeway-park-seattle",
+        "name": "Freeway Park (Seattle)",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [
+        {
+          "url": "https://www.instagram.com/p/DQiM2DViJk0/",
+          "kind": "post",
+          "topic": "luogo",
+          "title": "Lawrence Halprin 1916-2009: Freeway Park in Seattle …"
+        }
+      ],
+      "accounts": []
+    },
+    "gmaps-2278bfd662d9": {
+      "name": "Il sito del destino reversibile Yoro Park",
+      "location": {
+        "id": "763416072",
+        "slug": "site-of-reversible-destiny-yoro-parkgifu",
+        "name": "Site of Reversible Destiny - Yoro Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [
+        {
+          "url": "https://www.instagram.com/p/C5Jgqglu86B/",
+          "kind": "post",
+          "topic": "luogo",
+          "title": "The Site of Reversible Destiny, Yoro Park, Japan 2024"
+        }
+      ],
+      "accounts": [
+        {
+          "handle": "hantenchi_yoropark",
+          "name": "養老天命反転地（養老公園）",
+          "why": "pagina ufficiale del parco"
+        }
+      ]
+    },
+    "gmaps-5dea0939444a": {
+      "name": "Rogue Parkour Gym",
+      "location": {
+        "id": "289963027820393",
+        "slug": "rogue-parkour-gym",
+        "name": "Rogue Parkour Gym",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "rogue.parkour.gym",
+          "name": "Rogue Parkour Gym",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-01a0683608f2": {
+      "name": "Sepulveda Dam",
+      "location": {
+        "id": "272734427",
+        "slug": "sepulveda-dam",
+        "name": "Sepulveda Dam",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-bb5cb089399d": {
+      "name": "Tulsa Arts District",
+      "location": {
+        "id": "812180632292761",
+        "slug": "tulsa-arts-district",
+        "name": "Tulsa Arts District",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-760ca60a4c17": {
+      "name": "Flow Vault Parkour and Ninja",
+      "location": {
+        "id": "1035425393",
+        "slug": "flow-vault-parkour-and-ninja",
+        "name": "Flow Vault Parkour and Ninja",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-84054e6cced4": {
+      "name": "Vanarshala",
+      "location": null,
+      "posts": [
+        {
+          "url": "https://www.instagram.com/reel/Co4Lbl2vb9Z/",
+          "kind": "reel",
+          "topic": "parkour",
+          "title": "VANARSHALA: Parkour & Movement Workshop …"
+        }
+      ],
+      "accounts": [
+        {
+          "handle": "vanarshala",
+          "name": "Vanarshala",
+          "why": "parkour e movement training a Delhi"
+        }
+      ]
+    },
+    "gmaps-58d9b6a33cb8": {
+      "name": "NovaCity Rotherham",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "novacitycentre",
+          "name": "NovaCity",
+          "why": "il più grande parkour park indoor del Regno Unito"
+        }
+      ]
+    },
+    "gmaps-183d9178d032": {
+      "name": "Parkour Getafe Park",
+      "location": {
+        "id": "719509206",
+        "slug": "parkour-getafe-park",
+        "name": "Parkour Getafe Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [
+        {
+          "url": "https://www.instagram.com/reel/DTUy1kvjS9n/",
+          "kind": "reel",
+          "topic": "parkour",
+          "title": "Getafe Madrid · Parkour Getafe Park: cumplí mi premisa de …"
+        }
+      ],
+      "accounts": []
+    },
+    "gmaps-64d9d1c19190": {
+      "name": "Malmö Parkourklubb",
+      "location": {
+        "id": "327028027330602",
+        "slug": "quality-runners-qr",
+        "name": "Malmö ParkourKlubb",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "malmoparkourklubb",
+          "name": "Malmö ParkourKlubb",
+          "why": "il club dello spot"
+        }
+      ]
+    },
+    "gmaps-e1da56a1dac0": {
+      "name": "Cordata Parkour Park",
+      "location": {
+        "id": "632029718",
+        "slug": "cordata-park",
+        "name": "Cordata Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-b7bd95d17070": {
+      "name": "Horsham Park (Flips)",
+      "location": {
+        "id": "216010",
+        "slug": "horsham-park",
+        "name": "Horsham Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-210b9d1c3163": {
+      "name": "Ira Keller Fountain Park",
+      "location": {
+        "id": "873181807",
+        "slug": "keller-fountain-park",
+        "name": "Keller Fountain Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [
+        {
+          "url": "https://www.instagram.com/p/DPwUtLcjbt8/",
+          "kind": "post",
+          "topic": "luogo",
+          "title": "Ira Keller Fountain Park 🌲 A pocket of calm in the city …"
+        }
+      ],
+      "accounts": []
+    },
+    "gmaps-a0830ca45119": {
+      "name": "Origins Parkour",
+      "location": {
+        "id": "237379538",
+        "slug": "origins-parkour",
+        "name": "Origins Parkour",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "origins.pk",
+          "name": "Origins Parkour",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-c56cdeb61d2f": {
+      "name": "Hub Parkour Training Center",
+      "location": {
+        "id": "1020740923",
+        "slug": "hub-parkour-training-center",
+        "name": "Hub Parkour Training Center",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "hubptc",
+          "name": "Hub Parkour Training Center",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-30061bcb3da1": {
+      "name": "Parkour Skúrinn",
+      "location": {
+        "id": "109583907976438",
+        "slug": "parkour-skurinn",
+        "name": "Parkour Skúrinn",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "parkourskurinn",
+          "name": "Parkour Skúrinn",
+          "why": "la pagina del park"
+        }
+      ]
+    },
+    "gmaps-a116384b6d04": {
+      "name": "Parkour auf Zollverein",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "parkouraufzollverein",
+          "name": "Parkour auf Zollverein",
+          "why": "la pagina dello spot"
+        }
+      ]
+    },
+    "gmaps-b8e1f5c9addb": {
+      "name": "Parkour Park \"Álex Segura\"",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "alexseguralr",
+          "name": "Álex Segura LR",
+          "why": "il parkour park porta il suo nome"
+        }
+      ]
+    },
+    "gmaps-d1e9aaaded87": {
+      "name": "Ecopark- Parkour Park Antofagasta",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "parkourantofagasta.cl",
+          "name": "Parkour Antofagasta",
+          "why": "la community locale"
+        }
+      ]
+    },
+    "gmaps-c3a7159fb8e8": {
+      "name": "Parkour Park — Lannion",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "parkourpark_lannion",
+          "name": "Parkour Park - Lannion",
+          "why": "la pagina del park"
+        }
+      ]
+    },
+    "gmaps-2b3c1a8bc5a6": {
+      "name": "Blue Star Square",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "newcastleparkour",
+          "name": "Newcastle Parkour",
+          "why": "la community locale"
+        }
+      ]
+    },
+    "gmaps-621adad3bb53": {
+      "name": "Times Square",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "newcastleparkour",
+          "name": "Newcastle Parkour",
+          "why": "la community locale"
+        }
+      ]
+    },
+    "gmaps-dd85da4f0c0d": {
+      "name": "Empire Parkour",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "empireparkour",
+          "name": "Empire Parkour",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-ef0b383782df": {
+      "name": "In Motion Academy - parkourová hala",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "in.motion.academy",
+          "name": "In Motion Academy",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-ae13b7d022a0": {
+      "name": "Parkour Spot (Al Badii)",
+      "location": {
+        "id": "236960171",
+        "slug": "el-badi-palace",
+        "name": "El Badi Palace",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-0b5ced8461f5": {
+      "name": "Square du palais de justice d'antan",
+      "location": {
+        "id": "235030683",
+        "slug": "palais-de-justice-de-marseille",
+        "name": "Palais de justice de Marseille",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-2d5aa1133c27": {
+      "name": "Miami Freerunning & Parkour - Kendall",
+      "location": {
+        "id": "128923347",
+        "slug": "miami-freerunning-parkour-academy",
+        "name": "Miami Freerunning & Parkour Academy",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "miamifreerunningacademy",
+          "name": "Miami Freerunning & Parkour Academy",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-841e00989c30": {
+      "name": "Atlanta Parkour LLC",
+      "location": {
+        "id": "368334736857301",
+        "slug": "atlanta-parkour",
+        "name": "Atlanta Parkour",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "atlantaparkour",
+          "name": "Atlanta Parkour",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-2a49146276d3": {
+      "name": "Esplanade Park",
+      "location": {
+        "id": "91666",
+        "slug": "esplanade-park",
+        "name": "Esplanade Park",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-74f2913aabc8": {
+      "name": "Parkour-Anlage",
+      "location": {
+        "id": "439174162",
+        "slug": "dusseldorf-pempelfort",
+        "name": "Düsseldorf-Pempelfort",
+        "source": "ricerca web 2026-09-07"
+      },
+      "posts": [],
+      "accounts": []
+    },
+    "gmaps-eb2bd66e7f3d": {
+      "name": "Famous parkour spot of Madrid",
+      "location": null,
+      "posts": [
+        {
+          "url": "https://www.instagram.com/reel/DFqSGJLoeAL/",
+          "kind": "reel",
+          "topic": "parkour",
+          "title": "Zonas de Madrid para entrenar parkour, parte 3 🥵 …"
+        }
+      ],
+      "accounts": []
+    },
+    "gmaps-296420654f3a": {
+      "name": "Ferox Ninja Park - Trampolines, Ninja gym, Parkour",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "feroxninjapark",
+          "name": "Ferox Ninja Park",
+          "why": "la palestra dello spot"
+        }
+      ]
+    },
+    "gmaps-689a4556e5b4": {
+      "name": "VINE CITY PARK, ATLANTA 🇺🇸 🟢",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "parkourspots_atlanta",
+          "name": "Atlanta's Premiere PK Spots",
+          "why": "gli spot di Atlanta"
+        }
+      ]
+    },
+    "gmaps-891284017442": {
+      "name": "Parkour-Anlage — Humboldtkolonie",
+      "location": null,
+      "posts": [],
+      "accounts": [
+        {
+          "handle": "parkour.movement",
+          "name": "Parkour Movement e.V.",
+          "why": "corsi e community a Köln e Bonn"
         }
       ]
     }

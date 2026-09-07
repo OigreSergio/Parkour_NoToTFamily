@@ -50,10 +50,47 @@ python3 docs/demo/tools/build_pk_scheda.py            # rigenera pk-scheda.js + 
 scripts/deploy_pk_scheda.sh                           # pubblica su gh-pages
 ```
 
-Prima ricerca (2026-09-07): 57 spot con voce — tutti i 26 della family più i
-31 spot community di Roma e dintorni — 56 pagine del luogo, 22 post/reel,
-9 profili. Per gli spot fuori Roma il pulsante **Su Instagram** apre la
-ricerca già compilata con nome e città dello spot.
+## Coprire il maggior numero di spot
+
+Gli spot sono 1706 e i nomi della lista community sono di due tipi: nomi
+propri ("Parco Ermanno Olmi", "Bunkers del Carmel", "Parkour Getafe Park")
+e nomi generici ("Spot Brescia 3"). Per i primi si può trovare la pagina
+del luogo; per i secondi il pulsante **Su Instagram** apre la ricerca già
+compilata con nome e città (`Brescia parkour`), che per il parkour dice più
+del geotag di un'intera città.
+
+Tre sorgenti, dalla più precisa alla più ampia:
+
+1. **Wikidata** (`scripts/wikidata_instagram_places.py`, nessuna chiave):
+   i luoghi noti con ID Instagram registrato (proprietà P4173) vicini alle
+   coordinate dello spot. Precisi ma pochi, e vanno scelti a mano perché a
+   100 m può esserci sia il parco giusto sia un bar o la città intera.
+2. **Ricerca web a mano** (motore di ricerca, `site:instagram.com/explore/locations <nome> <città>`):
+   è come sono stati trovati i luoghi di Roma, dei parchi e quartieri
+   italiani e dei parkour park esteri.
+3. **Ricerca automatica quotidiana** (`scripts/find_instagram_places.py` +
+   workflow `instagram-luoghi`): con una chiave gratuita di Google
+   Programmable Search (100 query al giorno, nessuna carta) ogni notte
+   cerca la pagina del luogo per gli spot con nome proprio ancora scoperti
+   e apre una PR con quelle accettate (titolo o slug che contengono il nome
+   dello spot); le altre finiscono in `instagram-candidates.json` da
+   rivedere. Setup una volta sola:
+   - https://programmablesearchengine.google.com → "Aggiungi", attivare
+     "Cerca in tutto il web", copiare l'ID motore di ricerca (cx);
+   - https://console.cloud.google.com/apis/library/customsearch.googleapis.com
+     → "Abilita" (crea un progetto se chiesto), poi API e servizi →
+     Credenziali → "Crea credenziali" → "Chiave API";
+   - nel repository: Settings → Secrets and variables → Actions → due
+     secret `GOOGLE_CSE_KEY` e `GOOGLE_CSE_CX`;
+   - Settings → Actions → General → "Allow GitHub Actions to create and
+     approve pull requests", altrimenti il workflow non può aprire la PR.
+   Da quel momento basta fare merge delle PR e lanciare
+   `scripts/deploy_pk_scheda.sh`.
+
+Stato al 2026-09-07: 184 spot con voce (tutti i 26 della family, i 31 di
+Roma e dintorni, un centinaio di parchi, piazze, quartieri e paesi
+italiani, i parkour park e gli spot famosi all'estero), 164 pagine del
+luogo, 38 post/reel, 34 profili.
 
 ## Cose da sapere
 

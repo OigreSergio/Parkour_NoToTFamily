@@ -56,18 +56,57 @@ FIXED = REPO / "scripts" / "data" / "webapp_fixed_spots.json"
 
 GENERIC_NAME = re.compile(r"^Spot .+ \d+$")
 LOCATION_URL = re.compile(r"instagram\.com/explore/locations/(\d{3,})/?([A-Za-z0-9_-]*)")
-POST_URL = re.compile(r"https://www\.instagram\.com/(?:[A-Za-z0-9_.]+/)?(?:p|reel)/[A-Za-z0-9_-]{5,}/")
+POST_URL = re.compile(
+    r"https://www\.instagram\.com/(?:[A-Za-z0-9_.]+/)?(?:p|reel)/[A-Za-z0-9_-]{5,}/"
+)
 ROME = (41.8905, 12.4823)
 
 STOP = {
-    "spot", "parkour", "park", "parco", "the", "of", "de", "del", "della", "dei", "delle", "di",
-    "da", "la", "le", "il", "lo", "i", "gli", "e", "and", "a", "al", "alla", "allo", "ai", "agli",
-    "alle", "un", "una", "street", "st", "via", "viale", "area", "zona", "centro", "comune",
+    "spot",
+    "parkour",
+    "park",
+    "parco",
+    "the",
+    "of",
+    "de",
+    "del",
+    "della",
+    "dei",
+    "delle",
+    "di",
+    "da",
+    "la",
+    "le",
+    "il",
+    "lo",
+    "i",
+    "gli",
+    "e",
+    "and",
+    "a",
+    "al",
+    "alla",
+    "allo",
+    "ai",
+    "agli",
+    "alle",
+    "un",
+    "una",
+    "street",
+    "st",
+    "via",
+    "viale",
+    "area",
+    "zona",
+    "centro",
+    "comune",
 }
 
 
 def tokens(text: str) -> list[str]:
-    ascii_text = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode().lower()
+    ascii_text = (
+        unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode().lower()
+    )
     return [t for t in re.split(r"[^a-z0-9]+", ascii_text) if t]
 
 
@@ -89,8 +128,8 @@ def distance_km(a, b) -> float:
 
 def clean_title(title: str) -> str:
     """'Tufello - Roma on Instagram • Photos and Videos' → 'Tufello - Roma'."""
-    title = re.split(r"\s+(?:on|en|su|sur|auf)\s+Instagram", title, 1)[0]
-    title = re.split(r"\s+[•|·]\s+", title, 1)[0]
+    title = re.split(r"\s+(?:on|en|su|sur|auf)\s+Instagram", title, maxsplit=1)[0]
+    title = re.split(r"\s+[•|·]\s+", title, maxsplit=1)[0]
     return title.strip(" -–—")
 
 
@@ -110,9 +149,17 @@ def match_location(spot: dict, results: list[dict]) -> dict | None:
         hay = set(tokens(m.group(2)) + tokens(r.get("title", "")))
         if not all(t in hay for t in name_tokens):
             continue
-        if need_city and city_tokens and not (city_tokens & (hay | set(tokens(r.get("snippet", ""))))):
+        if (
+            need_city
+            and city_tokens
+            and not (city_tokens & (hay | set(tokens(r.get("snippet", "")))))
+        ):
             continue
-        return {"id": m.group(1), "slug": m.group(2), "name": clean_title(r.get("title", "")) or spot["name"]}
+        return {
+            "id": m.group(1),
+            "slug": m.group(2),
+            "name": clean_title(r.get("title", "")) or spot["name"],
+        }
     return None
 
 
@@ -126,9 +173,9 @@ class GoogleCSE:
     def search(self, query: str) -> list[dict]:
         params = {"key": self.key, "cx": self.cx, "q": query, "num": 10}
         url = "https://www.googleapis.com/customsearch/v1?" + urllib.parse.urlencode(params)
-        req = urllib.request.Request(url, headers={"User-Agent": "PkFamilyMap/1.0"})
+        req = urllib.request.Request(url, headers={"User-Agent": "PkFamilyMap/1.0"})  # noqa: S310
         try:
-            with urllib.request.urlopen(req, timeout=30) as r:
+            with urllib.request.urlopen(req, timeout=30) as r:  # noqa: S310
                 return json.load(r).get("items", []) or []
         except urllib.error.HTTPError as e:
             if e.code == 429:
@@ -164,16 +211,22 @@ def queue(spots: list[dict], manifest: dict, candidates: dict, country: str | No
         spot_country = head.split(",")[-1].strip() if "," in head else ""
         if country and spot_country != country:
             continue
-        todo.append((0 if spot_country == "Italia" else 1, distance_km(ROME, (s["lat"], s["lng"])), s))
+        todo.append(
+            (0 if spot_country == "Italia" else 1, distance_km(ROME, (s["lat"], s["lng"])), s)
+        )
     todo.sort(key=lambda t: (t[0], t[1]))
     return [t[2] for t in todo]
 
 
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--limit", type=int, default=90, help="query massime in questa esecuzione")
     ap.add_argument("--country", help="solo spot di questo paese (es. Italia)")
-    ap.add_argument("--posts", action="store_true", help="cerca anche post/reel (una query in più per spot)")
+    ap.add_argument(
+        "--posts", action="store_true", help="cerca anche post/reel (una query in più per spot)"
+    )
     ap.add_argument("--retry", action="store_true", help="ricerca anche gli spot già controllati")
     ap.add_argument("--dry-run", action="store_true", help="non scrive nulla")
     args = ap.parse_args()
@@ -206,7 +259,9 @@ def main() -> int:
         cand["query"] = q
         cand["locations"] = [
             {"id": m.group(1), "slug": m.group(2), "title": clean_title(r.get("title", ""))}
-            for r in results for m in [LOCATION_URL.search(r.get("link", ""))] if m
+            for r in results
+            for m in [LOCATION_URL.search(r.get("link", ""))]
+            if m
         ][:5]
         hit = match_location(s, results)
         if hit:
@@ -222,8 +277,12 @@ def main() -> int:
             results = engine.search(f'instagram parkour "{s["name"]}" {city}')
             used += 1
             cand["posts"] = [
-                {"url": POST_URL.search(r["link"]).group(0), "title": clean_title(r.get("title", ""))}
-                for r in results if POST_URL.search(r.get("link", ""))
+                {
+                    "url": POST_URL.search(r["link"]).group(0),
+                    "title": clean_title(r.get("title", "")),
+                }
+                for r in results
+                if POST_URL.search(r.get("link", ""))
             ][:5]
         time.sleep(1)  # 1 query/s: gentile con la quota
 
@@ -232,8 +291,10 @@ def main() -> int:
     if not args.dry_run:
         dump_json(MANIFEST, manifest)
         dump_json(CANDIDATES, candidates)
-    print(f"{used} query, {found} pagine del luogo accettate, "
-          f"{len(todo) - min(used, len(todo))} spot ancora in coda")
+    print(
+        f"{used} query, {found} pagine del luogo accettate, "
+        f"{len(todo) - min(used, len(todo))} spot ancora in coda"
+    )
     return 0
 
 
