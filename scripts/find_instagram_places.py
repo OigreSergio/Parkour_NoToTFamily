@@ -130,7 +130,7 @@ def clean_title(title: str) -> str:
     """'Tufello - Roma on Instagram • Photos and Videos' → 'Tufello - Roma'."""
     title = re.split(r"\s+(?:on|en|su|sur|auf)\s+Instagram", title, maxsplit=1)[0]
     title = re.split(r"\s+[•|·]\s+", title, maxsplit=1)[0]
-    return title.strip(" -–—")
+    return title.strip(" -–—")  # noqa: RUF001 (i titoli usano anche il trattino lungo)
 
 
 def match_location(spot: dict, results: list[dict]) -> dict | None:
