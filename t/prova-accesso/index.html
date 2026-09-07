@@ -1552,10 +1552,27 @@
 
   // --- ciclo -----------------------------------------------------------------
 
-  function advance(card, state) {
+  function saluto(card) {
+    // Finire e vedersi sparire il pannello sotto le dita è brusco. Una riga
+    // per dire che è fatta, e si esce quando si vuole.
+    return new Promise(function (resolve) {
+      render(card, [
+        el('p', 'pk-onb-step', 'Fatto'),
+        el('h2', null, 'Ci siamo, puoi andare.'),
+        el('p', 'pk-sum', 'Da qui in poi mappa e tutorial sono tarati su di te. ' +
+          'Prima di ogni spot e di ogni tutorial ti ricorderemo com’è la faccenda ' +
+          'della responsabilità: una volta per sessione, non a ogni tocco.'),
+        actions([button('Entra', function () { resolve(true); })])
+      ]);
+    });
+  }
+
+  function advance(card, state, mossi) {
+    function poi(next) { return advance(card, next, true); }
+
     switch (state.next_step) {
       case 'birth_date':
-        return askBirthDate(card).then(function (next) { return advance(card, next); });
+        return askBirthDate(card).then(poi);
       case 'practitioner_type':
         return askChoice(card, {
           title: 'Come ti muovi qui dentro?',
@@ -1563,7 +1580,7 @@
           options: state.practitioner_options,
           path: '/onboarding/practitioner-type',
           payload: function (v) { return { practitioner_type: v }; }
-        }).then(function (next) { return advance(card, next); });
+        }).then(poi);
       case 'experience':
         return askChoice(card, {
           title: 'Da quanto pratichi parkour?',
@@ -1571,13 +1588,16 @@
           options: state.experience_options,
           path: '/onboarding/experience',
           payload: function (v) { return { experience_band: v }; }
-        }).then(function (next) { return advance(card, next); });
+        }).then(poi);
       case 'instructor_certificate':
-        return askCertificate(card).then(function (next) { return advance(card, next); });
+        return askCertificate(card).then(poi);
       case 'experience_quiz':
-        return playQuiz(card).then(function (next) { return advance(card, next || { next_step: 'done' }); });
+        return playQuiz(card).then(function (next) {
+          return advance(card, next || { next_step: 'done' }, true);
+        });
       default:
-        return Promise.resolve(true);
+        // Chi rientra e ha già risposto a tutto non deve rileggersi il saluto.
+        return mossi ? saluto(card) : Promise.resolve(true);
     }
   }
 
@@ -1627,7 +1647,7 @@
     }
 
     return start
-      .then(function (state) { return advance(view.card, state); })
+      .then(function (state) { return advance(view.card, state, false); })
       .then(function () {
         view.close();
         return true;
