@@ -20,12 +20,25 @@ finto dentro la pagina. Le informative, i nomi degli scavalcamenti, le tabelle
 dei tetti e le regole del gioco sono generate dal codice Python, non riscritte
 a mano.
 
-Il codice di accesso **non si compila da solo**: la pagina mostra la mail
-no-reply che sarebbe partita — mittente, oggetto e corpo veri, presi dal
-servizio — e il codice va letto e ricopiato, come si fa col telefono in mano.
+**La mail parte davvero.** Il codice lo spedisce Supabase Auth — lo stesso che
+regge la web app — quindi arriva nella casella vera e non compare a schermo.
+La publishable key sta nella pagina perché è fatta per stare nei client (le
+RLS restano); una chiave di un provider di posta lì dentro sarebbe invece
+regalata a chiunque apra la pagina, ed è il motivo per cui l'invio dal
+backend passa da una chiave che nel browser non arriva mai.
 
-Cosa **non** fa: da sola non manda email (non ha un server), non salva niente
-da nessuna parte, e non è l'app Flutter.
+Due cose da sapere:
+
+- **entrando con l'email nasce un account vero** sul progetto Supabase. Per
+  guardare solo il flusso, si entra senza account;
+- **se arriva un link invece di un codice a sei cifre**, va cambiato il
+  template: Supabase → Authentication → Email Templates → Magic Link, con
+  dentro `{{ .Token }}`. Il mailer integrato di Supabase manda poche mail
+  all'ora ed è pensato per le prove: in produzione si configura un SMTP o
+  l'API di un provider, ed è quello che fa il backend di questo repo.
+
+Cosa **non** fa: le domande dopo il codice restano simulate nella pagina, non
+salva niente da nessuna parte, e non è l'app Flutter.
 
 ### La stessa pagina, ma con la mail vera
 
