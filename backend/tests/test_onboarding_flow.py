@@ -167,24 +167,24 @@ async def test_the_instructor_question_is_refused_for_a_minor(monkeypatch) -> No
 
 def test_the_profile_the_app_sees_cannot_reveal_that_someone_is_a_minor() -> None:
     # The safe experience only works if no client can tell it apart, including
-    # by accident. Nothing derived from the age may cross the API boundary.
-    from app.schemas.onboarding import ProfileOut
+    # by accident. Nothing derived from the age may cross the API boundary —
+    # and this is the payload a returning member's app actually reads.
+    from app.schemas.onboarding import MemberProfile
 
     leaky = {"birth_date", "age", "is_minor", "minor", "safe_mode", "max_level", "max_difficulty"}
-    assert leaky.isdisjoint(ProfileOut.model_fields)
+    assert leaky.isdisjoint(MemberProfile.model_fields)
 
     same_answers = dict(
         display_name="T",
         email="a@b.c",
-        practitioner_type=None,
+        email_verified=True,
         experience_band=ExperienceBand.one_year,
         verified_band=ExperienceBand.one_year,
-        instructor_status=None,
         onboarding_completed=True,
     )
     # A 14-year-old and a 30-year-old who answered the same way are, on the
     # wire, the same profile — the ceiling between them lives server-side.
-    assert ProfileOut(**same_answers).model_dump() == ProfileOut(**same_answers).model_dump()
+    assert MemberProfile(**same_answers).model_dump() == MemberProfile(**same_answers).model_dump()
 
 
 # --- the level is settled once ------------------------------------------------
@@ -302,3 +302,112 @@ def test_a_replayed_run_says_it_changes_nothing() -> None:
     assert "resta quello del primo giro" in dopo
     # Nessun invito a riprovare per fare meglio: non c'è niente da vincere.
     assert "riprova" not in dopo.lower()
+
+
+# --- what a returning member gets back ---------------------------------------
+
+
+class _SessionConSpot(_Session):
+    """Session stub that also answers the spot queries."""
+
+    def __init__(self, counts=None, latest=(), certification=None) -> None:
+        super().__init__(certification)
+        self.counts = counts or {}
+        self.latest = latest
+
+
+class _Spot:
+    def __init__(self, name, status, reason=None) -> None:
+        from datetime import datetime, timezone
+
+        self.id = uuid4()
+        self.name = name
+        self.status = status
+        self.created_at = datetime.now(timezone.utc)
+        self.rejection_reason = reason
+
+
+@pytest.fixture
+def _stub_spots(monkeypatch):
+    async def count_by_status_for(session, _user_id):
+        return session.counts
+
+    async def list_submitted_by(session, _user_id, limit=10):
+        return list(session.latest)[:limit]
+
+    monkeypatch.setattr(onboarding_service.spots_repo, "count_by_status_for", count_by_status_for)
+    monkeypatch.setattr(onboarding_service.spots_repo, "list_submitted_by", list_submitted_by)
+
+
+async def test_a_returning_member_gets_their_answers_back(monkeypatch, _stub_spots) -> None:
+    from app.models.spot import SpotStatus
+
+    profile = _profile(
+        birth_date=ADULT,
+        practitioner_type=PractitionerType.athlete,
+        experience_band=ExperienceBand.couple_years,
+        verified_band=ExperienceBand.one_year,
+    )
+
+    async def get(_session, _user_id):
+        return profile
+
+    monkeypatch.setattr(onboarding_service.profiles_repo, "get", get)
+
+    user = _user()
+    user.is_email_verified = True
+    session = _SessionConSpot(
+        counts={SpotStatus.verified: 2, SpotStatus.pending: 1},
+        latest=[_Spot("Colle Oppio", SpotStatus.verified), _Spot("Muretto", SpotStatus.pending)],
+    )
+
+    out = await onboarding_service.member_profile(session, user)
+
+    # Nothing is asked again: what they answered is read back.
+    assert out.email_verified
+    assert out.experience_band is ExperienceBand.couple_years
+    assert out.verified_band is ExperienceBand.one_year
+    assert out.level_settled
+    assert out.onboarding_completed
+    assert out.next_step is OnboardingStep.done
+
+    # ...and what they put on the map comes with it.
+    assert out.spots.submitted == 3
+    assert out.spots.verified == 2
+    assert out.spots.pending == 1
+    assert [s.name for s in out.spots.latest] == ["Colle Oppio", "Muretto"]
+
+
+async def test_the_members_own_pending_spots_come_back_too(monkeypatch, _stub_spots) -> None:
+    # A spot in review is invisible to everyone else, but its author is
+    # exactly the person who comes back to check on it.
+    from app.models.spot import SpotStatus
+
+    async def get(_session, _user_id):
+        return _profile(birth_date=ADULT, verified_band=ExperienceBand.one_year)
+
+    monkeypatch.setattr(onboarding_service.profiles_repo, "get", get)
+    session = _SessionConSpot(
+        counts={SpotStatus.pending: 1, SpotStatus.rejected: 1},
+        latest=[
+            _Spot("In attesa", SpotStatus.pending),
+            _Spot("Rifiutato", SpotStatus.rejected, "foto non pertinenti"),
+        ],
+    )
+    out = await onboarding_service.member_profile(session, _user())
+    assert out.spots.pending == 1
+    assert out.spots.rejected == 1
+    assert out.spots.latest[1].rejection_reason == "foto non pertinenti"
+
+
+async def test_somebody_who_has_never_submitted_gets_zeroes(monkeypatch, _stub_spots) -> None:
+    async def get(_session, _user_id):
+        return None
+
+    monkeypatch.setattr(onboarding_service.profiles_repo, "get", get)
+    out = await onboarding_service.member_profile(_SessionConSpot(), _user())
+    assert out.spots.submitted == 0
+    assert out.spots.latest == []
+    # Nothing answered yet: the app knows to start from the first question.
+    assert out.next_step is OnboardingStep.birth_date
+    assert not out.onboarding_completed

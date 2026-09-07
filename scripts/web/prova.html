@@ -78,7 +78,7 @@
       profilo.textContent = 'Nessuna sessione.';
       return;
     }
-    globalThis.PkOnboarding.api('/onboarding/profile').then(function (p) {
+    globalThis.PkOnboarding.api('/users/me/profile').then(function (p) {
       profilo.textContent = JSON.stringify(p, null, 2);
     }, function (e) {
       profilo.textContent = 'Non leggibile: ' + e.message;

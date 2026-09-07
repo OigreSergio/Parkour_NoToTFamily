@@ -44,19 +44,23 @@ from app.models.profile import (
     PractitionerType,
     UserProfile,
 )
+from app.models.spot import SpotStatus
 from app.models.user import User
 from app.repositories import profiles as profiles_repo
+from app.repositories import spots as spots_repo
 from app.schemas.legal import AcceptedDocument, LegalDocumentOut
 from app.schemas.onboarding import (
     InstructorCertificationOut,
+    MemberProfile,
     OnboardingState,
     OnboardingStep,
     Option,
-    ProfileOut,
     QuizCorrection,
     QuizOut,
     QuizQuestionOut,
     QuizResultOut,
+    SpotContributions,
+    SubmittedSpot,
 )
 from app.services import legal_service, mailer, quiz_service
 from app.services.access_policy import (
@@ -187,18 +191,55 @@ async def state(session: AsyncSession, user: User) -> OnboardingState:
     )
 
 
-async def profile_out(session: AsyncSession, user: User) -> ProfileOut:
+async def member_profile(session: AsyncSession, user: User) -> MemberProfile:
+    """Everything about the person signed in, in one call.
+
+    Somebody coming back with a verified address should be asked nothing
+    again: what they answered is on the server, and this reads it back —
+    including what they have put on the map, their pending and rejected
+    submissions included, because those are theirs to look at.
+
+    The date of birth and the ceiling it produces stay where they are. The app
+    learns *that* the questions are answered, never the answer that would let
+    it draw a minor differently.
+    """
     profile = await profiles_repo.get(session, user.id)
     cert = await profiles_repo.latest_certification(session, user.id)
     step = await next_step(session, user, profile)
-    return ProfileOut(
+
+    counts = await spots_repo.count_by_status_for(session, user.id)
+    latest = await spots_repo.list_submitted_by(session, user.id)
+
+    return MemberProfile(
         display_name=user.display_name,
         email=user.email,
+        # `bool(...)`: a User that has not been flushed yet carries None here,
+        # and a payload this central should not blow up over a column default.
+        email_verified=bool(user.is_email_verified),
+        is_guest=bool(user.is_guest),
         practitioner_type=profile.practitioner_type if profile else None,
         experience_band=profile.experience_band if profile else None,
         verified_band=profile.verified_band if profile else None,
+        level_settled=bool(profile and level_is_locked(profile)),
         instructor_status=cert.status if cert else None,
         onboarding_completed=step is OnboardingStep.done,
+        next_step=step,
+        spots=SpotContributions(
+            submitted=sum(counts.values()),
+            verified=counts.get(SpotStatus.verified, 0),
+            pending=counts.get(SpotStatus.pending, 0),
+            rejected=counts.get(SpotStatus.rejected, 0),
+            latest=[
+                SubmittedSpot(
+                    id=spot.id,
+                    name=spot.name,
+                    status=spot.status.value,
+                    created_at=spot.created_at,
+                    rejection_reason=spot.rejection_reason,
+                )
+                for spot in latest
+            ],
+        ),
     )
 
 

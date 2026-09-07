@@ -21,7 +21,6 @@ from app.schemas.onboarding import (
     InstructorCertificationOut,
     OnboardingState,
     PractitionerTypeRequest,
-    ProfileOut,
     QuizAnswersRequest,
     QuizOut,
     QuizResultOut,
@@ -37,15 +36,6 @@ async def state(
     session: AsyncSession = Depends(db_session),
 ) -> OnboardingState:
     return await onboarding_service.state(session, user)
-
-
-@router.get("/profile", response_model=ProfileOut)
-async def profile(
-    user: User = Depends(current_user),
-    session: AsyncSession = Depends(db_session),
-) -> ProfileOut:
-    """The profile as the app may see it — no age, no ceiling. See `ProfileOut`."""
-    return await onboarding_service.profile_out(session, user)
 
 
 class _BirthDateBody(BirthDateRequest):

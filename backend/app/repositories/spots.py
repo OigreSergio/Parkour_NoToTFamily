@@ -2,7 +2,7 @@ from datetime import datetime, timezone
 from uuid import UUID
 
 from geoalchemy2.functions import ST_DWithin, ST_GeogFromText
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.spot import Spot, SpotComment, SpotModerationEvent, SpotStatus
@@ -25,7 +25,39 @@ async def create(session: AsyncSession, *, data: SpotCreate, submitted_by: UUID)
     )
     session.add(spot)
     await session.flush()
+    # The attribute still holds the WKT string that was just assigned, while
+    # everything that reads a spot expects what the database gives back (a
+    # WKBElement). Without this, creating a spot answers 500 right after
+    # writing the row — the write succeeds and the response blows up.
+    await session.refresh(spot)
     return spot
+
+
+async def count_by_status_for(session: AsyncSession, submitted_by: UUID) -> dict[SpotStatus, int]:
+    """How many spots this member has sent in, per status."""
+    stmt = (
+        select(Spot.status, func.count())
+        .where(Spot.submitted_by == submitted_by)
+        .group_by(Spot.status)
+    )
+    return {status: count for status, count in (await session.execute(stmt)).all()}
+
+
+async def list_submitted_by(
+    session: AsyncSession, submitted_by: UUID, *, limit: int = 10
+) -> list[Spot]:
+    """The member's own spots, newest first — pending and rejected included.
+
+    They are the author: a spot still in review, or turned down, is exactly
+    what they come back to look at.
+    """
+    stmt = (
+        select(Spot)
+        .where(Spot.submitted_by == submitted_by)
+        .order_by(Spot.created_at.desc())
+        .limit(limit)
+    )
+    return list((await session.execute(stmt)).scalars())
 
 
 async def get(session: AsyncSession, spot_id: UUID) -> Spot | None:
@@ -45,7 +77,9 @@ async def list_verified_near(
     return list((await session.execute(stmt)).scalars())
 
 
-async def list_by_status(session: AsyncSession, status: SpotStatus, *, limit: int = 100) -> list[Spot]:
+async def list_by_status(
+    session: AsyncSession, status: SpotStatus, *, limit: int = 100
+) -> list[Spot]:
     stmt = select(Spot).where(Spot.status == status).order_by(Spot.created_at).limit(limit)
     return list((await session.execute(stmt)).scalars())
 

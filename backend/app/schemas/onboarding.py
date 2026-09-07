@@ -57,26 +57,61 @@ class OnboardingState(BaseModel):
     pending_documents: list[LegalDocumentOut] = []
 
 
-class ProfileOut(BaseModel):
-    """The profile as the app is allowed to see it.
+class SpotContributions(BaseModel):
+    """What this member has put on the map."""
 
-    Deliberately absent: ``birth_date``, anything derived from it, and the
-    content ceiling itself. A client that cannot know a member is a minor
-    cannot draw a "safe mode" badge, grey out a section, or word an empty
-    state differently — which is the whole point. The filtering happens
-    server-side, in ``app.services.access_policy``.
+    submitted: int = 0
+    verified: int = 0
+    #: Still in review. Only the author and the admins can see these at all.
+    pending: int = 0
+    rejected: int = 0
+    #: Their own spots, newest first — enough to show "le tue segnalazioni".
+    latest: list["SubmittedSpot"] = Field(default_factory=list)
+
+
+class SubmittedSpot(BaseModel):
+    id: UUID
+    name: str
+    status: str
+    created_at: datetime
+    rejection_reason: str | None = None
+
+
+class MemberProfile(BaseModel):
+    """Everything the app needs about the person signed in, in one call.
+
+    A member who comes back with a verified address should not be asked
+    anything again: their date of birth, what they declared, what the game
+    settled and what they have put on the map are already stored, and this is
+    where the app reads them back.
+
+    Deliberately absent, here as everywhere: the date of birth itself and the
+    content ceiling derived from it. The app is told *that* the questions are
+    answered, never the answer that would let it draw a minor differently.
     """
 
     model_config = ConfigDict(from_attributes=True)
 
     display_name: str
     email: str | None
+    #: True once a code sent to that address has been typed back.
+    email_verified: bool = False
+    is_guest: bool = False
+
     practitioner_type: PractitionerType | None = None
+    #: What they declared.
     experience_band: ExperienceBand | None = None
-    #: Set once the vault game has been played.
+    #: What the first run of the game settled. Does not move afterwards.
     verified_band: ExperienceBand | None = None
+    #: True once that first run has happened.
+    level_settled: bool = False
     instructor_status: CertificationStatus | None = None
+
     onboarding_completed: bool = False
+    #: The step still to answer, `done` when there is nothing left.
+    next_step: OnboardingStep = OnboardingStep.done
+
+    spots: SpotContributions = Field(default_factory=SpotContributions)
 
 
 class InstructorCertificationOut(BaseModel):

@@ -268,7 +268,36 @@ Il catalogo dei movimenti è in `backend/app/data/vaults.py`. Il campo
 `media_url` è pronto per quando ci saranno le clip: finché è vuoto il client
 mostra la sola descrizione.
 
-## 6. I pop-up sui rischi
+## 6. Chi torna non ricomincia
+
+`GET /api/v1/users/me/profile` è la chiamata che l'app fa appena ha un token:
+una sola, e ha tutto.
+
+```json
+{
+  "display_name": "sergio", "email": "sergio@gmail.com", "email_verified": true,
+  "practitioner_type": "athlete",
+  "experience_band": "over_5_years", "verified_band": "one_year",
+  "level_settled": true, "onboarding_completed": true, "next_step": "done",
+  "spots": {
+    "submitted": 3, "verified": 1, "pending": 1, "rejected": 1,
+    "latest": [{ "name": "Muretto di via Roma", "status": "pending", "...": "" }]
+  }
+}
+```
+
+Chi ha un account con la mail verificata non si sente più chiedere niente: la
+data di nascita, quello che ha dichiarato, quello che il gioco ha stabilito e
+gli spot che ha mandato sono già sul server. Fra questi ci sono anche i suoi
+spot **in attesa e rifiutati**, che nessun altro può vedere: l'autore è
+esattamente la persona che torna a controllare come è andata.
+
+Quello che qui non c'è, come ovunque, è la data di nascita e il tetto che ne
+deriva. L'app sa *che* le domande hanno una risposta, mai la risposta che le
+permetterebbe di disegnare un minorenne in modo diverso — il catalogo arriva
+già filtrato dal server. C'è un test che controlla proprio questo payload.
+
+## 7. I pop-up sui rischi
 
 Sono documenti versionati serviti dall'API, non stringhe nei client. Tre
 momenti: iscrizione, apertura di uno spot, avvio di un tutorial. Vedi

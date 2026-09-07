@@ -8,7 +8,7 @@ Two independent things narrow the catalogue, and the narrower of the two wins:
    "locked because you are 15", no second app. The catalogue simply contains
    the exercises that suit the member, exactly as it does for everyone else.
    Nothing in any API response names the ceiling or the age that produced it
-   (see ``app.schemas.onboarding.ProfileOut``), so no client can render a
+   (see ``app.schemas.onboarding.MemberProfile``), so no client can render a
    difference even by accident.
 
 2. **Experience.** An adult athlete declares how long they have been training
