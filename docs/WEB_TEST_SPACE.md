@@ -1,5 +1,18 @@
 # Spazio web di test (anteprima privata)
 
+> **Stato al 7 settembre 2026 — questa pagina descrive una fase conclusa.**
+> Dal 1° settembre la web app Expo è pubblicata sulla **root** di `gh-pages`
+> (pubblica, indicizzabile, con `sitemap.xml`); il percorso riservato
+> `/t/2fe095ecfaa79a73/` non esiste più e il QR di accesso è ora
+> `docs/qr/webapp-qr.png` (vedi `docs/qr/README.md`). Sotto `/t/` resta solo
+> l'anteprima Flutter `/t/30dc3113527532d3/`, raggiungibile con
+> `docs/qr/webapp-test-qr.png`.
+>
+> **Attenzione:** `scripts/deploy_test_web.sh` svuota `gh-pages` (tranne
+> `.git`) e ripubblica tutto sotto `/t/<TOKEN>/` con il token vecchio:
+> lanciato così com'è cancellerebbe l'app pubblica, la console inviti e le
+> altre pagine. Va aggiornato prima di riusarlo.
+
 La web app (export Expo) resta sempre online su GitHub Pages, ma in modalità
 anteprima privata finché non sarà pronta per il lancio pubblico.
 
