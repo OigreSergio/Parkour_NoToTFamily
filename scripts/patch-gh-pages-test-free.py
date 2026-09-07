@@ -12,7 +12,9 @@
    e fetchSpots li fonde sempre con quelli di Supabase.
 4. App gratuita: entitlements sempre veri e banner "Iscriviti" disattivato.
 5. Distanza & percorso: espone l'istanza MapLibre e aggiunge il pulsante
-   sulla scheda spot (logica in scripts/web/pk-route.js).
+   sulla scheda spot (logica in scripts/web/pk-route.js). Accanto al bundle
+   finiscono anche pk-scheda.js + pk-scheda-spots.json (contesto visivo e
+   Instagram nella scheda, generati da docs/demo/tools/build_pk_scheda.py).
 
 Uso: python3 scripts/patch-gh-pages-test-free.py <path-al-bundle-entry.js>
 Non idempotente: applicare a un bundle appena esportato.
@@ -261,15 +263,24 @@ src = replace_once(
 path.write_text(src, encoding="utf8")
 print(f"Bundle aggiornato: {path}")
 
-# --- 5c. pk-route.js accanto al bundle + script tag in index.html ----------
+# --- 5c. pk-route.js e pk-scheda.js accanto al bundle + script tag ---------
+# pk-scheda.js (contesto visivo + Instagram nella scheda spot) e il suo file
+# dati sono generati da docs/demo/tools/build_pk_scheda.py; il tag usa il
+# percorso relativo come pk-route.js (scripts/deploy_pk_scheda.sh lo rende
+# assoluto sulla root di gh-pages, dove servono i deep link /spot/<id>).
 app_root = path.parents[4]
 index_html = app_root / "index.html"
 if index_html.is_file():
     shutil.copy(Path(__file__).parent / "web" / "pk-route.js", app_root / "pk-route.js")
+    demo = Path(__file__).parents[1] / "docs" / "demo"
+    for name in ("pk-scheda.js", "pk-scheda-spots.json"):
+        if (demo / name).is_file():
+            shutil.copy(demo / name, app_root / name)
     html = index_html.read_text(encoding="utf8")
-    if "pk-route.js" not in html:
-        html = html.replace("</body>", '<script src="./pk-route.js" defer></script>\n</body>')
-        index_html.write_text(html, encoding="utf8")
-    print(f"ok: pk-route.js copiato e collegato in {index_html}")
+    for script in ("pk-route.js", "pk-scheda.js"):
+        if script not in html and (app_root / script).is_file():
+            html = html.replace("</body>", f'<script src="./{script}" defer></script>\n</body>')
+    index_html.write_text(html, encoding="utf8")
+    print(f"ok: pk-route.js e pk-scheda.js copiati e collegati in {index_html}")
 else:
     sys.exit(f"ERRORE: index.html non trovato in {app_root}")

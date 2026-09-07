@@ -43,6 +43,13 @@ Sul bundle pubblicato sono applicate le patch di
 - **foto degli spot fissi**: il campo `photos` (URL) di uno spot fisso viene
   mostrato nella scheda di dettaglio; per aggiornare spot/foto sul bundle già
   pubblicato senza rifare l'export c'è `scripts/update_deployed_spots.py`;
+- **contesto visivo nella scheda** (`pk-scheda.js` + `pk-scheda-spots.json`
+  accanto al bundle, generati da `docs/demo/tools/build_pk_scheda.py`): per
+  ogni spot — family e community — copertina Street View, seconda
+  angolazione o foto della zona, vista aerea, 360°, link a Street View e i
+  contenuti Instagram collegati (`docs/spots/instagram.json`, vedi
+  `docs/spots/README-instagram.md`). Si ripubblica da solo con
+  `scripts/deploy_pk_scheda.sh`, senza rifare l'export;
 - **tutto gratuito**: `useEntitlements` ritorna sempre `hasBase/hasChat/
   hasVideo/hasAny = true` e il banner "Iscriviti" è disattivato. Nota: le
   RLS lato Supabase restano attive, quindi le *scritture* riservate (es.
