@@ -168,6 +168,7 @@ class QuizResult {
     required this.passed,
     required this.message,
     required this.corrections,
+    this.countsTowardsLevel = true,
   });
 
   final int score;
@@ -176,11 +177,20 @@ class QuizResult {
   final String message;
   final List<QuizCorrection> corrections;
 
+  /// False on every run after the first.
+  ///
+  /// The starting level is settled by the first completed run and never moves
+  /// again — otherwise the game would be a lockpick: fail on purpose, read the
+  /// answers off the correction screen, play again. Later runs still happen,
+  /// they are just played for their own sake.
+  final bool countsTowardsLevel;
+
   factory QuizResult.fromJson(Map<String, dynamic> json) => QuizResult(
         score: json['score'] as int,
         total: json['total'] as int,
         passed: json['passed'] as bool,
         message: json['message'] as String? ?? '',
+        countsTowardsLevel: json['counts_towards_level'] as bool? ?? true,
         corrections: (json['corrections'] as List<dynamic>? ?? const [])
             .map((c) => QuizCorrection.fromJson(c as Map<String, dynamic>))
             .toList(growable: false),

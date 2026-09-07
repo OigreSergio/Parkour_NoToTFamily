@@ -49,6 +49,41 @@ BAND_ORDER: tuple[ExperienceBand, ...] = (
 
 ADULT_AGE = 18
 
+#: The age the youngest courses start at. It is what makes a long claim from a
+#: young member plausible instead of suspicious: someone who began at five is
+#: ten years in by fifteen, and telling them otherwise would be both wrong and
+#: insulting.
+MIN_START_AGE = 5
+
+#: Years of practice each band implies at minimum. Used to work out which
+#: bands a given age could honestly have reached.
+BAND_MIN_YEARS: dict[ExperienceBand, int] = {
+    ExperienceBand.less_than_month: 0,
+    ExperienceBand.few_months: 0,
+    ExperienceBand.six_months: 0,
+    ExperienceBand.one_year: 1,
+    ExperienceBand.couple_years: 2,
+    ExperienceBand.over_5_years: 5,
+    ExperienceBand.over_10_years: 10,
+}
+
+
+def min_age_for(band: ExperienceBand) -> int:
+    """The youngest someone declaring ``band`` could be."""
+    return MIN_START_AGE + BAND_MIN_YEARS[band]
+
+
+def bands_possible_at(age: int | None) -> tuple[ExperienceBand, ...]:
+    """The bands that age could have reached, in order.
+
+    Offering the impossible ones and then refusing them would be a worse
+    experience than not offering them: nobody enjoys being told their answer
+    was wrong after picking it from a list somebody else wrote.
+    """
+    if age is None:
+        return BAND_ORDER
+    return tuple(b for b in BAND_ORDER if min_age_for(b) <= age)
+
 
 @dataclass(frozen=True)
 class ContentAccess:
@@ -89,12 +124,18 @@ BAND_ACCESS: dict[ExperienceBand, ContentAccess] = {
 #: Age ceilings. Growth plates, not ability, set these: the impact loads of
 #: advanced parkour are not something a body still growing should be pushed
 #: into by an app that has never met the person.
+#:
+#: They are a ceiling, not a verdict on the member. A fifteen-year-old who
+#: started at five has trained longer than most adults on the platform, and
+#: their experience still counts — it just counts up to here. What the age
+#: decides is how hard the landings get, not whether the person knows what
+#: they are doing.
 _MINOR_CEILINGS: tuple[tuple[int, ContentAccess], ...] = (
     # (max age this row applies to, ceiling)
-    (11, ContentAccess(VideoLevel.beginner, 2)),
-    (13, ContentAccess(VideoLevel.beginner, 3)),
-    (15, ContentAccess(VideoLevel.intermediate, 4)),
-    (17, ContentAccess(VideoLevel.intermediate, 6)),
+    (11, ContentAccess(VideoLevel.beginner, 3)),
+    (13, ContentAccess(VideoLevel.intermediate, 4)),
+    (15, ContentAccess(VideoLevel.intermediate, 6)),
+    (17, ContentAccess(VideoLevel.advanced, 8)),
 )
 
 

@@ -59,7 +59,12 @@ from app.schemas.onboarding import (
     QuizResultOut,
 )
 from app.services import legal_service, mailer, quiz_service
-from app.services.access_policy import ADULT_AGE, BAND_ORDER, age_on
+from app.services.access_policy import (
+    ADULT_AGE,
+    age_on,
+    bands_possible_at,
+    min_age_for,
+)
 from app.services.mailer import Attachment, Email
 
 #: Wording of the options, served by the API so no client hardcodes them.
@@ -92,12 +97,38 @@ def practitioner_options() -> list[Option]:
     return [Option(value=t.value, label=PRACTITIONER_LABELS[t]) for t in PractitionerType]
 
 
-def experience_options() -> list[Option]:
-    return [Option(value=b.value, label=EXPERIENCE_LABELS[b]) for b in BAND_ORDER]
+def experience_options(age: int | None = None) -> list[Option]:
+    """The bands this age could honestly have reached.
+
+    A twelve-year-old is not offered "più di 10 anni": not because a young
+    member cannot be experienced — courses start at five, so ten years by
+    fifteen is perfectly real — but because ten years by twelve is not. The
+    impossible options simply never appear, which is kinder than offering them
+    and refusing the answer afterwards.
+    """
+    return [Option(value=b.value, label=EXPERIENCE_LABELS[b]) for b in bands_possible_at(age)]
 
 
 def _today() -> date:
     return datetime.now(timezone.utc).date()
+
+
+def current_age(profile: UserProfile | None, *, today: date | None = None) -> int | None:
+    if profile is None or profile.birth_date is None:
+        return None
+    return age_on(profile.birth_date, today or _today())
+
+
+def level_is_locked(profile: UserProfile) -> bool:
+    """Whether the starting level has already been settled.
+
+    It is settled by the *first* completed run of the vault game, and never
+    moves again. Letting a later run change it would turn the game into a
+    lockpick: fail on purpose, read the answers off the correction screen, play
+    again, walk away with a level nobody earned. Later runs still happen — they
+    are just for the pleasure of knowing the names.
+    """
+    return profile.verified_band is not None
 
 
 def is_adult(profile: UserProfile, *, today: date | None = None) -> bool:
@@ -149,7 +180,9 @@ async def state(session: AsyncSession, user: User) -> OnboardingState:
         practitioner_options=(
             practitioner_options() if step is OnboardingStep.practitioner_type else []
         ),
-        experience_options=experience_options() if step is OnboardingStep.experience else [],
+        experience_options=(
+            experience_options(current_age(profile)) if step is OnboardingStep.experience else []
+        ),
         pending_documents=pending,
     )
 
@@ -250,9 +283,19 @@ async def set_experience(
         raise ValidationFailed("answer the date of birth first")
     if profile.practitioner_type is PractitionerType.instructor:
         raise ValidationFailed("instructors submit a certificate instead")
+    if level_is_locked(profile):
+        # Re-declaring after the game would be the same lockpick from the
+        # other end: change the claim, play again, keep the better of the two.
+        raise Conflict("the starting level has already been settled")
+
+    age = current_age(profile)
+    if age is not None and band not in bands_possible_at(age):
+        raise ValidationFailed(
+            f"a {age} anni non si possono avere così tanti anni di pratica: "
+            f"per questa risposta ne servono almeno {min_age_for(band)}"
+        )
+
     profile.experience_band = band
-    # A new declaration has to be re-earned in the game.
-    profile.verified_band = None
     await session.commit()
     return await state(session, user)
 
@@ -383,13 +426,24 @@ async def submit_instructor_certificate(
 
 QUIZ_TITLE = "Come si chiama questo scavalcamento?"
 QUIZ_INTRO = (
-    "Sei movimenti, quattro nomi per ognuno. Serve a capire con che livello "
-    "partire: non c'è niente da saltare e niente da dimostrare a nessuno."
+    "Sei movimenti, quattro nomi per ognuno. Questo giro decide da dove parti; "
+    "dopo si potrà rigiocare quando vuoi, ma il livello non cambierà più. "
+    "Niente da saltare e niente da dimostrare a nessuno."
+)
+
+#: Shown instead of the intro on a run that no longer moves the level.
+QUIZ_INTRO_REPLAY = (
+    "Il livello è già deciso e non cambia: questo giro è per allenare "
+    "l'occhio, o per il gusto di saperli."
 )
 
 
 async def start_quiz(session: AsyncSession, user: User) -> QuizOut:
     profile = await profiles_repo.get_or_create(session, user.id)
+    # Saying it up front is the whole difference between a fair rule and a
+    # trap: you learn that the first run is the one that counts before you
+    # play it, not on the screen that follows.
+    replay = level_is_locked(profile)
     questions = quiz_service.build_questions(profile.experience_band)
     attempt = ExperienceQuizAttempt(
         user_id=user.id,
@@ -403,7 +457,7 @@ async def start_quiz(session: AsyncSession, user: User) -> QuizOut:
     return QuizOut(
         attempt_id=attempt.id,
         title=QUIZ_TITLE,
-        intro=QUIZ_INTRO,
+        intro=QUIZ_INTRO_REPLAY if replay else QUIZ_INTRO,
         pass_ratio=quiz_service.PASS_RATIO,
         questions=[
             QuizQuestionOut(
@@ -417,15 +471,19 @@ async def start_quiz(session: AsyncSession, user: User) -> QuizOut:
     )
 
 
-def _quiz_message(*, passed: bool, adjusted: bool) -> str:
+def _quiz_message(*, passed: bool, adjusted: bool, counts: bool) -> str:
+    if not counts:
+        # Deliberately not "riprova per fare meglio": there is nothing to win
+        # on a later run, and saying otherwise would be a small lie each time.
+        return "Il livello resta quello del primo giro: questo era per il gusto di saperli."
     if passed:
-        return "Nomi giusti: il livello che hai indicato resta com'è."
+        return "Nomi giusti: parti dal livello che hai indicato."
     if adjusted:
         return (
-            "Qualche nome è scappato. Si riparte da un gradino più sotto — "
-            "puoi rifare il gioco quando vuoi e recuperarlo."
+            "Qualche nome è scappato, quindi si parte da un gradino più sotto. "
+            "I livelli si aprono strada facendo."
         )
-    return "Rifallo pure quando vuoi: si può ripetere senza limiti."
+    return "Ecco da dove si parte."
 
 
 async def submit_quiz(
@@ -443,19 +501,26 @@ async def submit_quiz(
     ok = quiz_service.passed(score, total)
     granted = quiz_service.resolve_band(attempt.claimed_band, score, total)
 
+    profile = await profiles_repo.get_or_create(session, user.id)
+    # Read before anything is written: whether this run counts depends on
+    # whether an earlier one already settled the level.
+    counts = not level_is_locked(profile)
+
     attempt.score = score
     attempt.total = total
     attempt.passed = ok
+    # Always recorded on the attempt itself — that is the history of the runs,
+    # and only the first of them moves the profile.
     attempt.granted_band = granted
     attempt.completed_at = datetime.now(timezone.utc)
 
-    profile = await profiles_repo.get_or_create(session, user.id)
     profile.quiz_attempts += 1
-    profile.verified_band = granted
-    if ok:
-        profile.quiz_passed_at = attempt.completed_at
-    if profile.onboarding_completed_at is None:
-        profile.onboarding_completed_at = attempt.completed_at
+    if counts:
+        profile.verified_band = granted
+        if ok:
+            profile.quiz_passed_at = attempt.completed_at
+        if profile.onboarding_completed_at is None:
+            profile.onboarding_completed_at = attempt.completed_at
     await session.commit()
 
     corrections = []
@@ -476,13 +541,15 @@ async def submit_quiz(
             )
         )
 
-    adjusted = granted != attempt.claimed_band
+    adjusted = counts and granted != attempt.claimed_band
     return QuizResultOut(
         score=score,
         total=total,
         passed=ok,
-        granted_band=granted,
+        # The level that actually applies, not what this run would have given.
+        granted_band=profile.verified_band,
         adjusted=adjusted,
+        counts_towards_level=counts,
         corrections=corrections,
-        message=_quiz_message(passed=ok, adjusted=adjusted),
+        message=_quiz_message(passed=ok, adjusted=adjusted, counts=counts),
     )

@@ -358,7 +358,12 @@ class _QuizStepState extends ConsumerState<_QuizStep> {
             onPressed: () => widget.onDone(),
             child: const Text('Continua'),
           ),
-          TextButton(onPressed: _deal, child: const Text('Rigioca')),
+          // Rigiocare si può, ma il livello non si muove più: dirlo sul
+          // pulsante evita che qualcuno ci provi sperando di guadagnarci.
+          TextButton(
+            onPressed: _deal,
+            child: const Text('Rigioca — non cambia il livello'),
+          ),
         ],
       );
     }

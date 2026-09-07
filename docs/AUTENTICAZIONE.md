@@ -169,11 +169,18 @@ che l'app già mostra sui tutorial. Vale sempre il più basso fra i due tetti.
 
 | Età | Livello massimo | Difficoltà massima |
 | --- | --------------- | ------------------ |
-| fino a 11 | beginner | 2 |
-| 12–13 | beginner | 3 |
-| 14–15 | intermediate | 4 |
-| 16–17 | intermediate | 6 |
+| fino a 11 | beginner | 3 |
+| 12–13 | intermediate | 4 |
+| 14–15 | intermediate | 6 |
+| 16–17 | advanced | 8 |
 | 18+ | dipende solo dall'esperienza | |
+
+Il tetto è un limite, non un giudizio. **Un quindicenne che ha cominciato a
+cinque anni si allena da più tempo di quasi tutti gli adulti sulla
+piattaforma**, e la sua esperienza conta: fra due quindicenni, quello che
+pratica da dieci anni arriva più in alto di quello che ha cominciato il mese
+scorso. Quello che decide l'età è quanto diventano duri gli atterraggi, non
+quanto la persona ne sa.
 
 | Da quanto pratichi | Livello massimo | Difficoltà massima |
 | ------------------ | --------------- | ------------------ |
@@ -212,6 +219,26 @@ La qualifica **non è automatica**: la concede una persona, con
 `POST /api/v1/admin/users/{id}/role` — l'endpoint admin che esisteva già.
 Finché la pratica è in revisione lo stato è `pending`.
 
+### Quello che l'età rende possibile
+
+I corsi cominciano a cinque anni, quindi a quindici dieci anni di pratica sono
+un fatto, non un sospetto. Le risposte che invece l'età non consente — dieci
+anni a dodici — **non vengono proprio offerte**: la lista che il server manda
+è già filtrata.
+
+| Risposta | Età minima |
+| -------- | ---------- |
+| Meno di un mese, un paio di mesi, sei mesi | 5 |
+| Un anno | 6 |
+| Un paio d'anni | 7 |
+| Più di 5 anni | 10 |
+| Più di 10 anni | 15 |
+
+Offrire un'opzione e poi rifiutarla è peggio che non offrirla: nessuno gradisce
+sentirsi dire che la risposta era sbagliata dopo averla scelta da un elenco
+scritto da qualcun altro. Il controllo resta comunque anche lato server, per
+chi chiama l'API a mano.
+
 ## 5. Il gioco degli scavalcamenti
 
 Sei movimenti descritti come li descriverebbe un traceur allo spot, quattro
@@ -222,8 +249,16 @@ nessuno di saltare niente per dimostrare qualcosa.
   dichiara molti anni riceve **sempre almeno una domanda del tier più alto**:
   altrimenti dieci anni si confermerebbero con dei passamano;
 - si passa al 70%. Passare conferma la dichiarazione;
-- **non passare non blocca niente**: il tetto scende alla fascia che il
-  punteggio sostiene (almeno un gradino), e il gioco si può rifare;
+- **non passare non blocca niente**: il livello di partenza è la fascia che il
+  punteggio sostiene (almeno un gradino sotto la dichiarazione);
+- **decide il primo giro, e solo quello.** Dopo si può rigiocare quando si
+  vuole, ma il livello non si muove più. Altrimenti il gioco sarebbe un
+  grimaldello: sbagli apposta, leggi le risposte nella schermata delle
+  correzioni, rigiochi e ti porti a casa un livello che non hai. La regola è
+  scritta nell'introduzione **prima** di giocare, non scoperta dopo, e i giri
+  successivi lo dicono sia all'inizio sia sul pulsante;
+- per lo stesso motivo la dichiarazione non si può cambiare dopo il gioco:
+  sarebbe lo stesso grimaldello dall'altro capo;
 - le risposte giuste stanno nella riga del tentativo, lato server: il client
   non può leggerle dal proprio traffico;
 - alla fine si vedono le correzioni, così il gioco insegna qualcosa anche a chi

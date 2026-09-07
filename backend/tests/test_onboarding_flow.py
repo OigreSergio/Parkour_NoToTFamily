@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pytest
 
-from app.core.exceptions import Forbidden, ValidationFailed
+from app.core.exceptions import Conflict, Forbidden, ValidationFailed
 from app.models.profile import CertificationStatus, ExperienceBand, PractitionerType, UserProfile
 from app.models.user import User
 from app.services import onboarding_service
@@ -185,3 +185,120 @@ def test_the_profile_the_app_sees_cannot_reveal_that_someone_is_a_minor() -> Non
     # A 14-year-old and a 30-year-old who answered the same way are, on the
     # wire, the same profile — the ceiling between them lives server-side.
     assert ProfileOut(**same_answers).model_dump() == ProfileOut(**same_answers).model_dump()
+
+
+# --- the level is settled once ------------------------------------------------
+
+
+def test_a_long_claim_is_possible_for_a_young_member() -> None:
+    from app.services.access_policy import bands_possible_at, min_age_for
+
+    # Courses start at five, so ten years by fifteen is real — and the app has
+    # no business telling that member otherwise.
+    assert min_age_for(ExperienceBand.over_10_years) == 15
+    assert ExperienceBand.over_10_years in bands_possible_at(15)
+    assert ExperienceBand.over_5_years in bands_possible_at(10)
+
+
+def test_what_no_age_could_have_reached_is_never_offered() -> None:
+    from app.services.access_policy import bands_possible_at
+
+    # Ten years by twelve is not possible; the option simply does not appear,
+    # which beats offering it and refusing the answer afterwards.
+    assert ExperienceBand.over_10_years not in bands_possible_at(12)
+    assert ExperienceBand.over_5_years not in bands_possible_at(9)
+    assert bands_possible_at(6) == (
+        ExperienceBand.less_than_month,
+        ExperienceBand.few_months,
+        ExperienceBand.six_months,
+        ExperienceBand.one_year,
+    )
+
+
+def test_an_adult_is_offered_everything() -> None:
+    assert len(onboarding_service.experience_options(30)) == len(BAND_ORDER)
+    assert len(onboarding_service.experience_options(None)) == len(BAND_ORDER)
+
+
+def test_an_experienced_minor_is_not_treated_as_a_beginner() -> None:
+    from datetime import date
+
+    from app.services import access_policy
+
+    # Fifteen, started at five, confirmed by the game: their experience counts.
+    # The age still caps how hard the landings get — that is about growing
+    # bones, not about what they know.
+    experienced = _profile(
+        birth_date=date(2011, 1, 1),
+        experience_band=ExperienceBand.over_10_years,
+        verified_band=ExperienceBand.over_10_years,
+    )
+    beginner = _profile(
+        birth_date=date(2011, 1, 1),
+        experience_band=ExperienceBand.less_than_month,
+        verified_band=ExperienceBand.less_than_month,
+    )
+    today = date(2026, 9, 6)
+    assert access_policy.access_for(experienced, today=today).max_difficulty > (
+        access_policy.access_for(beginner, today=today).max_difficulty
+    )
+    # ...and never past the ceiling for that age.
+    assert access_policy.access_for(experienced, today=today) == (access_policy.minor_ceiling(15))
+
+
+def test_the_level_is_locked_by_the_first_completed_run() -> None:
+    unplayed = _profile(birth_date=ADULT, experience_band=ExperienceBand.couple_years)
+    assert not onboarding_service.level_is_locked(unplayed)
+
+    played = _profile(
+        birth_date=ADULT,
+        experience_band=ExperienceBand.couple_years,
+        verified_band=ExperienceBand.six_months,
+    )
+    assert onboarding_service.level_is_locked(played)
+
+
+async def test_the_declaration_cannot_be_changed_after_the_game(monkeypatch) -> None:
+    # The other end of the same lockpick: re-declare, play again, keep the
+    # better of the two.
+    profile = _profile(
+        birth_date=ADULT,
+        practitioner_type=PractitionerType.athlete,
+        experience_band=ExperienceBand.six_months,
+        verified_band=ExperienceBand.six_months,
+    )
+
+    async def get_or_create(_session, _user_id):
+        return profile
+
+    monkeypatch.setattr(onboarding_service.profiles_repo, "get_or_create", get_or_create)
+    with pytest.raises(Conflict):
+        await onboarding_service.set_experience(
+            _Session(), _user(), band=ExperienceBand.over_10_years
+        )
+    assert profile.experience_band is ExperienceBand.six_months
+
+
+async def test_a_claim_too_big_for_the_age_is_refused(monkeypatch) -> None:
+    from datetime import date
+
+    profile = _profile(birth_date=date(2014, 1, 1), practitioner_type=None)  # 12 anni
+
+    async def get_or_create(_session, _user_id):
+        return profile
+
+    monkeypatch.setattr(onboarding_service.profiles_repo, "get_or_create", get_or_create)
+    with pytest.raises(ValidationFailed):
+        await onboarding_service.set_experience(
+            _Session(), _user(), band=ExperienceBand.over_10_years
+        )
+    assert profile.experience_band is None
+
+
+def test_a_replayed_run_says_it_changes_nothing() -> None:
+    primo = onboarding_service._quiz_message(passed=False, adjusted=True, counts=True)
+    dopo = onboarding_service._quiz_message(passed=False, adjusted=False, counts=False)
+    assert "un gradino più sotto" in primo
+    assert "resta quello del primo giro" in dopo
+    # Nessun invito a riprovare per fare meglio: non c'è niente da vincere.
+    assert "riprova" not in dopo.lower()

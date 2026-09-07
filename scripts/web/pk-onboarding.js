@@ -485,7 +485,11 @@
             list,
             actions([
               button('Continua', function () { api('/onboarding/state').then(resolve, reject); }),
-              button('Rigioca', function () { playQuiz(card).then(resolve, reject); }, 'pk-legal-decline')
+              // Rigiocare si può, ma il livello non si muove più: dirlo sul
+              // pulsante evita che qualcuno ci provi sperando di guadagnarci.
+              button('Rigioca — non cambia il livello', function () {
+                playQuiz(card).then(resolve, reject);
+              }, 'pk-legal-decline')
             ])
           ]);
         }

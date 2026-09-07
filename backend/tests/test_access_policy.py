@@ -57,9 +57,13 @@ def test_adulthood_starts_on_the_eighteenth_birthday() -> None:
 # --- ceilings ----------------------------------------------------------------
 
 
-def test_no_minor_ceiling_ever_reaches_advanced() -> None:
+def test_no_minor_ceiling_ever_reaches_the_top() -> None:
+    # The oldest minors do get advanced material — a seventeen-year-old who
+    # started at five has trained longer than most adults here. What no age
+    # under 18 gets is the whole catalogue: the hardest landings wait.
     for age in range(5, 18):
-        assert access_policy.minor_ceiling(age).max_level is not VideoLevel.advanced
+        assert access_policy.minor_ceiling(age) != access_policy.FULL_ACCESS
+        assert access_policy.minor_ceiling(age).max_difficulty < 10
 
 
 def test_minor_ceilings_do_not_go_down_with_age() -> None:
@@ -86,15 +90,37 @@ def test_experience_opens_harder_levels() -> None:
 # --- how the two combine -----------------------------------------------------
 
 
-def test_age_ceiling_wins_over_any_claim() -> None:
-    # A 15-year-old who says they have trained for ten years still does not get
-    # advanced content: the age ceiling is not negotiable by answering.
-    access = access_policy.access_for(
+def test_the_age_ceiling_is_not_negotiable_by_answering() -> None:
+    # Ten years by fifteen is perfectly real — courses start at five — and the
+    # claim does count. It just cannot lift the ceiling that age sets.
+    fifteen = access_policy.access_for(
         _profile(birth_date=date(2011, 1, 1), band=ExperienceBand.over_10_years),
         today=TODAY,
     )
-    assert access.max_level is VideoLevel.intermediate
-    assert access.max_difficulty == 4
+    assert fifteen == access_policy.minor_ceiling(15)
+    assert fifteen != access_policy.FULL_ACCESS
+
+    # The same claim from an adult opens everything.
+    adult = access_policy.access_for(
+        _profile(birth_date=date(1998, 1, 1), band=ExperienceBand.over_10_years),
+        today=TODAY,
+    )
+    assert adult == access_policy.FULL_ACCESS
+
+
+def test_experience_still_counts_for_a_minor() -> None:
+    # Two fifteen-year-olds: one who started at five, one who started last
+    # month. Treating them the same would be the wrong kind of caution.
+    veterano = access_policy.access_for(
+        _profile(birth_date=date(2011, 1, 1), verified=ExperienceBand.over_10_years),
+        today=TODAY,
+    )
+    principiante = access_policy.access_for(
+        _profile(birth_date=date(2011, 1, 1), verified=ExperienceBand.less_than_month),
+        today=TODAY,
+    )
+    assert veterano.max_difficulty > principiante.max_difficulty
+    assert LEVEL_ORDER.index(veterano.max_level) >= LEVEL_ORDER.index(principiante.max_level)
 
 
 def test_adult_athlete_gets_the_band_ceiling() -> None:

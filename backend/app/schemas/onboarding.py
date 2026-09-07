@@ -130,5 +130,8 @@ class QuizResultOut(BaseModel):
     granted_band: ExperienceBand | None
     #: True when the run lowered what had been declared.
     adjusted: bool
+    #: False on every run after the first: the level was settled then and does
+    #: not move again. Later runs are played for their own sake.
+    counts_towards_level: bool = True
     corrections: list[QuizCorrection]
     message: str
