@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers.dart';
 import '../widgets/error_view.dart';
+import '../widgets/risk_notice.dart';
 import 'spot_detail_screen.dart';
 
 /// Scrollable list of verified spots. Tapping a row opens its detail screen.
@@ -42,10 +43,11 @@ class SpotsListScreen extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 trailing: _DifficultyBadge(difficulty: spot.difficulty),
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (_) => SpotDetailScreen(spot: spot),
-                  ),
+                onTap: () => pushBehindRiskNotice(
+                  context,
+                  ref,
+                  spotRiskNoticeId,
+                  (_) => SpotDetailScreen(spot: spot),
                 ),
               );
             },

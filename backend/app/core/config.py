@@ -1,8 +1,8 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
-from pydantic import Field, PostgresDsn, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -19,7 +19,11 @@ class Settings(BaseSettings):
     jwt_access_ttl_minutes: int = 15
     jwt_refresh_ttl_days: int = 30
 
-    cors_origins: list[str] = Field(default_factory=list)
+    # `NoDecode` keeps pydantic-settings from trying to JSON-parse the value
+    # first: without it, the comma-separated form that `.env.example` documents
+    # (`CORS_ORIGINS=http://a,http://b`) fails to parse before the validator
+    # below ever runs, and the app will not start.
+    cors_origins: Annotated[list[str], NoDecode] = Field(default_factory=list)
 
     s3_endpoint: str | None = None
     s3_bucket: str = "parkour-spots"
@@ -30,11 +34,69 @@ class Settings(BaseSettings):
     initial_admin_email: str | None = None
     initial_admin_password: str | None = None
 
+    # --- Outbound email (verification codes, instructor dossiers) -----------
+    # `console` prints the message (development), `memory` keeps it in a list
+    # (tests), `smtp` sends it over SMTP, `api` sends it through a provider's
+    # HTTPS API. Production must use one that really delivers.
+    #
+    # `api` exists because SMTP ports are the first thing blocked: by office
+    # networks, by proxies, and by most free hosting tiers. An HTTPS call goes
+    # through all of them, and every provider with a free plan offers one.
+    mail_backend: Literal["console", "memory", "smtp", "api"] = "console"
+    # Sender of every automated message. It is a *no-reply* address: replies
+    # are not read, so the body always points people at a monitored mailbox.
+    mail_from: str = "noreply@notot.family"
+    mail_from_name: str = "PkFAMILY"
+    smtp_host: str | None = None
+    smtp_port: int = 587
+    smtp_user: str | None = None
+    smtp_password: str | None = None
+    smtp_starttls: bool = True
+    #: Which provider's HTTPS API to speak, when MAIL_BACKEND=api.
+    mail_api_provider: Literal["resend", "brevo"] = "resend"
+    mail_api_key: str | None = None
+    #: Overridable so tests can point at a local server instead of the internet.
+    mail_api_base_url: str | None = None
+    # Mailbox that already receives spot-verification traffic; instructor
+    # certificates and ID documents are forwarded here for manual review.
+    moderation_email: str | None = None
+
+    # --- Email verification codes ------------------------------------------
+    email_code_ttl_minutes: int = 10
+    email_code_max_attempts: int = 5
+    #: Codes a single address may request per hour.
+    email_code_max_per_hour: int = 5
+    #: Minimum seconds between two code requests for the same address.
+    email_code_min_interval_seconds: int = 60
+
+    @property
+    def review_mailbox(self) -> str | None:
+        """Where instructor dossiers go: the spot-verification mailbox."""
+        return self.moderation_email or self.initial_admin_email
+
+    @property
+    def mail_is_delivered(self) -> bool:
+        """Whether a message actually leaves the machine.
+
+        `console` and `memory` do not deliver anything, so a sign-in code has
+        to reach the developer some other way. `smtp` and `api` do — and from
+        that moment the code must travel only by email, or the whole point of
+        emailing it (proving the address belongs to whoever typed it) is gone.
+        """
+        return self.mail_backend in {"smtp", "api"}
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def split_origins(cls, v: object) -> object:
         if isinstance(v, str):
             return [o.strip() for o in v.split(",") if o.strip()]
+        return v
+
+    @field_validator("mail_backend")
+    @classmethod
+    def require_real_delivery_in_prod(cls, v: str, info) -> str:
+        if info.data.get("env") == "production" and v not in {"smtp", "api"}:
+            raise ValueError("MAIL_BACKEND must be 'smtp' or 'api' in production")
         return v
 
     @field_validator("jwt_secret")

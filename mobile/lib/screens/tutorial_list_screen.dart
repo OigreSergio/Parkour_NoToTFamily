@@ -6,6 +6,7 @@ import '../models/video.dart';
 import '../providers.dart';
 import '../widgets/difficulty_gauge.dart';
 import '../widgets/error_view.dart';
+import '../widgets/risk_notice.dart';
 import 'tutorial_detail_screen.dart';
 
 /// Scrollable list of trick tutorials, optionally filtered by category.
@@ -136,10 +137,11 @@ class _TutorialRow extends ConsumerWidget {
           ),
         ],
       ),
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute<void>(
-          builder: (_) => TutorialDetailScreen(video: video),
-        ),
+      onTap: () => pushBehindRiskNotice(
+        context,
+        ref,
+        tutorialRiskNoticeId,
+        (_) => TutorialDetailScreen(video: video),
       ),
     );
   }

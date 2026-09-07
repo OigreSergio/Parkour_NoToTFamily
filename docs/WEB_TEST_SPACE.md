@@ -43,6 +43,10 @@ Sul bundle pubblicato sono applicate le patch di
 - **foto degli spot fissi**: il campo `photos` (URL) di uno spot fisso viene
   mostrato nella scheda di dettaglio; per aggiornare spot/foto sul bundle già
   pubblicato senza rifare l'export c'è `scripts/update_deployed_spots.py`;
+- **accesso e informative**: accanto al bundle vengono copiati
+  `pk-legal.js` (pop-up sui rischi prima di uno spot o di un tutorial) e
+  `pk-onboarding.js` (accesso con codice via email e domande di profilo).
+  Vedi [AUTENTICAZIONE.md](./AUTENTICAZIONE.md) e [LEGALE.md](./LEGALE.md);
 - **tutto gratuito**: `useEntitlements` ritorna sempre `hasBase/hasChat/
   hasVideo/hasAny = true` e il banner "Iscriviti" è disattivato. Nota: le
   RLS lato Supabase restano attive, quindi le *scritture* riservate (es.

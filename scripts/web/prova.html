@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PkFAMILY — prova l'accesso</title>
+<!--
+  Pagina di prova per pk-legal.js e pk-onboarding.js, da aprire dal telefono
+  contro un backend vero. Non fa parte della web app: serve a provare il
+  flusso senza dover riesportare il bundle Expo.
+
+      cd scripts/web && python3 -m http.server 8080
+      # poi dal telefono, sulla stessa Wi-Fi:
+      http://<indirizzo-lan-del-pc>:8080/prova.html?api=http://<indirizzo-lan-del-pc>:8000
+
+  Il backend va avviato con --host 0.0.0.0 e con l'origine di questa pagina
+  fra i CORS_ORIGINS. Vedi docs/PROVA_DA_TELEFONO.md.
+-->
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 24px 20px 48px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #f4ece0; color: #1f1b16; line-height: 1.5;
+  }
+  main { max-width: 420px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 6px; }
+  p { margin: 0 0 14px; }
+  .sottile { color: #6f6456; font-size: 14px; }
+  button {
+    display: block; width: 100%; font: inherit; font-size: 16px;
+    padding: 14px 16px; margin: 0 0 10px; border-radius: 10px;
+    border: 1px solid #e0d4bd; background: #fbf7ef; color: #1f1b16; cursor: pointer;
+  }
+  button.primario { background: #c26a52; border-color: #c26a52; color: #fff; font-weight: 700; }
+  code { font-size: 13px; background: #efe4d2; padding: 1px 5px; border-radius: 4px; word-break: break-all; }
+  pre { background: #fbf7ef; border: 1px solid #e0d4bd; border-radius: 10px;
+        padding: 12px; font-size: 12px; overflow-x: auto; white-space: pre-wrap; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #16130e; color: #f0e7d7; }
+    .sottile { color: #a2947f; }
+    button { background: #201b14; border-color: #362e23; color: #f0e7d7; }
+    button.primario { background: #d98a70; border-color: #d98a70; color: #16130e; }
+    code, pre { background: #201b14; border-color: #362e23; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>PkFAMILY — prova l'accesso</h1>
+  <p class="sottile">Backend: <code id="api"></code></p>
+
+  <button class="primario" id="accesso">Apri l'accesso</button>
+  <button id="spot">Pop-up spot</button>
+  <button id="tutorial">Pop-up tutorial</button>
+  <button id="reset">Ricomincia da zero</button>
+
+  <p class="sottile" id="stato"></p>
+  <pre id="profilo">—</pre>
+</main>
+
+<script>
+  // ?api=http://192.168.1.10:8000 — senza, si assume lo stesso host sulla 8000.
+  var params = new URLSearchParams(location.search);
+  globalThis.__PK_API__ = params.get('api') ||
+    location.protocol + '//' + location.hostname + ':8000';
+  document.getElementById('api').textContent = globalThis.__PK_API__;
+</script>
+<script src="./pk-legal.js"></script>
+<script src="./pk-onboarding.js"></script>
+<script>
+  var stato = document.getElementById('stato');
+  var profilo = document.getElementById('profilo');
+
+  function mostraProfilo() {
+    if (!globalThis.PkOnboarding.session()) {
+      profilo.textContent = 'Nessuna sessione.';
+      return;
+    }
+    globalThis.PkOnboarding.api('/users/me/profile').then(function (p) {
+      profilo.textContent = JSON.stringify(p, null, 2);
+    }, function (e) {
+      profilo.textContent = 'Non leggibile: ' + e.message;
+    });
+  }
+
+  function esito(testo) { stato.textContent = testo; mostraProfilo(); }
+
+  document.getElementById('accesso').addEventListener('click', function () {
+    globalThis.PkOnboarding.open().then(
+      function (ok) { esito(ok ? 'Flusso completato.' : 'Annullato.'); },
+      function (e) { esito('Errore: ' + e.message); }
+    );
+  });
+  document.getElementById('spot').addEventListener('click', function () {
+    globalThis.PkLegal.gateSpot().then(function (ok) {
+      esito(ok ? 'Spot: accettato.' : 'Spot: rifiutato.');
+    });
+  });
+  document.getElementById('tutorial').addEventListener('click', function () {
+    globalThis.PkLegal.gateTutorial().then(function (ok) {
+      esito(ok ? 'Tutorial: accettato.' : 'Tutorial: rifiutato.');
+    });
+  });
+  document.getElementById('reset').addEventListener('click', function () {
+    globalThis.PkLegal.reset();
+    globalThis.PkOnboarding.forgetGuest();
+    esito('Ripulito: la chiave ospite di questo browser è stata dimenticata.');
+  });
+
+  mostraProfilo();
+</script>
+</body>
+</html>
