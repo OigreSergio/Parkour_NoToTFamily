@@ -217,9 +217,11 @@
       riscritti a mano.
     </p>
     <p class="avviso" id="avviso" style="margin-top:14px">
-      Nessun dato esce da qui e nessuna email viene spedita: il server è una
-      funzione dentro questa pagina. Per provare l'app vera contro un backend
-      vero, c'è <code>docs/PROVA_DA_TELEFONO.md</code> nel repo.
+      <strong>La mail parte davvero.</strong> Il codice te lo spedisce Supabase
+      Auth — lo stesso che regge la web app — quindi arriva nella tua casella,
+      non a schermo. Entrando con l'email nasce un account vero sul progetto
+      Supabase; se vuoi solo guardare il flusso, entra senza account. Le
+      domande dopo il codice restano simulate qui dentro.
     </p>
   </header>
 
@@ -315,7 +317,14 @@
 
   <footer class="sottile">
     <p>
-      Simulazione del flusso descritto in <code>docs/AUTENTICAZIONE.md</code>.
+      Se al posto di un codice a sei cifre ti arriva un link, va cambiato il
+      template: Supabase → Authentication → Email Templates → Magic Link, con
+      dentro <code>{{ .Token }}</code>. Il mailer integrato manda poche mail
+      all'ora ed è pensato per le prove: in produzione si configura un SMTP o
+      l'API di un provider, che è quello che fa il backend del repo.
+    </p>
+    <p>
+      Il flusso è quello descritto in <code>docs/AUTENTICAZIONE.md</code>.
       Le informative integrali sono quelle di <code>backend/app/legal/</code>,
       e vanno fatte rivedere da un avvocato prima del lancio — il perché è in
       <code>docs/LEGALE.md</code>.
@@ -329,6 +338,88 @@
   globalThis.__PK_DEMO_DATA__ = JSON.parse(
     document.getElementById('pk-demo-data').textContent
   );
+</script>
+<script>
+/* Invio vero del codice, via Supabase Auth.
+ *
+ * La pagina è statica: non può spedire posta da sola, e una chiave di un
+ * provider messa qui dentro sarebbe pubblica per chiunque apra la pagina —
+ * cioè regalata. Supabase invece è già l'auth della web app, la sua
+ * publishable key è fatta apposta per stare nei client (le RLS restano), e il
+ * suo mailer manda una mail vera. Quindi il codice arriva in casella, non a
+ * schermo.
+ *
+ * Due conseguenze da conoscere, e sono scritte anche nella pagina:
+ *  - l'account che nasce è un account vero sul progetto Supabase;
+ *  - il mailer integrato di Supabase è limitato (poche mail all'ora) ed è
+ *    pensato per le prove: in produzione va configurato un SMTP o l'API di un
+ *    provider, che è quello che fa il backend di questo repo.
+ */
+(function () {
+  'use strict';
+
+  var SUPABASE_URL = 'https://gkdzdtxqkftebrxhgway.supabase.co';
+  var SUPABASE_KEY = 'sb_publishable_Xi0aGU8lnV182kEKpsmU3w__uAkFVXg';
+
+  function chiama(path, corpo) {
+    return fetch(SUPABASE_URL + '/auth/v1' + path, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: 'Bearer ' + SUPABASE_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(corpo)
+    }).then(function (r) {
+      return r.text().then(function (testo) {
+        var dati = null;
+        try { dati = testo ? JSON.parse(testo) : null; } catch (e) { dati = null; }
+        return { ok: r.ok, status: r.status, dati: dati };
+      });
+    });
+  }
+
+  function messaggio(esito, ripiego) {
+    var d = esito.dati || {};
+    var testo = d.msg || d.message || d.error_description || d.error || '';
+    if (esito.status === 429) {
+      return 'Supabase limita le mail di prova a poche all’ora. Riprova più ' +
+        'tardi, oppure collega un backend con ?api= (vedi docs/PROVA_DA_TELEFONO.md).';
+    }
+    return testo || ripiego;
+  }
+
+  globalThis.PkSupabaseMail = {
+    url: SUPABASE_URL,
+
+    /** Chiede il codice: Supabase spedisce la mail. */
+    chiediCodice: function (email) {
+      return chiama('/otp', { email: email, create_user: true }).then(function (esito) {
+        if (!esito.ok) {
+          var e = new Error(messaggio(esito, 'non siamo riusciti a mandare la mail'));
+          e.status = esito.status;
+          throw e;
+        }
+        return true;
+      });
+    },
+
+    /** Verifica il codice ricevuto per posta. */
+    verificaCodice: function (email, codice) {
+      return chiama('/verify', {
+        type: 'email', email: email, token: codice
+      }).then(function (esito) {
+        if (!esito.ok) {
+          var e = new Error(messaggio(esito, 'codice non valido o scaduto'));
+          e.status = esito.status;
+          throw e;
+        }
+        return esito.dati;
+      });
+    }
+  };
+})();
+
 </script>
 <script>
 /* Il backend finto.
@@ -367,7 +458,7 @@
   var ALPHABET = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ';
 
   function fresh() {
-    return { account: null, accepted: [], code: null, quiz: null, log: [], mail: null };
+    return { account: null, accepted: [], quiz: null, log: [], email_reale: null };
   }
 
   var server = (function () {
@@ -612,61 +703,66 @@
     }
 
     if (path === '/auth/email/request-code') {
-      var code = String(Math.floor(Math.random() * 1000000)).padStart(6, '0');
-      server.code = { email: body.email, code: code };
-      // `debug_code` resta null, come quando il backend ha un SMTP vero: il
-      // codice deve arrivare per posta, altrimenti la mail non sta verificando
-      // niente. Qui la posta non esiste, quindi la pagina mostra il messaggio
-      // che sarebbe partito — da leggere e ricopiare, come sul telefono.
-      var mail = DATA.mail;
-      var re = new RegExp(mail.placeholder, 'g');
-      server.mail = {
-        to: body.email,
-        from: mail.from,
-        subject: mail.subject.replace(re, code),
-        body: mail.body.replace(re, code)
-      };
-      note('POST', '/auth/email/request-code',
-        'codice generato e spedito a ' + body.email +
-        ' — non torna nella risposta, la risposta non dice nemmeno se l’indirizzo è iscritto');
-      if (globalThis.PkDemo && globalThis.PkDemo.mail) globalThis.PkDemo.mail(server.mail);
+      // La mail la spedisce Supabase Auth: parte davvero, verso la casella
+      // vera. Qui non si finge più niente.
       var dominio = String(body.email || '').split('@').pop().toLowerCase();
       var noti = { 'gmail.com': 'Gmail', 'googlemail.com': 'Gmail', 'icloud.com': 'iCloud',
                    'me.com': 'iCloud', 'outlook.com': 'Outlook', 'hotmail.com': 'Outlook',
                    'hotmail.it': 'Outlook', 'yahoo.com': 'Yahoo', 'yahoo.it': 'Yahoo',
                    'libero.it': 'Libero', 'virgilio.it': 'Virgilio' };
-      return ok({
-        sent: true,
-        expires_in_seconds: DATA.mail.ttl_minutes * 60,
-        provider_label: noti[dominio] || 'il tuo provider',
-        debug_code: null
-      });
+      return globalThis.PkSupabaseMail.chiediCodice(body.email).then(
+        function () {
+          server.email_reale = body.email;
+          note('POST', '/auth/email/request-code',
+            'mail spedita davvero a ' + body.email + ' da Supabase Auth — ' +
+            'il codice esiste solo in quella casella');
+          save();
+          return ok({
+            sent: true,
+            expires_in_seconds: 3600,
+            provider_label: noti[dominio] || 'il tuo provider',
+            debug_code: null
+          });
+        },
+        function (errore) {
+          note('POST', '/auth/email/request-code', 'mail non partita: ' + errore.message);
+          save();
+          return fail(errore.status || 502, 'mail_failed', errore.message);
+        }
+      );
     }
 
     if (path === '/auth/email/verify-code') {
-      // L'informativa si controlla prima del codice, e sempre: chi rifiuta e
-      // poi ci ripensa non ha speso niente, e la risposta non cambia a seconda
-      // che l'indirizzo sia già iscritto o no.
+      // L'informativa prima del codice, e sempre: chi rifiuta e ci ripensa non
+      // ha speso niente, e la risposta non cambia a seconda che l'indirizzo sia
+      // già iscritto.
       if (!waiverAccepted(body.accepted_documents)) {
-        note('POST', '/auth/email/verify-code', 'rifiutato: informativa non accettata — il codice non è stato speso');
+        note('POST', '/auth/email/verify-code',
+          'rifiutato: informativa non accettata — il codice non è stato speso');
         return fail(422, 'validation_failed', 'informativa non accettata');
       }
-      if (!server.code || server.code.code !== body.code) {
-        note('POST', '/auth/email/verify-code', 'codice sbagliato o scaduto');
-        return fail(401, 'unauthorized', 'codice non valido o scaduto');
-      }
-      var display = body.display_name || String(body.email).split('@')[0];
-      server.account = {
-        is_guest: false, email: body.email, display_name: display, guest_key: null,
-        practitioner_type: null, birth_date: null,
-        experience_band: null, verified_band: null
-      };
-      server.accepted = (body.accepted_documents || []).slice();
-      note('POST', '/auth/email/verify-code', 'account creato per ' + body.email);
-      return ok({
-        tokens: { access_token: 'demo', refresh_token: 'demo', token_type: 'Bearer' },
-        created: true, next_step: 'birth_date'
-      });
+      return globalThis.PkSupabaseMail.verificaCodice(body.email, body.code).then(
+        function () {
+          var display = body.display_name || String(body.email).split('@')[0];
+          server.account = {
+            is_guest: false, email: body.email, display_name: display, guest_key: null,
+            practitioner_type: null, birth_date: null,
+            experience_band: null, verified_band: null
+          };
+          server.accepted = (body.accepted_documents || []).slice();
+          note('POST', '/auth/email/verify-code',
+            'codice verificato da Supabase: l’indirizzo è davvero suo');
+          save();
+          return ok({
+            tokens: { access_token: 'demo', refresh_token: 'demo', token_type: 'Bearer' },
+            created: true, next_step: 'birth_date'
+          });
+        },
+        function (errore) {
+          note('POST', '/auth/email/verify-code', errore.message);
+          return fail(errore.status || 401, 'unauthorized', errore.message);
+        }
+      );
     }
 
     if (!server.account) return fail(401, 'unauthorized', 'nessuna sessione');
@@ -1825,101 +1921,7 @@
     renderCatalogo();
   }
 
-  // --- la mail no-reply ------------------------------------------------------
-  //
-  // Il codice non torna più nella risposta: deve arrivare per posta, o la mail
-  // non sta verificando niente. Qui la posta non c'è, quindi il messaggio che
-  // sarebbe partito compare come una notifica sopra tutto — da leggere e
-  // ricopiare, esattamente il gesto che si fa col telefono in mano.
-
-  function injectMailStyle() {
-    if (document.getElementById('pk-mail-style')) return;
-    var css = [
-      '.pk-mail{position:fixed;top:0;left:0;right:0;z-index:100000;',
-      'padding:calc(10px + env(safe-area-inset-top,0px)) 10px 10px;display:flex;justify-content:center}',
-      '.pk-mail-card{width:100%;max-width:420px;background:#fbf7ef;color:#1c1a17;border-radius:14px;',
-      'box-shadow:0 8px 30px rgba(0,0,0,.35);padding:13px 15px;',
-      // Aperta per intero, la mail è lunga: senza tetto coprirebbe proprio il
-      // campo in cui va ricopiato il codice.
-      'max-height:45vh;overflow:auto;',
-      'font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;font-size:14px;line-height:1.45}',
-      '.pk-mail-testata{display:flex;justify-content:space-between;align-items:baseline;gap:10px}',
-      '.pk-mail-da{font-size:12px;color:#8a8378;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '.pk-mail-chiudi{border:0;background:transparent;font:inherit;font-size:20px;line-height:1;',
-      'color:#8a8378;cursor:pointer;padding:0 2px}',
-      '.pk-mail-oggetto{font-weight:700;margin:2px 0 8px}',
-      '.pk-mail-codice{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:30px;',
-      'letter-spacing:.28em;color:#a8543e;margin:0 0 6px}',
-      '.pk-mail-nota{font-size:12px;color:#8a8378}',
-      '.pk-mail details{margin-top:8px}',
-      '.pk-mail summary{font-size:12px;color:#a8543e;font-weight:600;cursor:pointer}',
-      '.pk-mail pre{white-space:pre-wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;',
-      'font-size:11px;color:#4a443b;margin:8px 0 0}'
-    ].join('');
-    var el = document.createElement('style');
-    el.id = 'pk-mail-style';
-    el.textContent = css;
-    document.head.appendChild(el);
-  }
-
-  function mostraMail(mail) {
-    injectMailStyle();
-    var vecchia = document.querySelector('.pk-mail');
-    if (vecchia) vecchia.remove();
-
-    var codice = (mail.subject.match(/\d{4,8}/) || [''])[0];
-
-    var wrap = document.createElement('div');
-    wrap.className = 'pk-mail';
-    var card = document.createElement('div');
-    card.className = 'pk-mail-card';
-
-    var testata = document.createElement('div');
-    testata.className = 'pk-mail-testata';
-    var da = document.createElement('div');
-    da.className = 'pk-mail-da';
-    da.textContent = mail.from + '  ·  a ' + mail.to;
-    var chiudi = document.createElement('button');
-    chiudi.className = 'pk-mail-chiudi';
-    chiudi.setAttribute('aria-label', 'Chiudi');
-    chiudi.textContent = '\u00d7';
-    chiudi.addEventListener('click', function () { wrap.remove(); });
-    testata.appendChild(da);
-    testata.appendChild(chiudi);
-
-    var oggetto = document.createElement('div');
-    oggetto.className = 'pk-mail-oggetto';
-    oggetto.textContent = 'Il tuo codice di accesso';
-
-    var big = document.createElement('div');
-    big.className = 'pk-mail-codice';
-    big.textContent = codice;
-
-    var nota = document.createElement('div');
-    nota.className = 'pk-mail-nota';
-    nota.textContent = 'Ricopialo nel campo: nessun campo si compila da solo, ' +
-      'come nel flusso vero. Questa mail non è stata spedita davvero — ' +
-      'la pagina non ha un server.';
-
-    var dettagli = document.createElement('details');
-    var riassunto = document.createElement('summary');
-    riassunto.textContent = 'Mostra la mail intera';
-    var pre = document.createElement('pre');
-    pre.textContent = 'Da: ' + mail.from + '\nA: ' + mail.to +
-      '\nOggetto: ' + mail.subject + '\n\n' + mail.body;
-    dettagli.appendChild(riassunto);
-    dettagli.appendChild(pre);
-
-    card.appendChild(testata);
-    card.appendChild(oggetto);
-    if (codice) card.appendChild(big);
-    card.appendChild(nota);
-    card.appendChild(dettagli);
-    wrap.appendChild(card);
-    document.body.appendChild(wrap);
-  }
-
-  globalThis.PkDemo = { refresh: refresh, mail: mostraMail };
+  globalThis.PkDemo = { refresh: refresh };
 
   el('btn-accesso').addEventListener('click', function () {
     globalThis.PkOnboarding.open().then(refresh, refresh);
@@ -1931,8 +1933,6 @@
     globalThis.PkLegal.gateTutorial().then(refresh);
   });
   el('btn-reset').addEventListener('click', function () {
-    var mail = document.querySelector('.pk-mail');
-    if (mail) mail.remove();
     globalThis.PkDemoServer.reset();
     globalThis.PkLegal.reset();
     globalThis.PkOnboarding.forgetGuest();
