@@ -36,6 +36,9 @@ SEARCH_URL = (
 )
 
 RADII = [50, 120, 300, 600]  # metri: allarga la ricerca se lo spot è dentro un parco
+# NB: le coordinate nel blob possono essere ovunque nel mondo (gli spot della
+# lista community vanno da Los Angeles a Tokyo): le regex non devono dare per
+# scontato lat 4x / lng 1x come per Roma.
 
 # Correzioni manuali all'inquadratura alternativa (feedback della community):
 # nome spot → pano_id da usare come seconda angolazione. Serve quando la
@@ -91,7 +94,7 @@ def find_pano(lat: float, lng: float, with_alt: bool = False, preferred_alt: str
             continue  # nessun panorama in questo raggio
         blob = m.group(1)
         pano = re.search(r'\[2,"([A-Za-z0-9_-]{20,24})"\]', blob)
-        coords = re.search(r"\[null,null,(4\d\.\d+),(1\d\.\d+)\]", blob)
+        coords = re.search(r"\[null,null,(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)\]", blob)
         if not pano or not coords:
             continue
         dates = re.findall(r"\[(20\d\d),(\d{1,2})\]", blob)
@@ -100,7 +103,7 @@ def find_pano(lat: float, lng: float, with_alt: bool = False, preferred_alt: str
         if not with_alt:
             return primary
         alts = re.findall(
-            r'\[\[2,"([A-Za-z0-9_-]{20,24})"\],null,\[\[null,null,(4\d\.\d+),(1\d\.\d+)\]', blob
+            r'\[\[2,"([A-Za-z0-9_-]{20,24})"\],null,\[\[null,null,(-?\d{1,2}\.\d+),(-?\d{1,3}\.\d+)\]', blob
         )
         best = None
         for aid, alat, alng in alts:
