@@ -34,3 +34,9 @@ python scripts/add_spot_photos.py "Nome esatto dello spot" docs/spots/photos/<sl
 
 che le normalizza (JPEG max 1600px) e aggiorna il seed con gli URL raw di
 GitHub (attivi dopo il merge su `main`).
+
+## Instagram
+
+Post, reel, profili e pagina del luogo Instagram collegati a ogni spot stanno
+in [`../instagram.json`](../instagram.json) e compaiono nel "Contesto visivo"
+della scheda: vedi [`../README-instagram.md`](../README-instagram.md).
