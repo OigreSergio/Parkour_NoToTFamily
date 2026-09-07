@@ -1,0 +1,70 @@
+name: "📷 Instagram: pagine dei luoghi degli spot"
+
+# Ogni notte cerca, con Google Programmable Search (100 query gratis al
+# giorno), la pagina Instagram del luogo per gli spot con nome proprio che
+# non ce l'hanno ancora, e apre/aggiorna una PR con i risultati
+# (scripts/find_instagram_places.py). Senza i due secret non fa nulla.
+#
+# Setup: secret GOOGLE_CSE_KEY e GOOGLE_CSE_CX nel repository
+# (Settings → Secrets and variables → Actions). Istruzioni nell'intestazione
+# dello script.
+on:
+  schedule:
+    - cron: "41 5 * * *" # 05:41 UTC ogni notte
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: "Query massime (la quota gratuita è 100 al giorno)"
+        default: "90"
+      posts:
+        description: "Cerca anche post e reel (una query in più per spot)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cerca:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Cerca le pagine dei luoghi
+        env:
+          GOOGLE_CSE_KEY: ${{ secrets.GOOGLE_CSE_KEY }}
+          GOOGLE_CSE_CX: ${{ secrets.GOOGLE_CSE_CX }}
+        run: |
+          if [ -z "$GOOGLE_CSE_KEY" ] || [ -z "$GOOGLE_CSE_CX" ]; then
+            echo "Secret GOOGLE_CSE_KEY / GOOGLE_CSE_CX assenti: niente da fare."
+            exit 0
+          fi
+          python3 scripts/find_instagram_places.py \
+            --limit "${{ inputs.limit || '90' }}" \
+            ${{ inputs.posts == true && '--posts' || '' }}
+          python3 scripts/instagram_spots.py check
+          python3 docs/demo/tools/build_pk_scheda.py
+
+      - name: Apri o aggiorna la PR con i risultati
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bot/instagram-luoghi
+          delete-branch: true
+          commit-message: "chore: pagine Instagram dei luoghi trovate in automatico"
+          title: "Instagram: nuove pagine dei luoghi per gli spot"
+          body: |
+            Pagine Instagram dei luoghi trovate in automatico da
+            `scripts/find_instagram_places.py` (Google Programmable Search),
+            accettate solo quando titolo o slug contengono il nome dello spot.
+
+            Le pagine trovate ma non accettate sono in
+            `docs/spots/instagram-candidates.json`: si aggiungono a mano con
+            `python3 scripts/instagram_spots.py location <spot> <id> <slug> "<nome>"`.
+
+            Dopo il merge: `scripts/deploy_pk_scheda.sh` per pubblicare.
+          labels: instagram
