@@ -4,4 +4,12 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- Debug builds only: reach a backend running on the developer's machine
+         over plain HTTP. Android 9+ blocks cleartext traffic by default, so
+         without this a phone on the same Wi-Fi cannot talk to
+         http://<indirizzo-lan>:8000 at all — the request fails before it
+         leaves the device. Release builds never merge this file and stay
+         HTTPS-only. See docs/PROVA_DA_TELEFONO.md.
+    -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>
