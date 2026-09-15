@@ -85,7 +85,7 @@ See [docs/AUTENTICAZIONE.md](docs/AUTENTICAZIONE.md) and
 either a hosted preview or the real app against a backend on your machine —
 see [docs/PROVA_DA_TELEFONO.md](docs/PROVA_DA_TELEFONO.md).
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details, and [docs/TUTORIAL_CATALOG.md](docs/TUTORIAL_CATALOG.md) for the curated parkour tutorial catalog behind the Videos feature.
 
 ## Contributing
 
