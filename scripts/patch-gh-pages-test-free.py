@@ -13,6 +13,10 @@
 4. App gratuita: entitlements sempre veri e banner "Iscriviti" disattivato.
 5. Distanza & percorso: espone l'istanza MapLibre e aggiunge il pulsante
    sulla scheda spot (logica in scripts/web/pk-route.js).
+6. Accesso e informative: copia accanto al bundle scripts/web/pk-legal.js
+   (pop-up sui rischi) e scripts/web/pk-onboarding.js (codice via email e
+   domande di profilo), e li collega da index.html. Vedi
+   docs/AUTENTICAZIONE.md e docs/LEGALE.md.
 
 Uso: python3 scripts/patch-gh-pages-test-free.py <path-al-bundle-entry.js>
 Non idempotente: applicare a un bundle appena esportato.
@@ -261,15 +265,21 @@ src = replace_once(
 path.write_text(src, encoding="utf8")
 print(f"Bundle aggiornato: {path}")
 
-# --- 5c. pk-route.js accanto al bundle + script tag in index.html ----------
+# --- 5c. moduli standalone accanto al bundle + script tag in index.html ----
+# L'ordine conta: pk-onboarding.js usa i pop-up di pk-legal.js.
+STANDALONE = ("pk-legal.js", "pk-onboarding.js", "pk-route.js")
+
 app_root = path.parents[4]
 index_html = app_root / "index.html"
 if index_html.is_file():
-    shutil.copy(Path(__file__).parent / "web" / "pk-route.js", app_root / "pk-route.js")
     html = index_html.read_text(encoding="utf8")
-    if "pk-route.js" not in html:
-        html = html.replace("</body>", '<script src="./pk-route.js" defer></script>\n</body>')
-        index_html.write_text(html, encoding="utf8")
-    print(f"ok: pk-route.js copiato e collegato in {index_html}")
+    for name in STANDALONE:
+        shutil.copy(Path(__file__).parent / "web" / name, app_root / name)
+        if name not in html:
+            html = html.replace(
+                "</body>", f'<script src="./{name}" defer></script>\n</body>'
+            )
+    index_html.write_text(html, encoding="utf8")
+    print(f"ok: {', '.join(STANDALONE)} copiati e collegati in {index_html}")
 else:
     sys.exit(f"ERRORE: index.html non trovato in {app_root}")

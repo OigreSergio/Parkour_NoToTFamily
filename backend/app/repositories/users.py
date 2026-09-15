@@ -15,6 +15,16 @@ async def get_by_email(session: AsyncSession, email: str) -> User | None:
     return (await session.execute(stmt)).scalar_one_or_none()
 
 
+async def get_by_guest_key_hash(session: AsyncSession, key_hash: str) -> User | None:
+    stmt = select(User).where(User.guest_key_hash == key_hash)
+    return (await session.execute(stmt)).scalar_one_or_none()
+
+
+async def display_name_taken(session: AsyncSession, display_name: str) -> bool:
+    stmt = select(User.id).where(User.display_name == display_name).limit(1)
+    return (await session.execute(stmt)).scalar_one_or_none() is not None
+
+
 async def create(session: AsyncSession, **fields: object) -> User:
     if "email" in fields and isinstance(fields["email"], str):
         fields["email"] = fields["email"].lower()
