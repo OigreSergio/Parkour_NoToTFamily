@@ -59,6 +59,14 @@ docker compose up --build
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md](docs/SPOT_VERIFICATION.md) for details.
 
+## Masterplan (web app, community 24/7, security)
+
+- [docs/PKFAMILY_MASTERPLAN.md](docs/PKFAMILY_MASTERPLAN.md) — the single document that ties together the visual
+  and structural upgrade of the web app, the 24-hour community workflow (4 human moderation shifts,
+  no bot-generated content or fake reports) and the data-security measures. Written for people and AI agents.
+- [docs/PROMPT_OPUS5_MAX.md](docs/PROMPT_OPUS5_MAX.md) — the ready-to-paste prompt that drives Claude Opus 5
+  (effort max) through the masterplan, one phase at a time.
+
 ## Contributing
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Security reports: [SECURITY.md](SECURITY.md).
