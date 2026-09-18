@@ -6,6 +6,7 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 
 ```
 .
+├── app/          Installable phone app (PWA) that works with no network
 ├── backend/      FastAPI + PostgreSQL/PostGIS API
 ├── mobile/       Flutter app (iOS + Android)
 ├── web-admin/    Next.js admin dashboard (spot moderation)
@@ -34,6 +35,20 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 ```
 user submits  →  status=pending  →  admin reviews  →  status=verified | rejected
                                                     └─ only verified spots appear on the map
+```
+
+## The offline app
+
+`app/` is the product as an **application**, not a page: it installs on the
+phone, opens full screen and works in flight mode — 1,706 spots, their water
+points and the tutorial catalogue travel inside it. The computer is the test
+bench for it. See [`app/README.md`](app/README.md) and
+[`docs/APP_OFFLINE.md`](docs/APP_OFFLINE.md).
+
+```bash
+python3 app/tools/desktop.py      # phone-sized window on your computer
+python3 app/tools/serve.py        # http://127.0.0.1:8080
+cd app && npm install && npm test # boot, real offline, installability
 ```
 
 ## Getting started

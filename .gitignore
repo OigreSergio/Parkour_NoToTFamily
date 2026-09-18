@@ -268,3 +268,8 @@ tmp/
 # Backup completo: contiene dati personali, resta locale
 📲/backup-completo.json
 scripts/data/cities1000.zip
+
+# app/ — prove Playwright (l'app non ha dipendenze, i test sì)
+app/test-results/
+app/playwright-report/
+app/blob-report/

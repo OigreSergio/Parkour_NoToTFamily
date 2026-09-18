@@ -1,0 +1,82 @@
+name: App installabile
+
+# Controlla che l'app di `app/` sia coerente con le sue fonti e che funzioni
+# davvero, offline compreso. Due lavori separati, perché falliscono per
+# ragioni diverse:
+#
+#   dati    → i file generati (spot, fontanelle, tutorial, icone, elenco
+#             offline) corrispondono a ciò che li genera? Se qualcuno cambia
+#             una fonte e dimentica di rigenerare, l'app pubblicata mostra
+#             dati vecchi senza che nessuno se ne accorga.
+#   prove   → l'app si apre, si naviga, e **spento il server continua a
+#             funzionare**: è la promessa dell'applicazione, e va verificata
+#             a ogni modifica.
+#
+# Non pubblica niente: mettere l'app online è una scelta di una persona
+# (masterplan cap. 4.6 e decisioni aperte).
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "scripts/data/**"
+      - "backend/seeds/videos.json"
+      - ".github/workflows/app.yml"
+  pull_request:
+    paths:
+      - "app/**"
+      - "scripts/data/**"
+      - "backend/seeds/videos.json"
+      - ".github/workflows/app.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  dati:
+    name: I file generati sono aggiornati
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dati offline (spot, fontanelle, tutorial)
+        run: python3 app/tools/build_data.py --check
+      - name: Icone
+        run: python3 app/tools/make_icons.py --check
+      - name: "Caratteri (presenti: si riscaricano solo a mano)"
+        run: python3 app/tools/fetch_fonts.py --check
+      - name: Elenco dei file da tenere offline e versione
+        run: python3 app/tools/build_precache.py --check
+
+  prove:
+    name: Avvio, offline e installabilità
+    needs: [dati]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - run: npm ci
+      - name: Scarica il browser delle prove
+        run: npx playwright install --with-deps chromium
+      - name: Prove (il server lo avvia Playwright)
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: prove-fallite
+          path: app/test-results/
+          retention-days: 7

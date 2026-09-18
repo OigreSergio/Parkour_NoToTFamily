@@ -1,0 +1,15 @@
+{
+  "name": "pkfamily-app",
+  "private": true,
+  "description": "Prove automatiche dell'app PkFAMILY (l'app non ha dipendenze: queste servono solo ai test).",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "serve": "python3 tools/serve.py",
+    "desktop": "python3 tools/desktop.py",
+    "dati": "python3 tools/build_data.py && python3 tools/build_precache.py"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

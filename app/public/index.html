@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="it" data-tema="sistema">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>PkFAMILY</title>
+<meta name="description" content="La mappa degli spot di parkour, i tutorial e la famiglia. Funziona anche senza rete.">
+<meta name="theme-color" content="#C26A52">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+
+<!-- iOS: qui "installare" vuol dire Condividi → Aggiungi alla schermata Home. -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="PkFAMILY">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="styles/pk.css">
+<link rel="preload" href="fonts/karla-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="data/spots.json" as="fetch" crossorigin>
+</head>
+<body>
+
+<!-- Schermata di avvio in HTML puro: compare prima che parta qualunque script,
+     così l'app non sembra mai ferma (masterplan 3.8). -->
+<div id="pk-splash" role="status" aria-live="polite">
+  <svg class="pk-splash__mark" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="40" r="20" fill="none" stroke="#C26A52" stroke-width="9"/>
+    <path d="M38.5 48.5 L50 76 L61.5 48.5 Z" fill="#C26A52"/>
+    <g stroke="#A8543E" stroke-width="4" stroke-linecap="round">
+      <path d="M16 88 h9"/><path d="M31 88 h9"/><path d="M46 88 h9"/>
+      <path d="M61 88 h9"/><path d="M76 88 h9"/>
+    </g>
+  </svg>
+  <div class="pk-splash__bar"><i></i></div>
+  <p class="pk-muted pk-small" id="pk-splash-testo">Sto cucendo la mappa…</p>
+</div>
+
+<div id="app" hidden>
+
+  <p class="pk-offline" id="pk-offline-strip">
+    <span aria-hidden="true">⚑</span>
+    <span data-t="net.offline">Sei senza rete: l'app usa quello che ha già con sé.</span>
+  </p>
+
+  <header class="pk-header">
+    <button class="pk-iconbtn" id="pk-indietro" hidden aria-label="Indietro">←</button>
+    <div class="pk-header__title">
+      <span id="pk-titolo">PkFAMILY</span>
+      <span class="pk-header__sub" id="pk-sottotitolo"></span>
+    </div>
+    <button class="pk-iconbtn" id="pk-installa" hidden title="Installa l'app" aria-label="Installa l'app">⤓</button>
+  </header>
+
+  <main class="pk-main" id="pk-main">
+    <section class="pk-screen" data-schermata="mappa" aria-label="Mappa">
+      <div class="pk-map" id="pk-map"></div>
+    </section>
+
+    <section class="pk-screen" data-schermata="spot" aria-label="Spot">
+      <div style="padding: var(--sp-3) var(--sp-4) 0">
+        <input class="pk-input" id="pk-cerca" type="search" autocomplete="off"
+               placeholder="Cerca uno spot o una città" aria-label="Cerca uno spot">
+      </div>
+      <div class="pk-chiprow" id="pk-filtri"></div>
+      <div class="pk-scroll" id="pk-lista"></div>
+    </section>
+
+    <section class="pk-screen" data-schermata="tutorial" aria-label="Tutorial">
+      <div class="pk-chiprow" id="pk-filtri-tutorial"></div>
+      <div class="pk-scroll" id="pk-tutorial"></div>
+    </section>
+
+    <section class="pk-screen" data-schermata="tu" aria-label="Il tuo spazio">
+      <div class="pk-scroll" id="pk-tu"></div>
+    </section>
+
+    <section class="pk-screen" data-schermata="dettaglio" aria-label="Dettaglio">
+      <div class="pk-scroll" id="pk-dettaglio"></div>
+    </section>
+  </main>
+
+  <nav class="pk-nav" id="pk-nav" aria-label="Sezioni">
+    <button class="pk-nav__tab" data-vai="#/mappa"><span class="pk-nav__icon" aria-hidden="true">◎</span><span data-t="nav.map">Mappa</span></button>
+    <button class="pk-nav__tab" data-vai="#/spot"><span class="pk-nav__icon" aria-hidden="true">⌖</span><span data-t="nav.spots">Spot</span></button>
+    <button class="pk-nav__tab" data-vai="#/tutorial"><span class="pk-nav__icon" aria-hidden="true">▷</span><span data-t="nav.tutorials">Tutorial</span></button>
+    <button class="pk-nav__tab" data-vai="#/tu"><span class="pk-nav__icon" aria-hidden="true">☰</span><span data-t="nav.you">Tu</span></button>
+  </nav>
+</div>
+
+<script type="module" src="js/app.js"></script>
+<noscript>
+  <p style="padding:24px">PkFAMILY ha bisogno di JavaScript: è un'applicazione, non una pagina.</p>
+</noscript>
+</body>
+</html>

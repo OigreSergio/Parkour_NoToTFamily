@@ -1,0 +1,119 @@
+/* L'app si apre, si naviga, si cerca: le cose che deve fare sempre. */
+
+import { expect, test } from '@playwright/test';
+
+/** L'app è pronta quando `avvia()` ha finito: lo dice il body. */
+async function attendiPronta(page) {
+  await page.goto('/index.html');
+  await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
+}
+
+test('si apre sulla mappa, con la tela disegnata', async ({ page }) => {
+  await attendiPronta(page);
+
+  await expect(page.locator('#pk-splash')).toHaveCount(0);
+  await expect(page.locator('.pk-map__canvas')).toBeVisible();
+  await expect(page.locator('#pk-titolo')).toHaveText('Mappa');
+  await expect(page.locator('.pk-nav__tab[aria-current="page"]')).toHaveText(/Mappa/);
+
+  // La tela ha davvero dei pixel: se la mappa non si disegnasse sarebbe 0.
+  const misure = await page.locator('.pk-map__canvas').evaluate((tela) => ({
+    w: tela.width,
+    h: tela.height,
+  }));
+  expect(misure.w).toBeGreaterThan(300);
+  expect(misure.h).toBeGreaterThan(300);
+
+  // E soprattutto: ci sono gli spilli. Si contano i pixel del colore "filo",
+  // perché una mappa senza spot è il guasto più facile da non vedere.
+  const pixelSpillo = await page.locator('.pk-map__canvas').evaluate((tela) => {
+    const dati = tela.getContext('2d').getImageData(0, 0, tela.width, tela.height).data;
+    let conta = 0;
+    for (let i = 0; i < dati.length; i += 4) {
+      if (Math.abs(dati[i] - 194) < 26 && Math.abs(dati[i + 1] - 106) < 26 && Math.abs(dati[i + 2] - 82) < 26) {
+        conta++;
+      }
+    }
+    return conta;
+  });
+  expect(pixelSpillo).toBeGreaterThan(80);
+});
+
+test('la lista mostra gli spot e la ricerca li filtra', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+
+  await expect(page.locator('#pk-lista .pk-item').first()).toBeVisible();
+  const primi = await page.locator('#pk-lista .pk-item').count();
+  expect(primi).toBeGreaterThan(10);
+
+  await page.locator('#pk-cerca').fill('Borghese');
+  await expect(page.locator('#pk-lista .pk-item').first()).toContainText(/Borghese/i);
+  expect(await page.locator('#pk-lista .pk-item').count()).toBeLessThan(primi);
+});
+
+test('la scheda di uno spot passa dall’avviso sui rischi', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+  await page.locator('#pk-cerca').fill('Borghese');
+  await page.locator('#pk-lista .pk-item').first().click();
+
+  const avviso = page.locator('.pk-modal');
+  await expect(avviso).toBeVisible();
+  await expect(avviso).toContainText('rischio reale');
+  await avviso.getByRole('button', { name: /procedo sotto la mia responsabilità/i }).click();
+
+  await expect(page.locator('#pk-dettaglio h1')).toContainText(/Borghese/i);
+  await expect(page.locator('#pk-dettaglio')).toContainText('Quanto manca');
+  await expect(page.locator('#pk-dettaglio')).toContainText('Dove');
+  // Un pezzo di scheda che manca deve sparire, non diventare la parola «null».
+  await expect(page.locator('#pk-dettaglio')).not.toContainText('null');
+  await expect(page.locator('#pk-dettaglio')).not.toContainText('undefined');
+
+  // Una volta accettato, l'avviso non ricompare a ogni spot.
+  await page.locator('#pk-indietro').click();
+  await page.locator('#pk-lista .pk-item').first().click();
+  await expect(page.locator('.pk-modal')).toHaveCount(0);
+});
+
+test('i filtri della lista lavorano insieme', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+
+  const tutti = await page.locator('#pk-lista').textContent();
+  await page.locator('#pk-filtri .pk-chip', { hasText: 'Verificati' }).click();
+  const verificati = await page.locator('#pk-lista').textContent();
+
+  expect(verificati).not.toEqual(tutti);
+  await expect(page.locator('#pk-lista')).toContainText('26 spot');
+});
+
+test('i tutorial si filtrano per livello', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/tutorial"]').click();
+
+  await expect(page.locator('#pk-tutorial .pk-item').first()).toBeVisible();
+  await page.locator('#pk-filtri-tutorial .pk-chip', { hasText: 'Avanzato' }).click();
+  await expect(page.locator('#pk-tutorial')).toContainText('18 tutorial');
+});
+
+test('la schermata Tu racconta lo stato dell’offline', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/tu"]').click();
+
+  await expect(page.locator('#pk-tu')).toContainText('Installa');
+  await expect(page.locator('#pk-tu')).toContainText('Senza rete');
+  await expect(page.locator('#pk-tu')).toContainText('Prepara quest');
+  await expect(page.locator('#pk-tu')).toContainText('1706 spot nell');
+});
+
+test('il tema scuro si sceglie e resta', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/tu"]').click();
+  await page.locator('#pk-tu .pk-chip', { hasText: 'Scuro' }).click();
+
+  await expect(page.locator('html')).toHaveAttribute('data-tema', 'scuro');
+  await page.reload();
+  await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
+  await expect(page.locator('html')).toHaveAttribute('data-tema', 'scuro');
+});

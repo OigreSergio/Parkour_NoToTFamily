@@ -1,0 +1,99 @@
+# L'app installabile che funziona senza rete
+
+> Stato: prima versione completa, in `app/`. Si prova dal computer, si
+> installa dal telefono. Non è ancora pubblicata: pubblicare è un'azione di
+> una persona (principio 5 del masterplan).
+
+## Il problema
+
+Il QR porta a `https://oigresergio.github.io/Parkour_NoToTFamily/t/<token>/`:
+una **pagina**. Ne discendono tre cose, tutte vere insieme:
+
+1. **senza rete non c'è niente.** La build Flutter pubblicata ha un
+   `flutter_service_worker.js`, ma `manifest.json` e `index.html` sono ancora
+   quelli del generatore («A new Flutter project», colore `#0175C2`): non si
+   installa bene, e quello che tiene in cache è il guscio, non i dati;
+2. **non sembra un'applicazione.** Barra degli indirizzi, nessuna icona,
+   nessuna schermata di avvio di marca;
+3. **i sorgenti di quella build non stanno su `main`** (masterplan 1.4).
+   Qualunque intervento su di essa sarebbe una patch sul bundle pubblicato —
+   cioè esattamente ciò che il principio 5 vieta.
+
+## La scelta
+
+`app/` è un'applicazione web installabile (PWA) **scritta nel repository**,
+senza passaggio di build, che porta con sé i dati e funziona in modalità
+aereo. Non sostituisce la build Flutter: le sta accanto e risolve il problema
+che quella non può risolvere finché i suoi sorgenti non tornano su `main`.
+
+| | Build Flutter su `gh-pages` | `app/` |
+| --- | --- | --- |
+| Sorgenti su `main` | no | sì |
+| Si installa con icona e nome propri | male (manifest del generatore) | sì |
+| Si apre senza rete | solo il guscio | sì, dati compresi |
+| Spot disponibili offline | no | 1.706, con fontanelle |
+| Mappa senza rete | bianca | lino con la trama, spilli al loro posto |
+| Tessere scaricabili in anticipo | no | sì, l'area visibile |
+| Account, chat, community | sì (online) | no |
+| Video dei tutorial | sì (online) | scheda offline, video online |
+
+Quando i sorgenti della build Flutter torneranno su `main`, due strade — e
+vanno decise da una persona, non da un agente:
+
+- **A.** L'app Flutter prende da qui il manifest, le icone, la schermata di
+  avvio e la strategia di cache, e `app/` resta come banco di prova.
+- **B.** `app/` diventa il guscio offline pubblicato accanto alla build
+  Flutter, che resta la versione completa quando c'è rete.
+
+## Come funziona l'offline
+
+Tre cache, tre vite diverse (dettaglio in `app/public/sw.js`):
+
+| Cache | Cosa tiene | Quando cambia |
+| --- | --- | --- |
+| `pkfamily-app-<versione>` | i 35 file elencati in `precache.json`: guscio, codice, caratteri, icone, **spot, fontanelle, tutorial** | a ogni nuova versione; la vecchia viene cancellata |
+| `pkfamily-tiles` | le tessere già viste o scaricate a mano | tetto di 4.000, escono le più vecchie |
+| `pkfamily-media` | le foto degli spot già aperti | tetto di 300 |
+
+Quello che riguarda le persone — Supabase, il proxy dei percorsi — **non entra
+in nessuna cache**: passa dalla rete o non passa. C'è una prova automatica che
+lo verifica (`app/tests/offline.spec.mjs`).
+
+La versione è l'impronta del contenuto di tutti i file: cambiarne uno cambia
+la versione, il service worker se ne accorge e la schermata «Tu» offre
+l'aggiornamento.
+
+## Il vincolo da conoscere prima di provare
+
+**Il service worker si accende solo su `localhost` o su `https`.** È una
+regola dei browser. Quindi:
+
+- dal computer, `http://127.0.0.1:8080` va benissimo (`app/tools/serve.py`);
+- dal telefono in Wi-Fi, `http://192.168.x.y:8080` mostra l'app ma **non la
+  rende offline né installabile**;
+- dal telefono con l'offline vero: cavo USB e `chrome://inspect` → *Port
+  forwarding*, oppure `serve.py --https` accettando il certificato locale,
+  oppure la pubblicazione da `main` via CI.
+
+## Cosa manca per andare online
+
+Sono cose da persona, elencate perché siano decidibili:
+
+1. **pubblicare**: un workflow che da `main` copia `app/public/` sotto un
+   percorso di `gh-pages`. Oggi non esiste e non va creato a mano;
+2. **collegare Supabase**: `app/public/js/config.js` nasce con `supabase.url`
+   vuoto. Riempirlo (URL e publishable key, mai la secret key) accende
+   l'accesso e l'invio della coda dei contributi;
+3. **decidere A o B** qui sopra;
+4. **i caratteri**: Fraunces e Karla sono incorporati (OFL 1.1). Se in futuro
+   servono giapponese o cinese, si dichiara il fallback di sistema — l'app è
+   già pronta a farlo (`--testo` in `pk.css`).
+
+## Dove guardare
+
+- l'applicazione: [`app/README.md`](../app/README.md);
+- il design system che segue: masterplan capitolo 3;
+- la regola sull'arrotondamento delle coordinate: `docs/ROUTING_PK.md` e
+  `remote-service/pkremote/services/routing.py`;
+- come si prova dal telefono l'altra parte del prodotto:
+  [`PROVA_DA_TELEFONO.md`](PROVA_DA_TELEFONO.md).

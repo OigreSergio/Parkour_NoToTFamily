@@ -14,6 +14,7 @@ Python che gira in remoto è il servizio di supporto in `remote-service/`.
 | Cartella | Cosa | Stato | Lingua del codice |
 | --- | --- | --- | --- |
 | `remote-service/` | pacchetto Python `pkremote`: stato, proxy dei percorsi, job | attivo, è dove si sviluppa in Python | Python 3.11, FastAPI |
+| `app/` | applicazione installabile per telefono che funziona senza rete (PWA senza build) più gli strumenti per provarla dal PC | attiva; vedi `docs/APP_OFFLINE.md` | HTML/CSS/JS, Python per gli strumenti |
 | `supabase/` | migrazioni SQL e seed del progetto Supabase | schema di riferimento; quello reale di produzione differisce (vedi analisi) | SQL, Node |
 | `backend/` | API FastAPI completa nata prima della scelta di Supabase | scaffold, non in produzione: **non estenderlo** (decisione G del masterplan) | Python |
 | `mobile/` | app Flutter | sorgenti indietro rispetto alla build pubblicata | Dart |
@@ -80,6 +81,11 @@ Per lo stato attuale vince il codice; per la direzione vince il masterplan.
 ## 4. Comandi
 
 ```sh
+# app installabile (nessuna dipendenza per l'app; Playwright solo per i test)
+python3 app/tools/desktop.py            # finestra formato telefono sul PC
+python3 app/tools/serve.py              # http://127.0.0.1:8080
+cd app && npm install && npm test       # avvio, offline vero, installabilità
+
 # remote-service (Python)
 cd remote-service
 python3 -m venv .venv && . .venv/bin/activate && pip install -e ".[dev]"
