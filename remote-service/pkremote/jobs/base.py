@@ -6,6 +6,7 @@ durata, scrivere i log e trasformare un'eccezione inattesa in un risultato
 leggibile invece di un processo che muore.
 """
 
+import asyncio
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -90,12 +91,13 @@ async def run_job(name: str, ctx: JobContext) -> JobResult:
     """
     job = REGISTRY.get(name)
     if job is None:
-        raise NotFound(f"nessun job si chiama '{name}'")
+        raise NotFound("job sconosciuto")  # il nome è già nel percorso: non lo ripetiamo
     started = time.monotonic()
     log.info("job_avviato", job=name)
     try:
         # Dentro il `try`: una cartella non scrivibile è un esito, non un crash.
-        ctx.output_dir.mkdir(parents=True, exist_ok=True)
+        # In un thread: il filesystem non deve bloccare il processo che serve le richieste.
+        await asyncio.to_thread(ctx.output_dir.mkdir, parents=True, exist_ok=True)
         result = await job.run(ctx)
     except AppError as exc:
         result = JobResult(ok=False, message=f"{exc.code}: {exc.message}")

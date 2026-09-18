@@ -41,7 +41,7 @@ remote-service/
 ├── tests/               una suite senza rete: Supabase e OSRM sono finti
 ├── Dockerfile           immagine a due stadi, utente non root, healthcheck
 ├── .dockerignore        segreti locali, cache, risultati e test restano fuori dall'immagine
-├── docker-compose.yml   avvio locale (Compose ≥ 2.20); profilo `routing` per affiancare OSRM
+├── docker-compose.yml   avvio locale (Compose ≥ 2.24); profilo `routing` per affiancare OSRM
 ├── .env.example         tutte le variabili, commentate
 └── pyproject.toml       dipendenze e strumenti
 ```
@@ -90,7 +90,7 @@ Da lì, qualunque host che sa avviare un container va bene. Tre esempi:
 1. **Una macchina con Docker** (VPS, il proprio server):
    ```sh
    docker run -d --name pkremote --restart unless-stopped -p 127.0.0.1:8080:8080 \
-     -e ENV=production -e HOST=0.0.0.0 -e LOG_FORMAT=json \
+     -e APP_ENV=production -e HOST=0.0.0.0 -e LOG_FORMAT=json \
      -e CORS_ORIGINS=https://oigresergio.github.io \
      -e SUPABASE_URL=... -e SUPABASE_PUBLISHABLE_KEY=... \
      ghcr.io/<proprietario>/pkremote:latest

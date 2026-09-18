@@ -84,10 +84,13 @@ async def test_run_ping_job_over_http(make_client, tmp_path: Path) -> None:
     assert "elapsed_ms" in body["data"]
 
 
-async def test_unknown_job_is_404(make_client, tmp_path: Path) -> None:
-    async with make_client(job_token=TOKEN, jobs_output_dir=tmp_path) as (client, _):
+async def test_unknown_job_is_404_and_leaves_no_lock_behind(make_client, tmp_path: Path) -> None:
+    async with make_client(job_token=TOKEN, jobs_output_dir=tmp_path) as (client, app):
         response = await client.post("/api/v1/jobs/non-esiste", headers=AUTH)
+        locks = dict(app.state.job_locks)
     assert response.status_code == 404
+    assert response.json()["error"]["code"] == "not_found"
+    assert "non-esiste" not in locks  # nessun lock per nomi inventati
 
 
 async def test_same_job_does_not_run_twice_at_once(make_client, tmp_path: Path) -> None:
@@ -131,7 +134,7 @@ async def test_spots_export_reads_production_rows_and_writes_file(
             "description": "muretti",
             "lat": 41.9028,
             "lng": 12.4964,
-            "skill_level": 2,
+            "skill_level": "intermedio",  # in produzione è un testo, non un numero
             "has_fountain": True,
             "crowd_level": "basso",  # esiste in produzione ma NON va esportato
             "author_id": "u1",
@@ -139,6 +142,7 @@ async def test_spots_export_reads_production_rows_and_writes_file(
             "verified_at": "2026-07-01T10:00:00+00:00",
         },
         {"id": "2", "name": "Senza posizione", "lat": None, "lng": None},
+        {"id": "3", "name": "Fuori dal mondo", "lat": 500, "lng": 900},
     ]
 
     async with make_client(
@@ -155,7 +159,7 @@ async def test_spots_export_reads_production_rows_and_writes_file(
     assert body["ok"] is True
     assert body["data"] == {
         "count": 1,
-        "skipped": 1,
+        "skipped": 2,
         "slug_collisions": 0,
         "file": str(tmp_path / "spots_verificati.json"),
         "elapsed_ms": body["data"]["elapsed_ms"],
@@ -172,7 +176,7 @@ async def test_spots_export_reads_production_rows_and_writes_file(
     spot = written["spots"][0]
     assert spot["slug"] == "spot-verso-la-metro-cipro"
     assert (spot["lat"], spot["lng"]) == (41.9028, 12.4964)
-    assert spot["difficulty"] == 2
+    assert spot["difficulty"] == "intermedio"
     assert spot["fountain"] is True
     assert "crowd_level" not in spot
     assert "author_id" not in spot
@@ -347,7 +351,7 @@ def test_cli_invalid_production_config_exits_2_without_revealing_secrets(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("ENV", "production")
+    monkeypatch.setenv("APP_ENV", "production")
     monkeypatch.setenv("HOST", "127.0.0.1")  # sbagliato in produzione
     monkeypatch.setenv("CORS_ORIGINS", "https://oigresergio.github.io")
     monkeypatch.setenv("JOB_TOKEN", "token-segretissimo-di-prova-1234567890")

@@ -22,7 +22,7 @@ class PingJob:
             message="pong",
             data={
                 "instance": ctx.settings.instance_name,
-                "env": ctx.settings.env,
+                "env": ctx.settings.app_env,
                 "version": __version__,
                 "supabase_configured": ctx.supabase is not None,
             },

@@ -67,7 +67,7 @@ def create_app(
         )
         log.info(
             "avvio",
-            env=settings.env,
+            env=settings.app_env,
             instance=settings.instance_name,
             version=__version__,
             supabase=app.state.supabase is not None,

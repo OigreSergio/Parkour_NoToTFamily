@@ -35,5 +35,7 @@ async def fetch(
         options["timeout"] = timeout_seconds
     try:
         return await http.get(url, params=params or {}, headers=headers or {}, **options)
-    except httpx.HTTPError as exc:
+    except (httpx.HTTPError, httpx.InvalidURL) as exc:
+        # `InvalidURL` (es. porta non numerica nell'URL configurato) non è un
+        # `HTTPError`: senza questo ramo diventerebbe un 500 senza involucro.
         raise UpstreamError(f"{service} non raggiungibile: {exc.__class__.__name__}") from exc

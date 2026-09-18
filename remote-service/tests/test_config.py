@@ -9,7 +9,7 @@ from tests.production import PRODUCTION
 
 def test_defaults_are_for_local_development() -> None:
     settings = Settings(_env_file=None)
-    assert settings.env == "development"
+    assert settings.app_env == "development"
     assert settings.host == "127.0.0.1"
     assert settings.port == 8080
     assert not settings.supabase_configured

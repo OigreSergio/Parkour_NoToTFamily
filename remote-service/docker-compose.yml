@@ -8,8 +8,8 @@
 # I dati OSRM (centro-latest.osrm) si preparano una volta come descritto in
 # infra/routing/README.md.
 #
-# Richiede il plugin `docker compose` versione 2.20 o successiva (la forma
-# `env_file: - path/required` non esiste nel vecchio `docker-compose` v1).
+# Richiede il plugin `docker compose` versione 2.24 o successiva (l'attributo
+# `required` di `env_file` esiste da lì; nel vecchio `docker-compose` v1 no).
 services:
   remote:
     build: .

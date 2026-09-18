@@ -25,8 +25,10 @@ from collections.abc import Awaitable, Callable
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 from pkremote.config import Settings
+from pkremote.errors import error_payload
 from pkremote.logs import bind_request, clear_request, log
 
 CallNext = Callable[[Request], Awaitable[Response]]
@@ -59,13 +61,25 @@ def install_middleware(app: FastAPI, settings: Settings) -> None:
         bind_request(request_id=request_id, method=request.method, path=request.url.path)
         started = time.monotonic()
         try:
-            response = await call_next(request)
+            response: Response = await call_next(request)
+        except Exception:
+            # Un errore non previsto: la traccia va nel log con l'id della
+            # richiesta, e il client riceve l'involucro di sempre con lo stesso
+            # id, così l'errore visto dal telefono si ritrova nei log.
+            log.exception(
+                "richiesta_fallita", elapsed_ms=round((time.monotonic() - started) * 1000)
+            )
+            clear_request()
+            response = JSONResponse(
+                status_code=500,
+                content=error_payload("internal_error", "errore interno: cita X-Request-ID"),
+            )
+        else:
             log.info(
                 "richiesta",
                 status=response.status_code,
                 elapsed_ms=round((time.monotonic() - started) * 1000),
             )
-        finally:
             clear_request()
         response.headers["X-Request-ID"] = request_id
         return response

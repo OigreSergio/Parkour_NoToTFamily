@@ -126,6 +126,30 @@ async def test_readyz_without_cache_probes_every_time(make_client) -> None:
     assert calls == 2
 
 
+async def test_readyz_survives_a_malformed_upstream_url(make_client) -> None:
+    """Una porta non numerica supera la configurazione ma fa fallire httpx: 503, non 500."""
+    async with make_client(osrm_base_url="http://osrm:abc") as (client, _):
+        response = await client.get("/readyz")
+    assert response.status_code == 503
+    osrm = next(check for check in response.json()["checks"] if check["name"] == "osrm")
+    assert osrm["status"] == "error"
+    assert "InvalidURL" in osrm["detail"]
+
+
+async def test_unexpected_route_error_keeps_the_envelope_and_request_id(make_client) -> None:
+    async with make_client() as (client, app):
+
+        @app.get("/esplode")
+        async def _boom() -> None:
+            raise RuntimeError("boom")
+
+        response = await client.get("/esplode")
+    assert response.status_code == 500
+    assert response.json()["error"]["code"] == "internal_error"
+    assert len(response.headers["x-request-id"]) == 12
+    assert "boom" not in response.text  # niente dettagli interni al client
+
+
 async def test_only_secret_key_leaves_supabase_unconfigured(make_client) -> None:
     """La chiave segreta non è mai il ripiego per le letture."""
     async with make_client(
@@ -165,7 +189,7 @@ async def test_production_hides_docs_and_schema_and_adds_hsts(make_client) -> No
 
 
 async def test_development_serves_docs(make_client) -> None:
-    async with make_client(env="development") as (client, _):
+    async with make_client(app_env="development") as (client, _):
         schema = await client.get("/openapi.json")
     assert schema.status_code == 200
 

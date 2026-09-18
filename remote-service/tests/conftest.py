@@ -36,7 +36,7 @@ def make_settings() -> Callable[..., Settings]:
 
     def _make(**overrides: Any) -> Settings:
         values: dict[str, Any] = {
-            "env": "test",
+            "app_env": "test",
             "log_format": "console",
             "cors_origins": ["http://localhost:3000"],
         }
@@ -69,12 +69,14 @@ def make_client(make_settings: Callable[..., Settings]) -> Callable[..., Any]:
         if handler is not None:
             upstream = httpx.AsyncClient(transport=httpx.MockTransport(handler))
         app = create_app(settings, http_client=upstream)
-        # `lifespan_context` esegue avvio e arresto dell'app come farebbe uvicorn.
-        async with app.router.lifespan_context(app):
-            transport = httpx.ASGITransport(app=app)
-            async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
-                yield client, app
-        if upstream is not None:
-            await upstream.aclose()
+        try:
+            # `lifespan_context` esegue avvio e arresto dell'app come farebbe uvicorn.
+            async with app.router.lifespan_context(app):
+                transport = httpx.ASGITransport(app=app)
+                async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+                    yield client, app
+        finally:
+            if upstream is not None:  # anche se il test fallisce a metà
+                await upstream.aclose()
 
     return _make

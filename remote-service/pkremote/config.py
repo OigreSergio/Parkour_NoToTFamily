@@ -38,7 +38,10 @@ class Settings(BaseSettings):
 
     # --- Identità dell'ambiente -------------------------------------------------
     #: Decide i controlli di sicurezza: in `production` scattano quelli sotto.
-    env: Literal["development", "test", "production"] = "development"
+    #: Si chiama APP_ENV e non ENV perché `ENV` è una variabile che la shell
+    #: POSIX riserva al proprio file di avvio: su alcune immagini è già
+    #: impostata e il servizio si rifiuterebbe di partire senza motivo.
+    app_env: Literal["development", "test", "production"] = "development"
     #: Con `debug` le risposte d'errore sono più parlanti e i log più verbosi.
     debug: bool = False
     #: Nome libero dell'istanza (es. "fly-ams", "render-eu"): compare nei log e in /healthz.
@@ -166,7 +169,7 @@ class Settings(BaseSettings):
         Ogni controllo corrisponde a un errore visto davvero in progetti simili;
         il messaggio dice cosa correggere, mai il valore ricevuto.
         """
-        if self.env != "production":
+        if self.app_env != "production":
             return self
         problems: list[str] = []
         if self.debug:
@@ -208,7 +211,7 @@ class Settings(BaseSettings):
 
     @property
     def is_production(self) -> bool:
-        return self.env == "production"
+        return self.app_env == "production"
 
     @property
     def supabase_configured(self) -> bool:

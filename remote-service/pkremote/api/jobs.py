@@ -45,6 +45,6 @@ async def start_job(
     si leggerà a parte; per ora la semplicità vince.
     """
     if lock.locked():
-        raise Conflict(f"il job '{name}' è già in esecuzione su questa istanza")
+        raise Conflict("questo job è già in esecuzione su questa istanza")
     async with lock:
         return await run_job(name, ctx)

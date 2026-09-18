@@ -34,7 +34,8 @@ async def get_route(
     to: Annotated[str, Query(description='Arrivo come "lat,lng"')],
 ) -> RouteAnswer:
     """Percorso pedonale tra due punti. 503 se il motore non è configurato,
-    502 se OSRM non risponde, 422 se le coordinate non sono valide."""
+    502 se OSRM non risponde, 404 `no_route` se non esiste un tragitto,
+    422 se le coordinate non sono valide."""
     return await compute_route(
         parse_point(from_),
         parse_point(to),

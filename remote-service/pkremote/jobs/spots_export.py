@@ -40,14 +40,14 @@ file: pagine statiche generate da un file vuoto sarebbero un sito senza spot
 senza nessun errore a dirlo.
 """
 
+import asyncio
 import json
-import math
 import re
 import unicodedata
 from datetime import UTC, datetime
 from typing import Any
 
-from pkremote.integrations.geo import point_from_location
+from pkremote.integrations.geo import as_point, point_from_location
 from pkremote.jobs.base import JobContext, JobResult, register
 
 OUTPUT_FILE = "spots_verificati.json"
@@ -76,16 +76,10 @@ def unique_slug(base: str, spot_id: Any, taken: set[str]) -> tuple[str, bool]:
     return candidate, True
 
 
-def _is_number(value: Any) -> bool:
-    # `bool` è sottoclasse di `int`: True non è una coordinata; NaN e infinito nemmeno.
-    return isinstance(value, int | float) and not isinstance(value, bool) and math.isfinite(value)
-
-
 def _position(row: dict[str, Any]) -> tuple[float, float] | None:
     """`(lat, lng)` dalle colonne di produzione, oppure dalla geografia delle migrazioni."""
-    lat, lng = row.get("lat"), row.get("lng")
-    if _is_number(lat) and _is_number(lng):
-        return (float(lat), float(lng))
+    if row.get("lat") is not None and row.get("lng") is not None:
+        return as_point(row["lat"], row["lng"])
     return point_from_location(row.get("location"))
 
 
@@ -98,7 +92,13 @@ def _first_present(row: dict[str, Any], *names: str) -> Any:
 
 
 def to_export(row: dict[str, Any]) -> dict[str, Any] | None:
-    """Da riga del database a record dell'esportazione; None se manca la posizione."""
+    """Da riga del database a record dell'esportazione; None se manca la posizione.
+
+    `difficulty` passa così com'è: in produzione `skill_level` è un testo
+    (`principiante`, `intermedio`, `avanzato`), nelle migrazioni `difficulty`
+    è un intero da 1 a 5. Uniformarli è una scelta di prodotto (masterplan
+    4.4), non di questo job.
+    """
     point = _position(row)
     if point is None:
         return None
@@ -169,7 +169,11 @@ class SpotsExportJob:
             "count": len(exported),
             "spots": exported,
         }
-        output_path.write_text(json.dumps(document, ensure_ascii=False, indent=2), encoding="utf-8")
+        # In un thread: una scrittura lenta su un disco di rete non deve bloccare
+        # il processo che intanto risponde a /healthz e ai percorsi.
+        await asyncio.to_thread(
+            output_path.write_text, json.dumps(document, ensure_ascii=False, indent=2), "utf-8"
+        )
         return JobResult(
             ok=True,
             message=f"{len(exported)} spot verificati esportati in {output_path}",

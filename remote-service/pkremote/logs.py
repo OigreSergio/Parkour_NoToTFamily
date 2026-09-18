@@ -105,6 +105,11 @@ def configure_logging(*, log_format: str, debug: bool) -> None:
         uvicorn_logger.handlers.clear()
         uvicorn_logger.propagate = True
     logging.getLogger("uvicorn.access").disabled = True
+    # httpx e httpcore scrivono a livello INFO l'URL completo di ogni chiamata
+    # in uscita, parametri compresi: verso OSRM ci sono coordinate (arrotondate,
+    # ma pur sempre coordinate). Da loro vogliamo solo gli avvisi.
+    for name in ("httpx", "httpcore"):
+        logging.getLogger(name).setLevel(logging.WARNING)
 
     structlog.configure(
         processors=[*shared, structlog.stdlib.ProcessorFormatter.wrap_for_formatter],

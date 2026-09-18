@@ -348,7 +348,7 @@ remote-service/
 │   ├── jobs/ping.py        job di verifica del deploy
 │   └── jobs/spots_export.py      legge gli spot verificati da Supabase (schema reale lat/lng o schema delle migrazioni) e scrive output/spots_verificati.json; zero righe = esito non riuscito, nessun file
 ├── .dockerignore           .env, ambienti virtuali, cache, risultati e test restano fuori dall'immagine
-└── tests/                  103 test senza rete: Supabase e OSRM sono trasporti finti
+└── tests/                  110 test senza rete: Supabase e OSRM sono trasporti finti
 ```
 
 E alla radice del repository:
@@ -366,7 +366,7 @@ README.md, docs/PKFAMILY_MASTERPLAN.md (4.2, 4.6), docs/ROUTING_PK.md, docs/ARCH
 | Verifica | Esito |
 | --- | --- |
 | `ruff check .` su `remote-service/` | pulito |
-| `pytest` (103 test: configurazione, salute, routing, cache, job, client Supabase, geometrie, log, CLI) | 103 passati |
+| `pytest` (110 test: configurazione, salute, routing, cache, job, client Supabase, geometrie, log, CLI) | 110 passati |
 | `pkremote --version`, `pkremote jobs`, `pkremote config` con un finto `SUPABASE_SECRET_KEY` nell'ambiente | il valore non compare nell'output |
 | `pkremote job ping` | JSON pulito su stdout, log su stderr |
 | Server avviato con `pkremote serve` e interrogato con `curl` | `/healthz` 200 con intestazioni di sicurezza e `X-Request-ID`; `/readyz` 200 con dipendenze `not_configured`; `/api/v1/route` 503 `routing_unavailable` senza OSRM; `/api/v1/jobs` 401 senza token; `POST /api/v1/jobs/ping` 200 con token; preflight CORS corretto; nessuna riga di log contiene la query string delle richieste a `/api/v1/route` |
@@ -413,7 +413,7 @@ I passi, nell'ordine, con chi li fa:
    Koyeb: tutti avviano un'immagine). Raccomandazione: un PaaS con immagini
    Docker e TLS incluso, per non gestire un reverse proxy.
 2. **Admin**: imposta nel pannello dell'host (mai nel repository)
-   `ENV=production`, `HOST=0.0.0.0`, `LOG_FORMAT=json`,
+   `APP_ENV=production`, `HOST=0.0.0.0`, `LOG_FORMAT=json`,
    `CORS_ORIGINS=https://oigresergio.github.io` (più il dominio futuro),
    `FORWARDED_ALLOW_IPS` secondo l'host, `SUPABASE_URL` e
    `SUPABASE_PUBLISHABLE_KEY` (che sono pubblici per costruzione: stanno già
@@ -477,7 +477,7 @@ FATTO:
   punti d'ingresso, schema Supabase, workflow, script di deploy e branch gh-pages.
 - remote-service/: pacchetto Python `pkremote` commentato in italiano (stato, proxy dei
   percorsi con cache e coordinate arrotondate, job con token, CLI), Dockerfile,
-  .dockerignore, docker-compose, .env.example, README, 103 test; rivisto da cinque
+  .dockerignore, docker-compose, .env.example, README, 110 test; rivisto da cinque
   revisori indipendenti e corretto (cap. 7.3).
 - .github/workflows/remote-service.yml (lint, test, immagine provata e pubblicata su GHCR),
   .github/workflows/gitleaks.yml (S0-4), .github/dependabot.yml, .gitleaks.toml.
@@ -491,7 +491,7 @@ FATTO:
 - TernaryOperator: porting Python commentato, test, README (branch già pubblicato).
 
 VERIFICATO:
-- ruff pulito e 103 test verdi in remote-service/; 3 test verdi in TernaryOperator.
+- ruff pulito e 110 test verdi in remote-service/; 3 test verdi in TernaryOperator.
 - Server avviato in locale e interrogato con curl su tutte le rotte (esiti in 7.1); nessuna
   coordinata nei log.
 - `pkremote config` non stampa i segreti; `pkremote job ping` produce JSON pulito.

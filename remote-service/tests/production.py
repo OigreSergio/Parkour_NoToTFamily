@@ -6,7 +6,7 @@ I test tolgono o cambiano un pezzo alla volta per provare i controlli di
 """
 
 PRODUCTION = {
-    "env": "production",
+    "app_env": "production",
     "host": "0.0.0.0",  # noqa: S104 - è proprio ciò che un container deve fare
     "cors_origins": ["https://oigresergio.github.io"],
     "log_format": "json",

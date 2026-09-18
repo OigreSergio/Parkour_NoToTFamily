@@ -50,20 +50,40 @@ def parse_ewkb_point(hex_text: str) -> tuple[float, float]:
     return (y, x)  # PostGIS: x = longitudine, y = latitudine
 
 
+def as_point(lat: Any, lng: Any) -> tuple[float, float] | None:
+    """`(lat, lng)` se entrambi sono numeri finiti negli intervalli geografici; altrimenti None.
+
+    Vale per ogni sorgente: colonne numeriche, GeoJSON, EWKB. PostGIS codifica
+    `POINT EMPTY` come NaN,NaN, e `json.dumps` scriverebbe un `NaN` che non è
+    JSON valido: meglio scartare la riga e contarla.
+    """
+    if isinstance(lat, bool) or isinstance(lng, bool):  # True non è una coordinata
+        return None
+    try:
+        lat_f, lng_f = float(lat), float(lng)
+    except (TypeError, ValueError):
+        return None
+    if not (math.isfinite(lat_f) and math.isfinite(lng_f)):
+        return None
+    if not (-90.0 <= lat_f <= 90.0 and -180.0 <= lng_f <= 180.0):
+        return None
+    return (lat_f, lng_f)
+
+
 def point_from_location(value: Any) -> tuple[float, float] | None:
-    """Accetta GeoJSON o EWKB e restituisce `(lat, lng)`; None se non decodificabile."""
+    """Accetta GeoJSON o EWKB e restituisce `(lat, lng)`.
+
+    None se il valore non è decodificabile o le coordinate sono fuori intervallo.
+    """
     if isinstance(value, dict) and value.get("type") == "Point":
         coords = value.get("coordinates") or []
-        try:
-            lat, lng = float(coords[1]), float(coords[0])
-        except (TypeError, ValueError, IndexError):
+        if len(coords) < 2:
             return None
-        if not (math.isfinite(lat) and math.isfinite(lng)):
-            return None
-        return (lat, lng)
+        return as_point(coords[1], coords[0])
     if isinstance(value, str):
         try:
-            return parse_ewkb_point(value)
+            lat, lng = parse_ewkb_point(value)
         except ValueError:
             return None
+        return as_point(lat, lng)
     return None

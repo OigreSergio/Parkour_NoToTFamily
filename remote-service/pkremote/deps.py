@@ -13,10 +13,10 @@ from typing import Annotated
 from fastapi import Depends, Header, Request
 
 from pkremote.config import Settings
-from pkremote.errors import JobsHttpDisabled, Unauthorized
+from pkremote.errors import JobsHttpDisabled, NotFound, Unauthorized
 from pkremote.integrations.osrm import OSRMClient
 from pkremote.integrations.supabase import SupabaseClient
-from pkremote.jobs import JobContext
+from pkremote.jobs import REGISTRY, JobContext
 from pkremote.security import bearer_token, token_matches
 from pkremote.services.cache import TTLCache
 
@@ -50,7 +50,13 @@ def job_context_dep(request: Request) -> JobContext:
 
 
 async def job_lock_dep(name: str, request: Request) -> asyncio.Lock:
-    """Un lock per nome di job (`name` è il parametro di percorso della rotta)."""
+    """Un lock per nome di job (`name` è il parametro di percorso della rotta).
+
+    Solo per i job registrati: altrimenti ogni nome inventato lascerebbe un
+    lock in memoria per sempre. Il 404 qui è lo stesso che darebbe `run_job`.
+    """
+    if name not in REGISTRY:
+        raise NotFound("job sconosciuto")
     state = request.app.state
     async with state.job_locks_guard:
         return state.job_locks.setdefault(name, asyncio.Lock())

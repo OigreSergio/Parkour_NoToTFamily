@@ -95,7 +95,10 @@ class SupabaseClient:
         """Il corpo di una risposta a una lettura, o `UpstreamError` se non è quello atteso."""
         if response.status_code // 100 != 2:
             raise UpstreamError(f"Supabase risponde {response.status_code} su {table}")
-        body = response.json()
+        try:
+            body = response.json()
+        except ValueError as exc:  # un proxy davanti a Supabase che risponde HTML
+            raise UpstreamError(f"Supabase: risposta non JSON su {table}") from exc
         if not isinstance(body, list):
             raise UpstreamError(f"Supabase: risposta inattesa su {table} (non è una lista)")
         return body

@@ -27,6 +27,7 @@ from pkremote.deps import osrm_dep, ready_cache_dep, route_cache_dep, settings_d
 from pkremote.errors import UpstreamError
 from pkremote.integrations.osrm import OSRMClient
 from pkremote.integrations.supabase import SupabaseClient
+from pkremote.logs import log
 from pkremote.services.cache import TTLCache
 
 router = APIRouter(tags=["stato"])
@@ -38,7 +39,7 @@ async def healthz(settings: Annotated[Settings, Depends(settings_dep)]) -> dict[
     return {
         "status": "ok",
         "instance": settings.instance_name,
-        "env": settings.env,
+        "env": settings.app_env,
         "version": __version__,
     }
 
@@ -51,6 +52,13 @@ async def _check(name: str, client: Any, timeout_seconds: float) -> dict[str, st
         await client.ping(timeout_seconds=timeout_seconds)
     except UpstreamError as exc:
         return {"name": name, "status": "error", "detail": exc.message}
+    except Exception as exc:  # un controllo di prontezza non deve mai rispondere 500
+        log.exception("readyz_controllo_fallito", dipendenza=name)
+        return {
+            "name": name,
+            "status": "error",
+            "detail": f"errore inatteso: {exc.__class__.__name__}",
+        }
     return {"name": name, "status": "ok"}
 
 

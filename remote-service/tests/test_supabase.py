@@ -51,6 +51,15 @@ async def test_http_error_status_becomes_upstream_error() -> None:
             await client.ping()
 
 
+async def test_non_json_body_becomes_upstream_error() -> None:
+    def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, text="<html>manutenzione</html>")
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as http:
+        with pytest.raises(UpstreamError, match="non JSON"):
+            await make(http).select("spots")
+
+
 async def test_network_error_becomes_upstream_error() -> None:
     def handler(request: httpx.Request) -> httpx.Response:
         raise httpx.ConnectError("giù", request=request)

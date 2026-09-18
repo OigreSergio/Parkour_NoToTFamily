@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 import httpx
 
-from pkremote.errors import UpstreamError
+from pkremote.errors import RouteNotFound, UpstreamError
 from pkremote.integrations.http import fetch
 
 if TYPE_CHECKING:  # evita l'import circolare a runtime: serve solo ai tipi
@@ -72,8 +72,13 @@ class OSRMClient:
             body = response.json()
         except ValueError as exc:
             raise UpstreamError("OSRM: risposta non JSON") from exc
-        if body.get("code") != "Ok" or not body.get("routes"):
-            raise UpstreamError(f"OSRM: {body.get('code', 'risposta senza codice')}")
+        code = body.get("code", "risposta senza codice")
+        if code in ("NoRoute", "NoSegment"):
+            # Il motore funziona: semplicemente non c'è strada tra i due punti,
+            # o uno dei due è fuori dalla mappa caricata. Non è un 502.
+            raise RouteNotFound(f"OSRM: {code}")
+        if code != "Ok" or not body.get("routes"):
+            raise UpstreamError(f"OSRM: {code}")
         first = body["routes"][0]
         return OSRMRoute(
             distance_m=float(first["distance"]),

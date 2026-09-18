@@ -55,6 +55,13 @@ class NotFound(AppError):
     status_code = status.HTTP_404_NOT_FOUND
 
 
+class RouteNotFound(AppError):
+    """OSRM è vivo ma tra i due punti non c'è un tragitto (isola, punto fuori mappa)."""
+
+    code = "no_route"
+    status_code = status.HTTP_404_NOT_FOUND
+
+
 class Conflict(AppError):
     """L'azione contrasta con lo stato attuale (es. lo stesso job è già in corso)."""
 

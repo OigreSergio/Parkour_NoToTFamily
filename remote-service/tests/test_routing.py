@@ -153,8 +153,9 @@ async def test_route_upstream_failure_is_502(make_client) -> None:
     assert response.json()["error"]["code"] == "upstream_error"
 
 
-async def test_route_no_route_is_502(make_client) -> None:
-    # OSRM risponde 400 con il codice nel corpo quando non trova un tragitto.
+async def test_route_no_route_is_404_not_a_gateway_error(make_client) -> None:
+    # OSRM risponde 400 con il codice nel corpo quando non trova un tragitto:
+    # il motore è vivo, quindi non è un 502 e non deve far scattare allarmi.
     def handler(_: httpx.Request) -> httpx.Response:
         return httpx.Response(400, json={"code": "NoRoute", "message": "Impossible route."})
 
@@ -162,8 +163,40 @@ async def test_route_no_route_is_502(make_client) -> None:
         response = await client.get(
             "/api/v1/route", params={"from": "41.9,12.5", "to": "41.91,12.5"}
         )
+    assert response.status_code == 404
+    assert response.json()["error"]["code"] == "no_route"
+
+
+async def test_route_invalid_query_from_osrm_is_502(make_client) -> None:
+    def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(400, json={"code": "InvalidQuery"})
+
+    async with make_client(handler, osrm_base_url="http://osrm:5000") as (client, _):
+        response = await client.get(
+            "/api/v1/route", params={"from": "41.9,12.5", "to": "41.91,12.5"}
+        )
     assert response.status_code == 502
-    assert "NoRoute" in response.json()["error"]["message"]
+
+
+async def test_no_coordinates_reach_the_logs(
+    make_client, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Né il log per richiesta né quelli di httpx devono contenere coordinate."""
+
+    def handler(_: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, json=OSRM_OK)
+
+    async with make_client(handler, osrm_base_url="http://osrm:5000", log_format="json") as (
+        client,
+        _,
+    ):
+        await client.get(
+            "/api/v1/route", params={"from": "41.902777,12.496365", "to": "41.912345,12.501234"}
+        )
+    logged = capsys.readouterr().err
+    assert "41.902777" not in logged  # precise, in ingresso
+    assert "41.903" not in logged  # arrotondate, verso OSRM
+    assert "route/v1" not in logged  # nessun URL in uscita
 
 
 async def test_route_bad_coordinates_is_422(make_client) -> None:
