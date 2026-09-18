@@ -20,6 +20,8 @@ let campo = null;
 let contenitore = null;
 let idPreferiti = new Set();
 let mostrati = TETTO_VISIBILE;
+/** Ogni ricerca ha un numero: se ne parte un'altra, la vecchia non scrive. */
+let richiesta = 0;
 
 /**
  * Da dove si misurano le distanze. La posizione vera se c'è; altrimenti il
@@ -64,12 +66,14 @@ function riga(voce, origine) {
   );
 }
 
-function disegna() {
+async function disegna() {
   const origine = origineDistanze();
-  const elenco = dati.cerca(
+  const mia = ++richiesta;
+  const elenco = await dati.cerca(
     { ...FILTRI, da: origine.punto, preferiti: FILTRI.preferiti },
     distanzaM
   );
+  if (mia !== richiesta) return;
   svuota(contenitore);
 
   if (!elenco.length) {

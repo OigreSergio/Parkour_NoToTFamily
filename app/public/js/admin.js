@@ -188,6 +188,17 @@ export async function impostaConfig(via, valore) {
   applicaConfig();
 }
 
+/** C'è qualcosa di modificato in locale? Lo chiede `data.js` per decidere se
+ *  può fidarsi del motore, che le modifiche locali non le conosce. */
+export function haModifiche() {
+  return (
+    accesa &&
+    (Object.keys(dati.modificati).length > 0 ||
+      dati.nuovi.length > 0 ||
+      dati.cancellati.length > 0)
+  );
+}
+
 export function conteggi() {
   return {
     modificati: Object.keys(dati.modificati).length,

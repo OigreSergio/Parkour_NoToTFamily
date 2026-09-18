@@ -212,5 +212,6 @@
   "map.missingHere": "Di questa zona non hai le tessere",
   "map.prepareHere": "Scaricala",
   "spots.fromYou": "distanze da dove sei",
-  "spots.fromMap": "distanze dal centro della mappa"
+  "spots.fromMap": "distanze dal centro della mappa",
+  "band.python": "DEMO PYTHON {v}"
 }

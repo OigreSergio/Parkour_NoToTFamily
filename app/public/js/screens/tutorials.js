@@ -50,11 +50,12 @@ function scheda(voce) {
   ]);
 }
 
-function disegna() {
-  const elenco = dati
-    .tutorial()
-    .filter((voce) => !FILTRI.livello || voce.level === FILTRI.livello)
-    .filter((voce) => !FILTRI.categoria || voce.category === FILTRI.categoria);
+let richiesta = 0;
+
+async function disegna() {
+  const mia = ++richiesta;
+  const elenco = await dati.tutorialFiltrati(FILTRI);
+  if (mia !== richiesta) return;
 
   svuota(contenitore);
   if (!elenco.length) {

@@ -39,6 +39,13 @@ export const CONFIG = {
   supabase: { url: '', publishableKey: '' },
 
   /**
+   * L'indirizzo del motore in Python della demo da computer (`/api`). Vuoto
+   * — ed è il caso normale — l'app cerca, filtra e ordina da sola, anche
+   * senza rete. Impostato, quelle domande le fa a lui.
+   */
+  motore: '',
+
+  /**
    * Come le tessere vengono portate verso il lino (vedi js/map.js). Sono
    * stringhe di filtro CSS: si possono provare dal vivo dalla modalità
    * sviluppatore, ed è il motivo per cui stanno qui e non dentro il motore.

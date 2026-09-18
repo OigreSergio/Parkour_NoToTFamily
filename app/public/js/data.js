@@ -11,9 +11,15 @@
  *
  * Quando la modalità sviluppatore è accesa, quello che l'app mostra è il file
  * più le modifiche locali di chi sta lavorando: vedi `riapplica()`.
+ *
+ * Nella demo da computer c'è anche un motore in Python (`CONFIG.motore`): le
+ * domande pesanti — chi è nel riquadro, chi corrisponde a una ricerca — vanno
+ * a lui. Se non risponde, o se ci sono modifiche locali che lui non conosce,
+ * si torna a rispondere qui: l'app deve funzionare comunque.
  */
 
 import * as admin from './admin.js';
+import * as motore from './motore.js';
 
 const DATI = {
   /** Gli spot come stanno nel file: non si toccano mai. */
@@ -103,6 +109,14 @@ export function tutorialPerId(id) {
 
 /** Le fontanelle di uno spot. Il file è grande: si legge alla prima richiesta. */
 export async function fontanelleDi(id) {
+  if (motoreUtilizzabile()) {
+    try {
+      const esito = await motore.spot(id);
+      return esito.fountains || [];
+    } catch {
+      // Si risponde qui sotto.
+    }
+  }
   if (!DATI.fontanelle) {
     try {
       const dati = await leggiJson('data/fountains.json');
@@ -114,12 +128,38 @@ export async function fontanelleDi(id) {
   return DATI.fontanelle[id] || [];
 }
 
+/** Il motore può rispondere? Non se ha in mano dati diversi dai nostri. */
+function motoreUtilizzabile() {
+  return motore.acceso() && !admin.haModifiche();
+}
+
+function dentroIlRiquadro(voce, riquadro) {
+  return (
+    voce.lat >= riquadro.sud &&
+    voce.lat <= riquadro.nord &&
+    voce.lng >= riquadro.ovest &&
+    voce.lng <= riquadro.est
+  );
+}
+
 /**
  * Cerca fra gli spot.
  * `filtri`: {testo, soloVerificati, conFontanella, livello, preferiti:Set, da:{lat,lng}}
  * Restituisce un elenco ordinato: prima i più vicini, se sappiamo dove siamo.
  */
-export function cerca(filtri = {}, distanzaM) {
+export async function cerca(filtri = {}, distanzaM) {
+  if (motoreUtilizzabile() && !filtri.preferiti) {
+    try {
+      const esito = await motore.cerca(filtri);
+      return esito.spots;
+    } catch {
+      // Il motore non c'è o non risponde: si continua qui sotto.
+    }
+  }
+  return cercaInLocale(filtri, distanzaM);
+}
+
+function cercaInLocale(filtri, distanzaM) {
   const testo = normalizza(filtri.testo);
   const parole = testo ? testo.split(/\s+/).filter(Boolean) : [];
 
@@ -153,19 +193,37 @@ export function cerca(filtri = {}, distanzaM) {
  * precedente sfoltiva a griglia e gli spot in eccesso sparivano in silenzio,
  * che su una mappa di spot è il difetto peggiore possibile.
  */
-export function nelRiquadro(riquadro) {
-  const dentro = [];
-  for (const voce of DATI.spot) {
-    if (
-      voce.lat >= riquadro.sud &&
-      voce.lat <= riquadro.nord &&
-      voce.lng >= riquadro.ovest &&
-      voce.lng <= riquadro.est
-    ) {
-      dentro.push(voce);
+export async function nelRiquadro(riquadro, opzioni = {}) {
+  if (motoreUtilizzabile()) {
+    try {
+      const esito = await motore.nelRiquadro(riquadro, opzioni);
+      return esito.spots;
+    } catch {
+      // Si risponde qui sotto.
     }
   }
+  const dentro = [];
+  for (const voce of DATI.spot) {
+    if (!dentroIlRiquadro(voce, riquadro)) continue;
+    if (opzioni.soloVerificati && voce.status !== 'verified') continue;
+    dentro.push(voce);
+  }
   return dentro;
+}
+
+/** Il catalogo dei tutorial, filtrato per livello e categoria. */
+export async function tutorialFiltrati(filtri = {}) {
+  if (motore.acceso()) {
+    try {
+      const esito = await motore.tutorial(filtri);
+      return esito.tutorials;
+    } catch {
+      // Si risponde qui sotto.
+    }
+  }
+  return DATI.tutorial
+    .filter((voce) => !filtri.livello || voce.level === filtri.livello)
+    .filter((voce) => !filtri.categoria || voce.category === filtri.categoria);
 }
 
 /**

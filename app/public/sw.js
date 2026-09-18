@@ -151,6 +151,13 @@ async function rispondi(evento) {
 
   const stessaOrigine = url.origin === self.location.origin;
 
+  // Il motore della demo in Python risponde sotto /api/: sono domande su dati,
+  // non file. Una risposta vecchia servita dalla cache sarebbe peggio di
+  // nessuna risposta.
+  if (stessaOrigine && url.pathname.includes('/api/')) {
+    return fetch(richiesta);
+  }
+
   if (stessaOrigine) {
     return primaLaCache(richiesta, cacheApp, null).catch(async () => {
       const cache = await caches.open(cacheApp);

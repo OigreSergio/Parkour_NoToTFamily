@@ -180,7 +180,7 @@ function schedaSpot(voce) {
   ]);
 }
 
-function sezioneSpot() {
+async function sezioneSpot() {
   const ricerca = el('input', {
     class: 'pk-input',
     type: 'search',
@@ -203,7 +203,7 @@ function sezioneSpot() {
     }, 250);
   });
 
-  const trovati = filtroRicerca ? dati.cerca({ testo: filtroRicerca }).slice(0, 8) : [];
+  const trovati = filtroRicerca ? (await dati.cerca({ testo: filtroRicerca })).slice(0, 8) : [];
 
   return el('div', { class: 'pk-card' }, [
     el('h3', { testo: t('admin.spots') }),
@@ -389,7 +389,7 @@ function aggiornaMappa() {
 
 // --- schermata --------------------------------------------------------------
 
-function disegna() {
+async function disegna() {
   aggiungi(
     svuota(contenitore),
     el('div', { class: 'pk-card', style: 'border-color:var(--ambra)' }, [
@@ -412,7 +412,7 @@ function disegna() {
         [t('admin.turnOff')]
       ),
     ]),
-    sezioneSpot(),
+    await sezioneSpot(),
     spotScelto ? schedaSpot(spotScelto) : null,
     sezioneConfig('mappa', t('admin.groupMap')),
     sezioneConfig('collegamenti', t('admin.groupLinks')),
@@ -426,7 +426,7 @@ export function inizializza(ctx) {
   contenitore = document.getElementById('pk-admin');
 }
 
-export function entra(parametri) {
+export async function entra(parametri) {
   if (parametri && parametri.id) {
     const voce = dati.spotPerId(parametri.id);
     if (voce) {
@@ -434,7 +434,7 @@ export function entra(parametri) {
       filtroRicerca = voce.name;
     }
   }
-  disegna();
+  await disegna();
   contenitore.scrollTop = 0;
 }
 

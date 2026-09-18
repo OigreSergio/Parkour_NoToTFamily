@@ -10,6 +10,7 @@
  */
 
 import * as admin from './admin.js';
+import { CONFIG } from './config.js';
 import * as dati from './data.js';
 import * as i18n from './i18n.js';
 import { leggi, scrivi } from './store.js';
@@ -70,6 +71,9 @@ function disegnaFascia() {
   if (costruzione.canale === 'demo') {
     pezzi.push(i18n.t('band.demo', { v: costruzione.versione || '?' }));
   }
+  if (costruzione.canale === 'python') {
+    pezzi.push(i18n.t('band.python', { v: costruzione.versione || '?' }));
+  }
   if (admin.attiva()) pezzi.push(i18n.t('band.dev'));
 
   if (!pezzi.length) {
@@ -87,6 +91,7 @@ async function leggiCostruzione() {
   const dentro = globalThis.__PK_INLINE__ && globalThis.__PK_INLINE__['build.json'];
   if (dentro) {
     costruzione = { ...costruzione, ...dentro };
+    if (costruzione.motore) CONFIG.motore = costruzione.motore;
     contesto.costruzione = costruzione;
     return;
   }
@@ -96,6 +101,9 @@ async function leggiCostruzione() {
   } catch {
     // Senza il file resta «sviluppo»: nessuna fascia, nessun danno.
   }
+  // La demo con il motore in Python dice qui dove trovarlo: da quel momento
+  // le domande pesanti non le fa più il browser.
+  if (costruzione.motore) CONFIG.motore = costruzione.motore;
   contesto.costruzione = costruzione;
 }
 

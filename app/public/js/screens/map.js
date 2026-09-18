@@ -32,10 +32,15 @@ let salvataggioVista = null;
 let soloVerificati = false;
 
 /** Gli spot del riquadro, le fontanelle intorno, e il conto nel sottotitolo. */
-function aggiornaQuadro() {
+let richiestaQuadro = 0;
+
+async function aggiornaQuadro() {
   const riquadro = mappa.riquadro();
-  const dentro = dati.nelRiquadro(riquadro);
-  mappa.mostraSpot(soloVerificati ? dentro.filter((v) => v.status === 'verified') : dentro);
+  const mia = ++richiestaQuadro;
+  const dentro = await dati.nelRiquadro(riquadro, { soloVerificati });
+  // Trascinando si parte più volte: vince l'ultima, non la più lenta.
+  if (mia !== richiestaQuadro) return;
+  mappa.mostraSpot(dentro);
 
   if (mappa.zoom >= ZOOM_FONTANELLE && fontanelleCaricate) {
     const vicine = fontanelleCaricate.filter(

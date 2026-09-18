@@ -212,5 +212,6 @@
   "map.missingHere": "You don't have the tiles for this area",
   "map.prepareHere": "Download it",
   "spots.fromYou": "distances from where you are",
-  "spots.fromMap": "distances from the map centre"
+  "spots.fromMap": "distances from the map centre",
+  "band.python": "PYTHON DEMO {v}"
 }

@@ -71,8 +71,10 @@ app/
     i18n/                 it.json, en.json — nessuna stringa nel codice
     fonts/ icons/         Fraunces e Karla (OFL), icone generate dal codice
   tools/                  build_data, build_precache, make_icons, fetch_fonts,
-                          serve, desktop, screenshot, build_beta, build_demo
+                          serve, desktop, screenshot, build_beta, build_demo,
+                          build_demo_python
   dist/                   le beta e le demo costruite (non versionate)
+  demo/                   motore.py: la logica dell'app scritta in Python
   tests/                  prove Playwright: avvio, offline, installabilità
 ```
 
@@ -147,6 +149,42 @@ suo ambito) e i dati in `globalThis.__PK_INLINE__`, che `data.js`, `i18n.js` e
 Quello che la demo non ha, rispetto alla beta: il service worker — da `file://`
 non esiste — quindi niente «prepara quest'area» e niente aggiornamenti. La
 schermata «Tu» lo dice invece di fingere una cache che non c'è.
+
+## La demo con il motore in Python
+
+```sh
+python3 app/tools/build_demo_python.py --cartella ~/Desktop
+```
+
+Ne esce **un solo file `.py`** (0,5 MB) da mettere sul desktop. Si apre con un
+doppio clic: parte un server locale, si apre una finestra formato telefono, e
+a cercare fra 1.706 spot è **Python, non il browser**.
+
+```sh
+python3 pkfamily-demo.py              # apre la demo in una finestra
+python3 pkfamily-demo.py --installa   # mette l'icona sul desktop
+python3 pkfamily-demo.py --api        # solo il motore, senza finestra
+```
+
+Il motore è `app/demo/motore.py`: riquadro visibile, ricerca, spot vicini con
+distanza e tempi a piedi, fontanelle di uno spot, catalogo dei tutorial. L'app
+glielo chiede via `/api/…` perché `build.json`, dentro il pacchetto, dice
+`"motore": "/api"`; senza quella riga l'app fa tutto da sé come sempre.
+
+| Domanda | `/api/…` |
+| --- | --- |
+| chi c'è nel riquadro (e le fontanelle intorno) | `/riquadro?nord&sud&ovest&est` |
+| chi corrisponde a una ricerca, ordinato per vicinanza | `/cerca?q&lat&lng&verificati&fontanella&livello` |
+| gli spot più vicini a un punto, con i tempi a piedi | `/vicini?lat&lng&quanti` |
+| uno spot e le sue fontanelle | `/spot/<id>` |
+| il catalogo filtrato | `/tutorial?livello&categoria` |
+
+**Non è un backend di prodotto.** Le regole del prodotto stanno in Supabase
+(AGENTS.md, regola 3): qui non c'è nessuna regola nuova, nessuna scrittura,
+nessun account — c'è la stessa lettura che l'app fa da sola, spostata dove la
+si può guardare e misurare. Se il motore tace, l'app torna a rispondere da
+sola: c'è una prova che stacca `/api` e verifica che la ricerca funzioni
+lo stesso.
 
 ## La modalità sviluppatore
 

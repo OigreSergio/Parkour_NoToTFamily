@@ -191,7 +191,7 @@ test('nessuno spot sparisce: quello che è nel riquadro è disegnato o contato',
     // Tutto il Lazio in uno schermo: è il caso in cui prima si sfoltiva.
     mappa.vai({ lat: 41.9, lng: 12.5, zoom: 8 });
     const riquadro = mappa.riquadro();
-    const dentro = dati.nelRiquadro(riquadro);
+    const dentro = await dati.nelRiquadro(riquadro);
     mappa.mostraSpot(dentro);
     await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     const quadro = mappa.quadro;

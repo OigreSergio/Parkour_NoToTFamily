@@ -87,6 +87,19 @@ mette in coda sul dispositivo cosa stavi facendo, dove eri e che schermo hai.
 
 Non è una pubblicazione: è un pacchetto da passare a mano a chi prova.
 
+## La demo con il motore in Python
+
+`python3 app/tools/build_demo_python.py --cartella ~/Desktop` produce un solo
+file `.py` da mettere sul desktop: doppio clic, e l'app si apre in una finestra
+formato telefono con la logica gestita da `app/demo/motore.py` — riquadro,
+ricerca, vicini, fontanelle, tutorial. `--installa` mette l'icona sul desktop.
+
+Serve a due cose: provare l'app sul computer con dati veri, e vedere come si
+comporta con un servizio davanti invece che con tutto dentro il browser.
+
+Non è un backend di prodotto (AGENTS.md, regola 3): nessuna regola nuova,
+nessuna scrittura, nessun account. E se tace, l'app continua da sola.
+
 ## La modalità sviluppatore
 
 Si accende da «Tu → Avanzate» e apre un pannello (`#/admin`) per correggere
