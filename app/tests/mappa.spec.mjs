@@ -333,3 +333,65 @@ test('al buio la mappa è scura: niente lampada in faccia', async ({ page, conte
   });
   await expect.poll(() => dominante(page).then((c) => c.r), { timeout: 15_000 }).toBeLessThan(90);
 });
+
+/** EUR Laghetto: uno dei 26 verificati, con coordinate note. */
+const EUR = '0f9ac7ae-0dd1-4827-84ac-3f1874507b5e';
+
+test('si possono isolare i verificati fra i milleseicento della community', async ({ page }) => {
+  await attendiPronta(page);
+
+  const conta = () => page.locator('#pk-sottotitolo').textContent();
+  const tutti = await conta();
+  expect(tutti).toMatch(/spot qui/);
+
+  await page.locator('.pk-map__tool[aria-label="Solo verificati"]').click();
+  await expect.poll(conta).toMatch(/verificati qui|Nessuno spot verificato/);
+
+  // E la scelta resta: è una preferenza, non un capriccio del momento.
+  await page.reload();
+  await attendiPronta(page);
+  await expect(page.locator('.pk-map__tool[aria-label="Solo verificati"]')).toHaveAttribute(
+    'aria-pressed',
+    'true'
+  );
+});
+
+test('il foglio chiede la posizione, e poi dice quanto dista', async ({ page, context }) => {
+  // Si apre direttamente sullo spot: `attendiPronta` ricarica senza indirizzo,
+  // e qui l'indirizzo è tutto.
+  await page.goto(`/index.html#/mappa/${EUR}`);
+  await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
+
+  const foglio = page.locator('.pk-sheet[data-aperto="1"]');
+  await expect(foglio).toBeVisible();
+  // Senza posizione, al posto della distanza c'è il modo di averla.
+  await expect(foglio.getByRole('button', { name: 'Usa la mia posizione' })).toBeVisible();
+
+  await context.grantPermissions(['geolocation']);
+  await context.setGeolocation({ latitude: 41.9028, longitude: 12.4964 }); // Roma centro
+  await foglio.getByRole('button', { name: 'Usa la mia posizione' }).click();
+
+  // EUR Laghetto sta a ~8 km dal centro: il foglio lo dice.
+  await expect(page.locator('#pk-foglio-distanza')).toHaveText(/\d+([.,]\d+)?\s*(m|km)/, {
+    timeout: 15_000,
+  });
+});
+
+test('senza posizione la lista misura dal centro della mappa', async ({ page }) => {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+
+  await expect(page.locator('#pk-lista')).toContainText('distanze dal centro della mappa');
+  // E le distanze ci sono davvero.
+  await expect(page.locator('#pk-lista .pk-item__meta').first()).toContainText(/\d+\s*(m|km)/);
+});
+
+test('la mappa dice quando di una zona non hai le tessere, e la scarica da lì', async ({ page }) => {
+  await attendiPronta(page);
+
+  // Nella prova le tessere non arrivano mai: è esattamente il caso.
+  const striscia = page.locator('.pk-map__strip[data-aperta="1"]');
+  await expect(striscia).toBeVisible({ timeout: 15_000 });
+  await expect(striscia).toContainText('non hai le tessere');
+  await expect(striscia.getByRole('button', { name: 'Scaricala' })).toBeVisible();
+});

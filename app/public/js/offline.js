@@ -8,6 +8,8 @@
 
 import { CONFIG } from './config.js';
 import { LATO_TESSERA } from './geo.js';
+import { t } from './i18n.js';
+import { avviso, conferma } from './ui.js';
 
 const CACHE_TILE = 'pkfamily-tiles';
 /** Le tessere scaricate apposta stanno in una cache loro: non vengono mai
@@ -158,4 +160,88 @@ export async function scarica(indirizzi, avanzamento) {
 export function stimaPeso(quante) {
   // Una tessera raster sta fra 10 e 40 kB: 25 kB è una media onesta.
   return { tessere: quante, byte: quante * 25 * 1024, lato: LATO_TESSERA };
+}
+
+
+/** Quanti livelli di zoom in più si scaricano oltre a quello che si vede. */
+export const LIVELLI_IN_PIU = 3;
+
+/**
+ * Lo stato dello scaricamento vive qui e non nei nodi di una schermata: si
+ * parte dalla mappa o da «Tu», si cambia schermata, e l'avanzamento resta.
+ * È anche ciò che impedisce di farlo partire due volte.
+ */
+export const scaricamento = { inCorso: false, messaggio: '' };
+
+function pesoLeggibile(byte) {
+  const mega = byte / 1024 / 1024;
+  return mega < 1024 ? `${mega.toFixed(mega < 10 ? 1 : 0)} MB` : `${(mega / 1024).toFixed(1)} GB`;
+}
+
+/**
+ * Scarica la zona che la mappa sta mostrando. `progresso` viene chiamata a
+ * ogni passo con il testo da mostrare; `finito` alla fine.
+ * Restituisce true se lo scaricamento è davvero partito.
+ */
+export async function preparaArea(mappa, { progresso, finito } = {}) {
+  if (scaricamento.inCorso || !mappa) return false;
+
+  // Senza una misura vera il riquadro è un punto, e si scaricherebbero tre
+  // tessere credendo di aver preparato una città.
+  if (!mappa.misurata) {
+    avviso(t('you.prepareNoMap'));
+    return false;
+  }
+
+  const zoomOra = Math.round(mappa.zoom);
+  const { indirizzi, totale } = tessereDelRiquadro(
+    mappa.riquadro(),
+    mappa.sorgente,
+    zoomOra,
+    zoomOra + LIVELLI_IN_PIU
+  );
+  if (!indirizzi.length) {
+    avviso(t('you.prepareNoMap'));
+    return false;
+  }
+
+  const peso = stimaPeso(indirizzi.length);
+  const domanda =
+    totale > indirizzi.length
+      ? t('you.prepareAskCapped', {
+          n: indirizzi.length,
+          totale,
+          peso: pesoLeggibile(peso.byte),
+          z: zoomOra,
+          zmax: zoomOra + LIVELLI_IN_PIU,
+        })
+      : t('you.prepareAsk', {
+          n: indirizzi.length,
+          peso: pesoLeggibile(peso.byte),
+          z: zoomOra,
+          zmax: zoomOra + LIVELLI_IN_PIU,
+        });
+
+  const procedi = await conferma(t('you.prepareTitle'), domanda, t('you.prepareGo'), t('common.cancel'));
+  if (!procedi) return false;
+
+  scaricamento.inCorso = true;
+  scaricamento.messaggio = t('you.prepareProgress', { fatte: 0, totale: indirizzi.length });
+  if (progresso) progresso(scaricamento.messaggio);
+
+  await rendiPersistente();
+  const esito = await scarica(indirizzi, (fatte, quante) => {
+    scaricamento.messaggio = t('you.prepareProgress', { fatte, totale: quante });
+    if (progresso) progresso(scaricamento.messaggio);
+  });
+
+  scaricamento.inCorso = false;
+  scaricamento.messaggio = t('you.prepareDone', {
+    scaricate: esito.scaricate,
+    saltate: esito.saltate,
+    fallite: esito.fallite,
+  });
+  if (progresso) progresso(scaricamento.messaggio);
+  if (finito) finito(esito);
+  return true;
 }

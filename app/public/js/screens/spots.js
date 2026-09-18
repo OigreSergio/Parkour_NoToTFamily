@@ -21,9 +21,22 @@ let contenitore = null;
 let idPreferiti = new Set();
 let mostrati = TETTO_VISIBILE;
 
-function riga(voce) {
+/**
+ * Da dove si misurano le distanze. La posizione vera se c'è; altrimenti il
+ * centro della mappa — che è comunque dove stai guardando, e serve a chi
+ * arriva in una città nuova e non vuole dare il permesso alla posizione.
+ * La lista dice sempre quale delle due sta usando.
+ */
+function origineDistanze() {
   const mia = posizione.ultimaNota();
-  const metri = mia ? distanzaM(mia, voce) : null;
+  if (mia) return { punto: mia, vera: true };
+  const mappa = contesto && contesto.mappa;
+  if (mappa && mappa.misurata) return { punto: mappa.centro, vera: false };
+  return { punto: null, vera: false };
+}
+
+function riga(voce, origine) {
+  const metri = origine.punto ? distanzaM(origine.punto, voce) : null;
   const pezzi = [
     voce.status === 'verified' ? t('spot.verified') : t('spot.community'),
     voce.level ? t(`spot.level.${voce.level}`) : null,
@@ -52,8 +65,9 @@ function riga(voce) {
 }
 
 function disegna() {
+  const origine = origineDistanze();
   const elenco = dati.cerca(
-    { ...FILTRI, da: posizione.ultimaNota(), preferiti: FILTRI.preferiti },
+    { ...FILTRI, da: origine.punto, preferiti: FILTRI.preferiti },
     distanzaM
   );
   svuota(contenitore);
@@ -64,9 +78,14 @@ function disegna() {
   }
 
   contenitore.append(
-    el('p', { class: 'pk-small pk-muted', testo: t('spots.count', { n: elenco.length }) })
+    el('p', { class: 'pk-small pk-muted' }, [
+      t('spots.count', { n: elenco.length }),
+      origine.punto
+        ? ` · ${origine.vera ? t('spots.fromYou') : t('spots.fromMap')}`
+        : '',
+    ])
   );
-  const lista = el('div', {}, elenco.slice(0, mostrati).map(riga));
+  const lista = el('div', {}, elenco.slice(0, mostrati).map((voce) => riga(voce, origine)));
   contenitore.append(lista);
 
   if (elenco.length > mostrati) {

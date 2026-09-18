@@ -105,6 +105,10 @@ export function creaMappa(contenitore, opzioni = {}) {
   // L'ultima disposizione disegnata: serve a capire cosa c'è sotto il dito
   // senza rifare i conti di proiezione a ogni tocco.
   let disposizione = { spilli: [], gomitoli: [] };
+  /** Quante tessere, nell'ultimo disegno, non c'erano: né in memoria, né in
+   *  cache, né dal livello sopra. È quanto manca di questa zona. */
+  let tessereMancanti = 0;
+  let tessereViste = 0;
 
   const ascoltatori = { selezione: [], movimento: [], gomitolo: [], disegnato: [] };
 
@@ -375,6 +379,8 @@ export function creaMappa(contenitore, opzioni = {}) {
         ? CONFIG.filtroTessere[colori().scuro ? 'scuro' : 'chiaro'] || 'none'
         : 'none';
 
+    tessereMancanti = 0;
+    tessereViste = 0;
     for (let ty = primoY; ty <= ultimoY; ty++) {
       if (ty < 0 || ty >= n) continue;
       for (let tx = primoX; tx <= ultimoX; tx++) {
@@ -383,12 +389,14 @@ export function creaMappa(contenitore, opzioni = {}) {
         const lar = Math.ceil(lato) + 1;
         const avvolto = ((tx % n) + n) % n;
         const voce = tessera(z, avvolto, ty);
+        tessereViste += 1;
         if (voce.pronta) {
           if (filtro !== 'none') ctx.filter = filtro;
           ctx.drawImage(voce.img, x, y, lar, lar);
           if (filtro !== 'none') ctx.filter = 'none';
         } else if (!disegnaTesseraDiScorta(z, avvolto, ty, x, y, lar, filtro)) {
           disegnaLino(x, y, lar);
+          tessereMancanti += 1;
         }
       }
     }
@@ -663,6 +671,8 @@ export function creaMappa(contenitore, opzioni = {}) {
       spilli: disposizione.spilli.length,
       gomitoli: disposizione.gomitoli.length,
       raccolti: disposizione.gomitoli.reduce((somma, g) => somma + g.conta, 0),
+      tessereMancanti,
+      tessereViste,
     };
   }
 

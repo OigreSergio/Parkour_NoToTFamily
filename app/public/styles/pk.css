@@ -678,6 +678,33 @@ textarea {
   max-width: 70%;
 }
 
+/* --- striscia sulla mappa: «questa zona non ce l'hai» ------------------------- */
+
+.pk-map__strip {
+  position: absolute;
+  left: var(--sp-3);
+  right: var(--sp-3);
+  bottom: var(--sp-3);
+  display: none;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--carta);
+  border: 1px solid var(--cucitura);
+  border-radius: var(--r-card);
+  box-shadow: 0 2px 10px rgba(31, 27, 22, 0.12);
+}
+
+.pk-map__strip[data-aperta='1'] {
+  display: flex;
+}
+
+/* Quando il foglio di uno spot è aperto, la striscia gli sta sotto: la cosa
+   importante in quel momento è lo spot. */
+.pk-sheet[data-aperto='1'] ~ .pk-map__strip {
+  display: none;
+}
+
 /* --- foglio in basso -------------------------------------------------------- */
 
 .pk-sheet {

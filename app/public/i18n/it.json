@@ -205,5 +205,12 @@
   "you.prepareNoMap": "Apri prima la mappa e mettiti sulla zona: da qui non so ancora cosa stai guardando.",
   "you.prepareAskCapped": "Ne servirebbero {totale} dallo zoom {z} al {zmax}: ne scarico {n}, circa {peso}. Per il resto avvicinati e rifallo.",
   "band.demo": "DEMO {v}",
-  "you.offlineSingleFile": "Questa copia è un solo file: l'app è già tutta qui, dati compresi. Senza rete funziona tutto tranne le tessere della mappa che non hai ancora visto, i video e le foto."
+  "you.offlineSingleFile": "Questa copia è un solo file: l'app è già tutta qui, dati compresi. Senza rete funziona tutto tranne le tessere della mappa che non hai ancora visto, i video e le foto.",
+  "map.onlyVerified": "Solo verificati",
+  "map.hereVerified": "{n} verificati qui",
+  "map.noneVerifiedHere": "Nessuno spot verificato in questo riquadro",
+  "map.missingHere": "Di questa zona non hai le tessere",
+  "map.prepareHere": "Scaricala",
+  "spots.fromYou": "distanze da dove sei",
+  "spots.fromMap": "distanze dal centro della mappa"
 }

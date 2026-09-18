@@ -10,6 +10,7 @@ import * as dati from '../data.js';
 import { distanzaM, formattaDistanza } from '../geo.js';
 import { t } from '../i18n.js';
 import { creaMappa } from '../map.js';
+import * as offline from '../offline.js';
 import * as posizione from '../position.js';
 import { leggi, scrivi } from '../store.js';
 import { aggiungi, avviso, distintivo, el, svuota } from '../ui.js';
@@ -17,17 +18,24 @@ import { aggiungi, avviso, distintivo, el, svuota } from '../ui.js';
 /** Da qui in su si disegnano anche le fontanelle intorno. */
 const ZOOM_FONTANELLE = 14;
 
+/** Quante tessere devono mancare perché valga la pena dirlo. */
+const TESSERE_PER_AVVISARE = 4;
+
 let mappa = null;
 let foglio = null;
+let striscia = null;
 let contesto = null;
 let scelto = null;
 let fontanelleCaricate = null;
 let salvataggioVista = null;
+/** Mostrare solo i 26 verificati dalla famiglia, invece di tutti e 1.706. */
+let soloVerificati = false;
 
 /** Gli spot del riquadro, le fontanelle intorno, e il conto nel sottotitolo. */
 function aggiornaQuadro() {
   const riquadro = mappa.riquadro();
-  mappa.mostraSpot(dati.nelRiquadro(riquadro));
+  const dentro = dati.nelRiquadro(riquadro);
+  mappa.mostraSpot(soloVerificati ? dentro.filter((v) => v.status === 'verified') : dentro);
 
   if (mappa.zoom >= ZOOM_FONTANELLE && fontanelleCaricate) {
     const vicine = fontanelleCaricate.filter(
@@ -55,9 +63,56 @@ function aggiornaSottotitolo() {
 function testoSottotitolo() {
   const quadro = mappa.quadro;
   const totale = quadro.spilli + quadro.raccolti;
-  if (!totale) return t('map.noneHere');
+  if (!totale) return soloVerificati ? t('map.noneVerifiedHere') : t('map.noneHere');
+  if (soloVerificati) return t('map.hereVerified', { n: totale });
   if (quadro.gomitoli) return t('map.hereGrouped', { n: totale, g: quadro.raccolti });
   return t('map.here', { n: totale });
+}
+
+/**
+ * La striscia che dice che di questa zona mancano le tessere, e da cui si può
+ * scaricarla. Prima l'unico posto per farlo era la schermata «Tu», cioè non
+ * dove uno se ne accorge.
+ */
+function aggiornaStriscia() {
+  if (!striscia) return;
+  const quadro = mappa.quadro;
+  const mancano = quadro.tessereMancanti >= TESSERE_PER_AVVISARE;
+
+  if (offline.scaricamento.inCorso) {
+    striscia.dataset.aperta = '1';
+    svuota(striscia).append(
+      el('span', { class: 'pk-small', testo: offline.scaricamento.messaggio })
+    );
+    return;
+  }
+  if (!mancano) {
+    striscia.dataset.aperta = '0';
+    return;
+  }
+
+  striscia.dataset.aperta = '1';
+  svuota(striscia).append(
+    el('span', { class: 'pk-small', style: 'flex:1', testo: t('map.missingHere') }),
+    el(
+      'button',
+      {
+        class: 'pk-btn pk-btn--fantasma',
+        style: 'min-height:34px;padding:0 12px',
+        onclick: async () => {
+          await offline.preparaArea(mappa, {
+            progresso: () => aggiornaStriscia(),
+            finito: () => {
+              mappa.riprova();
+              setTimeout(aggiornaStriscia, 1200);
+            },
+          });
+          aggiornaStriscia();
+        },
+      },
+      [t('map.prepareHere')]
+    )
+  );
 }
 
 /** Le fontanelle arrivano da un file grande: si carica alla prima occasione. */
@@ -87,10 +142,51 @@ function scostaDalFoglio(voce) {
   if (p.y > desiderata) mappa.spostaDi(0, desiderata - p.y);
 }
 
+/** La riga della distanza nel foglio: il numero, o il modo per averlo. */
+function rigaDistanza(voce) {
+  const mia = posizione.ultimaNota();
+  if (mia) {
+    return el('span', {
+      class: 'pk-small pk-muted',
+      id: 'pk-foglio-distanza',
+      testo: formattaDistanza(distanzaM(mia, voce)),
+    });
+  }
+  return el(
+    'button',
+    {
+      class: 'pk-chip',
+      id: 'pk-foglio-distanza',
+      onclick: async (evento) => {
+        const bottone = evento.currentTarget;
+        bottone.disabled = true;
+        try {
+          const trovata = await posizione.chiedi();
+          mappa.segnaPosizione(trovata);
+          posizione.segui(seguiPosizione);
+          if (scelto) apriFoglio(scelto);
+        } catch {
+          bottone.disabled = false;
+          avviso(t('map.noPosition'));
+        }
+      },
+    },
+    [t('spot.usePosition')]
+  );
+}
+
+/** La posizione si muove: la distanza nel foglio si muove con lei. */
+function seguiPosizione(aggiornata) {
+  mappa.segnaPosizione(aggiornata);
+  if (!scelto) return;
+  const nodo = document.getElementById('pk-foglio-distanza');
+  if (nodo && nodo.tagName === 'SPAN') {
+    nodo.textContent = formattaDistanza(distanzaM(aggiornata, scelto));
+  }
+}
+
 async function apriFoglio(voce) {
   scelto = voce;
-  const mia = posizione.ultimaNota();
-  const metri = mia ? formattaDistanza(distanzaM(mia, voce)) : null;
 
   aggiungi(
     svuota(foglio),
@@ -107,7 +203,7 @@ async function apriFoglio(voce) {
     el('p', { class: 'pk-row pk-row--wrap', style: 'margin-top:8px' }, [
       distintivo(voce.status),
       voce.fountain ? el('span', { class: 'pk-badge', testo: t('spot.fountain') }) : null,
-      metri ? el('span', { class: 'pk-small pk-muted', testo: metri }) : null,
+      rigaDistanza(voce),
     ]),
     voce.description
       ? el('p', { class: 'pk-small pk-muted', testo: voce.description.slice(0, 180) })
@@ -141,7 +237,8 @@ async function centraSuDiMe(bottone) {
     const mia = await posizione.chiedi();
     mappa.segnaPosizione(mia);
     mappa.vai({ lat: mia.lat, lng: mia.lng, zoom: Math.max(mappa.zoom, 15) });
-    posizione.segui((aggiornata) => mappa.segnaPosizione(aggiornata));
+    posizione.segui(seguiPosizione);
+    if (scelto) apriFoglio(scelto);
   } catch {
     avviso(t('map.noPosition'));
   } finally {
@@ -162,6 +259,7 @@ export async function inizializza(ctx) {
   if (vista) mappa.vai(vista);
   const sorgente = await leggi('mappa.sorgente', 'mappa');
   mappa.cambiaSorgente(sorgente);
+  soloVerificati = Boolean(await leggi('mappa.soloVerificati', false));
 
   const interruttoreSfondo = el('button', {
     class: 'pk-map__tool',
@@ -200,8 +298,26 @@ export async function inizializza(ctx) {
         onclick: (evento) => centraSuDiMe(evento.currentTarget),
       }),
       interruttoreSfondo,
+      // I 26 verificati dalla famiglia in mezzo a 1.680 segnalati: senza un
+      // modo di isolarli, la mappa a zoom basso è tutta blu.
+      el('button', {
+        class: 'pk-map__tool',
+        testo: '✓',
+        'aria-label': t('map.onlyVerified'),
+        'aria-pressed': soloVerificati ? 'true' : 'false',
+        title: t('map.onlyVerified'),
+        onclick: async (evento) => {
+          soloVerificati = !soloVerificati;
+          evento.currentTarget.setAttribute('aria-pressed', soloVerificati ? 'true' : 'false');
+          await scrivi('mappa.soloVerificati', soloVerificati);
+          aggiornaQuadro();
+        },
+      }),
     ])
   );
+
+  striscia = el('div', { class: 'pk-map__strip', dati: { aperta: '0' } });
+  contenitore.append(striscia);
 
   foglio = el('div', {
     class: 'pk-sheet',
@@ -214,7 +330,10 @@ export async function inizializza(ctx) {
   mappa.su('selezione', (voce) => (voce ? apriFoglio(voce) : chiudiFoglio()));
   // Il conto nel sottotitolo si aggiorna quando la tela è stata disegnata:
   // prima di allora sarebbe il conto del fotogramma precedente.
-  mappa.su('disegnato', aggiornaSottotitolo);
+  mappa.su('disegnato', () => {
+    aggiornaSottotitolo();
+    aggiornaStriscia();
+  });
   mappa.su('gomitolo', () => {
     if (scelto) chiudiFoglio();
   });

@@ -205,5 +205,12 @@
   "you.prepareNoMap": "Open the map first and go to the area: from here I don't know yet what you're looking at.",
   "you.prepareAskCapped": "It would take {totale} from zoom {z} to {zmax}: I'll download {n}, about {peso}. For the rest, zoom in and do it again.",
   "band.demo": "DEMO {v}",
-  "you.offlineSingleFile": "This copy is a single file: the whole app is already here, data included. Without network everything works except map tiles you haven't seen yet, videos and photos."
+  "you.offlineSingleFile": "This copy is a single file: the whole app is already here, data included. Without network everything works except map tiles you haven't seen yet, videos and photos.",
+  "map.onlyVerified": "Verified only",
+  "map.hereVerified": "{n} verified here",
+  "map.noneVerifiedHere": "No verified spot in this view",
+  "map.missingHere": "You don't have the tiles for this area",
+  "map.prepareHere": "Download it",
+  "spots.fromYou": "distances from where you are",
+  "spots.fromMap": "distances from the map centre"
 }
