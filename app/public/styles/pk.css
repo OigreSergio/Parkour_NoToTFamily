@@ -68,8 +68,11 @@
   --verde: #63864a;
   --ambra: #b97a0e;
   --rosso: #b4463a;
-  --blu-community: #52809e;
+  --blu-community: #6f9cb8;
   --cucitura: #e0d4bd;
+  /* Lo stesso blu del masterplan, abbassato quanto basta perché la parola
+     «Community» su lino superi 4,5:1. Il colore dello spillo resta l'altro. */
+  --blu-testo: #4d7b98;
   --ombra: 0 1px 0 rgba(31, 27, 22, 0.05);
 
   --display: 'Fraunces', ui-serif, Georgia, serif;
@@ -108,6 +111,7 @@
     --ambra: #e0a94e;
     --rosso: #e06c5f;
     --blu-community: #8fb4cc;
+    --blu-testo: #8fb4cc;
     --cucitura: #362e23;
     --ombra: none;
   }
@@ -125,6 +129,7 @@
   --ambra: #e0a94e;
   --rosso: #e06c5f;
   --blu-community: #8fb4cc;
+  --blu-testo: #8fb4cc;
   --cucitura: #362e23;
   --ombra: none;
 }
@@ -497,7 +502,7 @@ textarea {
 }
 
 .pk-badge--community {
-  color: var(--blu-community);
+  color: var(--blu-testo);
 }
 
 .pk-badge--attesa {
@@ -585,7 +590,7 @@ textarea {
 }
 
 .pk-item__pin--community {
-  color: var(--blu-community);
+  color: var(--blu-testo);
 }
 
 .pk-item__body {

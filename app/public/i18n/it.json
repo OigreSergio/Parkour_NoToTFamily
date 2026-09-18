@@ -15,7 +15,12 @@
   "boot.retry": "Riprova",
 
   "map.label": "Mappa degli spot",
-  "map.subtitle": "{n} spot, anche senza rete",
+  "map.here": "{n} spot qui",
+  "map.hereGrouped": "{n} spot qui, {g} nei gomitoli",
+  "map.noneHere": "Nessuno spot in questo riquadro",
+  "map.satellite": "Sfondo: satellite",
+  "map.plain": "Sfondo: mappa",
+  "map.sheet": "Spot scelto",
   "map.open": "Apri la scheda",
   "map.zoomIn": "Ingrandisci",
   "map.zoomOut": "Rimpicciolisci",

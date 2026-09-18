@@ -7,8 +7,10 @@
  * riga di `git diff --stat` se una modifica al design ha spostato qualcosa
  * che non doveva. È la consegna 5 del capitolo grafica del masterplan.
  *
- * Le tessere di mappa non vengono scaricate: le fotografie mostrano il lino,
- * che è anche quello che si vede senza rete.
+ * Di norma le tessere non vengono scaricate: le fotografie mostrano il lino,
+ * che è anche quello che si vede senza rete. Con `--tessere` invece si
+ * scaricano davvero, per guardare come il filtro di colore porta la mappa di
+ * OpenStreetMap verso il lino; `PK_PROXY` passa un proxy di rete se serve.
  */
 
 import { spawn } from 'node:child_process';
@@ -27,6 +29,8 @@ const CARTELLA =
   indiceCartella >= 0
     ? path.resolve(argomenti[indiceCartella + 1])
     : path.resolve(RADICE_APP, '..', 'docs', 'design', 'screens');
+const CON_TESSERE = argomenti.includes('--tessere');
+const PROXY = process.env.PK_PROXY || process.env.HTTPS_PROXY;
 
 const attesa = (millisecondi) => new Promise((risolvi) => setTimeout(risolvi, millisecondi));
 
@@ -64,9 +68,11 @@ async function fotografa(browser, tema) {
     deviceScaleFactor: 2,
     locale: 'it-IT',
     colorScheme: tema === 'scuro' ? 'dark' : 'light',
+    ignoreHTTPSErrors: Boolean(CON_TESSERE && PROXY),
   });
-  // Nessuna tessera: le fotografie devono essere sempre uguali.
-  await contesto.route(/tile|arcgisonline/, (rotta) => rotta.abort());
+  // Senza `--tessere` la mappa resta sul lino: le fotografie di riferimento
+  // devono essere sempre uguali, e le tessere non lo sono mai.
+  if (!CON_TESSERE) await contesto.route(/tile|arcgisonline/, (rotta) => rotta.abort());
   const pagina = await contesto.newPage();
 
   await pagina.goto(`http://127.0.0.1:${PORTA}/index.html`);
@@ -96,7 +102,8 @@ async function fotografa(browser, tema) {
         await avviso.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
       }
     }
-    await attesa(500);
+    // Con le tessere vere ci vuole un attimo perché scendano e si disegnino.
+    await attesa(CON_TESSERE ? 2500 : 500);
     await pagina.screenshot({ path: path.join(CARTELLA, `telefono-${tema}-${nome}.png`) });
     process.stdout.write(`  telefono-${tema}-${nome}.png\n`);
   }
@@ -106,7 +113,12 @@ async function fotografa(browser, tema) {
 
 const server = await avviaServer();
 await mkdir(CARTELLA, { recursive: true });
-const browser = await chromium.launch({ executablePath: process.env.PK_CHROMIUM });
+const browser = await chromium.launch({
+  executablePath: process.env.PK_CHROMIUM,
+  ...(CON_TESSERE && PROXY
+    ? { proxy: { server: PROXY, bypass: '127.0.0.1,localhost' }, args: ['--ignore-certificate-errors'] }
+    : {}),
+});
 try {
   for (const tema of ['chiaro', 'scuro']) await fotografa(browser, tema);
 } finally {

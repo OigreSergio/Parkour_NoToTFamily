@@ -15,6 +15,7 @@ const DATI = {
   perId: new Map(),
   tutorial: [],
   fontanelle: null,
+  fontanelleUniche: null,
   verificati: 0,
 };
 
@@ -114,8 +115,14 @@ export function cerca(filtri = {}, distanzaM) {
   return risultati;
 }
 
-/** Gli spot dentro il riquadro visibile, al massimo `tetto`. */
-export function nelRiquadro(riquadro, tetto = 400) {
+/**
+ * Gli spot dentro il riquadro visibile. Li restituisce tutti: chi disegna la
+ * mappa li raccoglie in gomitoli quando sono troppi vicini, e il numero sul
+ * gomitolo dice quanti sono. Qui non si butta via niente — la versione
+ * precedente sfoltiva a griglia e gli spot in eccesso sparivano in silenzio,
+ * che su una mappa di spot è il difetto peggiore possibile.
+ */
+export function nelRiquadro(riquadro) {
   const dentro = [];
   for (const voce of DATI.spot) {
     if (
@@ -125,22 +132,31 @@ export function nelRiquadro(riquadro, tetto = 400) {
       voce.lng <= riquadro.est
     ) {
       dentro.push(voce);
-      // Oltre il tetto si continua a contare ma non si accumula: a zoom basso
-      // servirebbero migliaia di spilli per mostrare la stessa cosa.
-      if (dentro.length > tetto * 4) break;
     }
   }
-  if (dentro.length <= tetto) return dentro;
+  return dentro;
+}
 
-  // Sfoltimento a griglia: un solo spillo per cella, i verificati vincono.
-  const passo = (riquadro.nord - riquadro.sud) / 18 || 0.01;
-  const celle = new Map();
-  for (const voce of dentro) {
-    const chiave = `${Math.round(voce.lat / passo)},${Math.round(voce.lng / passo)}`;
-    const attuale = celle.get(chiave);
-    if (!attuale || (attuale.status !== 'verified' && voce.status === 'verified')) {
-      celle.set(chiave, voce);
+/**
+ * Tutte le fontanelle, una volta sola e senza doppioni.
+ *
+ * Il file le elenca per spot, e la stessa fontanella compare accanto a più
+ * spot vicini: sulla mappa sarebbe una goccia disegnata sopra l'altra. La
+ * chiave è la coordinata arrotondata, che nei dati è già a cinque decimali.
+ */
+export async function tutteLeFontanelle() {
+  if (DATI.fontanelleUniche) return DATI.fontanelleUniche;
+  if (!DATI.fontanelle) await fontanelleDi('');
+
+  const viste = new Map();
+  for (const elenco of Object.values(DATI.fontanelle || {})) {
+    for (const fontanella of elenco) {
+      const chiave = `${fontanella.lat},${fontanella.lng}`;
+      if (!viste.has(chiave)) {
+        viste.set(chiave, { lat: fontanella.lat, lng: fontanella.lng, kind: fontanella.kind });
+      }
     }
   }
-  return [...celle.values()].slice(0, tetto);
+  DATI.fontanelleUniche = [...viste.values()];
+  return DATI.fontanelleUniche;
 }

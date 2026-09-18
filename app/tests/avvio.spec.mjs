@@ -24,19 +24,23 @@ test('si apre sulla mappa, con la tela disegnata', async ({ page }) => {
   expect(misure.w).toBeGreaterThan(300);
   expect(misure.h).toBeGreaterThan(300);
 
-  // E soprattutto: ci sono gli spilli. Si contano i pixel del colore "filo",
-  // perché una mappa senza spot è il guasto più facile da non vedere.
-  const pixelSpillo = await page.locator('.pk-map__canvas').evaluate((tela) => {
+  // E soprattutto: ci sono gli spilli, nei colori del masterplan (3.5) —
+  // `verde` per i verificati, `blu-community` per gli altri. Una mappa senza
+  // spot è il guasto più facile da non vedere.
+  const spilli = await page.locator('.pk-map__canvas').evaluate((tela) => {
     const dati = tela.getContext('2d').getImageData(0, 0, tela.width, tela.height).data;
-    let conta = 0;
+    const vicino = (i, r, g, b) =>
+      Math.abs(dati[i] - r) < 24 && Math.abs(dati[i + 1] - g) < 24 && Math.abs(dati[i + 2] - b) < 24;
+    let verde = 0;
+    let blu = 0;
     for (let i = 0; i < dati.length; i += 4) {
-      if (Math.abs(dati[i] - 194) < 26 && Math.abs(dati[i + 1] - 106) < 26 && Math.abs(dati[i + 2] - 82) < 26) {
-        conta++;
-      }
+      if (vicino(i, 0x63, 0x86, 0x4a)) verde++;
+      else if (vicino(i, 0x6f, 0x9c, 0xb8)) blu++;
     }
-    return conta;
+    return { verde, blu };
   });
-  expect(pixelSpillo).toBeGreaterThan(80);
+  expect(spilli.verde).toBeGreaterThan(40);
+  expect(spilli.blu).toBeGreaterThan(40);
 });
 
 test('la lista mostra gli spot e la ricerca li filtra', async ({ page }) => {

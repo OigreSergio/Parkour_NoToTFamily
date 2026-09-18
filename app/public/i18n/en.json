@@ -15,7 +15,12 @@
   "boot.retry": "Try again",
 
   "map.label": "Map of spots",
-  "map.subtitle": "{n} spots, offline too",
+  "map.here": "{n} spots here",
+  "map.hereGrouped": "{n} spots here, {g} in the balls of yarn",
+  "map.noneHere": "No spot in this view",
+  "map.satellite": "Background: satellite",
+  "map.plain": "Background: map",
+  "map.sheet": "Chosen spot",
   "map.open": "Open the spot",
   "map.zoomIn": "Zoom in",
   "map.zoomOut": "Zoom out",
