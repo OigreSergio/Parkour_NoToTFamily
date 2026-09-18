@@ -1,0 +1,28 @@
+name: Scansione segreti
+
+# Misura S0-4 del masterplan (cap. 6.2): gitleaks a ogni push e pull request
+# sui commit nuovi, e una volta a settimana su tutta la storia del repository.
+# Un segreto trovato fa fallire il controllo: la risposta giusta è ruotarlo,
+# non riscrivere la storia in silenzio. La chiave pubblicabile di Supabase è
+# ammessa dal masterplan nei client e viene esclusa in .gitleaks.toml.
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "23 4 * * 1" # ogni lunedì alle 04:23 UTC, storia completa
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

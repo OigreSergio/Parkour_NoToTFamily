@@ -1,0 +1,16 @@
+# Configurazione di gitleaks per questo repository.
+# Parte dalle regole predefinite e aggiunge una sola esclusione: la chiave
+# "publishable" di Supabase è progettata per stare nei client e nelle pagine
+# pubblicate (masterplan cap. 2 regola 4 e supabase/README.md), quindi non è
+# un segreto. Tutto il resto, compresa la chiave "secret" e qualsiasi token
+# di firma, resta un rilevamento.
+title = "PkFAMILY"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Chiave pubblicabile di Supabase: pubblica per progetto"
+regexes = [
+  'sb_publishable_[A-Za-z0-9_-]+',
+]

@@ -1,0 +1,32 @@
+# Avvio locale del servizio remoto, da solo o con il motore dei percorsi.
+#
+#   cd remote-service && cp .env.example .env
+#   docker compose up --build                     # solo il servizio, su :8080
+#   docker compose --profile routing up --build   # servizio + OSRM (dati in ../infra/routing)
+#
+# Con il profilo `routing` mettere OSRM_BASE_URL=http://osrm:5000 nel file .env.
+# I dati OSRM (centro-latest.osrm) si preparano una volta come descritto in
+# infra/routing/README.md.
+#
+# Richiede il plugin `docker compose` versione 2.24 o successiva (l'attributo
+# `required` di `env_file` esiste da lì; nel vecchio `docker-compose` v1 no).
+services:
+  remote:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+    ports:
+      - "8080:8080"
+
+  osrm:
+    profiles: ["routing"]
+    image: ghcr.io/project-osrm/osrm-backend:latest
+    command: osrm-routed --algorithm mld /data/centro-latest.osrm
+    volumes:
+      - ../infra/routing:/data:ro
+    ports:
+      - "5000:5000"
