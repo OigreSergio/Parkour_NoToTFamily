@@ -1,0 +1,64 @@
+# Manifesto del pacchetto Python "pkremote": il servizio di supporto di PkFAMILY
+# pensato per girare in remoto. Qui stanno nome, versione, dipendenze e la
+# configurazione degli strumenti (ruff per lo stile, pytest per i test).
+#
+# Perché un pacchetto vero e non una cartella di script: un pacchetto si
+# installa con `pip install .`, si copia in un'immagine Docker, espone un
+# comando (`pkremote`) e ha i test accanto. È ciò che serve per essere
+# avviato da una macchina che non è quella dell'autore.
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pkremote"
+version = "0.1.0"
+description = "PkFAMILY - servizio di supporto che gira in remoto: proxy dei percorsi, job sui dati, stato"
+requires-python = ">=3.11"
+dependencies = [
+  # Server HTTP asincrono: espone /healthz, /readyz, /api/v1/route, /api/v1/jobs.
+  "fastapi>=0.111",
+  # Il processo che ascolta sulla porta e serve l'app FastAPI.
+  "uvicorn[standard]>=0.30",
+  # Client HTTP asincrono verso Supabase (PostgREST) e OSRM.
+  "httpx>=0.27",
+  # Validazione dei dati in ingresso e in uscita.
+  "pydantic>=2.7",
+  # Lettura della configurazione dalle variabili d'ambiente.
+  "pydantic-settings>=2.3",
+  # Log strutturati (JSON in remoto, leggibili in locale).
+  "structlog>=24.1",
+]
+
+[project.optional-dependencies]
+# Strumenti per chi sviluppa; non finiscono nell'immagine di produzione.
+dev = [
+  "pytest>=8.2",
+  "pytest-asyncio>=0.23",
+  "ruff>=0.4",
+]
+
+[project.scripts]
+# Dopo `pip install .` esiste il comando `pkremote` (serve, job, jobs, config).
+pkremote = "pkremote.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["pkremote*"]
+
+[tool.ruff]
+# Stesse regole del backend esistente, così il repository ha uno stile solo.
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "S", "RUF"]
+ignore = ["S101"]  # gli assert nei test sono voluti
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S105", "S106"]  # nei test compaiono token finti, per forza
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+addopts = "-ra --strict-markers"
+testpaths = ["tests"]

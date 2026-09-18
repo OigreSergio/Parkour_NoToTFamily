@@ -9,6 +9,7 @@ A social app for the parkour community: find spots on a map, chat with traceurs 
 ├── backend/      FastAPI + PostgreSQL/PostGIS API
 ├── mobile/       Flutter app (iOS + Android)
 ├── web-admin/    Next.js admin dashboard (spot moderation)
+├── remote-service/ Python support service built to run remotely (route proxy, jobs)
 ├── docs/         Architecture and product docs
 ├── .github/      CI workflows, issue/PR templates, dependabot
 └── docker-compose.yml
@@ -94,6 +95,17 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md]
   no bot-generated content or fake reports) and the data-security measures. Written for people and AI agents.
 - [docs/PROMPT_OPUS5_MAX.md](docs/PROMPT_OPUS5_MAX.md) — the ready-to-paste prompt that drives Claude Opus 5
   (effort max) through the masterplan, one phase at a time.
+
+## Remote service (Python)
+
+- [remote-service/](remote-service/README.md) — the `pkremote` package: the support service
+  the masterplan keeps next to Supabase (route proxy with cache and rounded coordinates,
+  jobs such as the verified-spots export, health endpoints), written to run on a remote host
+  with no database of its own. Built and published as a container image by
+  [`.github/workflows/remote-service.yml`](.github/workflows/remote-service.yml).
+- [docs/ANALISI_STRUTTURA_PYTHON.md](docs/ANALISI_STRUTTURA_PYTHON.md) — the analysis of the
+  repository that led to it: what exists, in what state, what a remote Python service must
+  and must not do here.
 
 ## Contributing
 

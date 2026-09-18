@@ -36,8 +36,12 @@ Setup in `infra/routing/` (docker compose + istruzioni). In sintesi:
      marciapiede), lungo-strada monotoni;
    - opzionale: bonus per vie con `barrier=wall/fence` basse mappate — dove
      l'ambiente urbano offre linee.
-3. Il backend FastAPI espone `GET /api/v1/route?from=..&to=..&profile=pk`
-   come proxy con cache (Redis) verso OSRM, e `pk-route.js` punta lì.
+3. Il servizio remoto (`remote-service/`, pacchetto `pkremote`) espone
+   `GET /api/v1/route?from=lat,lng&to=lat,lng` come proxy con cache in
+   memoria verso OSRM, arrotondando le coordinate a circa 100 m prima di
+   usarle (masterplan 6.4). Il profilo lo decide l'istanza con la variabile
+   `OSRM_PROFILE` (`foot` oggi, `pk_foot` quando esisterà), non il client.
+   `pk-route.js` punterà lì al posto del server pubblico.
 
 Costo: ~1 GB RAM per l'istanza OSRM su Roma, rigenerazione dati mensile.
 

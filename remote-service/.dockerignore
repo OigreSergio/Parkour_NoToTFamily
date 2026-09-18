@@ -1,0 +1,15 @@
+# Ciò che non deve entrare nell'immagine: segreti locali, ambienti virtuali,
+# cache di Python, risultati dei job, test. Il Dockerfile copia solo
+# pyproject.toml e pkremote/, ma un .pyc dentro pkremote/ passerebbe comunque.
+.env
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+output/
+tests/
+build/
+dist/
+*.egg-info/

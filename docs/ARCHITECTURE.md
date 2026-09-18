@@ -1,5 +1,14 @@
 # Architecture
 
+> **Stato (settembre 2026).** Questo documento descrive il backend FastAPI in
+> `backend/` così come era stato progettato. La direzione è cambiata: il
+> backend di produzione è Supabase e la parte Python che gira in remoto è il
+> servizio di supporto in `remote-service/` (vedi
+> [`PKFAMILY_MASTERPLAN.md`](PKFAMILY_MASTERPLAN.md) capitolo 4.2 e
+> [`ANALISI_STRUTTURA_PYTHON.md`](ANALISI_STRUTTURA_PYTHON.md)). Il flusso di
+> accesso reale è a codice via email e ospiti, non a password: vedi
+> [`AUTENTICAZIONE.md`](AUTENTICAZIONE.md).
+
 ## High-level
 
 ```

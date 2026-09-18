@@ -1,0 +1,19 @@
+# Aggiornamenti automatici delle dipendenze (masterplan cap. 6.5): un PR alla
+# settimana per ecosistema, così le versioni non restano ferme per mesi.
+version: 2
+updates:
+  - package-ecosystem: pip
+    directory: /remote-service
+    schedule:
+      interval: weekly
+    labels: [dipendenze, remote-service]
+  - package-ecosystem: docker
+    directory: /remote-service
+    schedule:
+      interval: weekly
+    labels: [dipendenze, remote-service]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    labels: [dipendenze, ci]

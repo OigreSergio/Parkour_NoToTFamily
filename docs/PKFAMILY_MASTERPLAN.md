@@ -359,6 +359,11 @@ ha una lista equivalente sempre raggiungibile.
 - **Le regole di business stanno nel database** (vincoli, trigger, policy RLS,
   funzioni SQL) e nelle Edge Functions per ciò che richiede privilegi. I
   client mirrorano, non inventano (regola già in vigore).
+- **Dove vive il servizio di supporto (settembre 2026):** in `remote-service/`
+  (pacchetto Python `pkremote`), scritto per girare in remoto senza database
+  proprio: stato, proxy dei percorsi con cache e coordinate arrotondate, job
+  sui dati. `backend/` resta com'è finché la decisione G non lo archivia. Le
+  ragioni e lo stato sono in `docs/ANALISI_STRUTTURA_PYTHON.md`.
 
 ### 4.3 Mappa delle rotte (information architecture)
 
@@ -432,6 +437,8 @@ Ogni tabella ha RLS attiva e politiche esplicite. Ogni politica ha un test
 | `backup-quotidiano.yml` | ogni notte | Come oggi, con le modifiche di 6.6 |
 | `sync-map.yml` | manuale | Come oggi, ma produce dati per la build, non patch sul bundle |
 | `budget.yml` | ogni PR | Lighthouse su landing e `/app/`: fallisce se sfora i budget di 3.8 |
+| `remote-service.yml` (esiste) | PR e push su `main` che toccano `remote-service/` | `ruff` + `pytest` del servizio remoto; sui push su `main` costruisce l'immagine, la prova su `/healthz` e la pubblica su GitHub Container Registry |
+| `gitleaks.yml` (esiste) | ogni push e PR; settimanale su tutta la storia | Scansione segreti (S0-4). La chiave pubblicabile è esclusa in `.gitleaks.toml` |
 
 Ambienti GitHub: `production` (segreti di deploy e Supabase, richiede
 approvazione dell'admin), `preview`. I segreti stanno lì e in nessun altro posto.
