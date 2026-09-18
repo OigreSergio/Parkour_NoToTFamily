@@ -10,7 +10,7 @@
 # In remoto la stessa immagine viene costruita dal workflow
 # .github/workflows/remote-service.yml e pubblicata su GitHub Container Registry.
 
-FROM python:3.11-slim AS build
+FROM python:3.14-slim AS build
 ENV PIP_NO_CACHE_DIR=1 PYTHONDONTWRITEBYTECODE=1
 WORKDIR /src
 COPY pyproject.toml ./
@@ -18,7 +18,7 @@ COPY pkremote ./pkremote
 # `--prefix` installa in una cartella separata che il secondo stadio copia in blocco.
 RUN pip install --prefix=/install .
 
-FROM python:3.11-slim
+FROM python:3.14-slim
 # HOST=0.0.0.0 è obbligatorio in un container (vedi config.py); PORT resta
 # sovrascrivibile dal provider; i log in JSON sono quelli che i provider indicizzano.
 ENV PYTHONUNBUFFERED=1 \
