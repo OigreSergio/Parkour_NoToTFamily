@@ -269,6 +269,10 @@ tmp/
 📲/backup-completo.json
 scripts/data/cities1000.zip
 
+# I worktree che gli agenti usano per lavorare in disparte: sono checkout
+# temporanei di questo stesso repository, non contenuto da versionare.
+.claude/worktrees/
+
 # app/ — la beta si costruisce, non si versiona
 app/dist/
 
