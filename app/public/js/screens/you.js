@@ -183,9 +183,13 @@ function sezioneAspetto() {
             class: 'pk-chip',
             'aria-pressed': attuale === valore ? 'true' : 'false',
             onclick: async () => {
-              document.documentElement.dataset.tema = valore;
+              // Prima si scrive, poi si cambia l'aspetto. Cambiare l'aspetto
+              // fa ridisegnare la mappa nello stesso istante, e una tela
+              // intera davanti a una scrittura su IndexedDB la fa aspettare:
+              // chi chiudesse l'app in quel momento la ritroverebbe com'era.
               await scrivi('tema', valore);
-              disegna();
+              document.documentElement.dataset.tema = valore;
+              await disegna();
             },
           },
           [etichetta]
