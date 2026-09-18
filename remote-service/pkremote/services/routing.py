@@ -11,11 +11,14 @@ chiamare invece `GET /api/v1/route` del servizio remoto, che:
 3. se manca, chiede a OSRM e salva la risposta.
 
 Il modulo non sa nulla di HTTP: la rotta in `api/route.py` fa solo da
-traduttore tra query string e queste funzioni.
+traduttore tra query string e queste funzioni. `RouteAnswer` è un modello
+pydantic perché è anche la risposta HTTP: un solo tipo, nessuna conversione.
 """
 
-from dataclasses import asdict, dataclass, replace
+from dataclasses import dataclass
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict
 
 from pkremote.errors import BadRequest, RoutingUnavailable
 from pkremote.integrations.osrm import OSRMClient
@@ -30,9 +33,10 @@ class Point:
     lng: float
 
 
-@dataclass(frozen=True)
-class RouteAnswer:
+class RouteAnswer(BaseModel):
     """Ciò che il servizio restituisce a chi chiede un percorso."""
+
+    model_config = ConfigDict(frozen=True)
 
     distance_m: float
     duration_s: float
@@ -45,20 +49,16 @@ class RouteAnswer:
     #: Chi ha calcolato il percorso (oggi solo "osrm").
     source: str
 
-    def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
-
 
 def parse_point(text: str) -> Point:
     """Da "41.9028,12.4964" a `Point(lat=41.9028, lng=12.4964)`.
 
     Controlla forma e intervalli: una latitudine fuori da [-90, 90] o una
     longitudine fuori da [-180, 180] non è un errore di OSRM da inoltrare, è
-    una richiesta sbagliata da rifiutare subito con 422.
+    una richiesta sbagliata da rifiutare subito con 422. I messaggi non
+    ripetono il valore ricevuto: una coordinata, anche sbagliata, è pur sempre
+    una posizione, e la risposta potrebbe finire in un log del client.
     """
-    # I messaggi non ripetono il valore ricevuto: una coordinata, anche
-    # sbagliata, è pur sempre una posizione, e la risposta potrebbe finire in
-    # un log del client o di un proxy.
     parts = text.split(",")
     if len(parts) != 2:
         raise BadRequest('coordinate attese come "lat,lng"')
@@ -115,7 +115,7 @@ async def compute_route(
 
     cached = await cache.get(key)
     if cached is not None:
-        return replace(cached, cached=True)
+        return cached.model_copy(update={"cached": True})
 
     result = await osrm.route(start, end)  # può alzare UpstreamError (502)
     answer = RouteAnswer(

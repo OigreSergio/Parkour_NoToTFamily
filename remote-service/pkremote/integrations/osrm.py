@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any
 import httpx
 
 from pkremote.errors import UpstreamError
-from pkremote.logs import log
+from pkremote.integrations.http import fetch
 
 if TYPE_CHECKING:  # evita l'import circolare a runtime: serve solo ai tipi
     from pkremote.services.routing import Point
@@ -43,30 +43,27 @@ class OSRMClient:
 
         Si chiede il punto stradale più vicino a una coordinata qualunque:
         anche un 400 ("nessun segmento") dimostra che il processo è vivo. Solo
-        un errore di rete o un 5xx contano come guasto. `timeout_seconds`, se
-        dato, vince sul timeout del client condiviso.
+        un errore di rete o un 5xx contano come guasto.
         """
-        url = f"{self._base}/nearest/v1/{self.profile}/12.4964,41.9028"
-        options: dict[str, Any] = (
-            {"timeout": timeout_seconds} if timeout_seconds is not None else {}
+        response = await fetch(
+            self._http,
+            f"{self._base}/nearest/v1/{self.profile}/12.4964,41.9028",
+            service="OSRM",
+            params={"number": "1"},
+            timeout_seconds=timeout_seconds,
         )
-        try:
-            response = await self._http.get(url, params={"number": 1}, **options)
-        except httpx.HTTPError as exc:
-            raise UpstreamError(f"OSRM non raggiungibile: {exc.__class__.__name__}") from exc
         if response.status_code >= 500:
             raise UpstreamError(f"OSRM risponde {response.status_code}")
 
     async def route(self, start: "Point", end: "Point") -> OSRMRoute:
         """Il percorso tra due punti già arrotondati (vedi services/routing.py)."""
         coords = f"{start.lng},{start.lat};{end.lng},{end.lat}"
-        url = f"{self._base}/route/v1/{self.profile}/{coords}"
-        params = {"overview": "full", "geometries": "geojson", "steps": "false"}
-        try:
-            response = await self._http.get(url, params=params)
-        except httpx.HTTPError as exc:
-            log.warning("osrm_non_raggiungibile", error=exc.__class__.__name__)
-            raise UpstreamError(f"OSRM non raggiungibile: {exc.__class__.__name__}") from exc
+        response = await fetch(
+            self._http,
+            f"{self._base}/route/v1/{self.profile}/{coords}",
+            service="OSRM",
+            params={"overview": "full", "geometries": "geojson", "steps": "false"},
+        )
         # OSRM risponde 400 con un JSON `{"code": "NoRoute" | "NoSegment" | ...}`
         # quando è vivo ma non ha un tragitto: il codice vale più dello stato.
         if response.status_code not in (200, 400):

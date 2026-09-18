@@ -8,8 +8,8 @@ non porta dipendenze. Quando serviranno RPC o scritture, si estende questo.
 Le regole del masterplan che questo file rispetta:
 - la chiave pubblicabile va bene ovunque: le policy RLS restano attive, quindi
   con essa il servizio vede solo ciò che vedrebbe un visitatore anonimo;
-- la chiave segreta scavalca le RLS: oggi nessun job la usa, e `app.py` non
-  costruisce mai questo client con lei. Quando servirà, il job che la richiede
+- la chiave segreta scavalca le RLS: oggi nessun job la usa, e `from_settings`
+  non costruisce mai il client con lei. Quando servirà, il job che la richiede
   lo farà in modo esplicito e documentato.
 
 Non ancora possibile, ed è il prossimo passo (analisi, cap. 9): agire per
@@ -27,7 +27,10 @@ from typing import Any
 import httpx
 from pydantic import SecretStr
 
+from pkremote.config import Settings
 from pkremote.errors import UpstreamError
+from pkremote.integrations.http import fetch
+from pkremote.logs import log
 
 
 class SupabaseClient:
@@ -41,6 +44,31 @@ class SupabaseClient:
         secret = key.get_secret_value()
         self._headers = {"apikey": secret, "Authorization": f"Bearer {secret}"}
 
+    @classmethod
+    def from_settings(cls, settings: Settings, http: httpx.AsyncClient) -> "SupabaseClient | None":
+        """Il client di lettura, o None se la configurazione non lo permette.
+
+        Nasce solo dalla chiave pubblicabile: con le RLS attive vede solo dati
+        pubblici, che per le letture è esattamente ciò che vogliamo. La chiave
+        segreta non è mai un ripiego: se è l'unica presente, il servizio lo
+        dice nel log e resta senza Supabase.
+        """
+        if not settings.supabase_configured:
+            if settings.supabase_url is not None and settings.supabase_secret_key is not None:
+                log.warning(
+                    "supabase_lettura_disattivata",
+                    motivo="manca SUPABASE_PUBLISHABLE_KEY: la segreta non serve a leggere",
+                )
+            return None
+        assert settings.supabase_url is not None  # garantiti da supabase_configured
+        assert settings.supabase_publishable_key is not None
+        return cls(
+            url=settings.supabase_url,
+            key=settings.supabase_publishable_key,
+            role="publishable",
+            http=http,
+        )
+
     def __repr__(self) -> str:
         # Mai la chiave: questo repr può finire in un log.
         return f"SupabaseClient(url={self._url!r}, role={self.role!r})"
@@ -49,34 +77,42 @@ class SupabaseClient:
         self,
         path: str,
         *,
-        params: dict[str, str] | None,
-        headers: dict[str, str],
-        timeout_seconds: float | None,
+        params: dict[str, str] | None = None,
+        extra_headers: dict[str, str] | None = None,
+        timeout_seconds: float | None = None,
     ) -> httpx.Response:
-        options: dict[str, Any] = (
-            {"timeout": timeout_seconds} if timeout_seconds is not None else {}
+        return await fetch(
+            self._http,
+            f"{self._url}{path}",
+            service="Supabase",
+            params=params,
+            headers={**self._headers, **(extra_headers or {})},
+            timeout_seconds=timeout_seconds,
         )
-        try:
-            return await self._http.get(
-                f"{self._url}{path}", params=params or {}, headers=headers, **options
-            )
-        except httpx.HTTPError as exc:
-            raise UpstreamError(f"Supabase non raggiungibile: {exc.__class__.__name__}") from exc
+
+    @staticmethod
+    def _rows(response: httpx.Response, table: str) -> list[dict[str, Any]]:
+        """Il corpo di una risposta a una lettura, o `UpstreamError` se non è quello atteso."""
+        if response.status_code // 100 != 2:
+            raise UpstreamError(f"Supabase risponde {response.status_code} su {table}")
+        body = response.json()
+        if not isinstance(body, list):
+            raise UpstreamError(f"Supabase: risposta inattesa su {table} (non è una lista)")
+        return body
 
     async def ping(self, *, timeout_seconds: float | None = None) -> None:
         """Una lettura minima (`spots`, una riga, solo `id`): se risponde 200 il
         progetto esiste, la chiave è accettata e le RLS lasciano leggere. È più
         leggera dello schema OpenAPI di `/rest/v1/`, che pesa centinaia di kB."""
         response = await self._get(
-            "/rest/v1/spots",
-            params={"select": "id", "limit": "1"},
-            headers=self._headers,
-            timeout_seconds=timeout_seconds,
+            "/rest/v1/spots", params={"select": "id", "limit": "1"}, timeout_seconds=timeout_seconds
         )
         if response.status_code != 200:
             raise UpstreamError(f"Supabase risponde {response.status_code}")
 
-    async def select(self, table: str, *, params: dict[str, str] | None = None) -> Any:
+    async def select(
+        self, table: str, *, params: dict[str, str] | None = None
+    ) -> list[dict[str, Any]]:
         """Legge righe da `table` con i filtri PostgREST passati in `params`.
 
         Esempi di `params`: `{"select": "id,name", "status": "eq.verified",
@@ -84,12 +120,7 @@ class SupabaseClient:
         pagina (il limite lo decide il progetto, di solito 1000 righe): per
         tutto usare `select_all`.
         """
-        response = await self._get(
-            f"/rest/v1/{table}", params=params, headers=self._headers, timeout_seconds=None
-        )
-        if response.status_code // 100 != 2:
-            raise UpstreamError(f"Supabase risponde {response.status_code} su {table}")
-        return response.json()
+        return self._rows(await self._get(f"/rest/v1/{table}", params=params), table)
 
     async def select_all(
         self, table: str, *, params: dict[str, str] | None = None, page_size: int = 1000
@@ -113,17 +144,14 @@ class SupabaseClient:
         start = 0
         previous: list[dict[str, Any]] | None = None
         while True:
-            headers = {**self._headers, "Range": f"{start}-{start + page_size - 1}"}
             response = await self._get(
-                f"/rest/v1/{table}", params=params, headers=headers, timeout_seconds=None
+                f"/rest/v1/{table}",
+                params=params,
+                extra_headers={"Range": f"{start}-{start + page_size - 1}"},
             )
             if response.status_code == 416:  # oltre l'ultima riga: finito
                 break
-            if response.status_code // 100 != 2:
-                raise UpstreamError(f"Supabase risponde {response.status_code} su {table}")
-            chunk = response.json()
-            if not isinstance(chunk, list):
-                raise UpstreamError(f"Supabase: risposta inattesa su {table} (non è una lista)")
+            chunk = self._rows(response, table)
             if not chunk:
                 break
             if chunk == previous:

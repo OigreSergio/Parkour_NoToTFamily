@@ -27,18 +27,20 @@ hanno due cache, e va bene così.
 remote-service/
 ├── pkremote/            il pacchetto (ogni file spiega sé stesso in testa)
 │   ├── __main__.py      comando `pkremote`: serve | jobs | job <nome> | config
-│   ├── app.py           fabbrica dell'app FastAPI: client condivisi, CORS, errori, rotte
+│   ├── app.py           fabbrica dell'app: oggetti condivisi su app.state, middleware, errori, rotte
 │   ├── config.py        configurazione da variabili d'ambiente + controlli di produzione
-│   ├── deps.py          come le rotte ottengono configurazione, client, cache, token
-│   ├── errors.py        errori con codice stabile → {"error": {"code", "message"}}
-│   ├── logs.py          log JSON/console, senza dati personali
-│   ├── security.py      confronto sicuro dei token, intestazioni di sicurezza
-│   ├── api/             health.py, route.py, jobs.py
+│   ├── deps.py          come le rotte ottengono configurazione, client, cache, contesto dei job, token
+│   ├── errors.py        errori con codice stabile e i gestori: tutto esce come {"error": {"code", "message"}}
+│   ├── logs.py          log JSON/console su stderr, senza dati personali, un solo formatter con uvicorn
+│   ├── middleware.py    CORS, intestazioni di sicurezza, un evento di log per richiesta con X-Request-ID
+│   ├── security.py      confronto del token dei job a tempo costante
+│   ├── api/             health.py, route.py, jobs.py (solo traduzione HTTP ↔ servizi)
 │   ├── services/        routing.py (arrotonda, cache, chiama OSRM), cache.py (TTL + LRU)
-│   ├── integrations/    supabase.py (PostgREST), osrm.py, geo.py (EWKB/GeoJSON)
+│   ├── integrations/    http.py (una sola GET con timeout ed errori), supabase.py, osrm.py, geo.py
 │   └── jobs/            base.py (contratto ed esecutore), ping.py, spots_export.py
 ├── tests/               una suite senza rete: Supabase e OSRM sono finti
 ├── Dockerfile           immagine a due stadi, utente non root, healthcheck
+├── .dockerignore        segreti locali, cache, risultati e test restano fuori dall'immagine
 ├── docker-compose.yml   avvio locale (Compose ≥ 2.20); profilo `routing` per affiancare OSRM
 ├── .env.example         tutte le variabili, commentate
 └── pyproject.toml       dipendenze e strumenti
@@ -46,8 +48,14 @@ remote-service/
 
 Dipendenze tra le parti, sempre in un verso solo:
 `api → services → integrations`, e `jobs → integrations`. Le rotte non
-contengono logica; i servizi non sanno di HTTP; le integrazioni non sanno di
-prodotto.
+contengono logica e non toccano `app.state` (passano da `deps.py`); i servizi
+non sanno di HTTP; le integrazioni non sanno di prodotto. I modelli di
+risposta (`RouteAnswer`, `JobResult`) sono definiti una volta sola, nei
+servizi e nei job, e le rotte li restituiscono così come sono.
+
+Convenzioni: identificatori, codici d'errore, stati e variabili d'ambiente in
+inglese; commenti, docstring, eventi di log e messaggi in italiano. Le regole
+complete per chi (persona o agente) lavora qui sono in [`AGENTS.md`](../AGENTS.md).
 
 ## Avvio in locale
 

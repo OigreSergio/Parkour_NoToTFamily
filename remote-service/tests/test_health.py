@@ -2,12 +2,7 @@
 
 import httpx
 
-PRODUCTION = {
-    "env": "production",
-    "host": "0.0.0.0",  # noqa: S104 - configurazione da container
-    "cors_origins": ["https://oigresergio.github.io"],
-    "log_format": "json",
-}
+from tests.production import PRODUCTION
 
 
 def osrm_alive(_: httpx.Request) -> httpx.Response:

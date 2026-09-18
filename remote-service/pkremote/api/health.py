@@ -18,13 +18,16 @@ Gli stati sono parole fisse in inglese (`ok`, `error`, `not_configured`,
 import asyncio
 from typing import Annotated, Any
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
 from pkremote import __version__
 from pkremote.config import Settings
-from pkremote.deps import settings_dep
+from pkremote.deps import osrm_dep, ready_cache_dep, route_cache_dep, settings_dep, supabase_dep
 from pkremote.errors import UpstreamError
+from pkremote.integrations.osrm import OSRMClient
+from pkremote.integrations.supabase import SupabaseClient
+from pkremote.services.cache import TTLCache
 
 router = APIRouter(tags=["stato"])
 
@@ -52,29 +55,33 @@ async def _check(name: str, client: Any, timeout_seconds: float) -> dict[str, st
 
 
 @router.get("/readyz")
-async def readyz(request: Request) -> JSONResponse:
+async def readyz(
+    settings: Annotated[Settings, Depends(settings_dep)],
+    supabase: Annotated[SupabaseClient | None, Depends(supabase_dep)],
+    osrm: Annotated[OSRMClient | None, Depends(osrm_dep)],
+    ready_cache: Annotated[TTLCache, Depends(ready_cache_dep)],
+    route_cache: Annotated[TTLCache, Depends(route_cache_dep)],
+) -> JSONResponse:
     """Pronto. 200 se tutte le dipendenze configurate rispondono, altrimenti 503.
 
     L'esito resta valido per `READY_CACHE_SECONDS`: sonde ravvicinate non
     costano chiamate a Supabase e OSRM, e nessuno può usare questa rotta per
     far martellare gli upstream.
     """
-    state = request.app.state
-    cached = await state.ready_cache.get("readyz")
+    cached = await ready_cache.get("readyz")
     if cached is not None:
         return JSONResponse(status_code=cached["status_code"], content=cached["body"])
-    timeout = state.settings.ready_timeout_seconds
     checks = await asyncio.gather(
-        _check("supabase", state.supabase, timeout),
-        _check("osrm", state.osrm, timeout),
+        _check("supabase", supabase, settings.ready_timeout_seconds),
+        _check("osrm", osrm, settings.ready_timeout_seconds),
     )
     ready = all(check["status"] != "error" for check in checks)
     body = {
         "status": "ready" if ready else "not_ready",
         "checks": list(checks),
-        "route_cache": state.route_cache.stats(),
+        "route_cache": route_cache.stats(),
     }
     status_code = 200 if ready else 503
-    if state.settings.ready_cache_seconds > 0:
-        await state.ready_cache.set("readyz", {"status_code": status_code, "body": body})
+    if settings.ready_cache_seconds > 0:
+        await ready_cache.set("readyz", {"status_code": status_code, "body": body})
     return JSONResponse(status_code=status_code, content=body)

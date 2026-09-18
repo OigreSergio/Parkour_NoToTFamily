@@ -4,14 +4,7 @@ import pytest
 from pydantic import ValidationError
 
 from pkremote.config import Settings
-
-# Una configurazione di produzione corretta, da cui i test tolgono un pezzo alla volta.
-PRODUCTION_OK = {
-    "env": "production",
-    "host": "0.0.0.0",  # noqa: S104 - è proprio ciò che un container deve fare
-    "cors_origins": ["https://oigresergio.github.io"],
-    "log_format": "json",
-}
+from tests.production import PRODUCTION
 
 
 def test_defaults_are_for_local_development() -> None:
@@ -85,13 +78,13 @@ def test_secret_key_alone_does_not_configure_supabase() -> None:
 
 
 def test_production_accepts_a_correct_configuration() -> None:
-    settings = Settings(_env_file=None, **PRODUCTION_OK, job_token="t" * 32)
+    settings = Settings(_env_file=None, **PRODUCTION, job_token="t" * 32)
     assert settings.is_production
     assert settings.jobs_http_enabled
 
 
 def test_production_accepts_ipv6_any_host() -> None:
-    settings = Settings(_env_file=None, **{**PRODUCTION_OK, "host": "::"})
+    settings = Settings(_env_file=None, **{**PRODUCTION, "host": "::"})
     assert settings.host == "::"
 
 
@@ -115,7 +108,7 @@ def test_production_accepts_ipv6_any_host() -> None:
 )
 def test_production_rejects_dangerous_configuration(broken: dict[str, object]) -> None:
     with pytest.raises(ValidationError):
-        Settings(_env_file=None, **{**PRODUCTION_OK, **broken})
+        Settings(_env_file=None, **{**PRODUCTION, **broken})
 
 
 def test_secrets_never_appear_in_repr_or_dump() -> None:

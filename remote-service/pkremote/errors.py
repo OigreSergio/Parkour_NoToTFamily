@@ -1,7 +1,8 @@
 """Errori applicativi: un codice stabile, un messaggio, uno stato HTTP.
 
 Ogni errore che il servizio vuole comunicare a chi lo chiama è una sottoclasse
-di `AppError`. Il gestore in `app.py` li trasforma tutti nella stessa forma:
+di `AppError`. `install_error_handlers` li trasforma tutti nella stessa forma,
+insieme agli errori di validazione di FastAPI e ai 404/405 di Starlette:
 
     {"error": {"code": "routing_unavailable", "message": "..."}}
 
@@ -13,7 +14,10 @@ esistente produce con il suo gestore (`backend/app/main.py`,
 `app_error_handler`), così un client tratta i due servizi allo stesso modo.
 """
 
-from fastapi import status
+from fastapi import FastAPI, Request, status
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
 class AppError(Exception):
@@ -27,7 +31,7 @@ class AppError(Exception):
         super().__init__(self.message)
 
     def to_payload(self) -> dict[str, dict[str, str]]:
-        return {"error": {"code": self.code, "message": self.message}}
+        return error_payload(self.code, self.message)
 
 
 class BadRequest(AppError):
@@ -82,3 +86,42 @@ class UpstreamError(AppError):
 
     code = "upstream_error"
     status_code = status.HTTP_502_BAD_GATEWAY
+
+
+#: Stato HTTP -> codice stabile, per gli errori che non nascono da AppError.
+CODES_BY_STATUS = {
+    400: "bad_request",
+    401: "unauthorized",
+    403: "forbidden",
+    404: "not_found",
+    405: "method_not_allowed",
+    422: "bad_request",
+}
+
+
+def error_payload(code: str, message: str) -> dict[str, dict[str, str]]:
+    return {"error": {"code": code, "message": message}}
+
+
+def install_error_handlers(app: FastAPI) -> None:
+    """Registra i gestori che danno a ogni errore la forma `{"error": {...}}`."""
+
+    @app.exception_handler(AppError)
+    async def _app_error(_: Request, exc: AppError) -> JSONResponse:
+        return JSONResponse(status_code=exc.status_code, content=exc.to_payload())
+
+    @app.exception_handler(RequestValidationError)
+    async def _validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
+        # Solo dove e perché, mai il valore ricevuto (potrebbe essere una coordinata).
+        problems = "; ".join(
+            f"{'.'.join(str(p) for p in error.get('loc', ()))}: {error.get('msg', '')}"
+            for error in exc.errors()
+        )
+        payload = error_payload("bad_request", f"richiesta non valida ({problems})")
+        return JSONResponse(status_code=422, content=payload)
+
+    @app.exception_handler(StarletteHTTPException)
+    async def _http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:
+        code = CODES_BY_STATUS.get(exc.status_code, "http_error")
+        payload = error_payload(code, str(exc.detail))
+        return JSONResponse(status_code=exc.status_code, content=payload, headers=exc.headers)

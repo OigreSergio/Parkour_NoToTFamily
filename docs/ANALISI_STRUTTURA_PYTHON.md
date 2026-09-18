@@ -328,21 +328,23 @@ remote-service/
 ├── pkremote/
 │   ├── __init__.py         versione e mappa del pacchetto
 │   ├── __main__.py         comando `pkremote`: serve | jobs | job <nome> | config (segreti mascherati)
-│   ├── app.py              fabbrica dell'app: client HTTP condiviso, cache, CORS, errori, rotte
+│   ├── app.py              fabbrica dell'app: oggetti condivisi su app.state, middleware, gestori degli errori, rotte
 │   ├── config.py           Settings da ambiente; in produzione rifiuta HOST≠0.0.0.0/::, CORS vuoto o "*", DEBUG, log non JSON, segreti segnaposto, JOB_TOKEN corto, SUPABASE_URL non https, chiave segreta senza pubblicabile; rifiuta sempre il router pubblico FOSSGIS come OSRM
-│   ├── deps.py             come le rotte ottengono settings, client, cache; protezione dei job con token
-│   ├── errors.py           AppError con codice stabile → {"error": {"code", "message"}}; anche i 404/405/422 di FastAPI escono in questa forma
+│   ├── deps.py             come le rotte ottengono settings, client, cache, contesto e lock dei job; protezione con token (le rotte non toccano app.state)
+│   ├── errors.py           AppError con codice stabile e i gestori che danno a tutti gli errori, anche 404/405/422 di FastAPI, la forma {"error": {"code", "message"}}
 │   ├── logs.py             un solo formatter per structlog e uvicorn, JSON in remoto, console in locale, su stderr; maschera lat, lng, email, authorization, token; il log di accesso di uvicorn (query string e IP) è spento e sostituito da un evento per richiesta con X-Request-ID
-│   ├── security.py         confronto del token a tempo costante; intestazioni nosniff, referrer, no-store, HSTS in produzione
+│   ├── middleware.py       CORS; intestazioni nosniff, referrer, no-store, HSTS in produzione; un evento di log per richiesta con X-Request-ID
+│   ├── security.py         confronto del token dei job a tempo costante
 │   ├── api/health.py       GET /healthz (vivo) e GET /readyz (dipendenze configurate raggiungibili → 200, altrimenti 503; timeout breve, esito riusato per 10 s)
-│   ├── api/route.py        GET /api/v1/route?from=lat,lng&to=lat,lng → distanza, durata, GeoJSON, cached, precision_m
+│   ├── api/route.py        GET /api/v1/route?from=lat,lng&to=lat,lng → RouteAnswer (distanza, durata, GeoJSON, cached, precision_m)
 │   ├── api/jobs.py         GET /api/v1/jobs, POST /api/v1/jobs/{nome}; con Authorization: Bearer JOB_TOKEN; lo stesso job non gira due volte insieme (409)
 │   ├── services/routing.py parse e validazione, arrotondamento a ~111 m, chiave di cache, chiamata a OSRM
 │   ├── services/cache.py   cache in memoria con scadenza e limite LRU, protetta da lock
-│   ├── integrations/supabase.py  client PostgREST minimo (ping leggero, select, select_all a pagine con Range); nasce solo dalla chiave pubblicabile; la chiave non compare mai in repr o log
+│   ├── integrations/http.py      una sola GET per tutte le chiamate in uscita: timeout opzionale, errori di rete → 502
+│   ├── integrations/supabase.py  client PostgREST minimo (ping leggero, select, select_all a pagine con Range); `from_settings` lo costruisce solo dalla chiave pubblicabile; la chiave non compare mai in repr o log
 │   ├── integrations/osrm.py      client OSRM (ping, route); converte lat,lng → lng,lat in un solo posto
 │   ├── integrations/geo.py       decodifica EWKB (esadecimale PostGIS) e GeoJSON dei punti
-│   ├── jobs/base.py        contratto Job, registro, esecutore con tempi, log ed errori catturati
+│   ├── jobs/base.py        contratto Job, JobResult (anche risposta HTTP), JobContext.build (stesso contesto da CLI e da HTTP), registro, esecutore con tempi, log ed errori catturati
 │   ├── jobs/ping.py        job di verifica del deploy
 │   └── jobs/spots_export.py      legge gli spot verificati da Supabase (schema reale lat/lng o schema delle migrazioni) e scrive output/spots_verificati.json; zero righe = esito non riuscito, nessun file
 ├── .dockerignore           .env, ambienti virtuali, cache, risultati e test restano fuori dall'immagine
@@ -481,6 +483,11 @@ FATTO:
   .github/workflows/gitleaks.yml (S0-4), .github/dependabot.yml, .gitleaks.toml.
 - README.md alla radice, masterplan 4.2 e 4.6, ROUTING_PK.md, ARCHITECTURE.md: note brevi
   che rimandano a remote-service/ e a questo documento.
+- Seconda passata di coerenza sul pacchetto: una sola funzione HTTP in uscita, client Supabase
+  costruito in un posto solo, modelli di risposta definiti una volta (RouteAnswer, JobResult),
+  middleware e gestori degli errori nei propri moduli, rotte che non toccano app.state.
+- Per gli agenti: AGENTS.md (istruzioni condivise), CLAUDE.md, .junie/guidelines.md,
+  configurazioni PyCharm in .run/, guida e incarichi di allenamento in docs/AGENTI_PYCHARM.md.
 - TernaryOperator: porting Python commentato, test, README (branch già pubblicato).
 
 VERIFICATO:

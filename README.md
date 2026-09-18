@@ -106,6 +106,9 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md]
 - [docs/ANALISI_STRUTTURA_PYTHON.md](docs/ANALISI_STRUTTURA_PYTHON.md) — the analysis of the
   repository that led to it: what exists, in what state, what a remote Python service must
   and must not do here.
+- [AGENTS.md](AGENTS.md) — the shared instructions for people and AI agents (Claude Code,
+  Junie, AI Assistant) working here; [docs/AGENTI_PYCHARM.md](docs/AGENTI_PYCHARM.md) explains
+  the PyCharm setup, the run configurations in `.run/` and a set of training assignments.
 
 ## Contributing
 

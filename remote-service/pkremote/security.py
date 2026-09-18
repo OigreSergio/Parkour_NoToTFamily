@@ -1,18 +1,15 @@
-"""Le poche cose di sicurezza che un servizio HTTP remoto deve fare da solo.
+"""Confronto sicuro del token dei job.
 
 Il grosso della sicurezza sta altrove (Supabase con le RLS, il provider con
-TLS e il firewall, Cloudflare quando arriverà: masterplan cap. 6.5). Qui
-restano due responsabilità che nessun altro può assumersi al posto nostro:
-
-1. confrontare un token senza rivelare, tramite il tempo di risposta, quante
-   lettere erano giuste (`token_matches`);
-2. aggiungere a ogni risposta le intestazioni che dicono al browser di non
-   fare cose pericolose (`install_security_headers`).
+TLS e il firewall, Cloudflare quando arriverà: masterplan cap. 6.5). Le
+intestazioni di sicurezza delle risposte stanno in `middleware.py`. Qui resta
+una responsabilità che nessun altro può assumersi al posto nostro: confrontare
+un token senza rivelare, tramite il tempo di risposta, quante lettere erano
+giuste.
 """
 
 import hmac
 
-from fastapi import FastAPI, Request, Response
 from pydantic import SecretStr
 
 
@@ -35,28 +32,3 @@ def bearer_token(authorization_header: str) -> str | None:
     if scheme.lower() != "bearer" or not token.strip():
         return None
     return token.strip()
-
-
-def install_security_headers(app: FastAPI, *, production: bool) -> None:
-    """Registra un middleware che aggiunge le intestazioni di sicurezza a ogni risposta.
-
-    - `X-Content-Type-Options: nosniff`: il browser non "indovina" il tipo di un file;
-    - `Referrer-Policy`: chi segue un link da qui non porta con sé l'URL completo;
-    - `Cache-Control: no-store`: le risposte dell'API non vanno salvate da proxy
-      intermedi (le coordinate di un percorso, anche arrotondate, non devono
-      restare in una cache condivisa);
-    - `Strict-Transport-Security`: solo in produzione, dove il TLS è garantito
-      dal provider; in locale, su http, sarebbe un errore.
-    """
-
-    @app.middleware("http")
-    async def _security_headers(request: Request, call_next):  # type: ignore[no-untyped-def]
-        response: Response = await call_next(request)
-        response.headers.setdefault("X-Content-Type-Options", "nosniff")
-        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
-        response.headers.setdefault("Cache-Control", "no-store")
-        if production:
-            response.headers.setdefault(
-                "Strict-Transport-Security", "max-age=31536000; includeSubDomains"
-            )
-        return response

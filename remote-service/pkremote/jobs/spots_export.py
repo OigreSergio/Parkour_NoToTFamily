@@ -17,8 +17,9 @@ dell'analisi, `docs/ANALISI_STRUTTURA_PYTHON.md`):
 | fontanella | `has_fountain` | `water` |
 
 Il job legge tutte le colonne che le RLS mostrano e scrive **solo** i campi
-elencati in `EXPORTED_FIELDS`: così funziona oggi e continuerà a funzionare
-quando lo schema sarà allineato, senza esportare per sbaglio campi nuovi.
+costruiti in `to_export` (id, slug, name, description, difficulty, fountain,
+verified_at, lat, lng): così funziona oggi e continuerà a funzionare quando
+lo schema sarà allineato, senza esportare per sbaglio campi nuovi.
 
 Lo slug (`/spot/<slug>/`) viene dal nome; due spot con lo stesso nome
 avrebbero lo stesso indirizzo, quindi al secondo si aggiunge un suffisso preso
@@ -50,19 +51,6 @@ from pkremote.integrations.geo import point_from_location
 from pkremote.jobs.base import JobContext, JobResult, register
 
 OUTPUT_FILE = "spots_verificati.json"
-
-#: I soli campi che finiscono nel file, nell'ordine in cui compaiono.
-EXPORTED_FIELDS = (
-    "id",
-    "slug",
-    "name",
-    "description",
-    "difficulty",
-    "fountain",
-    "verified_at",
-    "lat",
-    "lng",
-)
 
 
 def slugify(text: str) -> str:
@@ -117,7 +105,8 @@ def to_export(row: dict[str, Any]) -> dict[str, Any] | None:
     lat, lng = point
     name = str(row.get("name") or "").strip()
     fountain = _first_present(row, "has_fountain", "water")
-    record = {
+    # Questo dizionario È l'elenco dei campi esportati: niente altro passa.
+    return {
         "id": row.get("id"),
         "slug": slugify(name),
         "name": name,
@@ -128,7 +117,6 @@ def to_export(row: dict[str, Any]) -> dict[str, Any] | None:
         "lat": lat,
         "lng": lng,
     }
-    return {field: record[field] for field in EXPORTED_FIELDS}
 
 
 @register

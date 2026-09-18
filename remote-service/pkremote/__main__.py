@@ -7,6 +7,8 @@
 
 Tutto legge la stessa configurazione (`config.py`), quindi ciò che funziona
 da riga di comando in locale funziona identico dentro il container remoto.
+Codici di uscita: 0 riuscito, 1 job non riuscito, 2 job inesistente o
+configurazione non valida.
 """
 
 import argparse
@@ -21,6 +23,8 @@ from pydantic import ValidationError
 from pkremote import __version__
 from pkremote.config import Settings, get_settings
 from pkremote.errors import AppError
+from pkremote.integrations.supabase import SupabaseClient
+from pkremote.jobs import JobContext, describe_jobs, run_job
 from pkremote.logs import configure_logging
 
 
@@ -51,6 +55,20 @@ def _serve(settings: Settings) -> int:
     return 0
 
 
+async def _run_job(settings: Settings, name: str) -> int:
+    async with httpx.AsyncClient(
+        timeout=settings.http_timeout_seconds, headers={"User-Agent": f"pkremote/{__version__}"}
+    ) as http:
+        ctx = JobContext.build(settings, http, SupabaseClient.from_settings(settings, http))
+        try:
+            result = await run_job(name, ctx)
+        except AppError as exc:
+            print(json.dumps(exc.to_payload(), ensure_ascii=False))
+            return 2
+    print(result.model_dump_json(indent=2))
+    return 0 if result.ok else 1
+
+
 def _load_settings() -> Settings | None:
     """Legge la configurazione; se non è valida spiega perché, senza rivelare segreti.
 
@@ -68,43 +86,6 @@ def _load_settings() -> Settings | None:
         return None
 
 
-async def _run_job(settings: Settings, name: str) -> int:
-    from pkremote.app import build_supabase_client
-    from pkremote.jobs import JobContext, run_job
-
-    async with httpx.AsyncClient(
-        timeout=settings.http_timeout_seconds, headers={"User-Agent": f"pkremote/{__version__}"}
-    ) as http:
-        ctx = JobContext(
-            settings=settings,
-            http=http,
-            supabase=build_supabase_client(settings, http),
-            output_dir=settings.jobs_output_dir,
-        )
-        try:
-            result = await run_job(name, ctx)
-        except AppError as exc:
-            print(json.dumps(exc.to_payload(), ensure_ascii=False))
-            return 2
-    print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
-    return 0 if result.ok else 1
-
-
-def _print_config(settings: Settings) -> int:
-    # `default=str` trasforma SecretStr in "**********" e Path in testo:
-    # questa stampa può finire in un log di deploy senza rischi.
-    print(json.dumps(settings.model_dump(), default=str, ensure_ascii=False, indent=2))
-    return 0
-
-
-def _list_jobs() -> int:
-    from pkremote.jobs.base import describe_jobs
-
-    for job in describe_jobs():
-        print(f"{job['name']:<16} {job['description']}")
-    return 0
-
-
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="pkremote", description="PkFAMILY - servizio remoto")
     parser.add_argument("--version", action="version", version=f"pkremote {__version__}")
@@ -117,7 +98,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     if args.command == "jobs":
-        return _list_jobs()
+        for job in describe_jobs():
+            print(f"{job['name']:<16} {job['description']}")
+        return 0
 
     settings = _load_settings()
     if settings is None:
@@ -127,7 +110,10 @@ def main(argv: Sequence[str] | None = None) -> int:
         return _serve(settings)
     if args.command == "job":
         return asyncio.run(_run_job(settings, args.name))
-    return _print_config(settings)
+    # `config`: SecretStr esce come "**********" e Path come testo, quindi questa
+    # stampa può finire in un log di deploy senza rischi.
+    print(settings.model_dump_json(indent=2))
+    return 0
 
 
 if __name__ == "__main__":

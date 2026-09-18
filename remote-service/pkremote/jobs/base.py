@@ -7,11 +7,12 @@ leggibile invece di un processo che muore.
 """
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Protocol
 
 import httpx
+from pydantic import BaseModel, Field
 
 from pkremote.config import Settings
 from pkremote.errors import AppError, NotFound
@@ -19,16 +20,16 @@ from pkremote.integrations.supabase import SupabaseClient
 from pkremote.logs import log
 
 
-@dataclass
-class JobResult:
-    """L'esito di un job: riuscito o no, un messaggio per le persone, dati per le macchine."""
+class JobResult(BaseModel):
+    """L'esito di un job: riuscito o no, un messaggio per le persone, dati per le macchine.
+
+    È un modello pydantic perché è anche la risposta HTTP di `POST /api/v1/jobs/<nome>`
+    e il JSON stampato da `pkremote job <nome>`: un solo tipo, nessuna conversione.
+    """
 
     ok: bool
     message: str
-    data: dict[str, Any] = field(default_factory=dict)
-
-    def to_dict(self) -> dict[str, Any]:
-        return {"ok": self.ok, "message": self.message, "data": self.data}
+    data: dict[str, Any] = Field(default_factory=dict)
 
 
 @dataclass
@@ -37,10 +38,19 @@ class JobContext:
 
     settings: Settings
     http: httpx.AsyncClient
-    #: Client Supabase già costruito, oppure None se non configurato.
+    #: Client Supabase di lettura, oppure None se non configurato.
     supabase: SupabaseClient | None
     #: Cartella dei risultati (JOBS_OUTPUT_DIR), creata dall'esecutore.
     output_dir: Path
+
+    @classmethod
+    def build(
+        cls, settings: Settings, http: httpx.AsyncClient, supabase: SupabaseClient | None
+    ) -> "JobContext":
+        """Lo stesso contesto, che il job parta dalla CLI o da una rotta HTTP."""
+        return cls(
+            settings=settings, http=http, supabase=supabase, output_dir=settings.jobs_output_dir
+        )
 
 
 class Job(Protocol):

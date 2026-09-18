@@ -2,19 +2,21 @@
 
 FastAPI chiama queste funzioni per ogni richiesta e passa il risultato alla
 rotta (`Depends`). Tutte leggono da `request.app.state`, dove `app.py` ha
-messo la configurazione e i client creati all'avvio: così le rotte non
-importano oggetti globali e nei test si può montare un'app con client finti.
+messo la configurazione e gli oggetti creati all'avvio: le rotte non toccano
+`app.state` direttamente e non importano oggetti globali, e nei test si può
+montare un'app con client finti.
 """
 
+import asyncio
 from typing import Annotated
 
-import httpx
 from fastapi import Depends, Header, Request
 
 from pkremote.config import Settings
 from pkremote.errors import JobsHttpDisabled, Unauthorized
 from pkremote.integrations.osrm import OSRMClient
 from pkremote.integrations.supabase import SupabaseClient
+from pkremote.jobs import JobContext
 from pkremote.security import bearer_token, token_matches
 from pkremote.services.cache import TTLCache
 
@@ -23,12 +25,12 @@ def settings_dep(request: Request) -> Settings:
     return request.app.state.settings
 
 
-def http_dep(request: Request) -> httpx.AsyncClient:
-    return request.app.state.http
-
-
 def route_cache_dep(request: Request) -> TTLCache:
     return request.app.state.route_cache
+
+
+def ready_cache_dep(request: Request) -> TTLCache:
+    return request.app.state.ready_cache
 
 
 def osrm_dep(request: Request) -> OSRMClient | None:
@@ -37,7 +39,21 @@ def osrm_dep(request: Request) -> OSRMClient | None:
 
 
 def supabase_dep(request: Request) -> SupabaseClient | None:
+    """None quando manca SUPABASE_URL o la chiave pubblicabile."""
     return request.app.state.supabase
+
+
+def job_context_dep(request: Request) -> JobContext:
+    """Lo stesso contesto che la CLI costruisce, con i client condivisi dell'app."""
+    state = request.app.state
+    return JobContext.build(state.settings, state.http, state.supabase)
+
+
+async def job_lock_dep(name: str, request: Request) -> asyncio.Lock:
+    """Un lock per nome di job (`name` è il parametro di percorso della rotta)."""
+    state = request.app.state
+    async with state.job_locks_guard:
+        return state.job_locks.setdefault(name, asyncio.Lock())
 
 
 def require_job_token(
