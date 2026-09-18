@@ -35,7 +35,14 @@ function normalizza(testo) {
     .replace(/[̀-ͯ]/g, '');
 }
 
+/**
+ * Legge un file di dati. Nella demo in un file solo i dati sono già dentro la
+ * pagina (`__PK_INLINE__`): non c'è un server a cui chiederli, e `fetch` da
+ * `file://` non funzionerebbe comunque.
+ */
 async function leggiJson(percorso) {
+  const dentro = globalThis.__PK_INLINE__ && globalThis.__PK_INLINE__[percorso];
+  if (dentro) return dentro;
   const risposta = await fetch(percorso);
   if (!risposta.ok) throw new Error(`${percorso}: ${risposta.status}`);
   return risposta.json();

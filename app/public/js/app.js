@@ -67,6 +67,9 @@ function disegnaFascia() {
   if (costruzione.canale === 'beta') {
     pezzi.push(i18n.t('band.beta', { v: costruzione.versione || '?' }));
   }
+  if (costruzione.canale === 'demo') {
+    pezzi.push(i18n.t('band.demo', { v: costruzione.versione || '?' }));
+  }
   if (admin.attiva()) pezzi.push(i18n.t('band.dev'));
 
   if (!pezzi.length) {
@@ -81,6 +84,12 @@ function disegnaFascia() {
 
 /** Legge `build.json`: c'è sempre, ed è precaricato con il resto dell'app. */
 async function leggiCostruzione() {
+  const dentro = globalThis.__PK_INLINE__ && globalThis.__PK_INLINE__['build.json'];
+  if (dentro) {
+    costruzione = { ...costruzione, ...dentro };
+    contesto.costruzione = costruzione;
+    return;
+  }
   try {
     const risposta = await fetch('build.json');
     if (risposta.ok) costruzione = { ...costruzione, ...(await risposta.json()) };
@@ -178,6 +187,9 @@ function raccogliInvitoInstallazione() {
 
 async function registraServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
+  // Aperta come file (la demo in un file solo) non c'è niente da mettere in
+  // cache: l'app è già tutta nella pagina.
+  if (location.protocol === 'file:') return;
   // Alla primissima apertura il worker prende il controllo appena installato:
   // è un cambio di controllore che NON deve ricaricare la pagina, altrimenti
   // l'app riparte da sola sotto le mani di chi la sta usando. Si ricarica solo

@@ -203,5 +203,7 @@
   "you.offlineArea": "di cui {n} preparate apposta (non escono mai)",
   "you.prepareRunning": "Sto scaricando…",
   "you.prepareNoMap": "Apri prima la mappa e mettiti sulla zona: da qui non so ancora cosa stai guardando.",
-  "you.prepareAskCapped": "Ne servirebbero {totale} dallo zoom {z} al {zmax}: ne scarico {n}, circa {peso}. Per il resto avvicinati e rifallo."
+  "you.prepareAskCapped": "Ne servirebbero {totale} dallo zoom {z} al {zmax}: ne scarico {n}, circa {peso}. Per il resto avvicinati e rifallo.",
+  "band.demo": "DEMO {v}",
+  "you.offlineSingleFile": "Questa copia è un solo file: l'app è già tutta qui, dati compresi. Senza rete funziona tutto tranne le tessere della mappa che non hai ancora visto, i video e le foto."
 }

@@ -145,6 +145,14 @@ function sezioneInstalla() {
 
 async function sezioneOffline() {
   const scatola = el('div', { class: 'pk-card' }, [el('h3', { testo: t('you.offline') })]);
+
+  if (globalThis.__PK_INLINE__) {
+    // Demo in un file solo: non c'è nessuna cache da riempire, l'app è già
+    // tutta qui. Dirle «non posso lavorare offline» sarebbe falso.
+    scatola.append(el('p', { class: 'pk-small', testo: t('you.offlineSingleFile') }));
+    return scatola;
+  }
+
   const dato = await offline.stato();
 
   if (!dato) {

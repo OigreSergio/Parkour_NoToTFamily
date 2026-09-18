@@ -12,7 +12,10 @@ let dizionario = {};
 let base = {};
 
 async function carica(lingua) {
-  const risposta = await fetch(`i18n/${lingua}.json`);
+  const percorso = `i18n/${lingua}.json`;
+  const dentro = globalThis.__PK_INLINE__ && globalThis.__PK_INLINE__[percorso];
+  if (dentro) return dentro;
+  const risposta = await fetch(percorso);
   if (!risposta.ok) throw new Error(`lingua non trovata: ${lingua}`);
   return risposta.json();
 }

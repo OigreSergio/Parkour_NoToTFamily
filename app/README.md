@@ -71,8 +71,8 @@ app/
     i18n/                 it.json, en.json — nessuna stringa nel codice
     fonts/ icons/         Fraunces e Karla (OFL), icone generate dal codice
   tools/                  build_data, build_precache, make_icons, fetch_fonts,
-                          serve, desktop, screenshot, build_beta
-  dist/                   le beta costruite (non versionate)
+                          serve, desktop, screenshot, build_beta, build_demo
+  dist/                   le beta e le demo costruite (non versionate)
   tests/                  prove Playwright: avvio, offline, installabilità
 ```
 
@@ -123,6 +123,30 @@ sul dispositivo cosa stavi facendo, dove eri e che schermo hai.
 
 L'elenco dei file da tenere offline viene ricalcolato sulla copia: la versione
 del service worker è l'impronta di *quei* file, e cambia a ogni beta.
+
+## La demo in un file solo
+
+```sh
+python3 app/tools/build_demo.py
+```
+
+`app/dist/pkfamily-demo.html`: 1,16 MB, **un file**. Niente da scompattare,
+niente da installare, nessun server — si apre con un doppio clic e dentro c'è
+tutto: interfaccia, codice, caratteri e i dati veri (1.706 spot, le fontanelle,
+i 124 tutorial). La rete serve solo per le tessere della mappa che non hai già
+visto, per le foto e per i video.
+
+È il modo più corto per far provare l'app a qualcuno: si manda il file.
+
+Come ci sta tutto dentro: l'app è fatta di moduli ES che si chiamano fra loro e
+leggono i dati con `fetch`, e da `file://` nessuna delle due cose funziona.
+`build_demo.py` mette i moduli in un registro (uno dentro l'altro, ognuno nel
+suo ambito) e i dati in `globalThis.__PK_INLINE__`, che `data.js`, `i18n.js` e
+`app.js` sanno già leggere. I caratteri diventano indirizzi `data:`.
+
+Quello che la demo non ha, rispetto alla beta: il service worker — da `file://`
+non esiste — quindi niente «prepara quest'area» e niente aggiornamenti. La
+schermata «Tu» lo dice invece di fingere una cache che non c'è.
 
 ## La modalità sviluppatore
 

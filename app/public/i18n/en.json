@@ -203,5 +203,7 @@
   "you.offlineArea": "of which {n} downloaded on purpose (never evicted)",
   "you.prepareRunning": "Downloading…",
   "you.prepareNoMap": "Open the map first and go to the area: from here I don't know yet what you're looking at.",
-  "you.prepareAskCapped": "It would take {totale} from zoom {z} to {zmax}: I'll download {n}, about {peso}. For the rest, zoom in and do it again."
+  "you.prepareAskCapped": "It would take {totale} from zoom {z} to {zmax}: I'll download {n}, about {peso}. For the rest, zoom in and do it again.",
+  "band.demo": "DEMO {v}",
+  "you.offlineSingleFile": "This copy is a single file: the whole app is already here, data included. Without network everything works except map tiles you haven't seen yet, videos and photos."
 }
