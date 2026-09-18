@@ -44,7 +44,7 @@ jobs:
         run: pip install -e ".[dev]"
       - name: Ruff (stile e errori evidenti)
         run: ruff check .
-      - name: Pytest (nessuna rete: Supabase e OSRM sono finti)
+      - name: "Pytest (nessuna rete: Supabase e OSRM sono finti)"
         run: pytest
       - name: Il comando risponde e non stampa segreti
         shell: bash  # aggiunge `-o pipefail`: un crash di `pkremote config` fa fallire il passo
