@@ -639,10 +639,18 @@ textarea {
   cursor: grabbing;
 }
 
+/* In orizzontale, su un telefono con il notch, i margini di sicurezza stanno
+   ai lati: senza questi i comandi finiscono sotto la tacca o sotto l'angolo
+   arrotondato. La tela resta a filo dei bordi — una mappa deve restarci — si
+   spostano soltanto le cose che le stanno sopra.
+   La riga semplice viene prima: un browser che non conosce `env()` scarta la
+   seconda e tiene la prima, invece di perdere la posizione. */
 .pk-map__tools {
   position: absolute;
   right: var(--sp-3);
+  right: calc(var(--sp-3) + env(safe-area-inset-right, 0px));
   top: var(--sp-3);
+  top: calc(var(--sp-3) + env(safe-area-inset-top, 0px));
   display: flex;
   flex-direction: column;
   gap: var(--sp-2);
@@ -669,7 +677,9 @@ textarea {
 .pk-map__credits {
   position: absolute;
   left: var(--sp-2);
+  left: calc(var(--sp-2) + env(safe-area-inset-left, 0px));
   bottom: var(--sp-2);
+  bottom: calc(var(--sp-2) + env(safe-area-inset-bottom, 0px));
   font-size: 10px;
   color: var(--tenue);
   background: color-mix(in srgb, var(--carta) 85%, transparent);
@@ -683,8 +693,11 @@ textarea {
 .pk-map__strip {
   position: absolute;
   left: var(--sp-3);
+  left: calc(var(--sp-3) + env(safe-area-inset-left, 0px));
   right: var(--sp-3);
+  right: calc(var(--sp-3) + env(safe-area-inset-right, 0px));
   bottom: var(--sp-3);
+  bottom: calc(var(--sp-3) + env(safe-area-inset-bottom, 0px));
   display: none;
   align-items: center;
   gap: var(--sp-2);

@@ -99,6 +99,17 @@ function conMotore(page, azione) {
         evento('pointerup', 1, x + passi, y + passi);
         await disegnato();
       },
+      lancia: async (x, y, passi) => {
+        // Con il tempo vero fra un evento e l'altro: lo slancio si misura su
+        // una finestra di millisecondi, e in un ciclo stretto sarebbe zero.
+        evento('pointerdown', 1, x, y);
+        for (let i = 1; i <= passi; i++) {
+          await new Promise((r) => setTimeout(r, 16));
+          evento('pointermove', 1, x - i * 12, y);
+        }
+        evento('pointerup', 1, x - passi * 12, y);
+        await disegnato();
+      },
       pizzica: async (da, a) => {
         evento('pointerdown', 1, da[0].x, da[0].y);
         evento('pointerdown', 2, da[1].x, da[1].y);
@@ -394,4 +405,97 @@ test('la mappa dice quando di una zona non hai le tessere, e la scarica da lì',
   await expect(striscia).toBeVisible({ timeout: 15_000 });
   await expect(striscia).toContainText('non hai le tessere');
   await expect(striscia.getByRole('button', { name: 'Scaricala' })).toBeVisible();
+});
+
+test('dopo un lancio la mappa continua a scorrere, e poi si ferma', async ({ page }) => {
+  await attendiPronta(page);
+
+  const esito = await conMotore(page, async ({ mappa, gesti }) => {
+    mappa.vai({ lat: 41.9, lng: 12.48, zoom: 14 });
+    mappa.mostraSpot([]);
+    await gesti.lancia(300, 320, 12);
+
+    const appenaAlzato = mappa.centro.lng;
+    await new Promise((r) => setTimeout(r, 260));
+    const dopoUnPo = mappa.centro.lng;
+    await new Promise((r) => setTimeout(r, 900));
+    const allaFine = mappa.centro.lng;
+
+    return {
+      haContinuato: Math.abs(dopoUnPo - appenaAlzato) > 1e-7,
+      siEFermata: Math.abs(allaFine - dopoUnPo) < Math.abs(dopoUnPo - appenaAlzato),
+      finito: Number.isFinite(allaFine),
+    };
+  });
+
+  expect(esito.finito).toBe(true);
+  expect(esito.haContinuato).toBe(true);
+  expect(esito.siEFermata).toBe(true);
+});
+
+test('la longitudine torna sempre nel giro: oltre l’antimeridiano gli spilli restano', async ({
+  page,
+}) => {
+  await attendiPronta(page);
+
+  const esito = await conMotore(page, async ({ mappa, disegnato }) => {
+    // Due spot a cavallo della linea del cambio di data, a un soffio l'uno
+    // dall'altro: uno a ovest della linea, uno a est.
+    mappa.mostraSpot([
+      { id: 'ovest', name: 'ovest', lat: -41.29, lng: 179.98, status: 'verified' },
+      { id: 'est', name: 'est', lat: -41.29, lng: -179.98, status: 'verified' },
+    ]);
+    // La vista ci arriva da est, oltre i 180°: la longitudine deve rientrare.
+    mappa.vai({ lat: -41.29, lng: 180.0, zoom: 10 });
+    await disegnato();
+
+    return {
+      lngNormalizzata: mappa.centro.lng,
+      spilliVisti: mappa.quadro.spilli + mappa.quadro.raccolti,
+    };
+  });
+
+  // 180° est è -180°: la Terra si richiude su sé stessa.
+  expect(esito.lngNormalizzata).toBeCloseTo(-180, 6);
+  // E si vedono tutti e due: quello oltre la linea è disegnato nel giro accanto.
+  expect(esito.spilliVisti).toBe(2);
+});
+
+test('chiudere una scheda toccando il vuoto non avvicina', async ({ page }) => {
+  await attendiPronta(page);
+
+  const esito = await conMotore(page, async ({ mappa, gesti, disegnato }) => {
+    mappa.vai({ lat: 41.9, lng: 12.48, zoom: 16 });
+    mappa.mostraSpot([{ id: 'x', name: 'x', lat: 41.9, lng: 12.48, status: 'verified' }]);
+    await disegnato();
+
+    const scelte = [];
+    mappa.su('selezione', (v) => scelte.push(v ? v.id : null));
+    const zoomPrima = mappa.zoom;
+
+    const dove = mappa.aSchermo({ lat: 41.9, lng: 12.48 });
+    await gesti.tocca(dove.x, dove.y - 11); // apre
+    await gesti.tocca(40, 560); // chiude, subito dopo e lontano dallo spillo
+    await gesti.tocca(42, 562); // e un altro tocco vicino al precedente
+
+    return { scelte, zoomPrima, zoomDopo: mappa.zoom };
+  });
+
+  // Il primo sceglie, il secondo chiude. Nessuno dei due è mezzo doppio tocco.
+  expect(esito.scelte.slice(0, 2)).toEqual(['x', null]);
+  // Il terzo, sul vuoto e senza niente di aperto, può avvicinare: è il gesto vero.
+  expect(esito.zoomDopo).toBeGreaterThan(esito.zoomPrima);
+});
+
+test('la tela non va oltre il doppio dei pixel dello schermo', async ({ page }) => {
+  await attendiPronta(page);
+
+  const misure = await page.locator('.pk-map__canvas').evaluate((tela) => ({
+    pixel: tela.width,
+    css: tela.clientWidth,
+    dpr: window.devicePixelRatio,
+  }));
+
+  expect(misure.dpr).toBeGreaterThan(2); // il Pixel 7 emulato sta a 2,625
+  expect(misure.pixel / misure.css).toBeLessThanOrEqual(2.01);
 });

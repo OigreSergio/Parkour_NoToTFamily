@@ -33,6 +33,13 @@ const RAGGIO_DOPPIO_TOCCO = 34;
 /** Quanto deve muoversi il dito perché sia un trascinamento e non un tocco. */
 const SOGLIA_TRASCINAMENTO = 7;
 
+/** Oltre questa velocità non è un pollice, è rumore: px al millisecondo. */
+const VELOCITA_MASSIMA = 4;
+/** Sotto questa, il dito si è fermato: non c'è niente da far scorrere. */
+const VELOCITA_MINIMA = 0.05;
+/** Quanto la velocità si spegne a ogni fotogramma. */
+const ATTRITO = 0.94;
+
 /** Quanto si aspetta prima di riprovare una tessera che non è arrivata. */
 const ATTESA_PRIMA = 20_000;
 const ATTESA_MASSIMA = 5 * 60_000;
@@ -40,6 +47,16 @@ const ATTESA_MASSIMA = 5 * 60_000;
 /** L'ora, in millisecondi: una sola funzione, così è facile da provare. */
 function orologio() {
   return Date.now();
+}
+
+/**
+ * La Terra si richiude su sé stessa: la longitudine torna sempre in
+ * [-180, 180). Senza questo, trascinando verso est oltre l'antimeridiano le
+ * tessere continuavano (si ripetono per costruzione) e gli spilli no: la
+ * mappa restava senza spot, e nessuno poteva capire perché.
+ */
+function normalizzaLng(lng) {
+  return ((((lng + 180) % 360) + 360) % 360) - 180;
 }
 
 // Il filtro che porta le tessere verso il lino: le stringhe stanno in
@@ -179,7 +196,12 @@ export function creaMappa(contenitore, opzioni = {}) {
   }
 
   function ridimensiona() {
-    const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+    // Le tessere sono raster da 256 px disegnate su 256 px CSS: oltre il
+    // doppio si pagano pixel che non portano dettaglio. Il tetto a 2 toglie
+    // più di un terzo del lavoro per fotogramma — che adesso passa tutto dal
+    // filtro di colore — e lascia nitido quel poco che disegniamo noi:
+    // spilli, numeri dei gomitoli, etichette delle fontanelle.
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const { l, a, vera } = misura();
     if (!l || !a) return;
     visibile = vera;
@@ -591,26 +613,43 @@ export function creaMappa(contenitore, opzioni = {}) {
   function disponi(o) {
     const spilli = [];
     const celle = new Map();
+    // Alle longitudini estreme il riquadro può stare a cavallo del giro: uno
+    // spillo a -179° va disegnato anche a destra di uno a +179°. Fuori da quel
+    // caso le copie cadono fuori schermo e non costano niente.
+    const larghezzaMondo = LATO_TESSERA * 2 ** zoom;
 
     for (const voce of spot) {
       const p = aSchermo(voce, o);
-      if (p.x < -30 || p.y < -40 || p.x > larghezza + 30 || p.y > altezza + 30) continue;
-      if (voce.id === selezionato) {
-        spilli.push({ voce, x: p.x, y: p.y, scelto: true });
-        continue;
-      }
-      const cella = CONFIG.cellaGomitolo;
-      const chiave = `${Math.floor(p.x / cella)},${Math.floor(p.y / cella)}`;
-      const raccolta = celle.get(chiave);
-      if (raccolta) {
-        raccolta.voci.push(voce);
-        raccolta.x += p.x;
-        raccolta.y += p.y;
-      } else {
-        celle.set(chiave, { voci: [voce], x: p.x, y: p.y });
+      if (p.y < -40 || p.y > altezza + 30) continue;
+
+      for (const giro of [0, -larghezzaMondo, larghezzaMondo]) {
+        const x = p.x + giro;
+        if (x < -30 || x > larghezza + 30) continue;
+        aggiungiAllaDisposizione(voce, x, p.y, spilli, celle);
       }
     }
 
+    return raccogli(spilli, celle);
+  }
+
+  function aggiungiAllaDisposizione(voce, x, y, spilli, celle) {
+      if (voce.id === selezionato) {
+        spilli.push({ voce, x, y, scelto: true });
+        return;
+      }
+      const cella = CONFIG.cellaGomitolo;
+      const chiave = `${Math.floor(x / cella)},${Math.floor(y / cella)}`;
+      const raccolta = celle.get(chiave);
+      if (raccolta) {
+        raccolta.voci.push(voce);
+        raccolta.x += x;
+        raccolta.y += y;
+      } else {
+        celle.set(chiave, { voci: [voce], x, y });
+      }
+  }
+
+  function raccogli(spilli, celle) {
     const gomitoli = [];
     for (const raccolta of celle.values()) {
       if (raccolta.voci.length === 1) {
@@ -699,6 +738,67 @@ export function creaMappa(contenitore, opzioni = {}) {
   let ultimaDistanza = 0;
   let ultimoCentroDita = null;
   let ultimoTocco = null;
+  /** Lo slancio del dito: px al millisecondo, per far scorrere la mappa dopo. */
+  let velocita = { x: 0, y: 0 };
+  let ultimoCampione = null;
+  let inerzia = null;
+
+  function fermaInerzia() {
+    if (inerzia === null) return;
+    cancelAnimationFrame(inerzia);
+    inerzia = null;
+  }
+
+  /**
+   * La mappa continua a scorrere un momento dopo che il dito si è alzato.
+   * Senza, per spostarsi di qualche chilometro servono dieci passate di
+   * pollice. Con `prefers-reduced-motion` non parte: è movimento, e a chi lo
+   * ha chiesto di non averlo non si dà.
+   */
+  function avviaInerzia() {
+    fermaInerzia();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (Math.hypot(velocita.x, velocita.y) < VELOCITA_MINIMA) return;
+
+    let ultimo = orologio();
+    const passo = () => {
+      const adesso = orologio();
+      const dt = Math.min(48, Math.max(1, adesso - ultimo));
+      ultimo = adesso;
+
+      sposta(velocita.x * dt, velocita.y * dt);
+      const freno = ATTRITO ** (dt / 16);
+      velocita = { x: velocita.x * freno, y: velocita.y * freno };
+
+      if (!vivo || Math.hypot(velocita.x, velocita.y) < VELOCITA_MINIMA) {
+        inerzia = null;
+        return;
+      }
+      inerzia = requestAnimationFrame(passo);
+    };
+    inerzia = requestAnimationFrame(passo);
+  }
+
+  /** Campiona lo slancio su una finestra di tempo, non fra due eventi. */
+  function campionaVelocita(dx, dy, quando) {
+    if (!ultimoCampione) {
+      ultimoCampione = { quando, dx: 0, dy: 0 };
+      return;
+    }
+    ultimoCampione.dx += dx;
+    ultimoCampione.dy += dy;
+    const dt = quando - ultimoCampione.quando;
+    // Eventi nello stesso millisecondo (succede con quelli sintetici delle
+    // prove) darebbero una divisione per zero: si aspetta il campione dopo.
+    if (dt < 8) return;
+    const vx = ultimoCampione.dx / dt;
+    const vy = ultimoCampione.dy / dt;
+    velocita = {
+      x: Number.isFinite(vx) ? Math.max(-VELOCITA_MASSIMA, Math.min(VELOCITA_MASSIMA, vx)) : 0,
+      y: Number.isFinite(vy) ? Math.max(-VELOCITA_MASSIMA, Math.min(VELOCITA_MASSIMA, vy)) : 0,
+    };
+    ultimoCampione = { quando, dx: 0, dy: 0 };
+  }
 
   function cambiaZoom(nuovo, ancoraX, ancoraY) {
     const limitato = Math.max(ZOOM_MIN, Math.min(zoomMassimo(), nuovo));
@@ -710,7 +810,8 @@ export function creaMappa(contenitore, opzioni = {}) {
     zoom = limitato;
     // Si rimette il punto ancorato esattamente dove era sullo schermo.
     const p = latLngAPixel(sotto.lat, sotto.lng, zoom);
-    centro = pixelALatLng(p.x - ax + larghezza / 2, p.y - ay + altezza / 2, zoom);
+    const centroNuovo = pixelALatLng(p.x - ax + larghezza / 2, p.y - ay + altezza / 2, zoom);
+    centro = { lat: centroNuovo.lat, lng: normalizzaLng(centroNuovo.lng) };
     chiediDisegno();
     avvisaMovimento();
   }
@@ -718,7 +819,7 @@ export function creaMappa(contenitore, opzioni = {}) {
   function sposta(dx, dy) {
     const o = origine();
     const c = pixelALatLng(o.x - dx + larghezza / 2, o.y - dy + altezza / 2, zoom);
-    centro = { lat: Math.max(-85, Math.min(85, c.lat)), lng: c.lng };
+    centro = { lat: Math.max(-85, Math.min(85, c.lat)), lng: normalizzaLng(c.lng) };
     chiediDisegno();
     avvisaMovimento();
   }
@@ -763,9 +864,12 @@ export function creaMappa(contenitore, opzioni = {}) {
       /* va bene così */
     }
     puntatori.set(evento.pointerId, { x: evento.clientX, y: evento.clientY });
+    fermaInerzia();
     if (puntatori.size === 1) {
       trascinato = false;
       camminoTotale = 0;
+      velocita = { x: 0, y: 0 };
+      ultimoCampione = { quando: evento.timeStamp, dx: 0, dy: 0 };
     } else {
       // Due dita: da qui in poi non è più un tocco, qualunque cosa succeda.
       trascinato = true;
@@ -787,6 +891,7 @@ export function creaMappa(contenitore, opzioni = {}) {
       // e prima veniva scambiato per un tocco fermo.
       camminoTotale += Math.abs(dx) + Math.abs(dy);
       if (camminoTotale > SOGLIA_TRASCINAMENTO) trascinato = true;
+      campionaVelocita(dx, dy, evento.timeStamp);
       sposta(dx, dy);
       return;
     }
@@ -822,16 +927,26 @@ export function creaMappa(contenitore, opzioni = {}) {
       ultimaDistanza = 0;
       ultimoCentroDita = null;
     }
-    if (!era || trascinato || puntatori.size > 0) return;
+    if (!era) return;
+    if (trascinato && puntatori.size === 0) {
+      // Il dito si alza mentre la mappa scorre: continua da sola.
+      avviaInerzia();
+      ultimoCampione = null;
+    }
+    if (trascinato || puntatori.size > 0) return;
 
     const rettangolo = tela.getBoundingClientRect();
     const x = era.x - rettangolo.left;
     const y = era.y - rettangolo.top;
 
-    // Doppio tocco: due volte *nello stesso punto*. Due tocchi su due spilli
-    // diversi sono due scelte, non uno zoom.
+    const scelto = sotto(x, y);
+    // Un tocco che cambia la scelta — apre una scheda, o chiude quella aperta
+    // toccando il vuoto — è una risposta, non mezzo gesto di zoom. Il doppio
+    // tocco resta quello che è: due volte sul vuoto, nello stesso punto.
+    const cambiaScelta = Boolean(scelto) || selezionato !== null;
     const adesso = evento.timeStamp;
     if (
+      !cambiaScelta &&
       ultimoTocco &&
       adesso - ultimoTocco.quando < 300 &&
       Math.hypot(x - ultimoTocco.x, y - ultimoTocco.y) < RAGGIO_DOPPIO_TOCCO
@@ -842,7 +957,6 @@ export function creaMappa(contenitore, opzioni = {}) {
     }
     ultimoTocco = { quando: adesso, x, y };
 
-    const scelto = sotto(x, y);
     if (scelto && scelto.tipo === 'gomitolo') {
       for (const fn of ascoltatori.gomitolo) fn(scelto.gomitolo);
       // Aprire un gomitolo vuol dire avvicinarsi finché non si sfila.
@@ -859,12 +973,14 @@ export function creaMappa(contenitore, opzioni = {}) {
     puntatori.delete(evento.pointerId);
     ultimaDistanza = 0;
     ultimoCentroDita = null;
+    velocita = { x: 0, y: 0 };
   });
 
   tela.addEventListener(
     'wheel',
     (evento) => {
       evento.preventDefault();
+      fermaInerzia();
       const rettangolo = tela.getBoundingClientRect();
       cambiaZoom(
         zoom - Math.sign(evento.deltaY) * 0.5,
@@ -914,7 +1030,7 @@ export function creaMappa(contenitore, opzioni = {}) {
     },
     aSchermo: (punto) => aSchermo(punto),
     vai({ lat, lng, zoom: z }) {
-      centro = { lat, lng };
+      centro = { lat, lng: normalizzaLng(lng) };
       if (z !== undefined) zoom = Math.max(ZOOM_MIN, Math.min(zoomMassimo(), z));
       chiediDisegno();
       avvisaMovimento();
@@ -963,6 +1079,7 @@ export function creaMappa(contenitore, opzioni = {}) {
     ridisegna: chiediDisegno,
     distruggi() {
       vivo = false;
+      fermaInerzia();
       clearTimeout(sveglia);
       osservatore.disconnect();
       osservatoreTema.disconnect();
