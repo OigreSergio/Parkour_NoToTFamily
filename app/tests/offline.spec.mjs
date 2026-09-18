@@ -164,3 +164,98 @@ test('quello che riguarda le persone non finisce in cache', async ({ page }) => 
   expect(chiavi.some((url) => url.includes('/api/v1/route'))).toBe(false);
   expect(chiavi.some((url) => url.includes('youtube'))).toBe(false);
 });
+
+/** Una tessera qualunque: serve solo a far finire qualcosa nella cache. */
+const TESSERA = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mOomLblPwAGDgLCyvs2hAAAAABJRU5ErkJggg==',
+  'base64'
+);
+
+test('«prepara quest’area» sa cosa stai guardando anche arrivando da «Tu»', async ({ page }) => {
+  // Si apre l'app direttamente sulla schermata Tu: la mappa non è mai stata
+  // mostrata. Prima, in questo caso, il riquadro era un punto e il pulsante
+  // scaricava tre tessere facendo credere di aver preparato una città.
+  await page.goto('/index.html#/tu');
+  await attendiPronta(page);
+
+  await page.locator('#pk-tu').getByRole('button', { name: /Prepara quest/ }).click();
+  const finestra = page.locator('.pk-modal');
+  await expect(finestra).toBeVisible();
+
+  const testo = await finestra.textContent();
+  const quante = Number((testo.match(/(\d+)\s+tessere/) || [])[1] || 0);
+  expect(quante).toBeGreaterThan(50);
+  expect(testo).toContain('zoom');
+
+  // Non si scarica niente: si voleva solo sapere cosa avrebbe scaricato.
+  await finestra.getByRole('button', { name: 'Annulla' }).click();
+});
+
+test('le tessere preparate finiscono in una cache che non viene sfrattata', async ({
+  page,
+  context,
+}) => {
+  await context.route(/tile\.openstreetmap\.org/, (rotta) =>
+    rotta.fulfill({
+      status: 200,
+      contentType: 'image/png',
+      headers: { 'access-control-allow-origin': '*' },
+      body: TESSERA,
+    })
+  );
+  await page.goto('/index.html');
+  await attendiPronta(page);
+
+  // Poche tessere: la prova deve essere veloce, non esaustiva.
+  await page.evaluate(async () => {
+    const { CONFIG } = await import('./js/config.js');
+    CONFIG.tettoPrefetch = 12;
+  });
+
+  await page.locator('.pk-nav__tab[data-vai="#/tu"]').click();
+  await page.locator('#pk-tu').getByRole('button', { name: /Prepara quest/ }).click();
+  await page.locator('.pk-modal').getByRole('button', { name: 'Scarica' }).click();
+
+  await expect
+    .poll(
+      () =>
+        page.evaluate(async () => {
+          if (!(await caches.has('pkfamily-area'))) return 0;
+          const cache = await caches.open('pkfamily-area');
+          return (await cache.keys()).length;
+        }),
+      { timeout: 20_000 }
+    )
+    .toBeGreaterThan(0);
+
+  await expect(page.locator('#pk-tu')).toContainText('preparate apposta');
+});
+
+test('il riquadro che scavalca il 180° non fa il giro del mondo', async ({ page }) => {
+  await page.goto('/index.html');
+  await attendiPronta(page);
+
+  const conti = await page.evaluate(async () => {
+    const offline = await import('./js/offline.js');
+    // Un riquadro stretto a cavallo dell'antimeridiano (Figi, Kiribati).
+    const scavalca = offline.tessereDelRiquadro(
+      { nord: -17.5, sud: -18.5, ovest: 179.5, est: -179.5 },
+      'mappa',
+      8,
+      8,
+      5000
+    );
+    // Lo stesso riquadro, ma largo uguale e lontano dal bordo.
+    const normale = offline.tessereDelRiquadro(
+      { nord: -17.5, sud: -18.5, ovest: 10, est: 11 },
+      'mappa',
+      8,
+      8,
+      5000
+    );
+    return { scavalca: scavalca.totale, normale: normale.totale };
+  });
+
+  // Prima ne contava centinaia: tutta la fascia dall'altra parte del mondo.
+  expect(conti.scavalca).toBeLessThanOrEqual(conti.normale + 2);
+});

@@ -113,7 +113,7 @@
   "you.prepareWhy": "Scarica adesso la mappa della zona che vedi: quando sarai lì, senza campo, ci sarà comunque.",
   "you.prepare": "Prepara quest'area",
   "you.prepareTitle": "Prepara quest'area",
-  "you.prepareAsk": "{n} tessere, circa {peso}. Vanno scaricate adesso, con la rete che hai.",
+  "you.prepareAsk": "{n} tessere dallo zoom {z} al {zmax}, circa {peso}. Vanno scaricate adesso, con la rete che hai.",
   "you.prepareGo": "Scarica",
   "you.prepareProgress": "{fatte} di {totale}…",
   "you.prepareDone": "Fatto: {scaricate} nuove, {saltate} già c'erano, {fallite} non sono arrivate.",
@@ -199,5 +199,9 @@
   "admin.aiuto.filtroTessere.scuro": "Filtro CSS con il tema scuro: qui serve un ribaltamento, non meno luce.",
   "admin.aiuto.tiles.mappa.url": "Indirizzo con {z}/{x}/{y}. Cambiandolo cambia la mappa, non il satellite.",
   "admin.aiuto.routing.decimali": "Cifre con cui la posizione parte dal telefono: 3 = circa 110 m.",
-  "admin.aiuto.supabase.publishableKey": "Solo la chiave pubblicabile. La secret key non va mai in un client."
+  "admin.aiuto.supabase.publishableKey": "Solo la chiave pubblicabile. La secret key non va mai in un client.",
+  "you.offlineArea": "di cui {n} preparate apposta (non escono mai)",
+  "you.prepareRunning": "Sto scaricando…",
+  "you.prepareNoMap": "Apri prima la mappa e mettiti sulla zona: da qui non so ancora cosa stai guardando.",
+  "you.prepareAskCapped": "Ne servirebbero {totale} dallo zoom {z} al {zmax}: ne scarico {n}, circa {peso}. Per il resto avvicinati e rifallo."
 }

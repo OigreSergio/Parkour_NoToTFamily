@@ -33,6 +33,15 @@ const RAGGIO_DOPPIO_TOCCO = 34;
 /** Quanto deve muoversi il dito perché sia un trascinamento e non un tocco. */
 const SOGLIA_TRASCINAMENTO = 7;
 
+/** Quanto si aspetta prima di riprovare una tessera che non è arrivata. */
+const ATTESA_PRIMA = 20_000;
+const ATTESA_MASSIMA = 5 * 60_000;
+
+/** L'ora, in millisecondi: una sola funzione, così è facile da provare. */
+function orologio() {
+  return Date.now();
+}
+
 // Il filtro che porta le tessere verso il lino: le stringhe stanno in
 // config.js, così la modalità sviluppatore può provarne altre dal vivo.
 //
@@ -88,6 +97,9 @@ export function creaMappa(contenitore, opzioni = {}) {
   let larghezza = 0;
   let altezza = 0;
   let daRidisegnare = false;
+  /** La tela è davvero sullo schermo? Se no, si misura lo stesso ma non si
+   *  disegna: disegnare una tela nascosta è lavoro buttato. */
+  let visibile = false;
   let vivo = true;
 
   // L'ultima disposizione disegnata: serve a capire cosa c'è sotto il dito
@@ -144,11 +156,29 @@ export function creaMappa(contenitore, opzioni = {}) {
 
   // --- dimensioni ---------------------------------------------------------
 
+  /**
+   * Quanto è grande la mappa. Se la sua schermata è nascosta (`display:none`)
+   * la tela misura zero: si guarda allora il contenitore che la ospiterà, che
+   * una misura ce l'ha lo stesso, e in ultimo la finestra. Una mappa mai
+   * misurata ha un riquadro grande un punto, e da lì venivano le tre tessere
+   * di «prepara quest'area» quando si ricaricava stando sulla schermata «Tu».
+   */
+  function misura() {
+    if (contenitore.clientWidth && contenitore.clientHeight) {
+      return { l: contenitore.clientWidth, a: contenitore.clientHeight, vera: true };
+    }
+    const ospite = contenitore.closest('.pk-main') || contenitore.parentElement;
+    if (ospite && ospite.clientWidth && ospite.clientHeight) {
+      return { l: ospite.clientWidth, a: ospite.clientHeight, vera: false };
+    }
+    return { l: window.innerWidth || 360, a: Math.max(320, (window.innerHeight || 640) - 160), vera: false };
+  }
+
   function ridimensiona() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
-    const l = contenitore.clientWidth;
-    const a = contenitore.clientHeight;
+    const { l, a, vera } = misura();
     if (!l || !a) return;
+    visibile = vera;
     larghezza = l;
     altezza = a;
     tela.width = Math.round(larghezza * dpr);
@@ -195,22 +225,24 @@ export function creaMappa(contenitore, opzioni = {}) {
     return CONFIG.tiles[sorgente].url.replace('{z}', z).replace('{x}', x).replace('{y}', y);
   }
 
-  function tessera(z, x, y, soloSeCiSta) {
-    const chiave = `${sorgente}/${z}/${x}/${y}`;
-    const voce = tessere.get(chiave);
-    if (voce || soloSeCiSta) return voce || null;
-
+  function creaTessera(chiave, z, x, y, tentativi) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.decoding = 'async';
-    const nuova = { img, pronta: false, fallita: false };
+    const nuova = { img, pronta: false, fallita: false, tentativi, prossima: 0 };
     img.onload = () => {
       nuova.pronta = true;
       chiediDisegno();
     };
     img.onerror = () => {
-      // Senza rete succede subito: si smette di insistere e si disegna il lino.
+      // Senza rete succede subito: si disegna il lino e si riproverà più
+      // tardi, con un'attesa che raddoppia. La rete torna anche quando il
+      // browser non se ne accorge (una galleria, un ascensore).
       nuova.fallita = true;
+      nuova.tentativi += 1;
+      nuova.prossima =
+        orologio() + Math.min(ATTESA_MASSIMA, ATTESA_PRIMA * 2 ** (nuova.tentativi - 1));
+      programmaRiprova(nuova.prossima);
       chiediDisegno();
     };
     img.src = indirizzoTessera(z, x, y);
@@ -221,6 +253,79 @@ export function creaMappa(contenitore, opzioni = {}) {
       tessere.delete(piuVecchia);
     }
     return nuova;
+  }
+
+  function tessera(z, x, y, soloSeCiSta) {
+    const chiave = `${sorgente}/${z}/${x}/${y}`;
+    const voce = tessere.get(chiave);
+
+    if (voce) {
+      if (voce.fallita && !soloSeCiSta && orologio() >= voce.prossima) {
+        tessere.delete(chiave);
+        return creaTessera(chiave, z, x, y, voce.tentativi);
+      }
+      // Rimessa in fondo alla fila: la Map tiene l'ordine di inserimento e lo
+      // sfratto guarda la testa. Senza questo usciva la più vecchia di
+      // arrivo, anche se era quella sotto gli occhi.
+      tessere.delete(chiave);
+      tessere.set(chiave, voce);
+      return voce;
+    }
+
+    if (soloSeCiSta) return null;
+    return creaTessera(chiave, z, x, y, 0);
+  }
+
+  let sveglia = null;
+  let quandoSveglia = 0;
+
+  /** Una sola sveglia, per la riprova più vicina nel tempo. */
+  function programmaRiprova(quando) {
+    if (sveglia && quandoSveglia <= quando) return;
+    clearTimeout(sveglia);
+    quandoSveglia = quando;
+    sveglia = setTimeout(() => {
+      sveglia = null;
+      chiediDisegno();
+    }, Math.max(1000, quando - orologio()));
+  }
+
+  const scorteInCorso = new Set();
+
+  /**
+   * Cerca una tessera fra quelle che il service worker ha già salvato, senza
+   * toccare la rete. È così che l'area «preparata» a uno zoom serve anche
+   * agli zoom vicini: prima la scorta guardava solo la memoria, e quello che
+   * era stato scaricato apposta restava lì senza essere usato.
+   */
+  async function cercaNellaCache(z, x, y) {
+    if (typeof caches === 'undefined') return;
+    const chiave = `${sorgente}/${z}/${x}/${y}`;
+    if (tessere.has(chiave) || scorteInCorso.has(chiave)) return;
+    scorteInCorso.add(chiave);
+    try {
+      const risposta = await caches.match(indirizzoTessera(z, x, y));
+      if (!risposta || !risposta.ok) return;
+      const indirizzo = URL.createObjectURL(await risposta.blob());
+      const img = new Image();
+      img.decoding = 'async';
+      const voce = { img, pronta: false, fallita: false, tentativi: 0, prossima: 0 };
+      img.onload = () => {
+        voce.pronta = true;
+        URL.revokeObjectURL(indirizzo);
+        chiediDisegno();
+      };
+      img.onerror = () => {
+        voce.fallita = true;
+        URL.revokeObjectURL(indirizzo);
+      };
+      img.src = indirizzo;
+      tessere.set(chiave, voce);
+    } catch {
+      // Nessuna cache raggiungibile: si resta con il lino, che è onesto.
+    } finally {
+      scorteInCorso.delete(chiave);
+    }
   }
 
   /** Riprova le tessere che erano fallite: si chiama quando torna la rete. */
@@ -295,12 +400,19 @@ export function creaMappa(contenitore, opzioni = {}) {
    * uno zoom, avvicinandosi non si trova il vuoto.
    */
   function disegnaTesseraDiScorta(z, x, y, sx, sy, lato, filtro) {
-    for (let salto = 1; salto <= 4; salto++) {
+    for (let salto = 1; salto <= 5; salto++) {
       const zp = z - salto;
       if (zp < 0) break;
       const fattore = 2 ** salto;
-      const padre = tessera(zp, Math.floor(x / fattore), Math.floor(y / fattore), true);
-      if (!padre || !padre.pronta) continue;
+      const px = Math.floor(x / fattore);
+      const py = Math.floor(y / fattore);
+      const padre = tessera(zp, px, py, true);
+      if (!padre || !padre.pronta) {
+        // Non è in memoria: forse è fra quelle già scaricate. Si chiede alla
+        // cache, senza rete; quando arriva, la mappa si ridisegna da sé.
+        if (!padre && salto <= 3) cercaNellaCache(zp, px, py);
+        continue;
+      }
       const parte = LATO_TESSERA / fattore;
       if (filtro !== 'none') ctx.filter = filtro;
       ctx.drawImage(
@@ -511,7 +623,7 @@ export function creaMappa(contenitore, opzioni = {}) {
 
   function disegna() {
     daRidisegnare = false;
-    if (!larghezza || !altezza) return;
+    if (!larghezza || !altezza || !visibile) return;
     const c = colori();
     const o = origine();
 
@@ -786,6 +898,10 @@ export function creaMappa(contenitore, opzioni = {}) {
       return zoom;
     },
     riquadro,
+    /** La tela è stata misurata davvero almeno una volta? */
+    get misurata() {
+      return larghezza > 0 && altezza > 0;
+    },
     aSchermo: (punto) => aSchermo(punto),
     vai({ lat, lng, zoom: z }) {
       centro = { lat, lng };
@@ -837,6 +953,7 @@ export function creaMappa(contenitore, opzioni = {}) {
     ridisegna: chiediDisegno,
     distruggi() {
       vivo = false;
+      clearTimeout(sveglia);
       osservatore.disconnect();
       osservatoreTema.disconnect();
       preferenzaScura.removeEventListener('change', scordaColori);

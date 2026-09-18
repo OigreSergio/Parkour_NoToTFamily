@@ -6,9 +6,11 @@
  *                            (elenco in precache.json, generato da
  *                            app/tools/build_precache.py). Cambia versione,
  *                            si riscarica tutto e la vecchia sparisce.
- *   pkfamily-tiles           le tessere di mappa già viste o scaricate a mano
- *                            dalla schermata "Tu". Sono tante e pesano: c'è
- *                            un tetto, e le più vecchie escono per prime.
+ *   pkfamily-tiles           le tessere di mappa viste passando. Sono tante e
+ *                            pesano: c'è un tetto, e le più vecchie escono
+ *                            per prime.
+ *   pkfamily-area            le tessere scaricate apposta con "prepara
+ *                            quest'area": nessun tetto, nessuno sfratto.
  *   pkfamily-media           le foto degli spot già aperti.
  *
  * Quello che riguarda le persone — Supabase, il proxy dei percorsi — non
@@ -18,6 +20,10 @@
 const PREFISSO_APP = 'pkfamily-app-';
 const CACHE_META = 'pkfamily-meta';
 const CACHE_TILE = 'pkfamily-tiles';
+/** Le tessere scaricate apposta dalla schermata «Tu»: stanno a parte e non
+ *  vengono mai sfrattate. Chi prepara un'area prima di partire deve
+ *  ritrovarla, non scoprire che è uscita per far posto a un giro in centro. */
+const CACHE_AREA = 'pkfamily-area';
 const CACHE_MEDIA = 'pkfamily-media';
 
 // Tetti pensati per un telefono: ~4000 tessere sono già una città intera.
@@ -36,6 +42,12 @@ function eTessera(url) {
   return /\/\d{1,2}\/\d{1,6}\/\d{1,6}(\.\w{2,4})?(\?|$)/.test(url.pathname + url.search);
 }
 
+// Contare le chiavi di una cache costa quanto leggerle tutte: farlo a ogni
+// tessera salvata voleva dire quattromila letture per una scrittura. Si conta
+// ogni tanto, e si aspetta l'esito invece di lasciarlo correre per conto suo.
+const PASSO_POTATURA = 50;
+const daUltimaPotatura = new Map();
+
 /** Tiene la cache sotto il tetto, buttando le voci più vecchie. */
 async function limita(nome, massimo) {
   const cache = await caches.open(nome);
@@ -44,6 +56,17 @@ async function limita(nome, massimo) {
   for (const chiave of chiavi.slice(0, chiavi.length - massimo)) {
     await cache.delete(chiave);
   }
+}
+
+/** Pota, ma solo una volta ogni `PASSO_POTATURA` scritture. */
+async function forsePota(nome, massimo) {
+  const contate = (daUltimaPotatura.get(nome) || 0) + 1;
+  if (contate < PASSO_POTATURA) {
+    daUltimaPotatura.set(nome, contate);
+    return;
+  }
+  daUltimaPotatura.set(nome, 0);
+  await limita(nome, massimo);
 }
 
 async function versioneInstallata() {
@@ -88,7 +111,7 @@ async function primaLaCache(richiesta, nomeCache, massimo) {
   // Le risposte opache (no-cors) si salvano lo stesso: valgono per le tessere.
   if (risposta && (risposta.ok || risposta.type === 'opaque')) {
     await cache.put(richiesta, risposta.clone());
-    if (massimo) limita(nomeCache, massimo);
+    if (massimo) await forsePota(nomeCache, massimo);
   }
   return risposta;
 }
@@ -136,6 +159,11 @@ async function rispondi(evento) {
   }
 
   if (eTessera(url)) {
+    // Prima si guarda fra le tessere scaricate apposta: quelle non scadono e
+    // non escono mai dalla cache.
+    const area = await caches.open(CACHE_AREA);
+    const preparata = await area.match(richiesta);
+    if (preparata) return preparata;
     return primaLaCache(richiesta, CACHE_TILE, MAX_TILE).catch(() => Response.error());
   }
 

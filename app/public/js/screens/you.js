@@ -17,6 +17,86 @@ import { avviso, conferma, el, modale, svuota } from '../ui.js';
 let contesto = null;
 let contenitore = null;
 
+/**
+ * Lo scaricamento dell'area vive qui e non dentro i nodi della schermata:
+ * prima bastava passare alla mappa e tornare per perdere l'avanzamento — e
+ * per poterlo far partire una seconda volta mentre il primo era in corso.
+ */
+const scaricamento = { inCorso: false, messaggio: '' };
+
+/** Sta già aspettando che il service worker finisca di installarsi? */
+let attesaWorker = false;
+
+function mostraAvanzamento(testo) {
+  scaricamento.messaggio = testo;
+  const nodo = document.getElementById('pk-offline-avanzamento');
+  if (nodo) nodo.textContent = testo;
+}
+
+/** Quanti livelli di zoom in più si scaricano oltre a quello che si vede. */
+const LIVELLI_IN_PIU = 3;
+
+async function avviaScaricamento() {
+  if (scaricamento.inCorso) return;
+  const mappa = contesto.mappa;
+  if (!mappa) return;
+
+  // Senza una misura vera il riquadro è un punto, e si scaricherebbero tre
+  // tessere credendo di aver preparato una città.
+  if (!mappa.misurata) {
+    avviso(t('you.prepareNoMap'));
+    return;
+  }
+
+  const zoomOra = Math.round(mappa.zoom);
+  const { indirizzi, totale } = offline.tessereDelRiquadro(
+    mappa.riquadro(),
+    mappa.sorgente,
+    zoomOra,
+    zoomOra + LIVELLI_IN_PIU
+  );
+  if (!indirizzi.length) {
+    avviso(t('you.prepareNoMap'));
+    return;
+  }
+
+  const peso = offline.stimaPeso(indirizzi.length);
+  const procedi = await conferma(
+    t('you.prepareTitle'),
+    totale > indirizzi.length
+      ? t('you.prepareAskCapped', {
+          n: indirizzi.length,
+          totale,
+          peso: formattaByte(peso.byte),
+          z: zoomOra,
+          zmax: zoomOra + LIVELLI_IN_PIU,
+        })
+      : t('you.prepareAsk', {
+          n: indirizzi.length,
+          peso: formattaByte(peso.byte),
+          z: zoomOra,
+          zmax: zoomOra + LIVELLI_IN_PIU,
+        }),
+    t('you.prepareGo'),
+    t('common.cancel')
+  );
+  if (!procedi) return;
+
+  scaricamento.inCorso = true;
+  await disegna();
+  await offline.rendiPersistente();
+  const esito = await offline.scarica(indirizzi, (fatte, quante) => {
+    mostraAvanzamento(t('you.prepareProgress', { fatte, totale: quante }));
+  });
+  scaricamento.inCorso = false;
+  scaricamento.messaggio = t('you.prepareDone', {
+    scaricate: esito.scaricate,
+    saltate: esito.saltate,
+    fallite: esito.fallite,
+  });
+  await disegna();
+}
+
 function formattaByte(byte) {
   if (!byte) return '0 MB';
   const mega = byte / 1024 / 1024;
@@ -69,6 +149,16 @@ async function sezioneOffline() {
 
   if (!dato) {
     scatola.append(el('p', { class: 'pk-small pk-muted', testo: t('you.offlineNoSw') }));
+    // Alla primissima apertura il service worker sta ancora installando:
+    // «qui l'app non può lavorare offline» sarebbe una bugia lunga un secondo.
+    // Si aspetta che sia pronto e si ridisegna, una volta sola.
+    if ('serviceWorker' in navigator && !attesaWorker) {
+      attesaWorker = true;
+      navigator.serviceWorker.ready.then(() => {
+        attesaWorker = false;
+        if (contenitore && contenitore.isConnected) disegna();
+      });
+    }
     return scatola;
   }
 
@@ -78,48 +168,27 @@ async function sezioneOffline() {
       el('br'),
       t('you.offlineTiles', { n: dato.tiles }),
       el('br'),
+      t('you.offlineArea', { n: dato.area || 0 }),
+      el('br'),
       t('you.offlineSpace', { usato: formattaByte(dato.usage), totale: formattaByte(dato.quota) }),
     ]),
     el('p', { class: 'pk-mono pk-muted', testo: `v ${dato.version || '—'}` })
   );
 
-  const avanzamento = el('p', { class: 'pk-small pk-muted' });
+  const avanzamento = el('p', {
+    id: 'pk-offline-avanzamento',
+    class: 'pk-small pk-muted',
+    testo: scaricamento.messaggio,
+  });
+
   const scarica = el(
     'button',
     {
       class: 'pk-btn pk-btn--largo',
-      onclick: async () => {
-        const mappa = contesto.mappa;
-        if (!mappa) return;
-        const indirizzi = offline.tessereDelRiquadro(
-          mappa.riquadro(),
-          mappa.sorgente,
-          Math.round(mappa.zoom),
-          Math.round(mappa.zoom) + 2
-        );
-        const peso = offline.stimaPeso(indirizzi.length);
-        const procedi = await conferma(
-          t('you.prepareTitle'),
-          t('you.prepareAsk', { n: peso.tessere, peso: formattaByte(peso.byte) }),
-          t('you.prepareGo'),
-          t('common.cancel')
-        );
-        if (!procedi) return;
-
-        scarica.disabled = true;
-        await offline.rendiPersistente();
-        const esito = await offline.scarica(indirizzi, (fatte, totale) => {
-          avanzamento.textContent = t('you.prepareProgress', { fatte, totale });
-        });
-        scarica.disabled = false;
-        avanzamento.textContent = t('you.prepareDone', {
-          scaricate: esito.scaricate,
-          saltate: esito.saltate,
-          fallite: esito.fallite,
-        });
-      },
+      disabled: scaricamento.inCorso,
+      onclick: () => avviaScaricamento(),
     },
-    [t('you.prepare')]
+    [scaricamento.inCorso ? t('you.prepareRunning') : t('you.prepare')]
   );
 
   scatola.append(
@@ -140,6 +209,7 @@ async function sezioneOffline() {
           );
           if (!procedi) return;
           await offline.svuotaTessere();
+          scaricamento.messaggio = '';
           await disegna();
         },
       },

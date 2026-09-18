@@ -10,6 +10,9 @@ import { CONFIG } from './config.js';
 import { LATO_TESSERA } from './geo.js';
 
 const CACHE_TILE = 'pkfamily-tiles';
+/** Le tessere scaricate apposta stanno in una cache loro: non vengono mai
+ *  sfrattate per far posto a quelle viste passando. */
+const CACHE_AREA = 'pkfamily-area';
 
 const CACHE_MEDIA = 'pkfamily-media';
 const PREFISSO_APP = 'pkfamily-app-';
@@ -49,7 +52,8 @@ export async function stato() {
   return {
     version: nomeApp.slice(PREFISSO_APP.length),
     app: await conta(nomeApp),
-    tiles: await conta(CACHE_TILE),
+    tiles: (await conta(CACHE_TILE)) + (await conta(CACHE_AREA)),
+    area: await conta(CACHE_AREA),
     media: await conta(CACHE_MEDIA),
     usage: spazio.usage || 0,
     quota: spazio.quota || 0,
@@ -58,7 +62,11 @@ export async function stato() {
 
 /** Butta via tessere e foto: l'app resta installata e offline. */
 export async function svuotaTessere() {
-  await Promise.all([caches.delete(CACHE_TILE), caches.delete(CACHE_MEDIA)]);
+  await Promise.all([
+    caches.delete(CACHE_TILE),
+    caches.delete(CACHE_MEDIA),
+    caches.delete(CACHE_AREA),
+  ]);
 }
 
 /** Chiede al browser di non buttare via i dati dell'app quando ha fretta. */
@@ -74,31 +82,44 @@ function indirizzoTessera(sorgente, z, x, y) {
 
 /**
  * Gli indirizzi delle tessere che coprono un riquadro, dal livello `da` al
- * livello `a`, fermandosi al tetto per non riempire il telefono per sbaglio.
+ * livello `a`. Restituisce anche quante ne servirebbero in tutto: se il tetto
+ * ne taglia via una parte, chi chiede deve poterlo dire invece di far credere
+ * di aver scaricato tutto.
  */
 export function tessereDelRiquadro(riquadro, sorgente, da, a, tetto = CONFIG.tettoPrefetch) {
   const indirizzi = [];
   const zoomMax = CONFIG.tiles[sorgente].zoomMax;
+  let totale = 0;
 
   for (let z = Math.max(1, Math.round(da)); z <= Math.min(Math.round(a), zoomMax); z++) {
     const n = 2 ** z;
-    const perX = (lng) => Math.floor((((lng + 180) % 360) / 360) * n);
+    const perX = (lng) => Math.floor(((((lng % 360) + 540) % 360) / 360) * n) % n;
     const perY = (lat) => {
       const rad = (Math.max(-85.05, Math.min(85.05, lat)) * Math.PI) / 180;
       return Math.floor(((1 - Math.log(Math.tan(rad) + 1 / Math.cos(rad)) / Math.PI) / 2) * n);
     };
-    const x1 = perX(riquadro.ovest);
-    const x2 = perX(riquadro.est);
+
     const y1 = perY(riquadro.nord);
     const y2 = perY(riquadro.sud);
-    for (let y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-      for (let x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-        if (indirizzi.length >= tetto) return indirizzi;
-        indirizzi.push(indirizzoTessera(sorgente, z, ((x % n) + n) % n, y));
+    const primaY = Math.max(0, Math.min(y1, y2));
+    const ultimaY = Math.min(n - 1, Math.max(y1, y2));
+
+    // Le colonne si percorrono in avanti partendo da ovest, anche quando il
+    // riquadro scavalca il 180° meridiano: percorrendole da min a max si
+    // scaricava la fascia dall'altra parte del mondo.
+    const xOvest = perX(riquadro.ovest);
+    const xEst = perX(riquadro.est);
+    const quante = ((xEst - xOvest + n) % n) + 1;
+
+    for (let y = primaY; y <= ultimaY; y++) {
+      for (let passo = 0; passo < quante; passo++) {
+        totale += 1;
+        if (indirizzi.length >= tetto) continue;
+        indirizzi.push(indirizzoTessera(sorgente, z, (xOvest + passo) % n, y));
       }
     }
   }
-  return indirizzi;
+  return { indirizzi, totale };
 }
 
 /**
@@ -107,7 +128,7 @@ export function tessereDelRiquadro(riquadro, sorgente, da, a, tetto = CONFIG.tet
  * Restituisce {scaricate, saltate, fallite}.
  */
 export async function scarica(indirizzi, avanzamento) {
-  const cache = await caches.open(CACHE_TILE);
+  const cache = await caches.open(CACHE_AREA);
   const esito = { scaricate: 0, saltate: 0, fallite: 0 };
   let indice = 0;
 

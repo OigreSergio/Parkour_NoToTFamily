@@ -113,7 +113,7 @@
   "you.prepareWhy": "Download the map of the area you see now: when you get there, with no signal, it will still be here.",
   "you.prepare": "Prepare this area",
   "you.prepareTitle": "Prepare this area",
-  "you.prepareAsk": "{n} tiles, about {peso}. They download now, on the network you have.",
+  "you.prepareAsk": "{n} tiles from zoom {z} to {zmax}, about {peso}. They download now, on the network you have.",
   "you.prepareGo": "Download",
   "you.prepareProgress": "{fatte} of {totale}…",
   "you.prepareDone": "Done: {scaricate} new, {saltate} already there, {fallite} didn't arrive.",
@@ -199,5 +199,9 @@
   "admin.aiuto.filtroTessere.scuro": "CSS filter in the dark theme: here it takes an inversion, not less light.",
   "admin.aiuto.tiles.mappa.url": "Address with {z}/{x}/{y}. Changing it changes the map, not the satellite.",
   "admin.aiuto.routing.decimali": "Digits the position leaves the phone with: 3 = about 110 m.",
-  "admin.aiuto.supabase.publishableKey": "Publishable key only. The secret key never goes in a client."
+  "admin.aiuto.supabase.publishableKey": "Publishable key only. The secret key never goes in a client.",
+  "you.offlineArea": "of which {n} downloaded on purpose (never evicted)",
+  "you.prepareRunning": "Downloading…",
+  "you.prepareNoMap": "Open the map first and go to the area: from here I don't know yet what you're looking at.",
+  "you.prepareAskCapped": "It would take {totale} from zoom {z} to {zmax}: I'll download {n}, about {peso}. For the rest, zoom in and do it again."
 }
