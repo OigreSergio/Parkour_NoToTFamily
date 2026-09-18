@@ -33,10 +33,10 @@ ESCLUSI = {"sw.js", "precache.json"}
 ESTENSIONI_SALTATE = {".map", ".md"}
 
 
-def _file_da_includere() -> list[Path]:
+def _file_da_includere(cartella: Path) -> list[Path]:
     trovati = [
         p
-        for p in sorted(PUBBLICA.rglob("*"))
+        for p in sorted(cartella.rglob("*"))
         if p.is_file()
         and p.name not in ESCLUSI
         and p.suffix not in ESTENSIONI_SALTATE
@@ -45,14 +45,18 @@ def _file_da_includere() -> list[Path]:
     return trovati
 
 
-def costruisci() -> str:
-    """Il contenuto di `precache.json`, con i percorsi relativi alla radice dell'app."""
+def costruisci(cartella: Path = PUBBLICA) -> str:
+    """Il contenuto di `precache.json`, con i percorsi relativi alla radice dell'app.
+
+    `cartella` si cambia quando l'app viene impacchettata altrove (la beta di
+    `build_beta.py`): la versione è l'impronta di quei file, non di questi.
+    """
     impronta = hashlib.sha256()
     elenco: list[str] = []
     byte_totali = 0
 
-    for percorso in _file_da_includere():
-        relativo = percorso.relative_to(PUBBLICA).as_posix()
+    for percorso in _file_da_includere(cartella):
+        relativo = percorso.relative_to(cartella).as_posix()
         contenuto = percorso.read_bytes()
         byte_totali += len(contenuto)
         impronta.update(relativo.encode("utf-8"))

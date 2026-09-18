@@ -38,6 +38,22 @@ export const CONFIG = {
 
   supabase: { url: '', publishableKey: '' },
 
+  /**
+   * Come le tessere vengono portate verso il lino (vedi js/map.js). Sono
+   * stringhe di filtro CSS: si possono provare dal vivo dalla modalità
+   * sviluppatore, ed è il motivo per cui stanno qui e non dentro il motore.
+   */
+  filtroTessere: {
+    chiaro: 'sepia(0.35) saturate(0.8) brightness(1.04) contrast(0.95)',
+    scuro: 'invert(0.92) hue-rotate(180deg) saturate(0.6) brightness(0.92) sepia(0.25)',
+  },
+
+  /** Il lato in pixel della cella che raccoglie gli spilli in un gomitolo. */
+  cellaGomitolo: 54,
+
+  /** Da questo zoom in su si disegnano le fontanelle. */
+  zoomFontanelle: 14,
+
   /** Dove si apre la mappa la prima volta: Roma, dove stanno gli spot della famiglia. */
   partenza: { lat: 41.9, lng: 12.48, zoom: 11 },
 

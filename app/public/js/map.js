@@ -27,19 +27,14 @@ import { LATO_TESSERA, latLngAPixel, pixelALatLng } from './geo.js';
 const ZOOM_MIN = 2;
 const TESSERE_IN_MEMORIA = 360;
 
-/** Il lato, in pixel di schermo, della cella che raccoglie gli spilli vicini. */
-const CELLA_GOMITOLO = 54;
-
-/** Sotto questo zoom le fontanelle non si disegnano: sarebbero coriandoli. */
-const ZOOM_FONTANELLE = 14;
-
 /** Quanto lontano possono cadere due tocchi perché siano un doppio tocco. */
 const RAGGIO_DOPPIO_TOCCO = 34;
 
 /** Quanto deve muoversi il dito perché sia un trascinamento e non un tocco. */
 const SOGLIA_TRASCINAMENTO = 7;
 
-// Il filtro che porta le tessere verso il lino.
+// Il filtro che porta le tessere verso il lino: le stringhe stanno in
+// config.js, così la modalità sviluppatore può provarne altre dal vivo.
 //
 // Al chiaro basta scaldarle: `sepia .35` con un po' meno saturazione le porta
 // sul lino lasciando leggere le strade. Al buio abbassare la luce non basta —
@@ -47,10 +42,6 @@ const SOGLIA_TRASCINAMENTO = 7;
 // (`invert` + `hue-rotate 180°`): il fondo diventa notte, le strade restano
 // chiare, i parchi restano verdi. È il modo in cui sono fatte tutte le mappe
 // scure, ed è l'unico che qui non costi una libreria.
-const FILTRO_TESSERE = {
-  chiaro: 'sepia(0.35) saturate(0.8) brightness(1.04) contrast(0.95)',
-  scuro: 'invert(0.92) hue-rotate(180deg) saturate(0.6) brightness(0.92) sepia(0.25)',
-};
 
 /** Da "#rrggbb" alla luminanza percepita, per capire se siamo al buio. */
 function luminanza(esadecimale) {
@@ -276,7 +267,7 @@ export function creaMappa(contenitore, opzioni = {}) {
     // Il filtro vale solo per la mappa disegnata: il satellite resta vero.
     const filtro =
       filtriPossibili && sorgente === 'mappa'
-        ? FILTRO_TESSERE[colori().scuro ? 'scuro' : 'chiaro']
+        ? CONFIG.filtroTessere[colori().scuro ? 'scuro' : 'chiaro'] || 'none'
         : 'none';
 
     for (let ty = primoY; ty <= ultimoY; ty++) {
@@ -488,29 +479,30 @@ export function creaMappa(contenitore, opzioni = {}) {
         spilli.push({ voce, x: p.x, y: p.y, scelto: true });
         continue;
       }
-      const chiave = `${Math.floor(p.x / CELLA_GOMITOLO)},${Math.floor(p.y / CELLA_GOMITOLO)}`;
-      const cella = celle.get(chiave);
-      if (cella) {
-        cella.voci.push(voce);
-        cella.x += p.x;
-        cella.y += p.y;
+      const cella = CONFIG.cellaGomitolo;
+      const chiave = `${Math.floor(p.x / cella)},${Math.floor(p.y / cella)}`;
+      const raccolta = celle.get(chiave);
+      if (raccolta) {
+        raccolta.voci.push(voce);
+        raccolta.x += p.x;
+        raccolta.y += p.y;
       } else {
         celle.set(chiave, { voci: [voce], x: p.x, y: p.y });
       }
     }
 
     const gomitoli = [];
-    for (const cella of celle.values()) {
-      if (cella.voci.length === 1) {
-        spilli.push({ voce: cella.voci[0], x: cella.x, y: cella.y, scelto: false });
+    for (const raccolta of celle.values()) {
+      if (raccolta.voci.length === 1) {
+        spilli.push({ voce: raccolta.voci[0], x: raccolta.x, y: raccolta.y, scelto: false });
         continue;
       }
       gomitoli.push({
-        x: cella.x / cella.voci.length,
-        y: cella.y / cella.voci.length,
-        conta: cella.voci.length,
-        voci: cella.voci,
-        tuttiVerificati: cella.voci.every((v) => v.status === 'verified'),
+        x: raccolta.x / raccolta.voci.length,
+        y: raccolta.y / raccolta.voci.length,
+        conta: raccolta.voci.length,
+        voci: raccolta.voci,
+        tuttiVerificati: raccolta.voci.every((v) => v.status === 'verified'),
       });
     }
 
@@ -527,7 +519,7 @@ export function creaMappa(contenitore, opzioni = {}) {
     disegnaTessere();
     disegnaPercorso(o);
 
-    if (zoom >= ZOOM_FONTANELLE) {
+    if (zoom >= CONFIG.zoomFontanelle) {
       for (const fontanella of fontanelle) {
         const p = aSchermo(fontanella, o);
         if (p.x < -20 || p.y < -30 || p.x > larghezza + 60 || p.y > altezza + 20) continue;

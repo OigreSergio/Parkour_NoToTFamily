@@ -5,13 +5,14 @@
  * si vede quanto spazio occupa e si cancella tutto in un tocco.
  */
 
+import * as admin from '../admin.js';
 import { CONFIG } from '../config.js';
 import * as dati from '../data.js';
 import { t, LINGUE } from '../i18n.js';
 import { dimentica } from '../legal.js';
 import * as offline from '../offline.js';
-import { coda, dimenticaTutto, preferiti, scrivi, svuotaCoda } from '../store.js';
-import { avviso, conferma, el, svuota } from '../ui.js';
+import { accoda, coda, dimenticaTutto, preferiti, scrivi, svuotaCoda } from '../store.js';
+import { avviso, conferma, el, modale, svuota } from '../ui.js';
 
 let contesto = null;
 let contenitore = null;
@@ -308,6 +309,95 @@ function sezioneAccount() {
   ]);
 }
 
+/**
+ * La prova e i poteri: da qui si dice all'app che chi la sta usando la sta
+ * costruendo. Sta in fondo, e si accende a mano — non si eredita da un
+ * indirizzo, da una rete o da un cookie.
+ */
+function sezioneAvanzate() {
+  const costruzione = contesto.costruzione || { canale: 'sviluppo' };
+  const scatola = el('div', { class: 'pk-card' }, [el('h3', { testo: t('you.advanced') })]);
+
+  if (costruzione.canale === 'beta') {
+    scatola.append(
+      el('p', { class: 'pk-small', testo: t('you.betaWhat') }),
+      el('p', {
+        class: 'pk-mono pk-small pk-muted',
+        testo: `beta ${costruzione.versione || '?'} · ${(costruzione.quando || '').slice(0, 10)}`,
+      }),
+      el(
+        'button',
+        {
+          class: 'pk-btn pk-btn--largo',
+          onclick: async () => {
+            const area = el('textarea', {
+              class: 'pk-input',
+              rows: '4',
+              style: 'min-height:96px;padding:8px 12px;margin-bottom:16px',
+              placeholder: t('you.betaProblemPlaceholder'),
+              'aria-label': t('you.betaProblem'),
+            });
+            const invia = await modale({
+              titolo: t('you.betaProblem'),
+              sommario: t('you.betaProblemNote'),
+              corpo: area,
+              azioni: [
+                { testo: t('spot.fixQueue'), valore: true, primaria: true },
+                { testo: t('common.cancel'), valore: false },
+              ],
+            });
+            if (invia && area.value.trim()) {
+              await accoda({
+                tipo: 'problema_beta',
+                testo: area.value.trim(),
+                dove: location.hash || '#/mappa',
+                versione: costruzione.versione || '',
+                schermo: `${window.innerWidth}x${window.innerHeight}`,
+              });
+              avviso(t('spot.fixQueued'));
+              disegna();
+            }
+          },
+        },
+        [t('you.betaProblem')]
+      )
+    );
+  }
+
+  scatola.append(
+    el('p', { class: 'pk-small pk-muted', style: 'margin-top:12px', testo: t('you.devWhat') }),
+    el(
+      'button',
+      {
+        class: `pk-btn pk-btn--largo${admin.attiva() ? '' : ' pk-btn--fantasma'}`,
+        onclick: async () => {
+          if (admin.attiva()) {
+            await admin.accendi(false);
+            dati.riapplica();
+            contesto.aggiornaFascia();
+            if (contesto.mappa) contesto.mappa.ridisegna();
+            await disegna();
+            return;
+          }
+          const procedi = await conferma(
+            t('you.devOn'),
+            t('you.devAsk'),
+            t('you.devGo'),
+            t('common.cancel')
+          );
+          if (!procedi) return;
+          await admin.accendi(true);
+          contesto.aggiornaFascia();
+          contesto.vaiA('#/admin');
+        },
+      },
+      [admin.attiva() ? t('you.devOff') : t('you.devOn')]
+    )
+  );
+
+  return scatola;
+}
+
 function sezioneInformazioni() {
   return el('div', { class: 'pk-card' }, [
     el('h3', { testo: t('you.about') }),
@@ -324,6 +414,7 @@ async function disegna() {
     sezioneAspetto(),
     await sezioneDati(),
     sezioneAccount(),
+    sezioneAvanzate(),
     sezioneInformazioni()
   );
 }

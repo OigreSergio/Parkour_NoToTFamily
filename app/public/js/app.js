@@ -9,6 +9,7 @@
  * telefono è in modalità aereo l'app si apre uguale.
  */
 
+import * as admin from './admin.js';
 import * as dati from './data.js';
 import * as i18n from './i18n.js';
 import { leggi, scrivi } from './store.js';
@@ -19,6 +20,7 @@ import * as schermataSpot from './screens/spots.js';
 import * as schermataDettaglio from './screens/detail.js';
 import * as schermataTutorial from './screens/tutorials.js';
 import * as schermataTu from './screens/you.js';
+import * as schermataAdmin from './screens/admin.js';
 
 const SCHERMATE = {
   mappa: schermataMappa,
@@ -26,6 +28,7 @@ const SCHERMATE = {
   dettaglio: schermataDettaglio,
   tutorial: schermataTutorial,
   tu: schermataTu,
+  admin: schermataAdmin,
 };
 
 const contesto = {
@@ -45,7 +48,47 @@ const contesto = {
       contesto.registrazione.waiting.postMessage({ type: 'skip-waiting' });
     }
   },
+  aggiornaFascia() {
+    disegnaFascia();
+  },
 };
+
+/** Da dove viene questa copia: sviluppo dal repository, oppure una beta. */
+let costruzione = { canale: 'sviluppo', versione: '', quando: '' };
+
+/**
+ * La fascia in testa dice sempre che cosa stai guardando: una beta, la
+ * modalità sviluppatore, o tutte e due. Toccandola si va dove si agisce.
+ */
+function disegnaFascia() {
+  const fascia = document.getElementById('pk-fascia');
+  if (!fascia) return;
+  const pezzi = [];
+  if (costruzione.canale === 'beta') {
+    pezzi.push(i18n.t('band.beta', { v: costruzione.versione || '?' }));
+  }
+  if (admin.attiva()) pezzi.push(i18n.t('band.dev'));
+
+  if (!pezzi.length) {
+    fascia.hidden = true;
+    return;
+  }
+  fascia.hidden = false;
+  fascia.textContent = pezzi.join(' · ');
+  fascia.dataset.canale = admin.attiva() ? 'sviluppo' : costruzione.canale;
+  fascia.onclick = () => contesto.vaiA(admin.attiva() ? '#/admin' : '#/tu');
+}
+
+/** Legge `build.json`: c'è sempre, ed è precaricato con il resto dell'app. */
+async function leggiCostruzione() {
+  try {
+    const risposta = await fetch('build.json');
+    if (risposta.ok) costruzione = { ...costruzione, ...(await risposta.json()) };
+  } catch {
+    // Senza il file resta «sviluppo»: nessuna fascia, nessun danno.
+  }
+  contesto.costruzione = costruzione;
+}
 
 /** Da "#/spot/abc" a {nome: 'dettaglio', parametri: {id: 'abc'}}. */
 function rotta(indirizzo) {
@@ -57,10 +100,23 @@ function rotta(indirizzo) {
   if (primo === 'mappa') return { nome: 'mappa', parametri: secondo ? { id: secondo } : {} };
   if (primo === 'tutorial') return { nome: 'tutorial', parametri: {} };
   if (primo === 'tu') return { nome: 'tu', parametri: {} };
+  if (primo === 'admin') {
+    // Il pannello si apre solo se la modalità è accesa: un indirizzo scritto
+    // a mano non deve dare poteri a nessuno.
+    if (!admin.attiva()) return { nome: 'tu', parametri: {} };
+    return { nome: 'admin', parametri: secondo ? { id: secondo } : {} };
+  }
   return { nome: 'mappa', parametri: {} };
 }
 
-const TAB_DI = { mappa: '#/mappa', spot: '#/spot', dettaglio: '#/spot', tutorial: '#/tutorial', tu: '#/tu' };
+const TAB_DI = {
+  mappa: '#/mappa',
+  spot: '#/spot',
+  dettaglio: '#/spot',
+  tutorial: '#/tutorial',
+  tu: '#/tu',
+  admin: '#/tu',
+};
 
 function mostraSchermata(nome) {
   for (const sezione of document.querySelectorAll('.pk-screen')) {
@@ -177,6 +233,9 @@ async function avvia() {
   await i18n.inizializza(lingua);
   i18n.applica(document);
 
+  // La modalità sviluppatore va letta prima dei dati: se è accesa, quello che
+  // l'app mostra è il file più le modifiche locali.
+  await admin.inizializza();
   await dati.carica();
 
   document.getElementById('app').hidden = false;
@@ -185,10 +244,13 @@ async function avvia() {
   schermataDettaglio.inizializza(contesto);
   schermataTutorial.inizializza(contesto);
   schermataTu.inizializza(contesto);
+  schermataAdmin.inizializza(contesto);
 
   collegaNavigazione();
   seguiLaRete();
   raccogliInvitoInstallazione();
+  await leggiCostruzione();
+  disegnaFascia();
 
   if (!location.hash) location.hash = '#/mappa';
   await apri(location.hash);

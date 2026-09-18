@@ -8,9 +8,17 @@
  *
  * Gli spot `community` non sono verificati da nessuno: la mappa e la lista lo
  * dicono sempre, e non diventano verificati da soli (principio 2).
+ *
+ * Quando la modalità sviluppatore è accesa, quello che l'app mostra è il file
+ * più le modifiche locali di chi sta lavorando: vedi `riapplica()`.
  */
 
+import * as admin from './admin.js';
+
 const DATI = {
+  /** Gli spot come stanno nel file: non si toccano mai. */
+  base: [],
+  /** Gli spot come li vede l'app: base più le modifiche locali, se ce ne sono. */
   spot: [],
   perId: new Map(),
   tutorial: [],
@@ -40,14 +48,30 @@ export async function carica() {
     leggiJson('data/tutorials.json'),
   ]);
 
-  DATI.spot = spot.spots.map((voce) => ({
+  DATI.base = spot.spots;
+  DATI.tutorial = tutorial.tutorials;
+  riapplica();
+  return DATI;
+}
+
+/**
+ * Ricostruisce l'elenco degli spot partendo dal file e aggiungendoci le
+ * modifiche locali della modalità sviluppatore. Si richiama ogni volta che
+ * quelle cambiano, così non serve riavviare l'app per vederle.
+ */
+export function riapplica() {
+  DATI.spot = admin.applicaAgliSpot(DATI.base).map((voce) => ({
     ...voce,
     cerca: normalizza(`${voce.name} ${voce.description || ''}`),
   }));
-  DATI.verificati = spot.verified;
+  DATI.verificati = DATI.spot.filter((voce) => voce.status === 'verified').length;
   DATI.perId = new Map(DATI.spot.map((voce) => [voce.id, voce]));
-  DATI.tutorial = tutorial.tutorials;
-  return DATI;
+  return DATI.spot.length;
+}
+
+/** Gli spot come stanno nel file, senza modifiche locali: serve all'esportazione. */
+export function spotDelFile() {
+  return DATI.base;
 }
 
 export function spot() {

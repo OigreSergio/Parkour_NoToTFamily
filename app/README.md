@@ -58,18 +58,21 @@ app/
     sw.js                 il service worker: guscio, dati e tessere offline
     precache.json         l'elenco dei file da tenere (generato)
     styles/pk.css         i token del masterplan, cap. 3.2–3.4
+    build.json            da dove viene questa copia: sviluppo o beta
     js/                   moduli ES, nessuna dipendenza
-      app.js              avvio, rotte, service worker
+      app.js              avvio, rotte, service worker, fascia di canale
+      admin.js            modalità sviluppatore: sovrascritture locali ed export
       map.js              la mappa: tela, tessere, spilli, lino di riserva
       data.js store.js    dati che l'app porta con sé / dati che restano qui
       offline.js          stato delle cache e scarico delle tessere in anticipo
       route.js legal.js   distanze e percorsi / avviso sui rischi
-      screens/            mappa, spot, scheda, tutorial, Tu
+      screens/            mappa, spot, scheda, tutorial, Tu, pannello sviluppatore
     data/                 spots.json, fountains.json, tutorials.json (generati)
     i18n/                 it.json, en.json — nessuna stringa nel codice
     fonts/ icons/         Fraunces e Karla (OFL), icone generate dal codice
   tools/                  build_data, build_precache, make_icons, fetch_fonts,
-                          serve, desktop
+                          serve, desktop, screenshot, build_beta
+  dist/                   le beta costruite (non versionate)
   tests/                  prove Playwright: avvio, offline, installabilità
 ```
 
@@ -93,12 +96,65 @@ cd app && npm install && npm test
 ```
 
 Coprono: l'avvio e la navigazione, la ricerca, l'avviso sui rischi che compare
-una volta sola, i filtri, **la ricarica a rete staccata**, la mappa che
-disegna il lino quando le tessere non arrivano, il manifest e le icone, e il
-fatto che nelle cache non finisca niente che riguardi una persona.
+una volta sola, i filtri, **la ricarica a rete staccata**, la mappa (colori del
+masterplan, gomitoli che contano, trascinamento lento, doppio tocco, pizzico,
+filtro chiaro e scuro), il manifest e le icone, il fatto che nelle cache non
+finisca niente che riguardi una persona, la fascia della beta e la modalità
+sviluppatore (compreso il rifiuto di una chiave segreta).
 
 Dove Playwright non può scaricare il proprio Chromium:
 `PK_CHROMIUM=/percorso/di/chrome npm test`.
+
+## La beta da provare sul computer
+
+```sh
+python3 app/tools/build_beta.py --zip
+```
+
+Ne esce una cartella che sta in piedi da sola in `app/dist/` (1,1 MB; 0,4 MB
+zippata): dentro c'è l'app, un `avvia.py` che non chiede niente al repository e
+un LEGGIMI con cosa provare per prima cosa. Si copia su un'altra macchina, si
+lancia `python3 avvia.py`, e l'app si apre in una finestra formato telefono.
+
+La copia porta `build.json` con canale `beta`: l'app se ne accorge e mette in
+testa la fascia **BETA** con la versione, così nessuno confonde una prova con
+il prodotto. Da «Tu → Avanzate» c'è **Segnala un problema**, che mette in coda
+sul dispositivo cosa stavi facendo, dove eri e che schermo hai.
+
+L'elenco dei file da tenere offline viene ricalcolato sulla copia: la versione
+del service worker è l'impronta di *quei* file, e cambia a ogni beta.
+
+## La modalità sviluppatore
+
+«Tu → Avanzate → Accendi la modalità sviluppatore». Compare una fascia ambra in
+testa; toccandola si apre il pannello (`#/admin`). Da lì, senza aprire un
+editor:
+
+- **spot**: cercarli, correggerne nome, descrizione, stato, livello,
+  affollamento, fontanella e coordinate; prenderne il punto dal centro della
+  mappa; crearne di nuovi; toglierne; ripristinare quello che dice il file;
+- **mappa e tessere**: provare dal vivo un altro filtro di colore (chiaro e
+  scuro), un'altra sorgente di tessere, il lato della cella dei gomitoli, lo
+  zoom da cui compaiono le fontanelle;
+- **collegamenti**: l'indirizzo del servizio dei percorsi, le cifre con cui la
+  posizione parte dal telefono, Supabase;
+- **esporta / importa**: un JSON con tutte le modifiche, e un secondo file con
+  i soli spot da rivedere già nei nomi di campo di
+  `scripts/data/webapp_fixed_spots.json`.
+
+Tre cose che il pannello non fa, e lo dice in testa a sé stesso:
+
+1. **non pubblica niente**: le modifiche restano sul dispositivo finché non le
+   esporti, e a portarle nel repository è una persona (principio 5);
+2. **non finge**: ogni spot toccato o creato porta il segno «locale», e quelli
+   nuovi nascono `pending`. Verificato lo diventa uno spot quando una persona
+   lo verifica (principio 2);
+3. **non accetta chiavi segrete**: il campo della publishable key rifiuta
+   quello che sembra una secret key, e lo dice (principio 4).
+
+L'indirizzo `#/admin` da solo non basta: senza aver acceso la modalità porta a
+«Tu». Non è una difesa — è un'app che gira sul telefono di chi la usa — ma
+evita di darsi i poteri per sbaglio.
 
 ## Le regole rispettate qui dentro
 

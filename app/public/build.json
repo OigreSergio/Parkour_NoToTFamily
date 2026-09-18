@@ -1,0 +1,6 @@
+{
+  "canale": "sviluppo",
+  "versione": "0.1.0",
+  "quando": "",
+  "nota": "Copia di sviluppo servita dal repository. La beta la costruisce app/tools/build_beta.py."
+}

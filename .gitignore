@@ -269,6 +269,9 @@ tmp/
 📲/backup-completo.json
 scripts/data/cities1000.zip
 
+# app/ — la beta si costruisce, non si versiona
+app/dist/
+
 # app/ — prove Playwright (l'app non ha dipendenze, i test sì)
 app/test-results/
 app/playwright-report/

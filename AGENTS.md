@@ -85,6 +85,7 @@ Per lo stato attuale vince il codice; per la direzione vince il masterplan.
 python3 app/tools/desktop.py            # finestra formato telefono sul PC
 python3 app/tools/serve.py              # http://127.0.0.1:8080
 cd app && npm install && npm test       # avvio, offline vero, installabilità
+python3 app/tools/build_beta.py --zip   # la beta da provare sul PC, in app/dist/
 
 # remote-service (Python)
 cd remote-service

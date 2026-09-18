@@ -7,6 +7,7 @@
  * aggiungono quando c'è.
  */
 
+import * as admin from '../admin.js';
 import * as dati from '../data.js';
 import { distanzaM, formattaDistanza, formattaDurata } from '../geo.js';
 import { t } from '../i18n.js';
@@ -304,7 +305,18 @@ export async function entra(parametri) {
     sezioneCoordinate(voce),
     await sezionePersonale(voce),
     await sezioneFontanelle(voce),
-    sezioneCorrezione(voce)
+    sezioneCorrezione(voce),
+    admin.attiva()
+      ? el(
+          'button',
+          {
+            class: 'pk-btn pk-btn--fantasma pk-btn--largo',
+            style: 'margin-top:8px;border-color:var(--ambra);color:var(--ambra)',
+            onclick: () => contesto.vaiA(`#/admin/${voce.id}`),
+          },
+          [t('admin.editThis')]
+        )
+      : null
   );
   contenitore.scrollTop = 0;
 }

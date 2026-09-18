@@ -1,8 +1,9 @@
 {
-  "version": "5233bf45d3a5",
+  "version": "4bd6e8f5cdd0",
   "generated_by": "app/tools/build_precache.py",
-  "bytes": 1126070,
+  "bytes": 1163824,
   "files": [
+    "build.json",
     "data/fountains.json",
     "data/spots.json",
     "data/tutorials.json",
@@ -19,6 +20,7 @@
     "icons/icon-maskable-192.png",
     "icons/icon-maskable-512.png",
     "index.html",
+    "js/admin.js",
     "js/app.js",
     "js/config.js",
     "js/data.js",
@@ -29,6 +31,7 @@
     "js/offline.js",
     "js/position.js",
     "js/route.js",
+    "js/screens/admin.js",
     "js/screens/detail.js",
     "js/screens/map.js",
     "js/screens/spots.js",

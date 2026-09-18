@@ -739,6 +739,39 @@ textarea {
   margin-bottom: var(--sp-2);
 }
 
+/* --- fascia di canale (beta, modalità sviluppatore) --------------------------- */
+
+/* Sta sopra tutto e non si può confondere con il prodotto finito: se stai
+   guardando una beta, o hai i poteri da sviluppatore accesi, devi saperlo
+   senza doverlo cercare. */
+.pk-band {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--cucitura);
+  padding: 5px var(--sp-4);
+  padding-top: calc(5px + env(safe-area-inset-top, 0px));
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+  cursor: pointer;
+  flex: none;
+  background: var(--filo);
+  color: #fff;
+}
+
+.pk-band[data-canale='sviluppo'] {
+  background: var(--ambra);
+  color: #1f1b16;
+}
+
+/* Con la fascia in testa, l'intestazione non ha più bisogno di stare sotto
+   il notch: ci pensa la fascia. */
+.pk-band:not([hidden]) + .pk-header {
+  padding-top: var(--sp-3);
+}
+
 /* --- striscia di stato della rete -------------------------------------------- */
 
 .pk-offline {

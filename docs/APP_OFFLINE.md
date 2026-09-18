@@ -75,6 +75,38 @@ regola dei browser. Quindi:
   forwarding*, oppure `serve.py --https` accettando il certificato locale,
   oppure la pubblicazione da `main` via CI.
 
+## Provarla come beta
+
+`python3 app/tools/build_beta.py --zip` produce in `app/dist/` una cartella che
+sta in piedi da sola (1,1 MB, 0,4 MB zippata): app, avviatore e LEGGIMI. Si
+copia su qualunque computer con Python 3 e si lancia con `python3 avvia.py`.
+
+La copia porta `build.json` con canale `beta`: l'app mette in testa la fascia
+**BETA** con la versione, e «Tu → Avanzate» offre *Segnala un problema*, che
+mette in coda sul dispositivo cosa stavi facendo, dove eri e che schermo hai.
+
+Non è una pubblicazione: è un pacchetto da passare a mano a chi prova.
+
+## La modalità sviluppatore
+
+Si accende da «Tu → Avanzate» e apre un pannello (`#/admin`) per correggere
+spot, provare dal vivo il filtro delle tessere, cambiare sorgenti e
+collegamenti, esportare tutto in JSON. Dettagli in
+[`app/README.md`](../app/README.md).
+
+Le tre regole che la tengono dentro i principi del masterplan:
+
+| Principio | Come è rispettato |
+| --- | --- |
+| 5 — solo `main` via CI va online | il pannello non pubblica: esporta file da rivedere |
+| 2 — solo verificato è pubblico | ogni spot toccato porta il segno «locale»; i nuovi nascono `pending` |
+| 4 — nessun segreto nel client | il campo della publishable key rifiuta quello che sembra una secret key |
+
+È la sostituzione, per la parte di dati, di quello che oggi fa
+`admin-desktop/` con la secret key dentro il browser (problema P0 del
+masterplan, cap. 6.2): qui non c'è nessuna chiave privilegiata, e infatti non
+si può scrivere su Supabase — si esporta e si passa da una persona.
+
 ## Cosa manca per andare online
 
 Sono cose da persona, elencate perché siano decidibili:
