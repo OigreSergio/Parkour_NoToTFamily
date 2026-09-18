@@ -85,10 +85,19 @@ jobs:
       - name: Avvia il container e interroga /healthz
         run: |
           docker run -d --name smoke -p 8080:8080 -e CORS_ORIGINS=http://localhost pkremote:smoke
-          curl --silent --show-error --fail --retry 10 --retry-delay 1 --retry-connrefused \
-            http://127.0.0.1:8080/healthz
-          docker logs smoke
-          docker rm -f smoke
+          # Il proxy delle porte di Docker accetta la connessione TCP prima che il
+          # processo nel container ascolti, poi la chiude di colpo: per curl è un
+          # "connection reset" (errore 56), non un rifiuto, quindi --retry-connrefused
+          # da solo non ritenta mai. --retry-all-errors ritenta su qualsiasi errore.
+          curl --silent --show-error --fail --retry 20 --retry-delay 1 --retry-all-errors \
+            --output healthz.json http://127.0.0.1:8080/healthz
+          cat healthz.json
+          python3 -c 'import json; assert json.load(open("healthz.json"))["status"] == "ok"'
+      - name: Log del container (anche quando la prova fallisce)
+        if: always()
+        run: |
+          docker logs smoke || echo "il container non è mai partito"
+          docker rm -f smoke >/dev/null 2>&1 || true
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io

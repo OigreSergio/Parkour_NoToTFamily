@@ -76,6 +76,12 @@ che Supabase e OSRM non sono configurati, `/api/v1/route` risponde 503 e i
 job via HTTP sono spenti. È il comportamento voluto: ogni pezzo si accende con
 la sua variabile.
 
+Se la shell ha già una variabile `APP_ENV` con un valore diverso (alcuni
+ambienti la impostano a `dev`), il servizio si ferma subito spiegando che i
+valori ammessi sono `development`, `test` e `production`: la variabile
+d'ambiente vince sul file `.env`, quindi va corretta nella shell o nella
+configurazione di avvio (quelle in `.run/` la impostano esplicitamente).
+
 ## Messa in remoto
 
 La strada prevista dal masterplan (cap. 4.6) è: tutto ciò che va online nasce

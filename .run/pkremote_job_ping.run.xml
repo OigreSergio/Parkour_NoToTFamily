@@ -6,6 +6,7 @@
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="APP_ENV" value="development" />
       <env name="LOG_FORMAT" value="console" />
     </envs>
     <option name="SDK_HOME" value="" />

@@ -393,11 +393,24 @@ in remoto avrebbero contato. I principali, con la correzione:
 
 ### 7.2 Cosa NON è stato verificato
 
-- La **build dell'immagine Docker**: in questa sessione non c'è un demone
-  Docker. Il `Dockerfile` è scritto secondo lo schema a due stadi standard,
-  ma la prima build vera la farà il workflow o l'admin.
-- Il **workflow GitHub**: parte al primo push su `main` (o a mano); qui
-  è stato solo scritto. `gitleaks-action` è gratuita per account personali.
+- La **build dell'immagine Docker** non si può fare in sessione (nessun
+  demone Docker). L'ha fatta il workflow al merge della pull request #16 su
+  `main`: la build è riuscita al primo tentativo, ma il passo che avvia il
+  container e interroga `/healthz` è fallito per un difetto del passo, non
+  del servizio. Il proxy delle porte di Docker accetta la connessione TCP e
+  la chiude con un "reset" finché il processo non ascolta, e
+  `curl --retry-connrefused` non ritenta su quell'errore (codice 56).
+  Corretto con `--retry-all-errors`, un controllo sul JSON della risposta e
+  un passo che stampa i log del container anche quando la prova fallisce;
+  guasto e correzione sono stati riprodotti in locale con un finto proxy che
+  chiude le connessioni con reset. La pubblicazione su GHCR (amd64 e arm64)
+  resta da vedere al merge successivo.
+- Il **workflow GitHub**: `Lint e test` e `Scansione segreti` sono verdi
+  sulla pull request e su `main`. La scansione a ogni push guarda solo i
+  commit nuovi; quella settimanale su tutta la storia è la sola che può
+  segnalare il segreto degli inviti ancora presente su `main`
+  (`docs/demo/tools/build_tutorial_preview.py`). `gitleaks-action` è
+  gratuita per account personali.
 - Le chiamate a un **Supabase reale** e a un **OSRM reale**: i test usano
   trasporti finti. Il formato `application/geo+json` di PostgREST e la
   forma EWKB delle geometrie sono documentati e coperti da test, ma la
@@ -496,10 +509,13 @@ VERIFICATO:
   coordinata nei log.
 - `pkremote config` non stampa i segreti; `pkremote job ping` produce JSON pulito.
 - Quattro rilievi dei lettori ricontrollati da agenti indipendenti: tutti confermati.
+- Dopo il merge su `main`: `Lint e test` e `Scansione segreti` verdi, build dell'immagine
+  riuscita in CI; il passo di prova su `/healthz` è fallito (reset del proxy delle porte di
+  Docker, curl senza `--retry-all-errors`), riprodotto in locale e corretto (7.2).
 
 NON FATTO:
-- Build dell'immagine Docker (nessun demone Docker nella sessione), pull request e primo
-  deploy: il lavoro è sul branch claude/analisi-struttura-python-o8yvue.
+- Pubblicazione dell'immagine su GHCR e primo deploy: la build è riuscita in CI, ma la prova
+  su `/healthz`, corretta dopo il primo merge, va rivista al merge successivo (7.2).
 - Chiamate reali a Supabase e OSRM (test con trasporti finti).
 - Verifica del JWT di Supabase e letture per conto di un utente (passo 2 del cap. 9).
 - Job di importazione spot e pipeline foto: restano in scripts/ (passi 3 e 4 del cap. 9).

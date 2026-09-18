@@ -6,6 +6,7 @@
     <option name="PARENT_ENVS" value="true" />
     <envs>
       <env name="PYTHONUNBUFFERED" value="1" />
+      <env name="APP_ENV" value="development" />
       <env name="LOG_FORMAT" value="console" />
       <env name="PORT" value="8080" />
       <env name="CORS_ORIGINS" value="http://localhost:3000" />
