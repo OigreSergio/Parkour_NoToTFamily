@@ -100,6 +100,37 @@ comporta con un servizio davanti invece che con tutto dentro il browser.
 Non è un backend di prodotto (AGENTS.md, regola 3): nessuna regola nuova,
 nessuna scrittura, nessun account. E se tace, l'app continua da sola.
 
+## Installarla davvero: l'APK, e il QR che lo porta sul telefono
+
+```sh
+python3 app/tools/build_apk.py     # app/dist/pkfamily-<versione>.apk (0,8 MB)
+python3 app/tools/qr.py            # lo serve sulla rete di casa e mostra il QR
+```
+
+Installare dal browser («Aggiungi alla schermata Home») resta la strada
+principale e non chiede niente a nessuno. L'APK serve a chi quella strada non
+la trova, o a chi vuole passare l'app a mano: si inquadra il QR con la
+fotocamera, il telefono scarica, due tocchi e c'è.
+
+Dentro l'APK non c'è un'app riscritta: c'è **questa** app, con il suo service
+worker e i suoi dati. Il guscio Android (`app/android/`, due classi Java) è
+una tela web che intercetta le richieste a `https://appassets.androidplatform.net/`
+— un indirizzo che Android riserva a questo scopo e che in rete non esiste — e
+risponde con i file presi da dentro il pacchetto. È l'unico modo per avere
+insieme le tre cose che servono: un'origine sicura (senza la quale il service
+worker non si registra), un'origine **stabile** (una porta a caso cambierebbe
+a ogni avvio, e con lei preferenze, spot messi da parte e tessere scaricate) e
+nessuna richiesta che esca davvero dal telefono.
+
+Si compila senza Gradle e senza rete, con `aapt2`, `javac`, `d8`, `zipalign` e
+`apksigner`. La firma è una chiave di prova generata in `app/dist/`, che non
+entra nel repository: la chiave di pubblicazione è di una persona (AGENTS.md,
+regola 6), e per questo l'app porta in testa la fascia **APK DI PROVA**.
+
+Il QR lo disegna `app/tools/qr.py`, senza librerie da installare. Il file va
+dal computer al telefono sulla stessa rete Wi-Fi: non passa da internet, non
+passa da un sito.
+
 ## La modalità sviluppatore
 
 Si accende da «Tu → Avanzate» e apre un pannello (`#/admin`) per correggere

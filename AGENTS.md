@@ -14,7 +14,7 @@ Python che gira in remoto è il servizio di supporto in `remote-service/`.
 | Cartella | Cosa | Stato | Lingua del codice |
 | --- | --- | --- | --- |
 | `remote-service/` | pacchetto Python `pkremote`: stato, proxy dei percorsi, job | attivo, è dove si sviluppa in Python | Python 3.11, FastAPI |
-| `app/` | applicazione installabile per telefono che funziona senza rete (PWA senza build), gli strumenti per provarla dal PC e il motore Python della demo | attiva; vedi `docs/APP_OFFLINE.md` | HTML/CSS/JS, Python per strumenti e demo |
+| `app/` | applicazione installabile per telefono che funziona senza rete (PWA senza build), il guscio Android che la impacchetta in un APK, gli strumenti per provarla dal PC e il motore Python della demo | attiva; vedi `docs/APP_OFFLINE.md` | HTML/CSS/JS, Java per il guscio, Python per strumenti e demo |
 | `supabase/` | migrazioni SQL e seed del progetto Supabase | schema di riferimento; quello reale di produzione differisce (vedi analisi) | SQL, Node |
 | `backend/` | API FastAPI completa nata prima della scelta di Supabase | scaffold, non in produzione: **non estenderlo** (decisione G del masterplan) | Python |
 | `mobile/` | app Flutter | sorgenti indietro rispetto alla build pubblicata | Dart |
@@ -88,6 +88,9 @@ cd app && npm install && npm test       # avvio, offline vero, installabilità
 python3 app/tools/build_beta.py --zip   # la beta da provare sul PC, in app/dist/
 python3 app/tools/build_demo.py         # la demo in un file solo, da aprire com'è
 python3 app/tools/build_demo_python.py  # la demo con il motore in Python (un .py)
+python3 app/tools/build_apk.py          # l'APK per il telefono (serve ANDROID_HOME e un JDK)
+python3 app/tools/qr.py                 # serve l'APK sulla rete di casa e mostra il QR
+python3 app/tools/qr.py --prova         # controlla il codificatore QR
 
 # remote-service (Python)
 cd remote-service

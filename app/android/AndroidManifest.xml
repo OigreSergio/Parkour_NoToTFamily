@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Il guscio Android di PkFAMILY.
+
+  L'identificativo non è quello dell'app Flutter (family.notot.parkour_notot):
+  sono due cose diverse e devono poter stare sullo stesso telefono senza che
+  una scavalchi l'altra.
+
+  INTERNET serve per le tessere della mappa, le foto e i video: i file
+  dell'app arrivano da dentro l'APK e non passano mai dalla rete. La posizione
+  si chiede solo quando la persona tocca «Dove sono»: non la chiede l'avvio, e
+  non esce dal telefono.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="family.notot.pkfamily">
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+  <uses-feature android:name="android.hardware.location" android:required="false" />
+
+  <application
+      android:label="@string/nome_app"
+      android:icon="@mipmap/ic_launcher"
+      android:theme="@style/TemaPkFamily"
+      android:hardwareAccelerated="true"
+      android:allowBackup="false"
+      android:supportsRtl="true">
+
+    <activity
+        android:name="family.notot.pkfamily.Guscio"
+        android:exported="true"
+        android:launchMode="singleTask"
+        android:windowSoftInputMode="adjustResize"
+        android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|uiMode|density|fontScale|locale|layoutDirection">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>

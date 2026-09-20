@@ -218,5 +218,6 @@
   "map.announceCluster": "Gomitolo di {n} spot: la mappa si avvicina.",
   "spots.fromYou": "distanze da dove sei",
   "spots.fromMap": "distanze dal centro della mappa",
-  "band.python": "DEMO PYTHON {v}"
+  "band.python": "DEMO PYTHON {v}",
+  "band.apk": "APK DI PROVA {v}"
 }

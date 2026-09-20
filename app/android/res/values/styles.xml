@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    Nessuna barra del titolo: il guscio dell'app ha già la sua testata. Il
+    fondo è il lino del masterplan (cap. 3.2), così l'attimo prima che la
+    pagina compaia non è un lampo bianco.
+  -->
+  <style name="TemaPkFamily" parent="@android:style/Theme.DeviceDefault.NoActionBar">
+    <item name="android:windowBackground">@color/lino</item>
+  </style>
+</resources>

@@ -70,9 +70,10 @@ app/
     data/                 spots.json, fountains.json, tutorials.json (generati)
     i18n/                 it.json, en.json — nessuna stringa nel codice
     fonts/ icons/         Fraunces e Karla (OFL), icone generate dal codice
+  android/                il guscio Android: manifesto, risorse, la tela web
   tools/                  build_data, build_precache, make_icons, fetch_fonts,
                           serve, desktop, screenshot, build_beta, build_demo,
-                          build_demo_python
+                          build_demo_python, build_apk, qr
   dist/                   le beta e le demo costruite (non versionate)
   demo/                   motore.py: la logica dell'app scritta in Python
   tests/                  prove Playwright: avvio, offline, installabilità
@@ -204,6 +205,51 @@ nessun account — c'è la stessa lettura che l'app fa da sola, spostata dove la
 si può guardare e misurare. Se il motore tace, l'app torna a rispondere da
 sola: c'è una prova che stacca `/api` e verifica che la ricerca funzioni
 lo stesso.
+
+## L'APK, e il QR che lo porta sul telefono
+
+```sh
+python3 app/tools/build_apk.py     # app/dist/pkfamily-<versione>.apk
+python3 app/tools/qr.py            # lo serve, e mostra il QR da inquadrare
+```
+
+`build_apk.py` produce un **APK vero** (0,8 MB), firmato e installabile. Dentro
+non c'è un'app riscritta in Java: c'è **questa** app, quella di `app/public/`,
+con il suo service worker e i suoi 1.706 spot. Il guscio Android
+(`app/android/`) è una tela web a tutto schermo che se li prende da dentro il
+pacchetto.
+
+Un dettaglio che decide se funziona o no. I file dell'app non arrivano da
+`file://` — da lì i moduli, `fetch`, IndexedDB e il service worker non
+funzionano — e nemmeno da un server locale su una porta a caso, perché la
+porta fa parte dell'origine e cambierebbe a ogni avvio, portandosi via
+preferenze, spot messi da parte e tessere scaricate. Arrivano intercettando
+le richieste a `https://appassets.androidplatform.net/`, il nome che Android
+riserva proprio a questo: non esiste in rete, e per il browser è un'origine
+sicura, quindi il service worker può registrarsi. Le richieste che il service
+worker fa per conto suo passano da un cliente a parte (`ServiceWorkerClient`):
+senza quello, l'offline non si preparerebbe.
+
+Si compila **senza Gradle e senza rete**, con gli strumenti che stanno già
+nell'SDK: `aapt2`, `javac`, `d8`, `zipalign`, `apksigner`. Servono un SDK di
+Android (`ANDROID_HOME`) e un JDK 17 o più recente.
+
+**La firma è di prova.** Senza `--keystore`, il pacchetto viene firmato con una
+chiave generata in `app/dist/`, che non entra nel repository e non vale niente:
+serve solo perché Android non installa un APK non firmato. La chiave vera di
+pubblicazione è di una persona, non di uno script (AGENTS.md, regola 6). Per
+questo l'app porta in testa la fascia «APK DI PROVA».
+
+`qr.py` fa il resto: trova l'indirizzo di questo computer sulla rete di casa,
+serve l'APK, e disegna il QR — a schermo con i colori giusti, e in
+`app/dist/pkfamily-qr.png` e `.svg`. Il telefono lo inquadra, si apre una
+pagina che avvia il download e spiega i due tocchi per installare. Non passa
+da internet: il file va dal computer al telefono sulla stessa rete Wi-Fi.
+
+Il QR è disegnato lì dentro, senza librerie da installare (modo byte,
+correzione M, versioni 1–9). `python3 app/tools/qr.py --prova` ne controlla
+l'impronta e la struttura; i disegni da cui vengono le impronte sono stati
+riletti da un decodificatore indipendente, non solo confrontati con sé stessi.
 
 ## La modalità sviluppatore
 

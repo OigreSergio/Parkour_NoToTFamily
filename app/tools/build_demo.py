@@ -153,7 +153,13 @@ def icona_in_linea(nome: str) -> str:
     return f"data:{tipo};base64,{base64.b64encode(percorso.read_bytes()).decode('ascii')}"
 
 
-def costruisci() -> str:
+def costruisci(canale: str = "demo", versione: str | None = None) -> str:
+    """La pagina, in un file solo.
+
+    `canale` finisce nel `build.json` incorporato: è quello che fa comparire
+    la fascia in testa. `demo` per il doppio clic, `apk` per la copia di
+    riserva che l'applicazione Android tiene da parte.
+    """
     oggi = datetime.now(timezone.utc)
     pagina = (PUBBLICA / "index.html").read_text(encoding="utf-8")
     css = caratteri_in_linea((PUBBLICA / "styles" / "pk.css").read_text(encoding="utf-8"))
@@ -163,8 +169,8 @@ def costruisci() -> str:
         for chiave in DATI_INCORPORATI
     }
     dentro["build.json"] = {
-        "canale": "demo",
-        "versione": f"{VERSIONE_BASE}-demo.{oggi:%Y%m%d}",
+        "canale": canale,
+        "versione": versione or f"{VERSIONE_BASE}-{canale}.{oggi:%Y%m%d}",
         "quando": oggi.isoformat(timespec="seconds"),
         "nota": "Demo in un file solo. Le modifiche locali restano su questo dispositivo.",
     }

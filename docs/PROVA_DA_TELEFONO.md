@@ -3,6 +3,12 @@
 Tre modi, dal più veloce al più fedele. Il primo non installa niente ma è una
 simulazione; gli altri due parlano con un backend vero.
 
+Questi tre riguardano l'app Flutter e il backend. Per **PkFAMILY installabile**
+— quella di `app/`, che funziona senza rete — la strada è un'altra:
+`python3 app/tools/build_apk.py` e poi `python3 app/tools/qr.py`, che mostra un
+QR da inquadrare con la fotocamera. Sta in
+[`docs/APP_OFFLINE.md`](APP_OFFLINE.md).
+
 ## 1. La pagina di anteprima — zero installazioni
 
 <https://oigresergio.github.io/Parkour_NoToTFamily/t/prova-accesso/>

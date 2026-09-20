@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Il lino di styles/pk.css, tema scuro. -->
+  <color name="lino">#16130E</color>
+</resources>

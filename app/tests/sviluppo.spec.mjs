@@ -39,6 +39,25 @@ test('una beta lo dice in testa, con la sua versione', async ({ page, context })
   await expect(fascia).toContainText('0.1.0-beta.20260918');
 });
 
+test('la copia installata sul telefono lo dice in testa', async ({ page, context }) => {
+  // L'APK porta lo stesso `build.json`, con canale `apk`: chi ce l'ha sul
+  // telefono deve sapere che non è la versione pubblicata.
+  await context.route('**/build.json', (rotta) =>
+    rotta.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ canale: 'apk', versione: '0.1.0-apk.20260920' }),
+    })
+  );
+  await page.goto('/index.html');
+  await attendiPronta(page);
+
+  const fascia = page.locator('#pk-fascia');
+  await expect(fascia).toBeVisible();
+  await expect(fascia).toContainText('APK DI PROVA');
+  await expect(fascia).toContainText('0.1.0-apk.20260920');
+});
+
 test('la modalità sviluppatore si accende a mano e si vede', async ({ page }) => {
   await page.goto('/index.html');
   await attendiPronta(page);

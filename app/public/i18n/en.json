@@ -218,5 +218,6 @@
   "map.announceCluster": "Cluster of {n} spots: the map zooms in.",
   "spots.fromYou": "distances from where you are",
   "spots.fromMap": "distances from the map centre",
-  "band.python": "PYTHON DEMO {v}"
+  "band.python": "PYTHON DEMO {v}",
+  "band.apk": "TEST APK {v}"
 }
