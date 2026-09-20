@@ -91,6 +91,24 @@ Ognuno accetta `--check`: non scrive e fallisce se il file non è aggiornato.
 `build_precache.py` va **sempre per ultimo**: la versione è l'impronta di
 tutti gli altri file, ed è quella che dice al service worker di riscaricare.
 
+### La mappa sotto le dita
+
+Un dito trascina, due pizzicano, due tocchi nello stesso punto avvicinano.
+Dove gli spilli si accavallerebbero c'è un gomitolo con il numero: toccandolo
+la mappa si avvicina finché non si sfila, e nessuno spot sparisce in silenzio.
+
+Toccato uno spillo, dal basso sale la scheda dello spot. Ha due altezze e una
+maniglia vera: si trascina su per leggere la descrizione intera e l'acqua
+vicina, giù per tornare all'essenziale, ancora giù per chiuderla. La maniglia
+è un bottone, quindi con il tasto Tab ci si arriva e con Invio si alza e si
+abbassa; `aria-expanded` dice com'è messa.
+
+La tela è un disegno, non ha nodi da leggere: quello che succede lì dentro —
+lo spot scelto con il suo stato e la distanza, la scheda chiusa, il gomitolo
+aperto — viene detto in `#pk-annuncio`, una regione `aria-live` gentile
+(`annuncia` in `js/ui.js`). Con il tasto Tab si entra anche nella tela: le
+frecce spostano, `+` e `−` cambiano lo zoom.
+
 ### Le prove
 
 ```sh
@@ -100,9 +118,10 @@ cd app && npm install && npm test
 Coprono: l'avvio e la navigazione, la ricerca, l'avviso sui rischi che compare
 una volta sola, i filtri, **la ricarica a rete staccata**, la mappa (colori del
 masterplan, gomitoli che contano, trascinamento lento, doppio tocco, pizzico,
-filtro chiaro e scuro), il manifest e le icone, il fatto che nelle cache non
-finisca niente che riguardi una persona, la fascia della beta e la modalità
-sviluppatore (compreso il rifiuto di una chiave segreta).
+filtro chiaro e scuro, le due altezze della scheda, l'annuncio della scelta),
+il manifest e le icone, il fatto che nelle cache non finisca niente che
+riguardi una persona, la fascia della beta e la modalità sviluppatore
+(compreso il rifiuto di una chiave segreta).
 
 Dove Playwright non può scaricare il proprio Chromium:
 `PK_CHROMIUM=/percorso/di/chrome npm test`.

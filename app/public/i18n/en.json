@@ -211,6 +211,11 @@
   "map.noneVerifiedHere": "No verified spot in this view",
   "map.missingHere": "You don't have the tiles for this area",
   "map.prepareHere": "Download it",
+  "map.sheetToggle": "Raise or lower the spot card",
+  "map.announceChosen": "{nome} selected, {stato}.",
+  "map.announceChosenFar": "{nome} selected, {stato}, {distanza} away.",
+  "map.announceClosed": "Card closed, no spot selected.",
+  "map.announceCluster": "Cluster of {n} spots: the map zooms in.",
   "spots.fromYou": "distances from where you are",
   "spots.fromMap": "distances from the map centre",
   "band.python": "PYTHON DEMO {v}"

@@ -639,6 +639,14 @@ textarea {
   cursor: grabbing;
 }
 
+/* L'anello di focus va disegnato *dentro*: il contenitore della mappa ritaglia
+   quello che esce, e con la regola generale (offset positivo) chi arriva con
+   il tasto Tab non vedeva dove si trovava. */
+.pk-map__canvas:focus-visible {
+  outline: 2px solid var(--filo);
+  outline-offset: -3px;
+}
+
 /* In orizzontale, su un telefono con il notch, i margini di sicurezza stanno
    ai lati: senza questi i comandi finiscono sotto la tacca o sotto l'angolo
    arrotondato. La tela resta a filo dei bordi — una mappa deve restarci — si
@@ -730,10 +738,25 @@ textarea {
   border-radius: var(--r-foglio) var(--r-foglio) 0 0;
   padding: var(--sp-3) var(--sp-4) calc(var(--sp-4) + env(safe-area-inset-bottom, 0px));
   transform: translateY(101%);
-  transition: transform var(--durata-pagina) ease;
-  max-height: 72%;
-  overflow-y: auto;
+  transition: transform var(--durata-pagina) ease, max-height var(--durata-pagina) ease;
+  /* Raccolto lascia vedere la mappa sotto; alzato si legge tutto. Si passa
+     dall'uno all'altro trascinando la maniglia, o toccandola. */
+  max-height: 46%;
+  /* Scorre il contenuto, non la maniglia: se scorresse tutto, per riabbassare
+     il foglio bisognerebbe prima risalire in cima. */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   box-shadow: 0 -6px 24px rgba(31, 27, 22, 0.12);
+}
+
+.pk-sheet__corpo {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.pk-sheet[data-altezza='alto'] {
+  max-height: 88%;
 }
 
 .pk-sheet[data-aperto='1'] {
@@ -741,11 +764,30 @@ textarea {
 }
 
 .pk-sheet__grip {
+  display: block;
+  flex: none;
+  width: 100%;
+  /* Il bersaglio è alto quanto un dito anche se il segno è sottile. */
+  min-height: var(--tocco);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+}
+
+.pk-sheet__grip:active {
+  cursor: grabbing;
+}
+
+.pk-sheet__grip::before {
+  content: '';
+  display: block;
   width: 44px;
   height: 4px;
   border-radius: 999px;
   background: var(--cucitura);
-  margin: 0 auto var(--sp-3);
+  margin: var(--sp-2) auto var(--sp-3);
 }
 
 /* --- finestra modale (informative, conferme) --------------------------------- */

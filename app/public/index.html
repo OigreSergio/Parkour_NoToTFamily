@@ -48,6 +48,12 @@
 
   <button class="pk-band" id="pk-fascia" hidden></button>
 
+  <!-- Quello che cambia dentro la tela della mappa non ha nodi da leggere: un
+       canvas è un disegno. Le frasi finiscono qui, invisibili sullo schermo e
+       lette a voce da chi usa un lettore di schermo (vedi `annuncia` in
+       js/ui.js). -->
+  <p class="sr" id="pk-annuncio" role="status" aria-live="polite"></p>
+
   <header class="pk-header">
     <button class="pk-iconbtn" id="pk-indietro" hidden aria-label="Indietro">←</button>
     <div class="pk-header__title">

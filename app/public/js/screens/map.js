@@ -13,7 +13,7 @@ import { creaMappa } from '../map.js';
 import * as offline from '../offline.js';
 import * as posizione from '../position.js';
 import { leggi, scrivi } from '../store.js';
-import { aggiungi, avviso, distintivo, el, svuota } from '../ui.js';
+import { aggiungi, annuncia, avviso, distintivo, el, svuota } from '../ui.js';
 
 /** Da qui in su si disegnano anche le fontanelle intorno. */
 const ZOOM_FONTANELLE = 14;
@@ -21,8 +21,17 @@ const ZOOM_FONTANELLE = 14;
 /** Quante tessere devono mancare perché valga la pena dirlo. */
 const TESSERE_PER_AVVISARE = 4;
 
+/** Oltre questi pixel la maniglia è stata trascinata, non toccata. */
+const SOGLIA_TRASCINAMENTO = 18;
+
+/** Quanto spazio lasciare fra lo spillo scelto e il bordo del foglio. */
+const RESPIRO_SOPRA_IL_FOGLIO = 48;
+
 let mappa = null;
 let foglio = null;
+let corpo = null;
+/** Le fontanelle dello spot scelto: si mostrano quando la scheda è alzata. */
+let fontanelleDelloSpot = [];
 let striscia = null;
 let contesto = null;
 let scelto = null;
@@ -128,7 +137,9 @@ async function caricaFontanelle() {
 }
 
 function chiudiFoglio() {
+  if (scelto) annuncia(t('map.announceClosed'));
   scelto = null;
+  fontanelleDelloSpot = [];
   foglio.dataset.aperto = '0';
   foglio.setAttribute('aria-hidden', 'true');
   for (const nodo of foglio.querySelectorAll('button, a')) nodo.tabIndex = -1;
@@ -137,14 +148,91 @@ function chiudiFoglio() {
   aggiornaQuadro();
 }
 
-/** Se lo spillo scelto finisce sotto il foglio, la mappa si sposta di poco. */
+/**
+ * Se lo spillo scelto finisce sotto il foglio, la mappa si sposta di poco.
+ * La misura è quella vera del foglio, non una frazione scritta a mano: il
+ * foglio ha due altezze, e con quella alta una frazione fissa lo lascerebbe
+ * coperto.
+ */
 function scostaDalFoglio(voce) {
   const contenitore = document.getElementById('pk-map');
   const altezza = contenitore.clientHeight;
   if (!altezza) return;
   const p = mappa.aSchermo(voce);
-  const desiderata = altezza * 0.34;
+  const coperto = foglio.getBoundingClientRect().height || altezza * 0.46;
+  const desiderata = Math.max(altezza - coperto - RESPIRO_SOPRA_IL_FOGLIO, altezza * 0.18);
   if (p.y > desiderata) mappa.spostaDi(0, desiderata - p.y);
+}
+
+/**
+ * Alza o abbassa la scheda. Alzata non è la stessa scheda più grande: mostra
+ * la descrizione per intero e l'acqua vicina, che raccolta non ci starebbero.
+ * Un'altezza diversa con dentro le stesse righe sarebbe solo spazio vuoto.
+ */
+function alzaFoglio(alto) {
+  foglio.dataset.altezza = alto ? 'alto' : 'basso';
+  const maniglia = foglio.querySelector('.pk-sheet__grip');
+  if (maniglia) maniglia.setAttribute('aria-expanded', alto ? 'true' : 'false');
+  if (!scelto) return;
+  riempiFoglio(scelto);
+  scostaDalFoglio(scelto);
+}
+
+/**
+ * La maniglia del foglio: si trascina su e giù come su qualunque telefono, e
+ * si tocca per alternare le due altezze. È un bottone, non un segno grafico,
+ * perché il gesto deve esistere anche per chi arriva con il tasto Tab: lì
+ * Invio fa la stessa cosa del trascinamento, e `aria-expanded` dice com'è
+ * messo il foglio adesso.
+ */
+function creaManiglia() {
+  let partenza = null;
+  let trascinata = false;
+
+  const maniglia = el('button', {
+    type: 'button',
+    class: 'pk-sheet__grip',
+    'aria-label': t('map.sheetToggle'),
+    'aria-expanded': foglio.dataset.altezza === 'alto' ? 'true' : 'false',
+    onclick: () => {
+      // Un trascinamento ha già deciso: il click che lo segue non deve
+      // rifare il contrario.
+      if (trascinata) {
+        trascinata = false;
+        return;
+      }
+      alzaFoglio(foglio.dataset.altezza !== 'alto');
+    },
+  });
+
+  maniglia.addEventListener('pointerdown', (evento) => {
+    partenza = evento.clientY;
+    trascinata = false;
+    maniglia.setPointerCapture(evento.pointerId);
+  });
+
+  const finisci = (evento) => {
+    if (partenza === null) return;
+    const dy = evento.clientY - partenza;
+    partenza = null;
+    if (Math.abs(dy) < SOGLIA_TRASCINAMENTO) return; // era un tocco
+    trascinata = true;
+    if (dy < 0) {
+      alzaFoglio(true);
+    } else if (foglio.dataset.altezza === 'alto') {
+      alzaFoglio(false);
+    } else {
+      // Già in basso e si tira ancora giù: il foglio se ne va.
+      chiudiFoglio();
+    }
+  };
+
+  maniglia.addEventListener('pointerup', finisci);
+  maniglia.addEventListener('pointercancel', () => {
+    partenza = null;
+  });
+
+  return maniglia;
 }
 
 /** La riga della distanza nel foglio: il numero, o il modo per averlo. */
@@ -190,12 +278,12 @@ function seguiPosizione(aggiornata) {
   }
 }
 
-async function apriFoglio(voce) {
-  scelto = voce;
-
+/** Il contenuto della scheda, nella misura che l'altezza di adesso consente. */
+function riempiFoglio(voce) {
+  const alto = foglio.dataset.altezza === 'alto';
+  const testo = voce.description || '';
   aggiungi(
-    svuota(foglio),
-    el('div', { class: 'pk-sheet__grip', 'aria-hidden': 'true' }),
+    svuota(corpo),
     el('div', { class: 'pk-row' }, [
       el('h2', { testo: voce.name, style: 'flex:1;min-width:0' }),
       el('button', {
@@ -210,13 +298,38 @@ async function apriFoglio(voce) {
       voce.fountain ? el('span', { class: 'pk-badge', testo: t('spot.fountain') }) : null,
       rigaDistanza(voce),
     ]),
-    voce.description
-      ? el('p', { class: 'pk-small pk-muted', testo: voce.description.slice(0, 180) })
+    testo
+      ? el('p', { class: 'pk-small pk-muted', testo: alto ? testo : testo.slice(0, 180) })
+      : null,
+    // L'acqua vicina è già calcolata per gli spilli sulla mappa: alzando la
+    // scheda si legge, invece di doverla indovinare dai punti azzurri.
+    alto && fontanelleDelloSpot.length
+      ? el('p', { class: 'pk-small pk-muted', testo: t('spot.fountains') })
+      : null,
+    alto && fontanelleDelloSpot.length
+      ? el(
+          'ul',
+          { class: 'pk-small pk-muted' },
+          fontanelleDelloSpot
+            .slice(0, 3)
+            .map((f) =>
+              el('li', {
+                testo: `${t(`spot.water.${f.kind}`)} — ${formattaDistanza(f.distance_m)}`,
+              })
+            )
+        )
       : null,
     el('button', { class: 'pk-btn pk-btn--largo', onclick: () => contesto.vaiA(`#/spot/${voce.id}`) }, [
       t('map.open'),
     ])
   );
+  for (const nodo of corpo.querySelectorAll('button, a')) nodo.tabIndex = 0;
+}
+
+async function apriFoglio(voce) {
+  scelto = voce;
+
+  riempiFoglio(voce);
   foglio.dataset.aperto = '1';
   foglio.removeAttribute('aria-hidden');
   for (const nodo of foglio.querySelectorAll('button, a')) nodo.tabIndex = 0;
@@ -224,11 +337,27 @@ async function apriFoglio(voce) {
   mappa.seleziona(voce.id);
   scostaDalFoglio(voce);
 
+  // Lo spillo è cambiato dentro un disegno: senza questa frase, chi non vede
+  // la tela non saprebbe che è successo qualcosa.
+  const stato = voce.status === 'verified' ? t('spot.verified') : t('spot.community');
+  const mia = posizione.ultimaNota();
+  annuncia(
+    mia
+      ? t('map.announceChosenFar', {
+          nome: voce.name,
+          stato,
+          distanza: formattaDistanza(distanzaM(mia, voce)),
+        })
+      : t('map.announceChosen', { nome: voce.name, stato })
+  );
+
   // Le fontanelle di questo spot, con i metri: è il dato che il masterplan
   // vuole sulla mappa, e l'unico posto dove la distanza è già calcolata.
   const sue = await dati.fontanelleDi(voce.id);
   if (scelto && scelto.id === voce.id) {
     mappa.mostraFontanelle(sue.map((f) => ({ lat: f.lat, lng: f.lng, metri: f.distance_m })));
+    fontanelleDelloSpot = sue;
+    if (foglio.dataset.altezza === 'alto') riempiFoglio(voce);
   }
 }
 
@@ -326,10 +455,14 @@ export async function inizializza(ctx) {
 
   foglio = el('div', {
     class: 'pk-sheet',
-    dati: { aperto: '0' },
+    dati: { aperto: '0', altezza: 'basso' },
     'aria-hidden': 'true',
     'aria-label': t('map.sheet'),
   });
+  corpo = el('div', { class: 'pk-sheet__corpo' });
+  // La maniglia si crea una volta sola: rifarla a ogni scelta porterebbe via
+  // il focus a chi sta usando la tastiera.
+  foglio.append(creaManiglia(), corpo);
   contenitore.append(foglio);
 
   mappa.su('selezione', (voce) => (voce ? apriFoglio(voce) : chiudiFoglio()));
@@ -339,8 +472,9 @@ export async function inizializza(ctx) {
     aggiornaSottotitolo();
     aggiornaStriscia();
   });
-  mappa.su('gomitolo', () => {
+  mappa.su('gomitolo', (gomitolo) => {
     if (scelto) chiudiFoglio();
+    annuncia(t('map.announceCluster', { n: gomitolo.conta }));
   });
   mappa.su('movimento', ({ centro, zoom }) => {
     aggiornaQuadro();

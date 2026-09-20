@@ -47,6 +47,29 @@ export function aggiungi(nodo, ...figli) {
   return nodo;
 }
 
+let regioneAnnunci = null;
+let timerAnnuncio = null;
+
+/**
+ * Dice una frase a chi usa un lettore di schermo, senza mostrarla a schermo.
+ *
+ * Serve per quello che cambia dentro la tela della mappa: un canvas è un
+ * disegno, non ha nodi da leggere, quindi scegliere uno spillo sarebbe un
+ * fatto silenzioso. La frase passa da `#pk-annuncio` (regione `aria-live`).
+ * Si svuota prima e si riscrive dopo un attimo perché due volte la stessa
+ * frase, scritta di fila, non verrebbe riletta: per il browser il nodo non è
+ * cambiato.
+ */
+export function annuncia(testo) {
+  if (!regioneAnnunci) regioneAnnunci = document.getElementById('pk-annuncio');
+  if (!regioneAnnunci || !testo) return;
+  regioneAnnunci.textContent = '';
+  clearTimeout(timerAnnuncio);
+  timerAnnuncio = setTimeout(() => {
+    regioneAnnunci.textContent = testo;
+  }, 60);
+}
+
 /** Lo stato vuoto: un segno a punto croce, una frase, a volte un'azione. */
 export function vuoto(testo, azione) {
   return el('div', { class: 'pk-empty' }, [

@@ -122,6 +122,9 @@ export function creaMappa(contenitore, opzioni = {}) {
   // L'ultima disposizione disegnata: serve a capire cosa c'è sotto il dito
   // senza rifare i conti di proiezione a ogni tocco.
   let disposizione = { spilli: [], gomitoli: [] };
+  /** L'ultima riga di crediti scritta: riscriverla a ogni fotogramma era una
+   *  modifica del DOM sessanta volte al secondo per un testo che non cambia. */
+  let creditiScritti = '';
   /** Quante tessere, nell'ultimo disegno, non c'erano: né in memoria, né in
    *  cache, né dal livello sopra. È quanto manca di questa zona. */
   let tessereMancanti = 0;
@@ -697,7 +700,11 @@ export function creaMappa(contenitore, opzioni = {}) {
     }
 
     disegnaPosizione(o);
-    crediti.textContent = CONFIG.tiles[sorgente].crediti;
+    const testoCrediti = CONFIG.tiles[sorgente].crediti;
+    if (testoCrediti !== creditiScritti) {
+      crediti.textContent = testoCrediti;
+      creditiScritti = testoCrediti;
+    }
     void c;
 
     // Chi conta gli spilli deve contarli *dopo* che sono stati disegnati: il

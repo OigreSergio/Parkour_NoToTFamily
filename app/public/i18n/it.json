@@ -211,6 +211,11 @@
   "map.noneVerifiedHere": "Nessuno spot verificato in questo riquadro",
   "map.missingHere": "Di questa zona non hai le tessere",
   "map.prepareHere": "Scaricala",
+  "map.sheetToggle": "Alza o abbassa la scheda dello spot",
+  "map.announceChosen": "Scelto {nome}, {stato}.",
+  "map.announceChosenFar": "Scelto {nome}, {stato}, a {distanza}.",
+  "map.announceClosed": "Scheda chiusa, nessuno spot scelto.",
+  "map.announceCluster": "Gomitolo di {n} spot: la mappa si avvicina.",
   "spots.fromYou": "distanze da dove sei",
   "spots.fromMap": "distanze dal centro della mappa",
   "band.python": "DEMO PYTHON {v}"

@@ -499,3 +499,130 @@ test('la tela non va oltre il doppio dei pixel dello schermo', async ({ page }) 
   expect(misure.dpr).toBeGreaterThan(2); // il Pixel 7 emulato sta a 2,625
   expect(misure.pixel / misure.css).toBeLessThanOrEqual(2.01);
 });
+
+test('i crediti della mappa non si riscrivono a ogni fotogramma', async ({ page, context }) => {
+  await serviTessere(context, TESSERA_FINTA);
+  await attendiPronta(page);
+
+  const scritture = await conMotore(page, async ({ mappa, tela, gesti, disegnato }) => {
+    const crediti = tela.parentElement.querySelector('.pk-map__credits');
+    await disegnato();
+    await disegnato();
+    const prima = crediti.textContent;
+
+    // Da qui in poi si conta: il primo disegno la riga la deve scrivere.
+    let conta = 0;
+    const osservatore = new MutationObserver((cambi) => (conta += cambi.length));
+    osservatore.observe(crediti, { childList: true, characterData: true, subtree: true });
+
+    await gesti.trascinaPiano(180, 320, 40);
+    await gesti.lancia(180, 320, 6);
+    const durante = conta;
+
+    // Cambiare sfondo è l'unico caso in cui la riga deve cambiare davvero.
+    mappa.cambiaSorgente('satellite');
+    await disegnato();
+    osservatore.disconnect();
+
+    return { prima, durante, dopoIlCambio: conta, testo: crediti.textContent };
+  });
+
+  // Se la riga fosse ancora vuota, quel «zero» non proverebbe niente.
+  expect(scritture.prima).toContain('OpenStreetMap');
+  expect(scritture.durante).toBe(0);
+  expect(scritture.dopoIlCambio).toBeGreaterThan(0);
+  expect(scritture.testo).toContain('Esri');
+});
+
+test('la scheda dello spot ha due altezze: si tocca, si trascina, si chiude', async ({ page }) => {
+  // Uno spot con una descrizione lunga e otto fontanelle intorno: è dove la
+  // differenza fra raccolta e alzata si vede.
+  await page.goto('/index.html#/mappa/spot-metro-cipro');
+  await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
+
+  const foglio = page.locator('.pk-sheet[data-aperto="1"]');
+  await expect(foglio).toBeVisible();
+  await expect(foglio).toHaveAttribute('data-altezza', 'basso');
+
+  const maniglia = foglio.locator('.pk-sheet__grip');
+  // È un bersaglio grande quanto un dito, non un segno da guardare.
+  const misura = await maniglia.boundingBox();
+  expect(misura.height).toBeGreaterThanOrEqual(44);
+  await expect(maniglia).toHaveAttribute('aria-expanded', 'false');
+
+  const testoCorpo = () => foglio.locator('.pk-sheet__corpo').innerText();
+  const raccolta = await testoCorpo();
+  const basso = (await foglio.boundingBox()).height;
+
+  // Un tocco alza.
+  await maniglia.click();
+  await expect(foglio).toHaveAttribute('data-altezza', 'alto');
+  await expect(maniglia).toHaveAttribute('aria-expanded', 'true');
+
+  // Alzata non è la stessa scheda più grande: dice di più, e occupa di più.
+  // L'altezza si aspetta, perché ci arriva con una transizione.
+  await expect(foglio.locator('.pk-sheet__corpo')).toContainText('Acqua vicina');
+  expect((await testoCorpo()).length).toBeGreaterThan(raccolta.length);
+  await expect.poll(async () => (await foglio.boundingBox()).height).toBeGreaterThan(basso);
+
+  await maniglia.click();
+  await expect(foglio).toHaveAttribute('data-altezza', 'basso');
+  await expect(foglio.locator('.pk-sheet__corpo')).not.toContainText('Acqua vicina');
+
+  // Trascinare su alza, trascinare giù dal basso chiude. La maniglia si
+  // sposta insieme al foglio: la posizione si rilegge ogni volta.
+  const trascina = async (dy) => {
+    const ora = await maniglia.boundingBox();
+    const x = ora.x + ora.width / 2;
+    const y = ora.y + ora.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    for (let i = 1; i <= 6; i++) await page.mouse.move(x, y + (dy * i) / 6);
+    await page.mouse.up();
+  };
+
+  await trascina(-60);
+  await expect(foglio).toHaveAttribute('data-altezza', 'alto');
+  await trascina(60);
+  await expect(foglio).toHaveAttribute('data-altezza', 'basso');
+  await trascina(60);
+  await expect(page.locator('.pk-sheet')).toHaveAttribute('data-aperto', '0');
+});
+
+test('chi non vede la tela sente cosa è stato scelto', async ({ page }) => {
+  await page.goto(`/index.html#/mappa/${EUR}`);
+  await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
+
+  const annuncio = page.locator('#pk-annuncio');
+  // Una regione viva, gentile: non interrompe quello che si sta leggendo.
+  await expect(annuncio).toHaveAttribute('aria-live', 'polite');
+  await expect(annuncio).toContainText('EUR');
+
+  // E la chiusura è un fatto, non un silenzio.
+  await page.locator('.pk-sheet .pk-iconbtn').click();
+  await expect(annuncio).toContainText('nessuno spot scelto');
+});
+
+test('la tela mostra il filo del focus dentro i suoi bordi', async ({ page }) => {
+  await attendiPronta(page);
+
+  // Solo il tasto Tab accende `:focus-visible`: un focus dato dal codice, in
+  // Chromium, non conta. Si tabula finché la tela non è quella attiva.
+  let arrivata = false;
+  for (let i = 0; i < 12 && !arrivata; i++) {
+    await page.keyboard.press('Tab');
+    arrivata = await page.evaluate(() =>
+      document.activeElement.classList.contains('pk-map__canvas')
+    );
+  }
+  expect(arrivata).toBe(true);
+
+  const scostamento = await page
+    .locator('.pk-map__canvas')
+    .evaluate((tela) => getComputedStyle(tela).outlineOffset);
+
+  // Il contenitore della mappa ritaglia quello che esce: con uno scostamento
+  // positivo l'anello finirebbe sotto il bordo e chi usa il Tab non vedrebbe
+  // dove si trova.
+  expect(parseFloat(scostamento)).toBeLessThan(0);
+});
