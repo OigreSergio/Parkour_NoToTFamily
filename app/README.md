@@ -71,9 +71,10 @@ app/
     i18n/                 it.json, en.json — nessuna stringa nel codice
     fonts/ icons/         Fraunces e Karla (OFL), icone generate dal codice
   android/                il guscio Android: manifesto, risorse, la tela web
+  mac/                    il guscio macOS: l'eseguibile del bundle e l'avviatore
   tools/                  build_data, build_precache, make_icons, fetch_fonts,
                           serve, desktop, screenshot, build_beta, build_demo,
-                          build_demo_python, build_apk, qr
+                          build_demo_python, build_apk, build_mac_app, qr
   dist/                   le beta e le demo costruite (non versionate)
   demo/                   motore.py: la logica dell'app scritta in Python
   tests/                  prove Playwright: avvio, offline, installabilità
@@ -250,6 +251,46 @@ Il QR è disegnato lì dentro, senza librerie da installare (modo byte,
 correzione M, versioni 1–9). `python3 app/tools/qr.py --prova` ne controlla
 l'impronta e la struttura; i disegni da cui vengono le impronte sono stati
 riletti da un decodificatore indipendente, non solo confrontati con sé stessi.
+
+### Passo passo
+
+1. Telefono e computer **sulla stessa Wi-Fi**.
+2. `python3 app/tools/build_apk.py` (la prima volta) e poi `python3 app/tools/qr.py`.
+3. Il QR compare nel Terminale, con sotto l'indirizzo. Se la finestra è stretta,
+   apri `app/dist/pkfamily-qr.png`.
+4. Inquadralo con la fotocamera: nessuna app da installare.
+5. Il download parte da solo; apri il file, concedi il permesso, **Installa**.
+6. **Ctrl+C** quando hai finito.
+
+Se qualcosa non torna — rete ospite, firewall del Mac, indirizzo che comincia
+per `127.` — la tabella dei casi sta in
+[`docs/APP_OFFLINE.md`](../docs/APP_OFFLINE.md).
+
+## PkFAMILY.app: provarla sul Mac
+
+```sh
+python3 app/tools/build_mac_app.py --cartella ~/Desktop
+python3 app/tools/build_mac_app.py --apk ~/Downloads/pkfamily-0.1.0-apk.20260921.apk
+python3 app/tools/build_mac_app.py --zip     # il pacchetto da passare
+```
+
+Un APK non gira su un Mac. Quello che si può fare è **aprirlo e mettere nel
+bundle i file che ci stanno dentro** — è quello che fa questo strumento,
+verificandoli per impronta uno per uno. Sul Mac si prova la stessa app che si
+installa sul telefono, byte per byte; resta fuori solo il guscio Android, che
+solo un telefono può far girare. La fascia in testa dice **APK DI PROVA** con
+la versione dell'APK da cui viene, o **APP DI PROVA** se il bundle è stato
+costruito dai sorgenti perché un APK non c'era.
+
+Il bundle sta in piedi da solo: `Contents/Resources/app` è l'applicazione,
+`Contents/Resources/avvia.py` la accende su `127.0.0.1` (l'offline si attiva
+solo su `localhost` o `https`: da `file://` non funzionerebbe niente), e
+`Contents/MacOS/PkFAMILY` trova il Python 3 del Mac. macOS non ne porta più
+uno di serie: se manca, compare una finestra che lo dice.
+
+Uno `.zip` scaricato da internet arriva in quarantena: la prima volta si apre
+con **tasto destro sull'app → Apri**. Costruirlo sul proprio Mac evita la
+faccenda.
 
 ## La modalità sviluppatore
 

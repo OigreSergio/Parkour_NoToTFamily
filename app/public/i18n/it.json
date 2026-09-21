@@ -219,5 +219,6 @@
   "spots.fromYou": "distanze da dove sei",
   "spots.fromMap": "distanze dal centro della mappa",
   "band.python": "DEMO PYTHON {v}",
-  "band.apk": "APK DI PROVA {v}"
+  "band.apk": "APK DI PROVA {v}",
+  "band.mac": "APP DI PROVA {v}"
 }

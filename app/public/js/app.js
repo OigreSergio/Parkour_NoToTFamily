@@ -77,6 +77,9 @@ function disegnaFascia() {
   if (costruzione.canale === 'apk') {
     pezzi.push(i18n.t('band.apk', { v: costruzione.versione || '?' }));
   }
+  if (costruzione.canale === 'mac') {
+    pezzi.push(i18n.t('band.mac', { v: costruzione.versione || '?' }));
+  }
   if (admin.attiva()) pezzi.push(i18n.t('band.dev'));
 
   if (!pezzi.length) {

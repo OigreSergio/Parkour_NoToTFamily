@@ -58,6 +58,25 @@ test('la copia installata sul telefono lo dice in testa', async ({ page, context
   await expect(fascia).toContainText('0.1.0-apk.20260920');
 });
 
+test('la copia da scrivania lo dice in testa', async ({ page, context }) => {
+  // PkFAMILY.app costruita dai sorgenti, senza un APK sotto mano: non è né la
+  // versione pubblicata né quella del telefono, e la fascia lo dice.
+  await context.route('**/build.json', (rotta) =>
+    rotta.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ canale: 'mac', versione: '0.1.0-mac.20260921' }),
+    })
+  );
+  await page.goto('/index.html');
+  await attendiPronta(page);
+
+  const fascia = page.locator('#pk-fascia');
+  await expect(fascia).toBeVisible();
+  await expect(fascia).toContainText('APP DI PROVA');
+  await expect(fascia).toContainText('0.1.0-mac.20260921');
+});
+
 test('la modalità sviluppatore si accende a mano e si vede', async ({ page }) => {
   await page.goto('/index.html');
   await attendiPronta(page);

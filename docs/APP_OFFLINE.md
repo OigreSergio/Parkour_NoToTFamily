@@ -127,9 +127,71 @@ Si compila senza Gradle e senza rete, con `aapt2`, `javac`, `d8`, `zipalign` e
 entra nel repository: la chiave di pubblicazione è di una persona (AGENTS.md,
 regola 6), e per questo l'app porta in testa la fascia **APK DI PROVA**.
 
-Il QR lo disegna `app/tools/qr.py`, senza librerie da installare. Il file va
-dal computer al telefono sulla stessa rete Wi-Fi: non passa da internet, non
-passa da un sito.
+### Il QR, passo passo
+
+1. **Metti telefono e computer sulla stessa Wi-Fi.** È tutto quello che serve:
+   nessun cavo, nessun account, nessun sito di mezzo.
+2. Dal Terminale, nella cartella del repository:
+
+   ```sh
+   python3 app/tools/build_apk.py     # solo la prima volta, o dopo una modifica
+   python3 app/tools/qr.py
+   ```
+
+   Se l'APK ce l'hai già altrove (per esempio in `~/Downloads`):
+   `python3 app/tools/qr.py --file ~/Downloads/pkfamily-0.1.0-apk.20260921.apk`.
+3. Nel Terminale compare **il QR disegnato**, e sotto l'indirizzo che contiene
+   — qualcosa come `http://192.168.1.42:8080/`. Se la finestra è stretta il
+   disegno si spezza: allargala, o apri `app/dist/pkfamily-qr.png`, che è lo
+   stesso QR come immagine.
+4. **Inquadralo con la fotocamera del telefono.** Non serve nessuna app: sia
+   iPhone sia Android leggono i QR dalla fotocamera e mostrano una notifica da
+   toccare.
+5. Si apre una pagina con scritto **PkFAMILY** e il download parte da solo. Se
+   non parte, sulla stessa pagina c'è il bottone.
+6. Apri il file scaricato. Android chiede il permesso di installare da questa
+   sorgente: concedilo, poi **Installa**.
+7. Quando hai finito, **Ctrl+C** nel Terminale: il server si spegne. Finché
+   gira, chiunque sia su quella Wi-Fi può scaricare il file.
+
+Quello che può andare storto, e cosa vuol dire:
+
+| Cosa vedi | Cosa succede |
+| --- | --- |
+| La fotocamera legge il QR ma la pagina non si apre | Telefono e computer non sono sulla stessa rete. Occhio alle reti «ospiti» e alle Wi-Fi che isolano i dispositivi fra loro |
+| Si apre e resta a girare | Il firewall del Mac sta bloccando. Impostazioni di Sistema → Rete → Firewall: o lo spegni per un minuto, o consenti le connessioni in entrata a Python |
+| L'indirizzo nel QR comincia per `127.` | Il computer non ha trovato il proprio indirizzo di rete. Prendilo a mano (Impostazioni → Wi-Fi → Dettagli) e passalo: `python3 app/tools/qr.py --ip 192.168.1.42` |
+| «Porta già in uso» | Un'altra cosa sta usando la 8080: `python3 app/tools/qr.py --porta 8090` |
+| Su iPhone il file si scarica ma non si installa | Un APK è Android. Su iPhone l'app si installa dal browser: apri l'app e «Condividi → Aggiungi alla schermata Home» |
+
+## Provarla sul Mac, senza un telefono
+
+```sh
+python3 app/tools/build_mac_app.py --cartella ~/Desktop
+```
+
+Ne esce **PkFAMILY.app** sulla Scrivania: doppio clic e si apre in una finestra
+formato telefono, senza barra degli indirizzi. Dentro ci sono l'app,
+l'avviatore e l'icona; serve solo Python 3, che macOS non porta più di serie —
+se manca, il bundle lo dice con una finestra invece di non fare niente.
+
+**Un APK non gira su un Mac**, e nessun trucco lo cambia. Quello che lo
+strumento fa è aprire l'APK e mettere nel bundle *esattamente i file che ci
+stanno dentro*, verificandoli per impronta uno per uno: sul Mac si prova la
+stessa app che si installa sul telefono, byte per byte. Resta fuori solo il
+guscio Android — due classi Java — che solo un telefono può far girare. Per
+questo la fascia in testa dice **APK DI PROVA** con la versione dell'APK da cui
+viene.
+
+Senza un APK a portata di mano il bundle si costruisce lo stesso, dai sorgenti
+di `app/public/`, e allora la fascia dice **APP DI PROVA**: così si sa sempre
+cosa si sta guardando. Con `--apk ~/Downloads/pkfamily-....apk` si indica
+l'APK da aprire.
+
+`--zip` produce il pacchetto da passare a qualcuno. Uno `.zip` che arriva da
+internet, però, viene messo in quarantena da macOS: la prima volta si apre con
+**tasto destro sull'app → Apri**, non con il doppio clic. Costruirlo sul
+proprio Mac evita del tutto la faccenda.
 
 ## La modalità sviluppatore
 

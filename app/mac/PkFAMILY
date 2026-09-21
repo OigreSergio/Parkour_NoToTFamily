@@ -1,0 +1,36 @@
+#!/bin/bash
+# L'eseguibile del bundle: è quello che parte al doppio clic su PkFAMILY.app.
+#
+# Fa una cosa sola: trovare un Python 3 e passargli `avvia.py`. macOS non ne
+# porta più uno di serie, quindi se non c'è bisogna dirlo con una finestra —
+# qui non esiste nessun terminale che possa mostrare un errore.
+set -u
+
+RISORSE="$(cd "$(dirname "$0")/../Resources" && pwd)"
+
+for CANDIDATO in \
+  /opt/homebrew/bin/python3 \
+  /usr/local/bin/python3 \
+  /Library/Frameworks/Python.framework/Versions/Current/bin/python3 \
+  /usr/bin/python3
+do
+  if [ -x "$CANDIDATO" ]; then PYTHON="$CANDIDATO"; break; fi
+done
+
+if [ -z "${PYTHON:-}" ]; then
+  PYTHON="$(command -v python3 || true)"
+fi
+
+if [ -z "${PYTHON:-}" ]; then
+  osascript -e 'display dialog "PkFAMILY ha bisogno di Python 3, e su questo Mac non lo trovo.\n\nSi installa da python.org, oppure con «xcode-select --install» dal Terminale." with title "PkFAMILY" buttons {"Chiudi"} default button 1 with icon stop'
+  exit 1
+fi
+
+# `/usr/bin/python3` su un Mac senza gli strumenti da sviluppatore non è
+# Python: è un guscio che apre la finestra di installazione. Meglio saperlo qui.
+if ! "$PYTHON" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 9) else 1)' 2>/dev/null; then
+  osascript -e 'display dialog "Il Python 3 di questo Mac non risponde (serve la 3.9 o più recente).\n\nSi installa da python.org." with title "PkFAMILY" buttons {"Chiudi"} default button 1 with icon stop'
+  exit 1
+fi
+
+exec "$PYTHON" "$RISORSE/avvia.py"
