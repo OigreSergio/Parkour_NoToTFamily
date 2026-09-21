@@ -1,5 +1,6 @@
 package family.notot.pkfamily;
 
+import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 import android.net.Uri;
 import android.webkit.WebResourceResponse;
@@ -56,6 +57,7 @@ final class Risorse {
     TIPI.put("webp", "image/webp");
     TIPI.put("ico", "image/x-icon");
     TIPI.put("woff2", "font/woff2");
+    TIPI.put("mp4", "video/mp4");
     TIPI.put("txt", "text/plain");
   }
 
@@ -86,9 +88,27 @@ final class Risorse {
     // da nessuna parte lo stesso.
     if (percorso.contains("..")) return vuota(403, "Forbidden");
 
+    String dentro = RADICE + "/" + percorso;
+    Map<String, String> testa = intestazioni();
+
+    // Un video non si carica senza sapere quanto è lungo: la tela web chiede
+    // un pezzo per volta, e con una risposta che non dice la misura resta
+    // ferma sulla locandina. `openFd` la sa, ma solo per i file che il
+    // pacchetto non ha compresso — per gli altri si ripiega sullo stream, che
+    // è quello che serve a tutto il resto.
     try {
-      InputStream file = risorse.open(RADICE + "/" + percorso);
-      return new WebResourceResponse(tipo(percorso), "utf-8", 200, "OK", intestazioni(), file);
+      AssetFileDescriptor descrittore = risorse.openFd(dentro);
+      testa.put("Content-Length", String.valueOf(descrittore.getLength()));
+      testa.put("Accept-Ranges", "none");
+      return new WebResourceResponse(
+          tipo(percorso), "utf-8", 200, "OK", testa, descrittore.createInputStream());
+    } catch (IOException compresso) {
+      // Va bene così: il file c'è, solo non sa dire la propria misura.
+    }
+
+    try {
+      InputStream file = risorse.open(dentro);
+      return new WebResourceResponse(tipo(percorso), "utf-8", 200, "OK", testa, file);
     } catch (IOException mancante) {
       return vuota(404, "Not Found");
     }

@@ -109,11 +109,47 @@ async function primaLaCache(richiesta, nomeCache, massimo) {
 
   const risposta = await fetch(richiesta);
   // Le risposte opache (no-cors) si salvano lo stesso: valgono per le tessere.
-  if (risposta && (risposta.ok || risposta.type === 'opaque')) {
+  // Un 206 invece no: è un pezzo di file, e la Cache API lo rifiuta.
+  if (risposta && ((risposta.ok && risposta.status !== 206) || risposta.type === 'opaque')) {
     await cache.put(richiesta, risposta.clone());
     if (massimo) await forsePota(nomeCache, massimo);
   }
   return risposta;
+}
+
+/**
+ * Ritaglia un pezzo da una risposta intera, e risponde come farebbe un server.
+ *
+ * Serve ai video. Quando si preme play il browser non chiede tutto il file:
+ * chiede `Range: bytes=...`. Safari, in particolare, un video servito con un
+ * 200 intero non lo riproduce proprio. In cache c'è la copia intera, quindi
+ * il pezzo si ritaglia qui.
+ */
+async function pezzoDiFile(risposta, intestazione) {
+  const tutto = await risposta.clone().arrayBuffer();
+  const misura = tutto.byteLength;
+  const chiesto = /^bytes=(\d*)-(\d*)$/.exec(intestazione.trim());
+  if (!chiesto) return risposta;
+
+  const inizio = chiesto[1] ? Number(chiesto[1]) : 0;
+  const fine = chiesto[2] ? Math.min(Number(chiesto[2]), misura - 1) : misura - 1;
+  if (!Number.isFinite(inizio) || inizio > fine || inizio >= misura) {
+    return new Response(null, {
+      status: 416,
+      statusText: 'Range Not Satisfiable',
+      headers: { 'Content-Range': `bytes */${misura}` },
+    });
+  }
+
+  const testa = new Headers(risposta.headers);
+  testa.set('Content-Range', `bytes ${inizio}-${fine}/${misura}`);
+  testa.set('Content-Length', String(fine - inizio + 1));
+  testa.set('Accept-Ranges', 'bytes');
+  return new Response(tutto.slice(inizio, fine + 1), {
+    status: 206,
+    statusText: 'Partial Content',
+    headers: testa,
+  });
 }
 
 async function rispondi(evento) {
@@ -159,10 +195,16 @@ async function rispondi(evento) {
   }
 
   if (stessaOrigine) {
-    return primaLaCache(richiesta, cacheApp, null).catch(async () => {
+    const pezzo = richiesta.headers.get('range');
+    const dalla = async () => {
       const cache = await caches.open(cacheApp);
       return (await cache.match(richiesta)) || Response.error();
-    });
+    };
+    const risposta = await primaLaCache(richiesta, cacheApp, null).catch(dalla);
+    // La copia in cache è sempre intera: se ne era stato chiesto un pezzo,
+    // si ritaglia adesso.
+    if (pezzo && risposta && risposta.status === 200) return pezzoDiFile(risposta, pezzo);
+    return risposta;
   }
 
   if (eTessera(url)) {

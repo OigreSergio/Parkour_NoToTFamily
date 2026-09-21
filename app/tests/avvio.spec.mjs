@@ -121,3 +121,50 @@ test('il tema scuro si sceglie e resta', async ({ page }) => {
   await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
   await expect(page.locator('html')).toHaveAttribute('data-tema', 'scuro');
 });
+
+/** Apre la scheda di uno spot cercandolo, e toglie di mezzo l'avviso sui rischi. */
+async function apriScheda(page, cerca) {
+  await attendiPronta(page);
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+  await page.locator('#pk-cerca').fill(cerca);
+  await page.locator('#pk-lista .pk-item').first().click();
+  // L'avviso arriva un attimo dopo il tocco: si aspetta, non si conta.
+  const avviso = page.locator('.pk-modal');
+  await expect(avviso).toBeVisible();
+  await avviso.getByRole('button', { name: /procedo sotto la mia responsabilità/i }).click();
+  await expect(page.locator('#pk-dettaglio h1')).toBeVisible();
+}
+
+test('lo spot con un video lo mostra, e il video si riproduce davvero', async ({ page }) => {
+  await apriScheda(page, 'Metro Colosseo');
+  await expect(page.locator('#pk-dettaglio h1')).toHaveText('Spot Metro Colosseo');
+
+  const filmato = page.locator('#pk-dettaglio video');
+  await expect(filmato).toBeVisible();
+  await expect(filmato).toHaveJSProperty('controls', true);
+  // La locandina si vede prima di premere play: senza, il riquadro è nero.
+  await expect(filmato).toHaveAttribute('poster', /colosseo-metro\.jpg$/);
+
+  // Non è un riquadro vuoto: il browser lo ha letto, sa quanto dura e va avanti.
+  const letto = await filmato.evaluate(async (nodo) => {
+    await nodo.play().catch(() => {});
+    await new Promise((r) => setTimeout(r, 800));
+    return {
+      durata: nodo.duration,
+      larghezza: nodo.videoWidth,
+      altezza: nodo.videoHeight,
+      avanzato: nodo.currentTime > 0,
+      errore: nodo.error ? nodo.error.code : null,
+    };
+  });
+  expect(letto.errore).toBeNull();
+  expect(letto.durata).toBeGreaterThan(4);
+  expect(letto.larghezza).toBe(960);
+  expect(letto.altezza).toBe(550);
+  expect(letto.avanzato).toBe(true);
+});
+
+test('gli spot senza video non mostrano un riquadro vuoto', async ({ page }) => {
+  await apriScheda(page, 'Borghese');
+  await expect(page.locator('#pk-dettaglio video')).toHaveCount(0);
+});

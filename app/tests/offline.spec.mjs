@@ -122,6 +122,28 @@ test('spento il server, la scheda di uno spot resta completa', async ({ page }) 
   await expect(page.locator('#pk-dettaglio')).toContainText('Acqua vicina');
 });
 
+test('spento il server, il video dello spot si riproduce lo stesso', async ({ page }) => {
+  // Il filmato viaggia dentro il pacchetto, non su un sito: è la differenza
+  // fra lui e le foto, che senza rete non ci sono.
+  await apriPoiStacca(page, 8205);
+
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+  await page.locator('#pk-cerca').fill('Metro Colosseo');
+  await page.locator('#pk-lista .pk-item').first().click();
+  await page.locator('.pk-modal').getByRole('button', { name: /procedo/i }).click();
+
+  const filmato = page.locator('#pk-dettaglio video');
+  await expect(filmato).toBeVisible();
+  const letto = await filmato.evaluate(async (nodo) => {
+    await nodo.play().catch(() => {});
+    await new Promise((r) => setTimeout(r, 900));
+    return { durata: nodo.duration, avanzato: nodo.currentTime > 0, errore: nodo.error?.code ?? null };
+  });
+  expect(letto.errore).toBeNull();
+  expect(letto.durata).toBeGreaterThan(4);
+  expect(letto.avanzato).toBe(true);
+});
+
 test('spento il server, la mappa si disegna comunque', async ({ page }) => {
   // Dove le tessere non arrivano la tela mostra il lino con la sua trama, e
   // gli spilli restano al loro posto: la tela non è mai vuota.

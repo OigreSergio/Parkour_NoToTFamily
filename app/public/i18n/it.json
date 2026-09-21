@@ -41,6 +41,7 @@
   "spot.crowd.medio": "Passaggio medio",
   "spot.crowd.affollato": "Affollato",
   "spot.photoAlt": "Foto di {nome}",
+  "spot.videoAlt": "Video di {nome}",
   "spot.missing": "Questo spot non è fra quelli che l'app ha con sé.",
   "spot.howFar": "Quanto manca",
   "spot.noPositionYet": "Non so dove sei. La posizione resta sul telefono: serve solo a calcolare la distanza.",

@@ -68,6 +68,7 @@ app/
       route.js legal.js   distanze e percorsi / avviso sui rischi
       screens/            mappa, spot, scheda, tutorial, Tu, pannello sviluppatore
     data/                 spots.json, fountains.json, tutorials.json (generati)
+    media/                i video degli spot: viaggiano dentro il pacchetto
     i18n/                 it.json, en.json — nessuna stringa nel codice
     fonts/ icons/         Fraunces e Karla (OFL), icone generate dal codice
   android/                il guscio Android: manifesto, risorse, la tela web
@@ -79,6 +80,38 @@ app/
   demo/                   motore.py: la logica dell'app scritta in Python
   tests/                  prove Playwright: avvio, offline, installabilità
 ```
+
+### Un video su uno spot
+
+Le foto degli spot stanno su Wikimedia e senza rete non ci sono. Un video no:
+il file viaggia dentro il pacchetto, quindi si vede anche in aereo. Per
+aggiungerne uno:
+
+1. porta il filmato in un formato che i browser sanno leggere — H.264 in un
+   `.mp4`, non HEVC in un `.mov` — e tienilo corto e leggero:
+
+   ```sh
+   ffmpeg -i girato.mov -vf "scale=960:-2,fps=30" -c:v libx264 -profile:v main \
+     -pix_fmt yuv420p -crf 26 -preset slow -c:a aac -b:a 64k -ac 1 \
+     -movflags +faststart app/public/media/<nome>.mp4
+   ffmpeg -ss 1.5 -i girato.mov -frames:v 1 -vf scale=960:-2 -q:v 4 \
+     app/public/media/<nome>.jpg          # la locandina
+   ```
+
+2. aggiungi i due campi allo spot **nella fonte**,
+   `scripts/data/webapp_fixed_spots.json` (non in `app/public/data/`, che è
+   generato):
+
+   ```json
+   "video": "media/<nome>.mp4", "videoPoster": "media/<nome>.jpg"
+   ```
+
+3. `python3 app/tools/build_data.py` e poi `python3 app/tools/build_precache.py`.
+
+Il video entra nell'elenco offline, quindi pesa su ogni copia: l'APK passa da
+0,8 a 1,2 MB per cinque secondi. Nella demo in un file solo il filmato non c'è
+— lì dentro non c'è posto per i file accanto — e la scheda lo nasconde invece
+di lasciare un riquadro vuoto.
 
 ### Rigenerare ciò che è generato
 

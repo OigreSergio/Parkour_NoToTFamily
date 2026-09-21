@@ -89,3 +89,19 @@ test('anche da un file si corregge uno spot', async ({ page }) => {
   await page.locator('#pk-cerca').fill('dalla demo');
   await expect(page.locator('#pk-lista .pk-item').first()).toContainText('EUR Laghetto (dalla demo)');
 });
+
+test('nella demo il video non c’è, e non lascia un riquadro vuoto', async ({ page }) => {
+  // Il filmato di uno spot è un file accanto all'app: in un file solo non c'è
+  // posto per lui. La scheda deve restare intera lo stesso, senza il buco
+  // nero di un video che non parte.
+  await apriDemo(page);
+
+  await page.locator('.pk-nav__tab[data-vai="#/spot"]').click();
+  await page.locator('#pk-cerca').fill('Metro Colosseo');
+  await page.locator('#pk-lista .pk-item').first().click();
+  await page.locator('.pk-modal').getByRole('button', { name: /procedo/i }).click();
+
+  await expect(page.locator('#pk-dettaglio h1')).toHaveText('Spot Metro Colosseo');
+  await expect(page.locator('#pk-dettaglio video')).toBeHidden();
+  await expect(page.locator('#pk-dettaglio')).toContainText('Quanto manca');
+});

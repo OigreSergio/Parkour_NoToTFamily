@@ -80,6 +80,13 @@ def costruisci_spot(grezzi: list[dict[str, Any]]) -> dict[str, Any]:
         foto = [u for u in (grezzo.get("photos") or []) if isinstance(u, str) and u]
         if foto:
             voce["photos"] = foto
+        # Un video dello spot, se qualcuno ne ha girato uno: il percorso è
+        # relativo alla radice dell'app, perché il file viaggia dentro il
+        # pacchetto e deve funzionare anche senza rete.
+        for chiave in ("video", "videoPoster"):
+            valore = grezzo.get(chiave)
+            if isinstance(valore, str) and valore.strip():
+                voce[chiave] = valore.strip()
         if grezzo.get("ratingCount"):
             voce["rating"] = round(float(grezzo.get("rating") or 0), 2)
             voce["ratingCount"] = int(grezzo["ratingCount"])

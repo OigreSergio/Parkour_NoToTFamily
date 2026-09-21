@@ -41,6 +41,7 @@
   "spot.crowd.medio": "Some passers-by",
   "spot.crowd.affollato": "Busy",
   "spot.photoAlt": "Photo of {nome}",
+  "spot.videoAlt": "Video of {nome}",
   "spot.missing": "This spot is not among the ones the app carries.",
   "spot.howFar": "How far",
   "spot.noPositionYet": "I don't know where you are. Your position stays on the phone: it is only used for the distance.",

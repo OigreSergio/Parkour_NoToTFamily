@@ -1,7 +1,7 @@
 {
-  "version": "872121856f19",
+  "version": "73e909925ba2",
   "generated_by": "app/tools/build_precache.py",
-  "bytes": 1200128,
+  "bytes": 1674554,
   "files": [
     "build.json",
     "data/fountains.json",
@@ -41,6 +41,8 @@
     "js/store.js",
     "js/ui.js",
     "manifest.webmanifest",
+    "media/colosseo-metro.jpg",
+    "media/colosseo-metro.mp4",
     "styles/pk.css"
   ]
 }

@@ -42,6 +42,42 @@ function foto(voce) {
   return striscia;
 }
 
+/**
+ * Il video dello spot, se qualcuno ne ha girato uno.
+ *
+ * Il file viaggia dentro il pacchetto, quindi si vede anche senza rete — è
+ * l'unica differenza rispetto alle foto, che stanno su Wikimedia. Non parte
+ * da solo: cinque secondi di rumore addosso a chi apre una scheda non li
+ * vuole nessuno, e la prima immagine si vede già dalla locandina.
+ */
+function video(voce) {
+  if (!voce.video) return null;
+  const filmato = el('video', {
+    src: voce.video,
+    poster: voce.videoPoster || null,
+    controls: true,
+    // `metadata` e non `none`: si legge quanto dura, e soprattutto si scopre
+    // subito se il file non c'è. Con `none` il browser non guarda finché
+    // qualcuno non preme play, e un riquadro vuoto resterebbe lì a bluffare.
+    preload: 'metadata',
+    playsinline: true,
+    'aria-label': t('spot.videoAlt', { nome: voce.name }),
+    style:
+      'width:100%;border-radius:14px;border:1px solid var(--cucitura);' +
+      'background:var(--carta-alt);margin:8px 0 16px;display:block',
+  });
+  // Dove il file non c'è — la demo in un file solo, per dirne una — si toglie
+  // invece di lasciare un rettangolo vuoto. `hidden` prima di `remove()`
+  // perché l'errore può arrivare mentre l'elemento non è ancora nella pagina:
+  // lì `remove()` non ha niente da togliere, e un attimo dopo verrebbe
+  // inserito lo stesso.
+  filmato.addEventListener('error', () => {
+    filmato.hidden = true;
+    filmato.remove();
+  });
+  return filmato;
+}
+
 async function sezioneFontanelle(voce) {
   const elenco = await dati.fontanelleDi(voce.id);
   if (!elenco.length) return null;
@@ -299,6 +335,7 @@ export async function entra(parametri) {
     voce.status !== 'verified'
       ? el('p', { class: 'pk-small pk-muted', testo: t('spot.communityNote') })
       : null,
+    video(voce),
     foto(voce),
     voce.description ? el('p', { testo: voce.description }) : null,
     sezioneDistanza(voce),
