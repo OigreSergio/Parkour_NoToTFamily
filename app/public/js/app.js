@@ -279,7 +279,13 @@ async function avvia() {
   disegnaFascia();
 
   if (!location.hash) location.hash = '#/mappa';
-  await apri(location.hash);
+  // La prima schermata si apre, ma non la si aspetta. Aprendo di filato la
+  // scheda di uno spot — è quello che fa un QR che punta a uno spot — `apri`
+  // resta in attesa che una persona accetti l'avviso sui rischi, e può
+  // restarci per sempre. L'avviso deve comparire sopra l'app, non sopra il
+  // guscio d'avvio, che altrimenti se ne sta lì a dire «sto cucendo la
+  // mappa» mentre l'app è in piedi da un pezzo.
+  const primaSchermata = apri(location.hash);
 
   const splash = document.getElementById('pk-splash');
   splash.dataset.via = '1';
@@ -289,6 +295,10 @@ async function avvia() {
   registraServiceWorker();
   scrivi('ultimoAvvio', new Date().toISOString());
   document.body.dataset.pronta = '1';
+
+  // Aspettata in fondo, non prima: se la prima schermata fallisce, l'errore
+  // deve arrivare a chi ha chiamato `avvia`.
+  await primaSchermata;
 }
 
 avvia().catch((errore) => {

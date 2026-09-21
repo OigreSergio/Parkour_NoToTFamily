@@ -127,6 +127,23 @@ Si compila senza Gradle e senza rete, con `aapt2`, `javac`, `d8`, `zipalign` e
 entra nel repository: la chiave di pubblicazione è di una persona (AGENTS.md,
 regola 6), e per questo l'app porta in testa la fascia **APK DI PROVA**.
 
+### Vedere l'app sul telefono senza installare niente
+
+```sh
+python3 app/tools/qr.py --app                       # si apre sulla mappa
+python3 app/tools/qr.py --app '#/spot/<id>'         # o dritta su uno spot
+python3 app/tools/qr.py --app --https               # per provare anche l'offline
+```
+
+Il telefono inquadra il QR e apre l'app nel browser, sulla rete di casa: non
+si installa niente e non si aspetta nessun pacchetto. È il modo più corto per
+guardare una modifica sul telefono vero, e serve i file di `app/public/` così
+come sono in questo momento.
+
+In HTTP l'offline resta spento — i browser lo accendono solo su `localhost` o
+`https` — quindi per provare anche quello serve `--https`, e sul telefono si
+accetta il certificato una volta.
+
 ### Il QR, passo passo
 
 1. **Metti telefono e computer sulla stessa Wi-Fi.** È tutto quello che serve:

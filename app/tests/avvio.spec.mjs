@@ -164,6 +164,27 @@ test('lo spot con un video lo mostra, e il video si riproduce davvero', async ({
   expect(letto.avanzato).toBe(true);
 });
 
+test('aperta di filato su uno spot, l’app non resta sotto il guscio d’avvio', async ({ page }) => {
+  // È quello che fa un QR puntato a uno spot. L'avviso sui rischi ferma la
+  // scheda finché una persona non risponde: giusto. Ma l'app dietro deve
+  // esserci, e il guscio d'avvio deve essersene andato.
+  const METRO_COLOSSEO = 'd6668114-4fb1-46a2-b23b-02c3ed2d2d13';
+  await page.goto(`/index.html#/spot/${METRO_COLOSSEO}`);
+
+  await expect(page.locator('body[data-pronta="1"]')).toBeAttached({ timeout: 20_000 });
+  await expect(page.locator('#pk-splash')).toHaveCount(0);
+  await expect(page.locator('#pk-nav')).toBeVisible();
+
+  // L'avviso è lì, sopra l'app e non sopra il guscio.
+  const avviso = page.locator('.pk-modal');
+  await expect(avviso).toBeVisible();
+  await expect(avviso).toContainText('rischio reale');
+
+  await avviso.getByRole('button', { name: /procedo sotto la mia responsabilità/i }).click();
+  await expect(page.locator('#pk-dettaglio h1')).toHaveText('Spot Metro Colosseo');
+  await expect(page.locator('#pk-dettaglio video')).toBeVisible();
+});
+
 test('gli spot senza video non mostrano un riquadro vuoto', async ({ page }) => {
   await apriScheda(page, 'Borghese');
   await expect(page.locator('#pk-dettaglio video')).toHaveCount(0);

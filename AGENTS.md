@@ -91,6 +91,7 @@ python3 app/tools/build_demo_python.py  # la demo con il motore in Python (un .p
 python3 app/tools/build_apk.py          # l'APK per il telefono (serve ANDROID_HOME e un JDK)
 python3 app/tools/build_mac_app.py      # PkFAMILY.app per il Mac (--cartella ~/Desktop)
 python3 app/tools/qr.py                 # serve l'APK sulla rete di casa e mostra il QR
+python3 app/tools/qr.py --app           # serve l'app: il telefono la apre senza installare
 python3 app/tools/qr.py --prova         # controlla il codificatore QR
 
 # remote-service (Python)

@@ -117,7 +117,7 @@ def certificato(cartella: Path) -> tuple[Path, Path]:
     return chiave, pubblico
 
 
-def avvia(porta: int, https: bool, solo_locale: bool) -> None:
+def avvia(porta: int, https: bool, solo_locale: bool, suggerisci_qr: bool = True) -> None:
     os.chdir(PUBBLICA)
     gestore = functools.partial(Gestore, directory=str(PUBBLICA))
     ospite = "127.0.0.1" if solo_locale else "0.0.0.0"  # noqa: S104 - serve in LAN, di proposito
@@ -140,7 +140,8 @@ def avvia(porta: int, https: bool, solo_locale: bool) -> None:
         print(f"  dalla rete     {schema}://{ip}:{porta}/")
         if not https:
             print("                 (in HTTP l'offline resta spento: vedi --https o il cavo USB)")
-        print(f"  QR             python3 scripts/make_qr.py \"{schema}://{ip}:{porta}/\" /tmp/pk.png")
+        if suggerisci_qr:
+            print("  QR             python3 app/tools/qr.py --app    (lo disegna e serve da sé)")
     print("\n  Ctrl-C per fermare.\n")
 
     try:

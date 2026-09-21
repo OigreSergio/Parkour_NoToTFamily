@@ -4,8 +4,16 @@
     python3 app/tools/qr.py                    # serve l'APK di app/dist/ e mostra il QR
     python3 app/tools/qr.py --porta 8090
     python3 app/tools/qr.py --file altro.apk
+    python3 app/tools/qr.py --app              # serve l'app, senza installare niente
+    python3 app/tools/qr.py --app '#/spot/<id>'    # e la apre dritta su uno spot
     python3 app/tools/qr.py --indirizzo https://esempio/x   # QR e basta, per un indirizzo qualunque
     python3 app/tools/qr.py --prova            # controlla il codificatore
+
+Con `--app` non si installa niente: il telefono apre l'app nel browser, sulla
+rete di casa, e si guarda com'è. È il modo più corto per vedere una modifica
+sul telefono vero. L'offline però resta spento, perché i browser lo accendono
+solo su `localhost` o `https`: per provare anche quello, `--app --https` (e poi
+si accetta il certificato).
 
 Il telefono e il computer devono stare sulla **stessa rete Wi-Fi**: il QR
 contiene l'indirizzo di rete locale di questo computer, che fuori di lì non
@@ -26,6 +34,10 @@ import socket
 import sys
 import zlib
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+from serve import avvia as servi_app  # noqa: E402 - dopo aver sistemato il percorso
 
 RADICE = Path(__file__).resolve().parents[2]
 USCITA_PREDEFINITA = RADICE / "app" / "dist"
@@ -598,6 +610,14 @@ def main() -> int:
     parser.add_argument("--porta", type=int, default=8080)
     parser.add_argument("--file", help="l'APK da consegnare (in mancanza, il più recente)")
     parser.add_argument("--cartella", default=str(USCITA_PREDEFINITA))
+    parser.add_argument(
+        "--app",
+        nargs="?",
+        const="",
+        metavar="ROTTA",
+        help="serve l'app invece dell'APK; con una rotta la apre lì (es. '#/spot/<id>')",
+    )
+    parser.add_argument("--https", action="store_true", help="con --app: certificato locale")
     parser.add_argument("--indirizzo", help="un indirizzo qualunque: fa il QR e si ferma")
     parser.add_argument("--ip", help="l'indirizzo di questo computer, se non lo indovina")
     parser.add_argument("--prova", action="store_true", help="controlla il codificatore")
@@ -608,8 +628,15 @@ def main() -> int:
 
     cartella = Path(argomenti.cartella).resolve()
 
+    apk = None
     if argomenti.indirizzo:
-        indirizzo, apk = argomenti.indirizzo, None
+        indirizzo = argomenti.indirizzo
+    elif argomenti.app is not None:
+        rotta = argomenti.app.lstrip("/")
+        if rotta and not rotta.startswith("#"):
+            rotta = "#/" + rotta.lstrip("#/")
+        schema = "https" if argomenti.https else "http"
+        indirizzo = f"{schema}://{argomenti.ip or indirizzo_locale()}:{argomenti.porta}/{rotta}"
     else:
         apk = Path(argomenti.file).resolve() if argomenti.file else trova_apk(cartella)
         indirizzo = f"http://{argomenti.ip or indirizzo_locale()}:{argomenti.porta}/"
@@ -628,6 +655,16 @@ def main() -> int:
     print()
     print(f"  {indirizzo}")
     print(f"  immagini: {cartella / 'pkfamily-qr.png'} e .svg")
+
+    if argomenti.app is not None:
+        print("  l'app, così com'è adesso: niente da installare, si apre nel browser.")
+        if not argomenti.https:
+            print("  (in HTTP l'offline resta spento: con --https si prova anche quello)")
+        print()
+        print("  Inquadra il QR con la fotocamera del telefono, sulla stessa rete Wi-Fi.")
+        print("  Ctrl+C per chiudere.")
+        servi_app(argomenti.porta, argomenti.https, False, suggerisci_qr=False)
+        return 0
 
     if apk is None:
         return 0

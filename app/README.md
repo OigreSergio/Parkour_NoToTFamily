@@ -285,6 +285,18 @@ correzione M, versioni 1–9). `python3 app/tools/qr.py --prova` ne controlla
 l'impronta e la struttura; i disegni da cui vengono le impronte sono stati
 riletti da un decodificatore indipendente, non solo confrontati con sé stessi.
 
+### Solo guardare, senza installare
+
+```sh
+python3 app/tools/qr.py --app                  # QR → l'app nel browser del telefono
+python3 app/tools/qr.py --app '#/spot/<id>'    # aperta dritta su uno spot
+python3 app/tools/qr.py --app --https          # e con l'offline acceso
+```
+
+Serve i file di `app/public/` sulla rete di casa e disegna il QR: il telefono
+lo inquadra e apre l'app, senza installare niente. È il giro più corto per
+guardare una modifica sul telefono vero.
+
 ### Passo passo
 
 1. Telefono e computer **sulla stessa Wi-Fi**.

@@ -1,7 +1,7 @@
 {
-  "version": "73e909925ba2",
+  "version": "2590d04cbb99",
   "generated_by": "app/tools/build_precache.py",
-  "bytes": 1674554,
+  "bytes": 1675152,
   "files": [
     "build.json",
     "data/fountains.json",
