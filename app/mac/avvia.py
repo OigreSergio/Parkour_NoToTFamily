@@ -19,7 +19,6 @@ from __future__ import annotations
 import contextlib
 import functools
 import http.server
-import os
 import shutil
 import socket
 import subprocess
@@ -170,5 +169,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    os.environ.setdefault("PYTHONUNBUFFERED", "1")
     raise SystemExit(main())

@@ -13,7 +13,7 @@ Python che gira in remoto è il servizio di supporto in `remote-service/`.
 
 | Cartella | Cosa | Stato | Lingua del codice |
 | --- | --- | --- | --- |
-| `remote-service/` | pacchetto Python `pkremote`: stato, proxy dei percorsi, job | attivo, è dove si sviluppa in Python | Python 3.11, FastAPI |
+| `remote-service/` | pacchetto Python `pkremote`: stato, proxy dei percorsi, job | attivo, è dove si sviluppa in Python | Python 3.14, FastAPI |
 | `app/` | applicazione installabile per telefono che funziona senza rete (PWA senza build), i gusci Android e macOS che la impacchettano in un APK e in un bundle `.app`, gli strumenti per provarla dal PC e il motore Python della demo | attiva; vedi `docs/APP_OFFLINE.md` | HTML/CSS/JS, Java per il guscio Android, Python per gusci, strumenti e demo |
 | `supabase/` | migrazioni SQL e seed del progetto Supabase | schema di riferimento; quello reale di produzione differisce (vedi analisi) | SQL, Node |
 | `backend/` | API FastAPI completa nata prima della scelta di Supabase | scaffold, non in produzione: **non estenderlo** (decisione G del masterplan) | Python |
@@ -22,6 +22,18 @@ Python che gira in remoto è il servizio di supporto in `remote-service/`.
 | `scripts/` | pipeline dati (spot, foto, QR) e strumenti legati al bundle legacy | in parte da portare come job in `remote-service/` | Python |
 | `infra/` | compose per tile e OSRM self-hosted | pronti, senza dati | YAML |
 | `docs/` | documentazione | `PKFAMILY_MASTERPLAN.md` è la direzione; `ANALISI_STRUTTURA_PYTHON.md` è lo stato verificato | Markdown |
+
+**Quale Python.** Il pavimento del repository è **Python 3.14**:
+`remote-service/` lo dichiara in `requires-python` e gli strumenti di
+`app/tools/` girano sulla stessa versione. Due eccezioni, e non sono
+dimenticanze:
+
+- `backend/` resta alla 3.11 perché resta com'è (decisione G).
+- Tre file finiscono sul computer di chi prova l'app, dove la versione di
+  Python non la scegliamo noi, e restano compatibili **dalla 3.9 in su**:
+  `app/mac/avvia.py`, la stringa `AVVIATORE` dentro `app/tools/build_beta.py`
+  e l'avviatore incorporato in `app/tools/build_demo_python.py`. Su questi si
+  correggono errori, non si usano novità del linguaggio.
 
 Prima di scrivere codice leggi, nell'ordine: `docs/PKFAMILY_MASTERPLAN.md`
 capitoli 0 e 2 (le regole), il capitolo del tuo compito, e
@@ -80,6 +92,10 @@ Per lo stato attuale vince il codice; per la direzione vince il masterplan.
 
 ## 4. Comandi
 
+I comandi qui sotto danno per scontato che `python3` sia la **3.14 o
+successiva** (`python3 --version`): con una precedente `pip install -e .` in
+`remote-service/` si ferma prima di installare qualsiasi cosa.
+
 ```sh
 # app installabile (nessuna dipendenza per l'app; Playwright solo per i test)
 python3 app/tools/desktop.py            # finestra formato telefono sul PC
@@ -101,7 +117,7 @@ ruff check . && pytest          # gli stessi controlli della CI
 pkremote serve                  # http://127.0.0.1:8080/healthz, /docs
 pkremote jobs && pkremote job ping
 
-# backend (solo per leggere: non estenderlo)
+# backend (solo per leggere: non estenderlo; dichiara Python 3.11, non 3.14)
 cd backend && ruff check . && pytest      # i test con database richiedono Postgres+PostGIS
 
 # mobile

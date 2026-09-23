@@ -13,18 +13,20 @@ spot è Python, non il browser.
     python3 pkfamily-demo.py --installa   # mette l'icona sul desktop
     python3 pkfamily-demo.py --api        # solo il motore, senza finestra
 
-Serve solo Python 3: nessuna dipendenza, nessuna installazione.
+Serve solo Python 3: nessuna dipendenza, nessuna installazione — e Python 3
+vuol dire anche un Python vecchio, perché il file finisce sul computer di
+altre persone: prima di scriverlo, lo strumento controlla che la sintassi sia
+ancora quella che un interprete di allora sa leggere.
 """
 
-from __future__ import annotations
-
 import argparse
+import ast
 import base64
 import io
 import json
 import sys
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 RADICE = Path(__file__).resolve().parents[2]
@@ -33,6 +35,10 @@ MOTORE = RADICE / "app" / "demo" / "motore.py"
 USCITA_PREDEFINITA = RADICE / "app" / "dist"
 
 VERSIONE_BASE = "0.1.0"
+
+# Il pavimento di chi apre la demo, non il nostro: qui il repository gira su un
+# Python recente, ma questo file viaggia e va aperto dove capita.
+VERSIONE_MINIMA = (3, 9)
 
 INTESTAZIONE = '''#!/usr/bin/env python3
 """PkFAMILY — demo con il motore in Python. Un file solo.
@@ -355,8 +361,28 @@ def sorgente_motore() -> str:
     return "\n".join(r for r in righe if not r.startswith("from __future__"))
 
 
+def controlla_versione_minima(sorgente: str) -> None:
+    """Rifiuta un file che un Python vecchio non saprebbe nemmeno leggere.
+
+    Il motore arriva da `app/demo/motore.py` e l'avviatore dalle stringhe qui
+    sopra: chi li modifica lavora su una macchina aggiornata e non ha modo di
+    accorgersi che di qui passano e vanno a finire altrove. Meglio fermarsi
+    mentre si costruisce che lasciare l'errore a chi apre la demo.
+    """
+    try:
+        ast.parse(sorgente, feature_version=VERSIONE_MINIMA)
+    except SyntaxError as errore:
+        minima = ".".join(str(n) for n in VERSIONE_MINIMA)
+        sys.exit(
+            f"La demo userebbe sintassi che Python {minima} non legge "
+            f"(riga {errore.lineno}): {errore.msg}.\n"
+            "  Il file finisce sul computer di altre persone: il motore e "
+            "l'avviatore restano alla sintassi vecchia."
+        )
+
+
 def costruisci(destinazione: Path) -> Path:
-    oggi = datetime.now(timezone.utc)
+    oggi = datetime.now(UTC)
     versione = f"{VERSIONE_BASE}-python.{oggi:%Y%m%d}"
     quando = oggi.isoformat(timespec="seconds")
 
@@ -367,8 +393,11 @@ def costruisci(destinazione: Path) -> Path:
         CODA.format(payload=impacchetta_app(versione, quando), versione=versione),
     ]
 
+    sorgente = "\n".join(pezzi)
+    controlla_versione_minima(sorgente)
+
     file = destinazione / "pkfamily-demo.py"
-    file.write_text("\n".join(pezzi), encoding="utf-8")
+    file.write_text(sorgente, encoding="utf-8")
     file.chmod(0o755)
     return file
 

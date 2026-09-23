@@ -20,13 +20,14 @@ UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
       "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 
 
-def get(url):
+def get(url: str) -> str:
+    """Scarica una pagina e la decodifica come testo, fingendosi un browser."""
     req = urllib.request.Request(url, headers={"User-Agent": UA})
     with urllib.request.urlopen(req, timeout=60) as r:
         return r.read().decode("utf8", errors="replace")
 
 
-def main():
+def main() -> None:
     page = get(SHORT_LINK)
     m = re.search(r'(/maps/preview/entitylist/getlist\?[^"]+)', page)
     if not m:

@@ -215,14 +215,35 @@ class Motore:
 ROTTE = re.compile(r"^/api/(?P<cosa>[a-z-]+)/?(?P<coda>.*)$")
 
 
-def _numero(valori: dict[str, list[str]], nome: str, predefinito: float | None = None):
+def _numero(
+    valori: dict[str, list[str]], nome: str, predefinito: float | None = None
+) -> float | None:
+    """Un numero preso dalla richiesta, o il predefinito se non se ne cava uno.
+
+    Non utilizzabile vuol dire anche `inf` e `nan`: `float()` li accetta, ma
+    non sono né una coordinata né un tetto, e più avanti farebbero saltare la
+    risposta invece di limitarla.
+    """
     grezzo = valori.get(nome, [None])[0]
     if grezzo is None or grezzo == "":
         return predefinito
     try:
-        return float(grezzo)
+        numero = float(grezzo)
     except ValueError:
         return predefinito
+    return numero if math.isfinite(numero) else predefinito
+
+
+def _tetto(valori: dict[str, list[str]], nome: str, predefinito: int) -> int:
+    """Quanti elementi al massimo (`tetto`, `quanti`): un intero mai negativo.
+
+    Il controllo sul segno non è pignoleria: `elenco[:-5]` non limita niente,
+    toglie gli ultimi cinque e restituisce comunque tutto il resto. Un tetto
+    negativo arrivato dalla richiesta darebbe quindi più dati di quanti ne
+    chiedeva, e `mostrati` racconterebbe una cosa per un'altra.
+    """
+    numero = _numero(valori, nome, predefinito)
+    return max(0, int(numero if numero is not None else predefinito))
 
 
 def _booleano(valori: dict[str, list[str]], nome: str) -> bool:
@@ -261,14 +282,14 @@ def rispondi(percorso: str, valori: dict[str, list[str]], motore: Motore) -> tup
             con_fontanella=_booleano(valori, "fontanella"),
             livello=valori.get("livello", [""])[0],
             da=(lat, lng) if lat is not None and lng is not None else None,
-            tetto=int(_numero(valori, "tetto", 200)),
+            tetto=_tetto(valori, "tetto", 200),
         )
 
     if cosa == "vicini":
         lat, lng = _numero(valori, "lat"), _numero(valori, "lng")
         if lat is None or lng is None:
             return 422, {"errore": "serve_un_punto"}
-        return 200, motore.vicini(lat, lng, int(_numero(valori, "quanti", 20)))
+        return 200, motore.vicini(lat, lng, _tetto(valori, "quanti", 20))
 
     if cosa == "spot":
         trovato = motore.spot_singolo(coda)

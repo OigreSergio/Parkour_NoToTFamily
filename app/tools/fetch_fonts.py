@@ -14,8 +14,6 @@ Gli indirizzi sono quelli dei sottoinsiemi latino e latino esteso serviti da
 Google Fonts: bloccati qui perché il file scaricato sia sempre lo stesso.
 """
 
-from __future__ import annotations
-
 import argparse
 import sys
 import urllib.request

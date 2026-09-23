@@ -59,6 +59,10 @@ complete per chi (persona o agente) lavora qui sono in [`AGENTS.md`](../AGENTS.m
 
 ## Avvio in locale
 
+Serve **Python 3.14 o successivo** (`python3 --version`): è il pavimento
+dichiarato in `pyproject.toml`, e con una versione precedente `pip install`
+si ferma prima di installare qualsiasi cosa.
+
 ```sh
 cd remote-service
 python3 -m venv .venv && . .venv/bin/activate
@@ -83,7 +87,9 @@ da `main` tramite CI. Il workflow
 [`.github/workflows/remote-service.yml`](../.github/workflows/remote-service.yml)
 esegue lint e test a ogni modifica di questa cartella e, sui push su `main`,
 costruisce l'immagine e la pubblica su GitHub Container Registry come
-`ghcr.io/<proprietario>/pkremote:latest` (e `:sha-<commit>`).
+`ghcr.io/<proprietario>/pkremote:latest` (e `:sha-<commit>`). Lo stesso
+workflow ripete lint e test sulla release candidate di Python 3.15: quel
+lavoro non blocca niente, serve solo a vedere in anticipo cosa si romperà.
 
 Da lì, qualunque host che sa avviare un container va bene. Tre esempi:
 

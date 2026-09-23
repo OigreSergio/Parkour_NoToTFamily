@@ -19,7 +19,9 @@
 
 ## Code style
 
-- **Python:** Ruff + Black, type hints required on public functions, async-first.
+- **Python:** 3.14+ in `remote-service/` and `app/tools/` (`backend/` stays on 3.11,
+  and the launchers shipped to other people stay compatible with 3.9+);
+  Ruff + Black, type hints required on public functions, async-first.
 - **Dart:** `flutter_lints`, Riverpod for state, `freezed` for models.
 - **TypeScript:** ESLint + Prettier, strict mode on.
 

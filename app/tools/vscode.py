@@ -20,8 +20,6 @@ Senza VS Code installato non succede niente di male: il collegamento resta
 stampato, e `--solo-link` è il modo di chiederlo apposta.
 """
 
-from __future__ import annotations
-
 import argparse
 import shutil
 import subprocess
@@ -67,11 +65,16 @@ def apri(indirizzo: str, percorso: Path, riga: int | None) -> bool:
         if subprocess.run(comando, check=False).returncode == 0:  # noqa: S603 - percorso da `which`
             return True
 
-    apritore = (
-        ["open"] if sys.platform == "darwin" else ["xdg-open"] if sys.platform.startswith("linux") else None
-    )
-    if sys.platform.startswith("win"):
+    # Il comando con cui ogni sistema apre un indirizzo che non è del browser.
+    if sys.platform == "darwin":
+        apritore = ["open"]
+    elif sys.platform.startswith("win"):
         apritore = ["cmd", "/c", "start", ""]
+    elif sys.platform.startswith("linux"):
+        apritore = ["xdg-open"]
+    else:
+        apritore = None
+
     if apritore and shutil.which(apritore[0]):
         return subprocess.run([*apritore, indirizzo], check=False).returncode == 0  # noqa: S603
 
@@ -80,8 +83,12 @@ def apri(indirizzo: str, percorso: Path, riga: int | None) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Apre PkFAMILY in VS Code.")
-    parser.add_argument("bersaglio", nargs="?", help="file o cartella, anche con :riga o :riga:colonna")
-    parser.add_argument("--solo-link", action="store_true", help="stampa il collegamento, non aprire")
+    parser.add_argument(
+        "bersaglio", nargs="?", help="file o cartella, anche con :riga o :riga:colonna"
+    )
+    parser.add_argument(
+        "--solo-link", action="store_true", help="stampa il collegamento, non aprire"
+    )
     argomenti = parser.parse_args()
 
     riga = colonna = None

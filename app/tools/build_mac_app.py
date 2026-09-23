@@ -26,8 +26,6 @@ Lo strumento gira su qualunque sistema: un bundle `.app` è una cartella, e si
 può preparare anche da Linux per poi copiarla su un Mac.
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json
@@ -37,7 +35,7 @@ import stat
 import struct
 import sys
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -155,7 +153,7 @@ def informazioni(versione: str) -> bytes:
 
 
 def costruisci(destinazione: Path, apk: Path | None, fare_zip: bool) -> Path:
-    oggi = datetime.now(timezone.utc)
+    oggi = datetime.now(UTC)
     bundle = destinazione / "PkFAMILY.app"
     if bundle.exists():
         shutil.rmtree(bundle)
@@ -180,10 +178,11 @@ def costruisci(destinazione: Path, apk: Path | None, fare_zip: bool) -> Path:
     (contenuto / "Info.plist").write_bytes(informazioni(versione))
     (contenuto / "PkgInfo").write_text("APPL????", encoding="ascii")
     (risorse / "PkFAMILY.icns").write_bytes(icona())
-    shutil.copy(MAC / "avvia.py", risorse / "avvia.py")
+    (MAC / "avvia.py").copy_into(risorse)
 
-    avviatore = eseguibili / "PkFAMILY"
-    shutil.copy(MAC / "PkFAMILY", avviatore)
+    # `copy_into` copia il file dentro la cartella e restituisce dov'è finito:
+    # non porta con sé i permessi, e i bit di esecuzione li accendiamo qui.
+    avviatore = (MAC / "PkFAMILY").copy_into(eseguibili)
     avviatore.chmod(avviatore.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
 
     peso = sum(f.stat().st_size for f in bundle.rglob("*") if f.is_file())

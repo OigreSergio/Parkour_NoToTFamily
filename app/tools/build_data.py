@@ -24,8 +24,6 @@ inventa. Gli spot `community` restano marcati come tali finché una persona
 non li verifica (principio 2 del masterplan).
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import sys

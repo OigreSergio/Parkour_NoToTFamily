@@ -25,8 +25,6 @@ correzione d'errore di livello M, versioni da 1 a 9 (fino a 180 caratteri) —
 più che abbastanza per `http://192.168.x.y:8080/`.
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import http.server
@@ -41,6 +39,12 @@ from serve import avvia as servi_app  # noqa: E402 - dopo aver sistemato il perc
 
 RADICE = Path(__file__).resolve().parents[2]
 USCITA_PREDEFINITA = RADICE / "app" / "dist"
+
+# Il disegno di un QR è una griglia di moduli: 1 scuro, 0 chiaro. Mentre lo si
+# costruisce certe caselle sono ancora da riempire — `None` vuol dire «qui ci
+# vanno i dati» — quindi i due tipi non sono lo stesso, e conviene dargli un nome.
+Moduli = list[list[int]]
+Griglia = list[list[int | None]]
 
 # ---------------------------------------------------------------------------
 # Il codificatore
@@ -162,7 +166,7 @@ def _intreccia(codeword: list[int], versione: int) -> list[int]:
     return fuori
 
 
-def _struttura(versione: int):
+def _struttura(versione: int) -> tuple[Griglia, int]:
     """I moduli che il disegno decide da sé: mirini, tempi, allineamenti.
 
     `None` vuol dire «qui ci vanno i dati»: è anche l'elenco dei posti liberi.
@@ -170,7 +174,7 @@ def _struttura(versione: int):
     lato = versione * 4 + 17
     moduli = [[None] * lato for _ in range(lato)]
 
-    def mirino(riga, colonna):
+    def mirino(riga: int, colonna: int) -> None:
         for dr in range(-1, 8):
             for dc in range(-1, 8):
                 r, c = riga + dr, colonna + dc
@@ -245,10 +249,12 @@ def _formato(maschera: int) -> int:
     return ((dato << 10) | resto) ^ 0b101010000010010
 
 
-def _penalita(moduli, lato: int) -> int:
+def _penalita(moduli: Moduli, lato: int) -> int:
     """Quanto quel disegno è difficile da leggere: meno è, meglio è."""
     punti = 0
-    linee = [list(riga) for riga in moduli] + [list(colonna) for colonna in zip(*moduli)]
+    linee = [list(riga) for riga in moduli] + [
+        list(colonna) for colonna in zip(*moduli, strict=True)
+    ]
 
     # 1. file di cinque o più moduli dello stesso colore
     for riga in linee:
@@ -283,7 +289,7 @@ def _penalita(moduli, lato: int) -> int:
     return punti
 
 
-def matrice(testo: str) -> list[list[int]]:
+def matrice(testo: str) -> Moduli:
     """I moduli del QR per quel testo: 1 scuro, 0 chiaro, senza bordo."""
     dati = testo.encode("utf-8")
     versione = _versione_per(len(dati))
@@ -313,7 +319,7 @@ def matrice(testo: str) -> list[list[int]]:
     migliore, punteggio = None, None
     for maschera in range(8):
         moduli = [[0 if modulo is None else modulo for modulo in riga] for riga in base]
-        for (riga, colonna), valore in zip(posti, bit):
+        for (riga, colonna), valore in zip(posti, bit, strict=True):
             moduli[riga][colonna] = valore ^ (1 if _maschera(maschera, riga, colonna) else 0)
 
         formato = _formato(maschera)
@@ -355,7 +361,7 @@ def matrice(testo: str) -> list[list[int]]:
 BORDO = 4  # la «zona di quiete» che lo standard chiede intorno al disegno
 
 
-def a_terminale(moduli) -> str:
+def a_terminale(moduli: Moduli) -> str:
     """Il QR a schermo, con i colori veri.
 
     Il fondo lo si dipinge chiaro e i moduli scuri: un terminale a tema scuro,
@@ -378,7 +384,7 @@ def a_terminale(moduli) -> str:
     return "\n".join(righe)
 
 
-def a_png(moduli, scala: int = 10) -> bytes:
+def a_png(moduli: Moduli, scala: int = 10) -> bytes:
     """Un PNG in bianco e nero, scritto a mano: serve solo `zlib`."""
     lato = len(moduli)
     larghezza = (lato + BORDO * 2) * scala
@@ -414,7 +420,7 @@ def a_png(moduli, scala: int = 10) -> bytes:
     )
 
 
-def a_svg(moduli, scala: int = 10) -> str:
+def a_svg(moduli: Moduli, scala: int = 10) -> str:
     lato = len(moduli)
     misura = (lato + BORDO * 2) * scala
     quadrati = []
@@ -509,7 +515,7 @@ telefono.</p>
 """
 
 
-def servi(apk: Path, porta: int, indirizzo: str) -> None:
+def servi(apk: Path, porta: int) -> None:
     pagina = PAGINA.format(
         versione=apk.stem.replace("pkfamily-", ""),
         peso=f"{apk.stat().st_size / 1024 / 1024:.1f}",
@@ -564,7 +570,8 @@ def servi(apk: Path, porta: int, indirizzo: str) -> None:
 IMPRONTE = {
     "http://192.168.1.42:8080/": "6f9c4dc324a3539f2989a896a66bba0f120de3d9d63f03f7a772da1bb2c9d442",
     "PkFAMILY": "76a45e4c44623ea44d94fcb556f1c66ca293487fdddb966e9156dcac5db67c19",
-    "https://oigresergio.github.io/Parkour_NoToTFamily/": "8d10b1f57fde9c5ce24ed45f87b2ea21c31c72734505379ad9d835ccf26422ff",
+    "https://oigresergio.github.io/Parkour_NoToTFamily/":
+        "8d10b1f57fde9c5ce24ed45f87b2ea21c31c72734505379ad9d835ccf26422ff",
 }
 
 
@@ -674,7 +681,7 @@ def main() -> int:
     print("  Inquadra il QR con la fotocamera del telefono, sulla stessa rete Wi-Fi.")
     print("  Ctrl+C per chiudere.")
     print()
-    servi(apk, argomenti.porta, indirizzo)
+    servi(apk, argomenti.porta)
     return 0
 
 

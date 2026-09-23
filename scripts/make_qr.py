@@ -15,8 +15,8 @@ from pathlib import Path
 
 try:
     import qrcode
-    from qrcode.constants import ERROR_CORRECT_M
     from PIL import Image, ImageDraw, ImageFont
+    from qrcode.constants import ERROR_CORRECT_M
 except ImportError:  # pragma: no cover - messaggio, non logica
     sys.exit('Manca una dipendenza: pip install "qrcode[pil]"')
 
@@ -25,8 +25,9 @@ LINO, INCHIOSTRO, TENUE, FILO = (244, 236, 224), (31, 27, 22), (111, 100, 86), (
 MARGINE, PAD = 50, 26
 
 
-def _font(size: int, bold: bool = False):
-    percorso = "/usr/share/fonts/truetype/dejavu/DejaVuSans%s.ttf" % ("-Bold" if bold else "")
+def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
+    """Il font DejaVu alla misura chiesta, o quello di ripiego se non è installato."""
+    percorso = f"/usr/share/fonts/truetype/dejavu/DejaVuSans{'-Bold' if bold else ''}.ttf"
     try:
         return ImageFont.truetype(percorso, size)
     except OSError:

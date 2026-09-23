@@ -21,8 +21,6 @@ L'app pubblicata, invece, la cache la vuole eccome — e ci pensa il service
 worker.
 """
 
-from __future__ import annotations
-
 import argparse
 import contextlib
 import functools
@@ -68,7 +66,7 @@ class Gestore(http.server.SimpleHTTPRequestHandler):
             self.send_header("Service-Worker-Allowed", "/")
         super().end_headers()
 
-    def log_message(self, formato: str, *argomenti) -> None:
+    def log_message(self, formato: str, *argomenti: object) -> None:
         # Una riga per richiesta, senza data ripetuta: il terminale resta leggibile.
         sys.stderr.write("  %s\n" % (formato % argomenti))
 
@@ -155,7 +153,9 @@ def avvia(porta: int, https: bool, solo_locale: bool, suggerisci_qr: bool = True
 def main() -> int:
     parser = argparse.ArgumentParser(description="Serve l'app PkFAMILY dal computer.")
     parser.add_argument("--porta", type=int, default=8080)
-    parser.add_argument("--https", action="store_true", help="certificato locale (offline dal telefono)")
+    parser.add_argument(
+        "--https", action="store_true", help="certificato locale (offline dal telefono)"
+    )
     parser.add_argument("--solo-locale", action="store_true", help="non esporre in rete locale")
     argomenti = parser.parse_args()
 

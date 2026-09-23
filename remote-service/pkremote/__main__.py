@@ -87,7 +87,14 @@ def _load_settings() -> Settings | None:
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="pkremote", description="PkFAMILY - servizio remoto")
+    parser = argparse.ArgumentParser(
+        prog="pkremote",
+        description="PkFAMILY - servizio remoto",
+        # `jobs` (elenca) e `job <nome>` (esegue) si somigliano troppo per non
+        # sbagliarli: dalla 3.14 argparse propone da sé il comando giusto a chi
+        # lo digita storto, invece di limitarsi a dire "scelta non valida".
+        suggest_on_error=True,
+    )
     parser.add_argument("--version", action="version", version=f"pkremote {__version__}")
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("serve", help="avvia il server HTTP")

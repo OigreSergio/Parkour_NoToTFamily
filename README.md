@@ -51,6 +51,11 @@ python3 app/tools/serve.py        # http://127.0.0.1:8080
 cd app && npm install && npm test # boot, real offline, installability
 ```
 
+The app itself needs nothing installed. The tools in `app/tools/` run on
+**Python 3.14+**, the repository floor; the launchers that ship to other
+people (`app/mac/avvia.py`, the ones embedded in the beta and in the demo)
+stay compatible with **Python 3.9+**.
+
 ## Getting started
 
 ```bash
@@ -113,11 +118,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and [docs/SPOT_VERIFICATION.md]
 
 ## Remote service (Python)
 
-- [remote-service/](remote-service/README.md) — the `pkremote` package: the support service
-  the masterplan keeps next to Supabase (route proxy with cache and rounded coordinates,
-  jobs such as the verified-spots export, health endpoints), written to run on a remote host
-  with no database of its own. Built and published as a container image by
-  [`.github/workflows/remote-service.yml`](.github/workflows/remote-service.yml).
+- [remote-service/](remote-service/README.md) — the `pkremote` package (**Python 3.14+**):
+  the support service the masterplan keeps next to Supabase (route proxy with cache and
+  rounded coordinates, jobs such as the verified-spots export, health endpoints), written to
+  run on a remote host with no database of its own. Built and published as a container image
+  by [`.github/workflows/remote-service.yml`](.github/workflows/remote-service.yml).
 - [docs/ANALISI_STRUTTURA_PYTHON.md](docs/ANALISI_STRUTTURA_PYTHON.md) — the analysis of the
   repository that led to it: what exists, in what state, what a remote Python service must
   and must not do here.

@@ -15,6 +15,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Senza questo passo gli script girerebbero con il Python che ubuntu-latest
+      # si porta dietro, che cambia quando cambia l'immagine del runner: è l'unico
+      # posto del repository dove la versione veniva decisa per caso. Qui vale il
+      # pavimento dichiarato in AGENTS.md, la stessa versione degli altri workflow.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
 
       - name: Rigenera i dati degli spot
         run: |

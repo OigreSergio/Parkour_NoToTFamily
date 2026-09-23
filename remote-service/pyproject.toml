@@ -15,7 +15,7 @@ build-backend = "setuptools.build_meta"
 name = "pkremote"
 version = "0.1.0"
 description = "PkFAMILY - servizio di supporto che gira in remoto: proxy dei percorsi, job sui dati, stato"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 dependencies = [
   # Server HTTP asincrono: espone /healthz, /readyz, /api/v1/route, /api/v1/jobs.
   "fastapi>=0.111",
@@ -47,9 +47,11 @@ pkremote = "pkremote.__main__:main"
 include = ["pkremote*"]
 
 [tool.ruff]
-# Stesse regole del backend esistente, così il repository ha uno stile solo.
+# Stessa larghezza di riga del backend esistente, così il repository ha uno stile
+# solo; la versione di riferimento è quella di `requires-python`, non quella del
+# backend, che resta fermo alla 3.11 (decisione G del masterplan).
 line-length = 100
-target-version = "py311"
+target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "ASYNC", "S", "RUF"]

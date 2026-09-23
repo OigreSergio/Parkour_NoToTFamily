@@ -30,8 +30,6 @@ Cosa serve sulla macchina:
 * un JDK 17 o più recente (`javac`, `keytool`), da `JAVA_HOME` o dal PATH.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import os
@@ -40,7 +38,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -94,8 +92,13 @@ def trova_strumenti(sdk: Path) -> tuple[Path, Path]:
     versioni = sorted((sdk / "build-tools").glob("*"), key=lambda p: _numero_versione(p.name))
     if not versioni:
         raise Mancante(f"In {sdk} manca `build-tools`: installalo dal gestore dell'SDK.")
-    piattaforme = sorted((sdk / "platforms").glob("android-*"), key=lambda p: _numero_versione(p.name))
-    jar = next((p / "android.jar" for p in reversed(piattaforme) if (p / "android.jar").is_file()), None)
+    piattaforme = sorted(
+        (sdk / "platforms").glob("android-*"), key=lambda p: _numero_versione(p.name)
+    )
+    jar = next(
+        (p / "android.jar" for p in reversed(piattaforme) if (p / "android.jar").is_file()),
+        None,
+    )
     if jar is None:
         raise Mancante(f"In {sdk}/platforms non c'è nessun `android.jar`.")
     return versioni[-1], jar
@@ -177,7 +180,7 @@ def chiave_di_prova(destinazione: Path, keytool: str) -> tuple[Path, str, str]:
 
 
 def costruisci(destinazione: Path, keystore: Path | None, alias: str, parola: str | None) -> Path:
-    oggi = datetime.now(timezone.utc)
+    oggi = datetime.now(UTC)
     versione = f"{VERSIONE_BASE}-apk.{oggi:%Y%m%d}"
     codice = int(f"{oggi:%y%m%d}")
 

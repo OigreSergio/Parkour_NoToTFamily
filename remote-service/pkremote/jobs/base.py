@@ -47,7 +47,7 @@ class JobContext:
     @classmethod
     def build(
         cls, settings: Settings, http: httpx.AsyncClient, supabase: SupabaseClient | None
-    ) -> "JobContext":
+    ) -> JobContext:
         """Lo stesso contesto, che il job parta dalla CLI o da una rotta HTTP."""
         return cls(
             settings=settings, http=http, supabase=supabase, output_dir=settings.jobs_output_dir

@@ -45,7 +45,7 @@ class SupabaseClient:
         self._headers = {"apikey": secret, "Authorization": f"Bearer {secret}"}
 
     @classmethod
-    def from_settings(cls, settings: Settings, http: httpx.AsyncClient) -> "SupabaseClient | None":
+    def from_settings(cls, settings: Settings, http: httpx.AsyncClient) -> SupabaseClient | None:
         """Il client di lettura, o None se la configurazione non lo permette.
 
         Nasce solo dalla chiave pubblicabile: con le RLS attive vede solo dati

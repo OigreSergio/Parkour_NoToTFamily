@@ -13,8 +13,6 @@ Sul telefono l'app vera si installa dalla schermata "Tu" (o da «Aggiungi alla
 schermata Home»): quella è l'applicazione, questa è la prova.
 """
 
-from __future__ import annotations
-
 import argparse
 import os
 import shutil

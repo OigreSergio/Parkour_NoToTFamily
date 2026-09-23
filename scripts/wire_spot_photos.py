@@ -18,7 +18,10 @@ Uso: python3 scripts/wire_spot_photos.py
 
 import json
 import re
+import time
 import unicodedata
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
@@ -32,16 +35,14 @@ COMMONS = re.compile(
 UA = "PkFamilyMap/1.0 (collegamento foto spot; repo Parkour_NoToTFamily)"
 
 
-def slugify(name):
+def slugify(name: str) -> str:
+    """Il nome dello spot ridotto a lettere, cifre e trattini: è la chiave di incrocio."""
     a = unicodedata.normalize("NFKD", name).encode("ascii", "ignore").decode()
     return re.sub(r"[^a-z0-9]+", "-", a.lower()).strip("-")
 
 
-def reachable(url):
+def reachable(url: str) -> bool:
     """HEAD con retry: Commons applica rate limit alle richieste ravvicinate."""
-    import time
-    import urllib.error
-    import urllib.request
     for attempt in range(4):
         time.sleep(0.4 if attempt == 0 else 3 * attempt)
         try:
@@ -57,7 +58,7 @@ def reachable(url):
     return False
 
 
-def display_url(image_url):
+def display_url(image_url: str) -> str:
     """URL Commons (originale o thumb di qualunque taglia) -> thumb 1280px,
     con fallback sull'originale se il thumb non è disponibile (immagini più
     piccole di 1280px). Ogni altro URL resta com'è."""
@@ -75,7 +76,7 @@ def display_url(image_url):
     return original
 
 
-def main():
+def main() -> None:
     webapp = json.loads(WEBAPP_JSON.read_text(encoding="utf8"))
     seeds = json.loads(SEED_JSON.read_text(encoding="utf8"))
     by_slug = {slugify(s["name"]): s for s in webapp}

@@ -19,6 +19,10 @@ icona, si apre a tutto schermo e **funziona in modalità aereo**.
 
 ## Provarla, subito
 
+Serve **Python 3.14 o successivo** (`python3 --version`): è il pavimento del
+repository, e gli strumenti di `tools/` lo danno per scontato. L'app in sé non
+ha bisogno di niente.
+
 ```sh
 python3 app/tools/desktop.py         # finestra formato telefono, server incluso
 ```
@@ -330,8 +334,10 @@ costruito dai sorgenti perché un APK non c'era.
 Il bundle sta in piedi da solo: `Contents/Resources/app` è l'applicazione,
 `Contents/Resources/avvia.py` la accende su `127.0.0.1` (l'offline si attiva
 solo su `localhost` o `https`: da `file://` non funzionerebbe niente), e
-`Contents/MacOS/PkFAMILY` trova il Python 3 del Mac. macOS non ne porta più
-uno di serie: se manca, compare una finestra che lo dice.
+`Contents/MacOS/PkFAMILY` trova il Python 3 del Mac — va bene qualunque
+versione dalla 3.9 in su, perché l'avviatore del bundle resta compatibile
+all'indietro apposta: su quel Mac la versione non la scegliamo noi. macOS non
+porta più un Python di serie: se manca, compare una finestra che lo dice.
 
 Uno `.zip` scaricato da internet arriva in quarantena: la prima volta si apre
 con **tasto destro sull'app → Apri**. Costruirlo sul proprio Mac evita la

@@ -16,7 +16,7 @@ I nomi delle variabili sono quelli dei campi in maiuscolo: il campo `host` si
 imposta con `HOST`, `supabase_url` con `SUPABASE_URL`, e così via.
 """
 
-from functools import lru_cache
+from functools import cache
 from pathlib import Path
 from typing import Annotated, Literal
 
@@ -162,7 +162,7 @@ class Settings(BaseSettings):
     # --- Controlli che valgono solo in produzione -----------------------------------
 
     @model_validator(mode="after")
-    def _production_guardrails(self) -> "Settings":
+    def _production_guardrails(self) -> Settings:
         """In produzione il servizio si rifiuta di partire con una configurazione
         che "sembra" funzionare ma espone dati o non riceve traffico.
 
@@ -227,7 +227,7 @@ class Settings(BaseSettings):
         return self.job_token is not None
 
 
-@lru_cache
+@cache
 def get_settings() -> Settings:
     """Legge la configurazione una volta sola per processo.
 

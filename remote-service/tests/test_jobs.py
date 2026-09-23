@@ -288,6 +288,17 @@ def test_cli_lists_jobs(capsys: pytest.CaptureFixture[str]) -> None:
     assert "spots-export" in printed
 
 
+def test_cli_suggests_the_right_command_on_a_typo(capsys: pytest.CaptureFixture[str]) -> None:
+    """Un comando digitato storto riceve il suggerimento giusto, non solo un rifiuto."""
+    with pytest.raises(SystemExit) as exit_info:
+        main(["jbos"])
+    assert exit_info.value.code == 2
+    # Il solo nome "jobs" comparirebbe anche senza `suggest_on_error`: argparse
+    # elenca da sempre le scelte valide nel messaggio d'errore. A distinguere il
+    # suggerimento è la frase che lo introduce, quindi è quella che si pretende.
+    assert "maybe you meant 'jobs'" in capsys.readouterr().err
+
+
 def test_cli_runs_ping(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
 ) -> None:

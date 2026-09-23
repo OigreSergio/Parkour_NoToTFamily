@@ -23,6 +23,7 @@ import urllib.request
 import zipfile
 from collections import defaultdict
 from pathlib import Path
+from typing import NamedTuple
 
 HERE = Path(__file__).parent
 DATA = HERE / "data"
@@ -54,30 +55,46 @@ COUNTRY_IT = {
 }
 
 
-def load_cities():
+class City(NamedTuple):
+    """Una città del dataset GeoNames, con i quattro campi che ci servono.
+
+    Resta una tupla — la griglia e il confronto delle distanze continuano a
+    funzionare come prima — ma dare un nome ai campi toglie di mezzo gli indici
+    numerici, che erano leggibili solo grazie a un commento.
+    """
+
+    lat: float
+    lng: float
+    name: str
+    country: str
+
+
+def load_cities() -> defaultdict[tuple[int, int], list[City]]:
+    """Le città di GeoNames indicizzate su una griglia di mezzo grado."""
     if not CITIES_ZIP.is_file():
         print(f"scarico {CITIES_URL} …")
         urllib.request.urlretrieve(CITIES_URL, CITIES_ZIP)
-    cities = []  # (lat, lng, name, country)
+    cities = []
     with zipfile.ZipFile(CITIES_ZIP) as z, z.open("cities1000.txt") as f:
         for line in f:
             p = line.decode("utf8").split("\t")
-            cities.append((float(p[4]), float(p[5]), p[1], p[8]))
+            cities.append(City(float(p[4]), float(p[5]), p[1], p[8]))
     # indice a griglia di 0.5° per lookup veloce
     grid = defaultdict(list)
     for c in cities:
-        grid[(int(c[0] // 0.5), int(c[1] // 0.5))].append(c)
+        grid[(int(c.lat // 0.5), int(c.lng // 0.5))].append(c)
     return grid
 
 
-def nearest_city(grid, lat, lng):
+def nearest_city(grid: dict[tuple[int, int], list[City]], lat: float, lng: float) -> City | None:
+    """La città più vicina alle coordinate, o ``None`` se la griglia è vuota lì attorno."""
     best, best_d = None, math.inf
     gy, gx = int(lat // 0.5), int(lng // 0.5)
     for r in (1, 3, 8):  # allarga il raggio finché non trova qualcosa
         for dy in range(-r, r + 1):
             for dx in range(-r, r + 1):
                 for c in grid.get((gy + dy, gx + dx), ()):
-                    d = (c[0] - lat) ** 2 + ((c[1] - lng) * math.cos(math.radians(lat))) ** 2
+                    d = (c.lat - lat) ** 2 + ((c.lng - lng) * math.cos(math.radians(lat))) ** 2
                     if d < best_d:
                         best, best_d = c, d
         if best:
@@ -85,12 +102,19 @@ def nearest_city(grid, lat, lng):
     return best
 
 
-def spot_id(lat, lng):
-    h = hashlib.sha1(f"{lat:.6f},{lng:.6f}".encode()).hexdigest()[:12]
+def spot_id(lat: float, lng: float) -> str:
+    """Identificatore stabile ricavato dalle coordinate.
+
+    ``sha1`` non protegge nulla, serve solo ad accorciare le coordinate in modo
+    ripetibile: lo si dichiara con ``usedforsecurity=False`` perché non venga
+    scambiato per una scelta di sicurezza.
+    """
+    digest = f"{lat:.6f},{lng:.6f}".encode()
+    h = hashlib.sha1(digest, usedforsecurity=False).hexdigest()[:12]
     return f"gmaps-{h}"
 
 
-def main():
+def main() -> None:
     items = json.loads((DATA / "gmaps_parkour_list.json").read_text(encoding="utf8"))
     existing = json.loads((DATA / "webapp_fixed_spots.json").read_text(encoding="utf8"))
     grid = load_cities()
@@ -116,8 +140,8 @@ def main():
     for it in kept:
         lat, lng = it["lat"], it["lng"]
         city = nearest_city(grid, lat, lng)
-        city_name = city[2] if city else "?"
-        country = COUNTRY_IT.get(city[3], city[3]) if city else "?"
+        city_name = city.name if city else "?"
+        country = COUNTRY_IT.get(city.country, city.country) if city else "?"
         name = it["name"].strip()
         if name.lower() in GENERIC_NAMES:
             per_city[city_name] += 1

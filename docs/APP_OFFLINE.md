@@ -75,11 +75,18 @@ regola dei browser. Quindi:
   forwarding*, oppure `serve.py --https` accettando il certificato locale,
   oppure la pubblicazione da `main` via CI.
 
+**E serve Python 3.14 o successivo** (`python3 --version`): è il pavimento del
+repository, e gli strumenti di `app/tools/` lo danno per scontato. L'app in sé
+non ha bisogno di niente; i pacchetti che si passano ad altri — la beta, la
+demo e `PkFAMILY.app` — portano invece un avviatore che funziona dalla 3.9 in
+su, perché su quel computer la versione non la scegliamo noi.
+
 ## Provarla come beta
 
 `python3 app/tools/build_beta.py --zip` produce in `app/dist/` una cartella che
 sta in piedi da sola (1,1 MB, 0,4 MB zippata): app, avviatore e LEGGIMI. Si
-copia su qualunque computer con Python 3 e si lancia con `python3 avvia.py`.
+copia su qualunque computer con Python 3.9 o successivo e si lancia con
+`python3 avvia.py`.
 
 La copia porta `build.json` con canale `beta`: l'app mette in testa la fascia
 **BETA** con la versione, e «Tu → Avanzate» offre *Segnala un problema*, che
@@ -189,8 +196,9 @@ python3 app/tools/build_mac_app.py --cartella ~/Desktop
 
 Ne esce **PkFAMILY.app** sulla Scrivania: doppio clic e si apre in una finestra
 formato telefono, senza barra degli indirizzi. Dentro ci sono l'app,
-l'avviatore e l'icona; serve solo Python 3, che macOS non porta più di serie —
-se manca, il bundle lo dice con una finestra invece di non fare niente.
+l'avviatore e l'icona; serve solo Python 3 (dalla 3.9 in su), che macOS non
+porta più di serie — se manca, il bundle lo dice con una finestra invece di
+non fare niente.
 
 **Un APK non gira su un Mac**, e nessun trucco lo cambia. Quello che lo
 strumento fa è aprire l'APK e mettere nel bundle *esattamente i file che ci

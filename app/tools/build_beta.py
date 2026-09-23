@@ -16,13 +16,11 @@ Anche l'elenco dei file da tenere offline viene ricalcolato sulla copia — la
 versione è l'impronta di quei file, e cambia a ogni beta.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import shutil
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -236,14 +234,14 @@ apri via `http://` semplice, l'app si vede ma non va offline.
 
 
 def impacchetta(destinazione: Path, fare_zip: bool) -> Path:
-    oggi = datetime.now(timezone.utc)
+    oggi = datetime.now(UTC)
     versione = f"{VERSIONE_BASE}-beta.{oggi:%Y%m%d}"
     cartella = destinazione / f"pkfamily-beta-{oggi:%Y%m%d}"
 
     if cartella.exists():
         shutil.rmtree(cartella)
-    (cartella / "app").parent.mkdir(parents=True, exist_ok=True)
-    shutil.copytree(PUBBLICA, cartella / "app")
+    cartella.mkdir(parents=True, exist_ok=True)
+    PUBBLICA.copy(cartella / "app")
 
     build = {
         "canale": "beta",
@@ -273,7 +271,9 @@ def impacchetta(destinazione: Path, fare_zip: bool) -> Path:
     print(f"{cartella} — {peso / 1024 / 1024:.2f} MB, versione {versione}")
 
     if fare_zip:
-        archivio = shutil.make_archive(str(cartella), "zip", root_dir=cartella.parent, base_dir=cartella.name)
+        archivio = shutil.make_archive(
+            str(cartella), "zip", root_dir=cartella.parent, base_dir=cartella.name
+        )
         print(f"{archivio} — {Path(archivio).stat().st_size / 1024 / 1024:.2f} MB")
 
     return cartella

@@ -14,8 +14,6 @@ versione, e il service worker sa che deve riscaricare. È anche il numero che
 la schermata "Tu" mostra come versione installata.
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json

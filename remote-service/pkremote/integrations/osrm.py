@@ -55,7 +55,7 @@ class OSRMClient:
         if response.status_code >= 500:
             raise UpstreamError(f"OSRM risponde {response.status_code}")
 
-    async def route(self, start: "Point", end: "Point") -> OSRMRoute:
+    async def route(self, start: Point, end: Point) -> OSRMRoute:
         """Il percorso tra due punti già arrotondati (vedi services/routing.py)."""
         coords = f"{start.lng},{start.lat};{end.lng},{end.lat}"
         response = await fetch(

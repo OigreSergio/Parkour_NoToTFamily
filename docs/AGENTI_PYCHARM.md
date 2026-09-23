@@ -10,8 +10,10 @@ stanno in [`AGENTS.md`](../AGENTS.md): questo documento spiega solo il "come".
 1. **Apri la radice del repository** (`Parkour_NoToTFamily`), non
    `remote-service/`: le configurazioni condivise in `.run/` e i file per gli
    agenti stanno alla radice.
-2. **Interprete**: crea l'ambiente in `remote-service/.venv` e installa il
-   pacchetto con gli strumenti di sviluppo:
+2. **Interprete**: crea l'ambiente in `remote-service/.venv` con **Python 3.14
+   o successivo** — è il pavimento dichiarato in `pyproject.toml`, e con una
+   versione precedente `pip install` si ferma subito — e installa il pacchetto
+   con gli strumenti di sviluppo:
    ```sh
    cd remote-service
    python3 -m venv .venv && . .venv/bin/activate
@@ -34,9 +36,10 @@ stanno in [`AGENTS.md`](../AGENTS.md): questo documento spiega solo il "come".
    | `pkremote: job ping` | esegue il job di verifica | `pkremote job ping` |
 
    Le configurazioni usano l'interprete del progetto e la cartella di lavoro
-   `remote-service/`; per variabili in più (per esempio `SUPABASE_URL`)
-   duplica la configurazione e aggiungile lì, oppure crea `remote-service/.env`
-   da `.env.example` (`.env` è ignorato da git).
+   `remote-service/`: nessuna di loro fissa una versione di Python, quindi
+   quella la decide solo il punto 2. Per variabili in più (per esempio
+   `SUPABASE_URL`) duplica la configurazione e aggiungile lì, oppure crea
+   `remote-service/.env` da `.env.example` (`.env` è ignorato da git).
 
 ## 2. Gli agenti dentro PyCharm
 

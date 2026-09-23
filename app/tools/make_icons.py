@@ -14,8 +14,6 @@ sfondo lino, cucitura tratteggiata, spillo color filo con la cruna chiara.
 Il PNG viene scritto a mano (zlib + CRC): la libreria Pillow non è richiesta.
 """
 
-from __future__ import annotations
-
 import argparse
 import struct
 import sys
@@ -34,6 +32,8 @@ FILO_SCURO = (0xA8, 0x54, 0x3E)
 # Quante sotto-campionature per lato: 4x4 bastano per bordi puliti a 192 px.
 CAMPIONI = 4
 
+# Un colore è una terna rosso-verde-blu: `type` dice che è un alias di tipo
+# e non un valore, così chi legge non lo cerca fra le costanti qui sopra.
 Colore = tuple[int, int, int]
 
 

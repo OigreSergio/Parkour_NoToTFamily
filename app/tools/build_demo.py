@@ -20,15 +20,13 @@ esiste), quindi niente «prepara quest'area» e niente aggiornamenti. Non serve:
 quello che c'è nel file c'è già.
 """
 
-from __future__ import annotations
-
 import argparse
 import base64
 import json
 import mimetypes
 import re
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 RADICE = Path(__file__).resolve().parents[2]
@@ -105,28 +103,40 @@ def ordina(trovati: dict[str, dict]) -> list[str]:
     return ordine
 
 
+def in_registro(sorgente: str, percorso: Path) -> str:
+    """Gli `import` di un modulo diventano letture dal registro `__PK_MOD`.
+
+    La sostituzione sta qui fuori, e il percorso arriva come argomento, perché
+    dentro al ciclo di `assembla` sarebbe una chiusura sulla variabile del
+    ciclo: funziona finché la sostituzione è immediata, e si rompe in silenzio
+    il giorno che non lo fosse più.
+    """
+
+    def scambia(m: re.Match) -> str:
+        da = _risolvi(percorso, m.group("da"))
+        if m.group("spazio"):
+            return f"const {m.group('spazio')} = __PK_MOD['{da}'];"
+        nomi = " ".join(m.group("nomi").split())
+        return f"const {{ {nomi} }} = __PK_MOD['{da}'];"
+
+    return IMPORTAZIONE.sub(scambia, sorgente)
+
+
 def assembla(trovati: dict[str, dict]) -> str:
     """Tutti i moduli in un registro, ognuno chiuso nel suo ambito."""
     pezzi = ["var __PK_MOD = {};"]
 
     for chiave in ordina(trovati):
         modulo = trovati[chiave]
-        corpo = modulo["sorgente"]
-
-        def scambia(m: re.Match) -> str:
-            da = _risolvi(modulo["percorso"], m.group("da"))
-            if m.group("spazio"):
-                return f"const {m.group('spazio')} = __PK_MOD['{da}'];"
-            nomi = " ".join(m.group("nomi").split())
-            return f"const {{ {nomi} }} = __PK_MOD['{da}'];"
-
-        corpo = IMPORTAZIONE.sub(scambia, corpo)
+        corpo = in_registro(modulo["sorgente"], modulo["percorso"])
         # `export function x` → `function x`: nel registro i nomi escono dal
         # `return` qui sotto, non dalla parola chiave.
         corpo = re.sub(r"^export\s+", "", corpo, flags=re.MULTILINE)
         uscite = ", ".join(f"{nome}: {nome}" for nome in modulo["esporta"])
         pezzi.append(
-            f"__PK_MOD['{chiave}'] = (function () {{\n'use strict';\n{corpo}\nreturn {{ {uscite} }};\n}})();"
+            f"__PK_MOD['{chiave}'] = (function () {{\n"
+            f"'use strict';\n{corpo}\n"
+            f"return {{ {uscite} }};\n}})();"
         )
 
     # L'ultimo modulo a partire è quello che avvia tutto.
@@ -160,7 +170,7 @@ def costruisci(canale: str = "demo", versione: str | None = None) -> str:
     la fascia in testa. `demo` per il doppio clic, `apk` per la copia di
     riserva che l'applicazione Android tiene da parte.
     """
-    oggi = datetime.now(timezone.utc)
+    oggi = datetime.now(UTC)
     pagina = (PUBBLICA / "index.html").read_text(encoding="utf-8")
     css = caratteri_in_linea((PUBBLICA / "styles" / "pk.css").read_text(encoding="utf-8"))
 

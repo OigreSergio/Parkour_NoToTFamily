@@ -3,7 +3,9 @@ name: Servizio remoto
 # Lint e test a ogni modifica di remote-service/; sui push su main costruisce
 # l'immagine Docker, la avvia una volta per provare /healthz, e la pubblica su
 # GitHub Container Registry, da cui qualunque host la può avviare (vedi
-# remote-service/README.md). La scansione dei segreti di tutto il repository
+# remote-service/README.md). Un terzo lavoro ripete lint e test sulla release
+# candidate della 3.15 senza poter bloccare niente: serve solo a sapere in
+# anticipo cosa si romperà. La scansione dei segreti di tutto il repository
 # sta in gitleaks.yml, perché deve girare anche quando questa cartella non
 # cambia.
 #
@@ -37,7 +39,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          # Il pavimento dichiarato in pyproject.toml (`requires-python`): è la
+          # versione su cui il lavoro deve passare per essere considerato buono.
+          python-version: "3.14"
           cache: pip
           cache-dependency-path: remote-service/pyproject.toml
       - name: Installa il pacchetto con gli strumenti di sviluppo
@@ -57,6 +61,39 @@ jobs:
           pkremote config | tee config.json
           python -c 'import json; json.load(open("config.json"))'
           ! grep -q "di-prova-non-reale" config.json
+
+  next-version:
+    name: Lint e test sulla prossima versione (3.15 rc)
+    runs-on: ubuntu-latest
+    # Un avviso in anticipo, non un cancello. La versione che decide resta la
+    # 3.14 del lavoro `test`; qui si ripetono gli stessi controlli sulla release
+    # candidate della 3.15 per scoprire un'incompatibilità mentre c'è tempo per
+    # rimediare, invece che il giorno in cui la 3.15 esce. `continue-on-error`
+    # fa sì che un fallimento resti un avviso: il lavoro `image` dipende solo da
+    # `test`, quindi la pubblicazione dell'immagine non passa mai di qui.
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: remote-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          # Oggi l'elenco di actions/python-versions contiene 3.15.0-rc.2, ma
+          # senza `allow-prereleases` setup-python scarta le release candidate e
+          # installerebbe un'altra versione senza dirlo.
+          python-version: "3.15"
+          allow-prereleases: true
+          cache: pip
+          cache-dependency-path: remote-service/pyproject.toml
+      # Più lento degli altri lavori di qualche minuto: per la 3.15 httptools non
+      # ha ancora ruote precompilate e pip lo compila dai sorgenti.
+      - name: Installa il pacchetto con gli strumenti di sviluppo
+        run: pip install -e ".[dev]"
+      - name: Ruff (stile e errori evidenti)
+        run: ruff check .
+      - name: "Pytest (nessuna rete: Supabase e OSRM sono finti)"
+        run: pytest
 
   image:
     name: Immagine Docker

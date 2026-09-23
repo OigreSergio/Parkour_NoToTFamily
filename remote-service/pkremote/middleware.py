@@ -31,7 +31,7 @@ from pkremote.config import Settings
 from pkremote.errors import error_payload
 from pkremote.logs import bind_request, clear_request, log
 
-CallNext = Callable[[Request], Awaitable[Response]]
+type CallNext = Callable[[Request], Awaitable[Response]]
 
 
 def install_middleware(app: FastAPI, settings: Settings) -> None:
