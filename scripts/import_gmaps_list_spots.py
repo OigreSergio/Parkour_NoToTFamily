@@ -58,9 +58,9 @@ COUNTRY_IT = {
 class City(NamedTuple):
     """Una città del dataset GeoNames, con i quattro campi che ci servono.
 
-    Resta una tupla — la griglia e il confronto delle distanze continuano a
-    funzionare come prima — ma dare un nome ai campi toglie di mezzo gli indici
-    numerici, che erano leggibili solo grazie a un commento.
+    È una ``NamedTuple`` e non una dataclass perché ``load_cities`` e
+    ``nearest_city`` la trattano come tupla: indici e spacchettamento devono
+    continuare a funzionare.
     """
 
     lat: float

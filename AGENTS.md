@@ -25,15 +25,28 @@ Python che gira in remoto è il servizio di supporto in `remote-service/`.
 
 **Quale Python.** Il pavimento del repository è **Python 3.14**:
 `remote-service/` lo dichiara in `requires-python` e gli strumenti di
-`app/tools/` girano sulla stessa versione. Due eccezioni, e non sono
+`app/tools/` girano sulla stessa versione. Tre eccezioni, e non sono
 dimenticanze:
 
 - `backend/` resta alla 3.11 perché resta com'è (decisione G).
-- Tre file finiscono sul computer di chi prova l'app, dove la versione di
+- Quattro file finiscono sul computer di chi prova l'app, dove la versione di
   Python non la scegliamo noi, e restano compatibili **dalla 3.9 in su**:
-  `app/mac/avvia.py`, la stringa `AVVIATORE` dentro `app/tools/build_beta.py`
-  e l'avviatore incorporato in `app/tools/build_demo_python.py`. Su questi si
-  correggono errori, non si usano novità del linguaggio.
+  `app/mac/avvia.py`, la stringa `AVVIATORE` dentro `app/tools/build_beta.py`,
+  l'avviatore incorporato in `app/tools/build_demo_python.py` e
+  `app/demo/motore.py`, che quell'avviatore si porta dentro riga per riga. Su
+  questi si correggono errori, non si usano novità del linguaggio. Il solo
+  controllo automatico è in `build_demo_python.py`, ferma la costruzione della
+  demo se la *sintassi* supera la 3.9: non vede le novità che si manifestano
+  all'esecuzione (`datetime.UTC`, `Path.copy`, `itertools.batched`), e la beta
+  e il bundle del Mac non hanno nemmeno quello.
+- `app/tools/qr.py` e `app/tools/make_icons.py` **non usano sintassi oltre la
+  3.9**, pur potendo. Non è un pavimento più basso: girano sulla 3.14 come gli
+  altri. È che sono i due che una persona lancia a mano dal proprio computer —
+  `qr.py` è quello che porta l'app sul telefono — e su una Python vecchia una
+  novità di sintassi non dà un messaggio, dà una `SyntaxError` a riga 46. Gli
+  alias di tipo lì si scrivono come assegnamenti (`Moduli = list[list[int]]`),
+  non con la parola chiave `type`. Chi li «moderna» toglie a qualcuno il modo
+  di far partire l'app.
 
 Prima di scrivere codice leggi, nell'ordine: `docs/PKFAMILY_MASTERPLAN.md`
 capitoli 0 e 2 (le regole), il capitolo del tuo compito, e

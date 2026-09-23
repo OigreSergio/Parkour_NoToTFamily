@@ -16,11 +16,20 @@ name: App installabile
 # (masterplan cap. 4.6 e decisioni aperte).
 #
 # Il Python installato è la 3.14, il pavimento del repository: gli strumenti di
-# `app/tools/` girano solo qui e sulla macchina di chi sviluppa. Gli avviatori
-# che invece finiscono sul computer di chi prova l'app (`app/mac/avvia.py` e
-# quelli incorporati nella beta e nella demo) restano compatibili dalla 3.9 in
-# su, perché lì la versione di Python non la scegliamo noi: la CI non li esegue
-# e non è quindi il posto dove ci si accorge se qualcuno li modernizza.
+# `app/tools/` girano solo qui e sulla macchina di chi sviluppa. Quello che
+# invece finisce sul computer di chi prova l'app — `app/mac/avvia.py`, la
+# stringa AVVIATORE dentro `app/tools/build_beta.py`, e `app/demo/motore.py`
+# con l'avviatore incorporato in `app/tools/build_demo_python.py` — resta
+# compatibile dalla 3.9 in su, perché lì la versione non la scegliamo noi.
+#
+# Attenzione a cosa prova davvero il lavoro `prove`, perché non è ovvio: la
+# demo in un file solo viene costruita e avviata sul serio
+# (`app/tests/motore-python.spec.mjs`), ma con la 3.14 di qui, e
+# `build_demo_python.py` confronta la sola *sintassi* con la 3.9. Le novità
+# che si vedono solo all'esecuzione (`datetime.UTC`, `Path.copy`,
+# `itertools.batched`) passano quel controllo e si rompono sul computer di
+# chi apre la demo. L'avviatore della beta e quello del Mac non li esegue
+# nessuno: qui un verde non dice niente sulla loro compatibilità.
 
 on:
   push:

@@ -12,6 +12,13 @@ rigenerarle.
 Il segno è quello dell'identità "ricamo su lino" del masterplan (cap. 3.1):
 sfondo lino, cucitura tratteggiata, spillo color filo con la cruna chiara.
 Il PNG viene scritto a mano (zlib + CRC): la libreria Pillow non è richiesta.
+
+Una regola per chi modifica questo file: **niente sintassi oltre la 3.9**.
+Gira sulla 3.14 come il resto del repository, ma è uno dei due strumenti che
+una persona lancia a mano dal proprio computer, e là la versione di Python non
+la scegliamo noi. Una novità di sintassi non dà un messaggio: dà una
+`SyntaxError` prima ancora di arrivare al `main`. Gli alias di tipo qui sono
+assegnamenti, non `type X = ...` (vedi AGENTS.md, «Quale Python»).
 """
 
 import argparse
@@ -32,8 +39,10 @@ FILO_SCURO = (0xA8, 0x54, 0x3E)
 # Quante sotto-campionature per lato: 4x4 bastano per bordi puliti a 192 px.
 CAMPIONI = 4
 
-# Un colore è una terna rosso-verde-blu: `type` dice che è un alias di tipo
-# e non un valore, così chi legge non lo cerca fra le costanti qui sopra.
+# Un colore è una terna rosso-verde-blu. È un alias di tipo, non una costante
+# come le tre qui sopra: scritto come assegnamento e non con la parola chiave
+# `type`, che esiste solo dalla 3.12 e qui terrebbe fuori chi lancia lo
+# strumento con il Python di sistema del proprio Mac.
 Colore = tuple[int, int, int]
 
 

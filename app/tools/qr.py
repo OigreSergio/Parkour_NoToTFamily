@@ -23,6 +23,13 @@ qui a lì e basta.
 Il QR è disegnato qui dentro, senza librerie da installare: modo byte,
 correzione d'errore di livello M, versioni da 1 a 9 (fino a 180 caratteri) —
 più che abbastanza per `http://192.168.x.y:8080/`.
+
+Una regola per chi modifica questo file: **niente sintassi oltre la 3.9**.
+Gira sulla 3.14 come il resto del repository, ma è uno dei due strumenti che
+una persona lancia a mano dal proprio computer, e là la versione di Python non
+la scegliamo noi. Una novità di sintassi non dà un messaggio: dà una
+`SyntaxError` prima ancora di arrivare al `main`. Gli alias di tipo qui sono
+assegnamenti, non `type X = ...` (vedi AGENTS.md, «Quale Python»).
 """
 
 import argparse

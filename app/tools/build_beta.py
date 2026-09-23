@@ -241,7 +241,12 @@ def impacchetta(destinazione: Path, fare_zip: bool) -> Path:
     if cartella.exists():
         shutil.rmtree(cartella)
     cartella.mkdir(parents=True, exist_ok=True)
-    PUBBLICA.copy(cartella / "app")
+    # `preserve_metadata=True` perché qui si sta impacchettando, non copiando di
+    # servizio: senza, `Path.copy` scrive i file con i permessi e la data di
+    # adesso, e la beta perderebbe in silenzio il bit di esecuzione di un file
+    # che un giorno ne avesse bisogno. Con il parametro fa quello che faceva
+    # `shutil.copytree`, che qui copiava con `copy2`.
+    PUBBLICA.copy(cartella / "app", preserve_metadata=True)
 
     build = {
         "canale": "beta",

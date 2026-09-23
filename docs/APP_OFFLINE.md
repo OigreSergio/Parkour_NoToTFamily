@@ -84,7 +84,7 @@ su, perché su quel computer la versione non la scegliamo noi.
 ## Provarla come beta
 
 `python3 app/tools/build_beta.py --zip` produce in `app/dist/` una cartella che
-sta in piedi da sola (1,1 MB, 0,4 MB zippata): app, avviatore e LEGGIMI. Si
+sta in piedi da sola (1,6 MB, 0,8 MB zippata): app, avviatore e LEGGIMI. Si
 copia su qualunque computer con Python 3.9 o successivo e si lancia con
 `python3 avvia.py`.
 

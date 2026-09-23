@@ -66,11 +66,17 @@ jobs:
     name: Lint e test sulla prossima versione (3.15 rc)
     runs-on: ubuntu-latest
     # Un avviso in anticipo, non un cancello. La versione che decide resta la
-    # 3.14 del lavoro `test`; qui si ripetono gli stessi controlli sulla release
+    # 3.14 del lavoro `test`; qui si ripetono lint e test sulla release
     # candidate della 3.15 per scoprire un'incompatibilità mentre c'è tempo per
     # rimediare, invece che il giorno in cui la 3.15 esce. `continue-on-error`
     # fa sì che un fallimento resti un avviso: il lavoro `image` dipende solo da
     # `test`, quindi la pubblicazione dell'immagine non passa mai di qui.
+    #
+    # È una copia a mano dei primi tre passi di `test`, non tutto `test`: la
+    # prova del comando (`pkremote config`, i segreti) resta solo là, perché su
+    # una release candidate direbbe della 3.15, non del nostro codice. Chi
+    # aggiunge o cambia un passo di lint o di test in `test` lo aggiunga anche
+    # qui, altrimenti i due lavori si allontanano in silenzio.
     continue-on-error: true
     defaults:
       run:
