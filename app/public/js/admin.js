@@ -157,10 +157,13 @@ export async function creaSpot(campi) {
   const numero = dati.nuovi.length + 1;
   const voce = {
     id: `locale-${numero}-${String(campi.name || 'spot').toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 24)}`,
-    // Uno spot nuovo nasce `pending`: nessuno lo ha ancora verificato, e
-    // l'app non deve mai far credere il contrario.
-    status: 'pending',
     ...ripulisci(campi),
+    // Uno spot nuovo nasce `pending`: nessuno lo ha ancora verificato, e
+    // l'app non deve mai far credere il contrario. Va scritto **dopo** i campi
+    // arrivati dal modulo, non prima: al contrario, uno `status` scelto nel
+    // pannello lo scavalcava, e il pulsante «Nuovo spot qui» creava uno spot
+    // già verificato — che poi finiva così anche nell'esportazione.
+    status: 'pending',
   };
   dati.nuovi.push(voce);
   await salva();

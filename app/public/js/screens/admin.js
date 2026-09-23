@@ -56,12 +56,14 @@ function controlloSpot(voce, definizione) {
     return casella;
   }
   if (definizione.tipo === 'scelta') {
-    const scelta = el(
-      'select',
-      { class: 'pk-input' },
-      definizione.valori.map((v) => el('option', { value: v, testo: v }))
-    );
-    scelta.value = valore || definizione.valori[0];
+    // La voce vuota in testa c'è solo finché il campo è vuoto, e serve a
+    // lasciarlo vuoto: partire dal primo della lista voleva dire proporre
+    // `verified` a ogni spot nuovo, e farlo salvare a chi quel campo non lo
+    // aveva nemmeno guardato.
+    const voci = definizione.valori.map((v) => el('option', { value: v, testo: v }));
+    if (!valore) voci.unshift(el('option', { value: '', testo: '—' }));
+    const scelta = el('select', { class: 'pk-input' }, voci);
+    scelta.value = valore || '';
     return scelta;
   }
   if (definizione.tipo === 'lungo') {

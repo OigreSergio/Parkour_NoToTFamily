@@ -167,3 +167,69 @@ test('una chiave segreta non entra nel pannello', async ({ page }) => {
   await expect(page.getByText('Sembra una chiave segreta')).toBeVisible();
   await expect(chiave).toHaveValue('');
 });
+
+test('uno spot creato dal pannello non può nascere verificato', async ({ page }) => {
+  // Era un difetto vero: `creaSpot` scriveva `status: 'pending'` *prima* dei
+  // campi arrivati dal modulo, e il menù partiva da `verified` perché era il
+  // primo della lista. Il pulsante «Nuovo spot qui» creava quindi uno spot
+  // verificato, e l'esportazione per il repository lo portava via così.
+  await page.goto('/index.html');
+  await attendiPronta(page);
+  await accendiSviluppo(page);
+
+  const creato = await page.evaluate(async () => {
+    const admin = await import('./js/admin.js');
+    // Come se qualcuno avesse lasciato il menù sul primo valore.
+    const voce = await admin.creaSpot({ name: 'Prova di nascita', status: 'verified' });
+    return { status: voce.status, id: voce.id };
+  });
+  expect(creato.status).toBe('pending');
+  expect(creato.id).toMatch(/^locale-/);
+
+  // E l'app lo mostra per quello che è: gli spot toccati qui portano il segno
+  // `locale`, anche quelli nuovi.
+  const segnato = await page.evaluate(async () => {
+    const admin = await import('./js/admin.js');
+    const [voce] = admin.applicaAgliSpot([]).filter((v) => v.name === 'Prova di nascita');
+    return voce ? { status: voce.status, locale: voce.locale } : null;
+  });
+  expect(segnato).not.toBeNull();
+  expect(segnato.status).toBe('pending');
+  expect(segnato.locale).toBe(true);
+});
+
+test('la posizione non esce mai dal dispositivo a precisione piena', async ({ page }) => {
+  // `route.js` arrotondava da sempre; `motore.js` no, e `CONFIG.motore` si può
+  // cambiare dal pannello o con un file importato. Adesso arrotonda anche lui.
+  await page.goto('/index.html');
+  await attendiPronta(page);
+
+  const chieste = [];
+  await page.route('**/api/**', (rotta) => {
+    chieste.push(rotta.request().url());
+    return rotta.fulfill({ status: 200, contentType: 'application/json', body: '{"spots":[]}' });
+  });
+
+  await page.evaluate(async () => {
+    const { CONFIG } = await import('./js/config.js');
+    CONFIG.motore = '/api';
+    const motore = await import('./js/motore.js');
+    // Una posizione con sette decimali: quella vera di un telefono.
+    await motore.cerca({ testo: 'x', da: { lat: 41.9028123, lng: 12.4963456 } }).catch(() => {});
+    await motore.vicini({ lat: 41.9028123, lng: 12.4963456 }, 5).catch(() => {});
+  });
+
+  expect(chieste.length).toBeGreaterThan(0);
+  for (const indirizzo of chieste) {
+    const u = new URL(indirizzo, 'http://x');
+    for (const nome of ['lat', 'lng']) {
+      const valore = u.searchParams.get(nome);
+      if (valore === null) continue;
+      const decimali = (valore.split('.')[1] || '').length;
+      expect(decimali).toBeLessThanOrEqual(3);
+    }
+  }
+  // E la precisione piena non compare da nessuna parte nell'indirizzo.
+  expect(chieste.join(' ')).not.toContain('41.9028123');
+  expect(chieste.join(' ')).not.toContain('12.4963456');
+});

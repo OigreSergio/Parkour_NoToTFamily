@@ -11,6 +11,7 @@
  */
 
 import { CONFIG } from './config.js';
+import { arrotonda } from './geo.js';
 
 /** `CONFIG.motore` è la base (per esempio `/api`); `percorso` le si attacca
  *  dietro. Tenere il prefisso in un posto solo evita gli `/api/api/`. */
@@ -53,20 +54,36 @@ export function nelRiquadro(riquadro, { soloVerificati, conFontanelle } = {}) {
   });
 }
 
+/**
+ * La posizione di una persona non esce mai com'è.
+ *
+ * `route.js` lo fa da sempre prima di chiedere un percorso; qui mancava, e il
+ * motore riceveva le coordinate a precisione piena. Di suo il motore gira
+ * dentro il telefono o dentro la demo, ma `CONFIG.motore` si può cambiare dal
+ * pannello sviluppatore e da un file importato: l'arrotondamento va fatto dove
+ * si compone la richiesta, non dove si spera che l'indirizzo sia innocuo.
+ * Tre cifre sono circa 110 metri (AGENTS.md, regola 4).
+ */
+function fuori(punto) {
+  return punto ? arrotonda(punto, CONFIG.routing.decimali) : null;
+}
+
 export function cerca(filtri) {
+  const da = fuori(filtri.da);
   return chiedi('/cerca', {
     q: filtri.testo,
     verificati: filtri.soloVerificati,
     fontanella: filtri.conFontanella,
     livello: filtri.livello,
-    lat: filtri.da ? filtri.da.lat : undefined,
-    lng: filtri.da ? filtri.da.lng : undefined,
+    lat: da ? da.lat : undefined,
+    lng: da ? da.lng : undefined,
     tetto: filtri.tetto,
   });
 }
 
 export function vicini(punto, quanti) {
-  return chiedi('/vicini', { lat: punto.lat, lng: punto.lng, quanti });
+  const p = fuori(punto);
+  return chiedi('/vicini', { lat: p ? p.lat : undefined, lng: p ? p.lng : undefined, quanti });
 }
 
 export function spot(identificativo) {
