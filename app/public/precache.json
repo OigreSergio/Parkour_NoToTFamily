@@ -1,7 +1,7 @@
 {
-  "version": "757aed71aa14",
+  "version": "82f35f8c20a3",
   "generated_by": "app/tools/build_precache.py",
-  "bytes": 1676418,
+  "bytes": 1683922,
   "files": [
     "build.json",
     "data/fountains.json",
@@ -26,6 +26,7 @@
     "js/data.js",
     "js/geo.js",
     "js/i18n.js",
+    "js/ispettore.js",
     "js/legal.js",
     "js/map.js",
     "js/motore.js",
