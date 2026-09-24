@@ -546,8 +546,12 @@ test('la scheda dello spot ha due altezze: si tocca, si trascina, si chiude', as
 
   const maniglia = foglio.locator('.pk-sheet__grip');
   // È un bersaglio grande quanto un dito, non un segno da guardare.
+  // Si arrotonda: `boundingBox` restituisce pixel veri, e 44 px CSS su uno
+  // schermo con rapporto 2,625 tornano indietro come 43,999969. Chiedere
+  // `>= 44` faceva cadere la prova per un millesimo di pixel, cioè per una
+  // ragione che non ha niente a che vedere con la grandezza di un dito.
   const misura = await maniglia.boundingBox();
-  expect(misura.height).toBeGreaterThanOrEqual(44);
+  expect(Math.round(misura.height)).toBeGreaterThanOrEqual(44);
   await expect(maniglia).toHaveAttribute('aria-expanded', 'false');
 
   const testoCorpo = () => foglio.locator('.pk-sheet__corpo').innerText();
@@ -570,9 +574,25 @@ test('la scheda dello spot ha due altezze: si tocca, si trascina, si chiude', as
   await expect(foglio.locator('.pk-sheet__corpo')).not.toContainText('Acqua vicina');
 
   // Trascinare su alza, trascinare giù dal basso chiude. La maniglia si
-  // sposta insieme al foglio: la posizione si rilegge ogni volta.
+  // sposta insieme al foglio: la posizione si rilegge ogni volta — e prima si
+  // aspetta che abbia smesso di muoversi. Rileggerla non basta: fra i due
+  // stati c'è una transizione, e un trascinamento che parte da una posizione
+  // di mezzo dice al foglio uno spostamento che non è quello fatto dal dito.
+  // È il motivo per cui questa prova cadeva una volta ogni tanto, e solo dopo
+  // un'altra prova che aveva lasciato il browser occupato.
+  const fermo = async () => {
+    let prima = null;
+    for (let tentativo = 0; tentativo < 40; tentativo++) {
+      const ora = await maniglia.boundingBox();
+      if (prima && Math.abs(ora.y - prima.y) < 0.5) return ora;
+      prima = ora;
+      await page.waitForTimeout(50);
+    }
+    return maniglia.boundingBox();
+  };
+
   const trascina = async (dy) => {
-    const ora = await maniglia.boundingBox();
+    const ora = await fermo();
     const x = ora.x + ora.width / 2;
     const y = ora.y + ora.height / 2;
     await page.mouse.move(x, y);

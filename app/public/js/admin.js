@@ -558,9 +558,28 @@ export function esportaPerIlRepository(base, impronta = null) {
   };
 
   const spot = dati.collezioni.spot || { modificati: {}, nuovi: [], cancellati: [] };
-  const modificati = Object.entries(spot.modificati)
-    .map(([id, campi]) => {
+
+  /**
+   * Gli spot che devono comparire nel file: quelli corretti, **più** quelli
+   * segnati «da rivedere» senza aver cambiato niente.
+   *
+   * I secondi sono il caso più frequente del segno, non un caso limite: «la
+   * foto non è di questo posto, non so quale sia quella giusta» è una
+   * segnalazione che non tocca nessun campo. Senza questa riga quel segno si
+   * contava nel pannello e poi non arrivava nel file, cioè non arrivava a
+   * nessuno.
+   */
+  const daEmettere = new Set(Object.keys(spot.modificati));
+  for (const via of Object.keys(dati.revisioni)) {
+    if (!via.startsWith('spot:')) continue;
+    const id = via.slice('spot:'.length);
+    if (perId.has(id)) daEmettere.add(id);
+  }
+
+  const modificati = [...daEmettere]
+    .map((id) => {
       const originale = perId.get(id);
+      const campi = spot.modificati[id] || {};
       return originale ? verso({ ...originale, ...campi }, Object.keys(campi)) : null;
     })
     .filter(Boolean);
@@ -631,37 +650,5 @@ export async function azzera() {
   dati = structuredClone(VUOTE);
   await persisti();
 }
-
-// --- compatibilità -----------------------------------------------------------
-
-/**
- * Le due tabelle scritte a mano di prima. Restano finché il pannello non è
- * riscritto sopra `campiDi()` e `campiConfig()`, che le sostituiscono: da
- * allora si tolgono, e nessun altro file le importa.
- */
-export const CAMPI_CONFIG = [
-  { via: 'filtroTessere.chiaro', tipo: 'testo', gruppo: 'mappa' },
-  { via: 'filtroTessere.scuro', tipo: 'testo', gruppo: 'mappa' },
-  { via: 'tiles.mappa.url', tipo: 'testo', gruppo: 'mappa' },
-  { via: 'tiles.satellite.url', tipo: 'testo', gruppo: 'mappa' },
-  { via: 'cellaGomitolo', tipo: 'numero', gruppo: 'mappa' },
-  { via: 'zoomFontanelle', tipo: 'numero', gruppo: 'mappa' },
-  { via: 'routing.servizio', tipo: 'testo', gruppo: 'collegamenti' },
-  { via: 'routing.decimali', tipo: 'numero', gruppo: 'collegamenti' },
-  { via: 'supabase.url', tipo: 'testo', gruppo: 'collegamenti' },
-  { via: 'supabase.publishableKey', tipo: 'testo', gruppo: 'collegamenti' },
-  { via: 'tettoPrefetch', tipo: 'numero', gruppo: 'offline' },
-];
-
-export const CAMPI_SPOT = [
-  { nome: 'name', tipo: 'testo' },
-  { nome: 'description', tipo: 'lungo' },
-  { nome: 'status', tipo: 'scelta', valori: ['verified', 'community', 'pending'] },
-  { nome: 'level', tipo: 'scelta', valori: ['principiante', 'intermedio', 'avanzato'] },
-  { nome: 'crowd', tipo: 'scelta', valori: ['tranquillo', 'medio', 'affollato'] },
-  { nome: 'fountain', tipo: 'booleano' },
-  { nome: 'lat', tipo: 'numero' },
-  { nome: 'lng', tipo: 'numero' },
-];
 
 export { sembraSegreta };

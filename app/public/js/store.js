@@ -103,6 +103,83 @@ export async function scrivi(chiave, valore) {
   if (esito.ripiego) inRipiego('kv', chiave, valore);
 }
 
+/**
+ * Che cosa sta reggendo il magazzino: `indexedDB`, `localStorage` o `memoria`.
+ *
+ * Non è curiosità: con `memoria` quello che si scrive sparisce alla chiusura
+ * della scheda, e chi sta correggendo dei dati ha il diritto di saperlo prima
+ * di perderli, non dopo.
+ */
+export async function supporto() {
+  const db = await apri();
+  if (db) return 'indexedDB';
+  try {
+    const prova = 'pkfamily.prova';
+    localStorage.setItem(prova, '1');
+    localStorage.removeItem(prova);
+    return 'localStorage';
+  } catch {
+    return 'memoria';
+  }
+}
+
+/**
+ * Tutto quello che c'è sul dispositivo, deposito per deposito.
+ *
+ * Restituisce `{kv: [{chiave, valore}], preferiti: [...], note: [...],
+ * coda: [...]}`. Serve al pannello, ed è l'unico punto da cui si vede davvero
+ * cosa l'app si è tenuta: finché non si guarda, «resta sul dispositivo» è una
+ * promessa che nessuno può controllare.
+ */
+export async function tutto() {
+  const fuori = {};
+  for (const deposito of DEPOSITI) {
+    const chiavi = await transazione(deposito, 'readonly', (d) => d.getAllKeys());
+    const valori = await transazione(deposito, 'readonly', (d) => d.getAll());
+    if (chiavi.ripiego || valori.ripiego) {
+      fuori[deposito] = daRipiegoTutto(deposito);
+      continue;
+    }
+    const elencoChiavi = chiavi.valore || [];
+    const elencoValori = valori.valore || [];
+    fuori[deposito] = elencoChiavi.map((chiave, indice) => ({
+      chiave: String(chiave),
+      valore: elencoValori[indice],
+    }));
+  }
+  return fuori;
+}
+
+/** Quello che è finito in localStorage quando IndexedDB non c'era. */
+function daRipiegoTutto(deposito) {
+  const prefisso = `pkfamily.${deposito}.`;
+  const voci = [];
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const chiave = localStorage.key(i);
+      if (!chiave || !chiave.startsWith(prefisso)) continue;
+      voci.push({ chiave: chiave.slice(prefisso.length), valore: daRipiego(deposito, chiave.slice(prefisso.length)) });
+    }
+  } catch {
+    for (const [chiave, valore] of memoria) {
+      if (chiave.startsWith(prefisso)) voci.push({ chiave: chiave.slice(prefisso.length), valore });
+    }
+  }
+  return voci;
+}
+
+/** Cancella una voce da un deposito qualunque. */
+export async function elimina(deposito, chiave) {
+  if (!DEPOSITI.includes(deposito)) return false;
+  // Le chiavi della coda sono numeri (`autoIncrement`), e un numero arrivato
+  // da un attributo del DOM è una stringa: senza questa riga la cancellazione
+  // non trova niente e non lo dice.
+  const vera = deposito === 'coda' ? Number(chiave) : chiave;
+  const esito = await transazione(deposito, 'readwrite', (d) => d.delete(vera));
+  if (esito.ripiego) inRipiego(deposito, chiave, undefined);
+  return true;
+}
+
 /** Tutti gli id degli spot messi da parte. */
 export async function preferiti() {
   const esito = await transazione('preferiti', 'readonly', (deposito) => deposito.getAllKeys());

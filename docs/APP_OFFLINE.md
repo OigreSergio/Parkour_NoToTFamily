@@ -220,18 +220,22 @@ proprio Mac evita del tutto la faccenda.
 
 ## La modalità sviluppatore
 
-Si accende da «Tu → Avanzate» e apre un pannello (`#/admin`) per correggere
-spot, provare dal vivo il filtro delle tessere, cambiare sorgenti e
-collegamenti, esportare tutto in JSON. Dettagli in
+Si accende da «Tu → Avanzate» e apre un pannello (`#/admin`) che copre **tutte
+le collezioni registrate** (spot, tutorial, e le fontanelle in sola lettura),
+**tutte** le impostazioni di `js/config.js` e il magazzino del dispositivo. Lo
+schema non è scritto da nessuna parte: i campi si deducono dai dati, le
+impostazioni sono le foglie di `CONFIG`. Dettagli in
 [`app/README.md`](../app/README.md).
 
-Le tre regole che la tengono dentro i principi del masterplan:
+Le regole che lo tengono dentro i principi del masterplan:
 
 | Principio | Come è rispettato |
 | --- | --- |
 | 5 — solo `main` via CI va online | il pannello non pubblica: esporta file da rivedere |
-| 2 — solo verificato è pubblico | ogni spot toccato porta il segno «locale»; i nuovi nascono `pending` |
-| 4 — nessun segreto nel client | il campo della publishable key rifiuta quello che sembra una secret key |
+| 2 — solo verificato è pubblico | ogni voce toccata porta il segno «locale» — spot **e** tutorial; gli spot nuovi nascono `pending` |
+| 4 — nessun segreto nel client | il rifiuto di una chiave segreta vale su ogni scrittura: un campo di uno spot, un'impostazione, una voce del magazzino, un file importato |
+| 1 — niente contenuti finti | il magazzino si guarda e si cancella; in `note`, `preferiti` e `coda` non si crea, perché sarebbe fabbricare il contributo di una persona |
+| 4 — la posizione resta sul dispositivo | il magazzino mostra `mappa.vista`, ma nessun file esportato la contiene |
 
 È la sostituzione, per la parte di dati, di quello che oggi fa
 `admin-desktop/` con la secret key dentro il browser (problema P0 del

@@ -17,6 +17,19 @@ import { expect, test } from '@playwright/test';
 
 const RADICE_APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+/**
+ * Qui il tempo è più lungo che altrove, e non per nascondere una lentezza.
+ *
+ * La demo è **un file solo** da 1,16 MB: aprirla da `file://` vuol dire che il
+ * browser deve leggere e interpretare tutto in una volta, senza cache e senza
+ * moduli. `apriDemo` da sola può prendersi trenta secondi su una macchina
+ * occupata — due terzi dei quarantacinque della configurazione — e quello che
+ * resta non basta per il resto della prova. Il difetto che ne nasceva non era
+ * dell'app: era una prova che si dava un budget più corto del suo passo più
+ * lento.
+ */
+test.describe.configure({ timeout: 120_000 });
+
 let cartella;
 let file;
 

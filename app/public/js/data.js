@@ -164,6 +164,31 @@ function motoreUtilizzabile() {
   return motore.acceso() && !admin.haModifiche();
 }
 
+/** L'ultima domanda al motore è rimasta senza risposta? */
+let motoreMuto = false;
+
+/**
+ * Chi sta rispondendo alle domande dell'app, e perché.
+ *
+ * Restituisce `{chi: 'locale'|'motore', perche: string}`. Serve al pannello:
+ * «il motore è configurato» e «il motore sta rispondendo» sono due cose
+ * diverse, e finché non si vede la seconda non si capisce perché una ricerca
+ * dia risultati che non tornano con quello che si è appena corretto.
+ */
+export function chiRisponde() {
+  if (!motore.acceso()) return { chi: 'locale', perche: 'whyNotConfigured' };
+  if (admin.haModifiche()) {
+    const conti = admin.conteggiTotali();
+    const quante = Object.values(conti.per).reduce(
+      (somma, c) => somma + c.modificati + c.nuovi + c.cancellati,
+      0
+    );
+    return { chi: 'locale', perche: 'whyChanges', quante };
+  }
+  if (motoreMuto) return { chi: 'locale', perche: 'whySilent' };
+  return { chi: 'motore', perche: '' };
+}
+
 function dentroIlRiquadro(voce, riquadro) {
   return (
     voce.lat >= riquadro.sud &&
@@ -182,9 +207,13 @@ export async function cerca(filtri = {}, distanzaM) {
   if (motoreUtilizzabile() && !filtri.preferiti) {
     try {
       const esito = await motore.cerca(filtri);
+      motoreMuto = false;
       return esito.spots;
     } catch {
-      // Il motore non c'è o non risponde: si continua qui sotto.
+      // Il motore non c'è o non risponde: si continua qui sotto. Lo si segna,
+      // perché «configurato» e «sta rispondendo» sono due cose diverse e il
+      // pannello deve poter dire quale delle due.
+      motoreMuto = true;
     }
   }
   return cercaInLocale(filtri, distanzaM);
@@ -228,9 +257,11 @@ export async function nelRiquadro(riquadro, opzioni = {}) {
   if (motoreUtilizzabile()) {
     try {
       const esito = await motore.nelRiquadro(riquadro, opzioni);
+      motoreMuto = false;
       return esito.spots;
     } catch {
       // Si risponde qui sotto.
+      motoreMuto = true;
     }
   }
   const dentro = [];
@@ -244,12 +275,18 @@ export async function nelRiquadro(riquadro, opzioni = {}) {
 
 /** Il catalogo dei tutorial, filtrato per livello e categoria. */
 export async function tutorialFiltrati(filtri = {}) {
-  if (motore.acceso()) {
+  // `motoreUtilizzabile()` e non `motore.acceso()`: con una modifica locale in
+  // corso il motore ha in mano dati diversi dai nostri, e un tutorial corretto
+  // qui tornerebbe dal motore com'era nel file. Gli spot lo facevano già; i
+  // tutorial no, da quando il pannello sa correggerli anche loro.
+  if (motoreUtilizzabile()) {
     try {
       const esito = await motore.tutorial(filtri);
+      motoreMuto = false;
       return esito.tutorials;
     } catch {
       // Si risponde qui sotto.
+      motoreMuto = true;
     }
   }
   return DATI.tutorial

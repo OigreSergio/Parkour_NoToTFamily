@@ -71,6 +71,22 @@ export async function svuotaTessere() {
   ]);
 }
 
+/**
+ * Il browser ha già promesso di non buttare via i dati di questa app?
+ *
+ * Senza quella promessa lo spazio è «best effort»: il browser lo libera quando
+ * ha fretta, e la mappa preparata per una gita sparisce la sera prima. Chi
+ * apre il pannello deve poterlo sapere prima di contarci.
+ */
+export async function persistente() {
+  if (!navigator.storage || !navigator.storage.persisted) return null;
+  try {
+    return await navigator.storage.persisted();
+  } catch {
+    return null;
+  }
+}
+
 /** Chiede al browser di non buttare via i dati dell'app quando ha fretta. */
 export async function rendiPersistente() {
   if (!navigator.storage || !navigator.storage.persist) return false;

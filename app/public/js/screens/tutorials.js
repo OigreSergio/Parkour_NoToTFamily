@@ -42,6 +42,10 @@ function scheda(voce) {
           voce.channel,
           voce.seconds ? formattaDurata(voce.seconds) : null,
           '★'.repeat(Math.max(1, Math.min(5, voce.difficulty))),
+          // Da quando il pannello sa correggere anche i tutorial, il segno
+          // «locale» deve valere anche qui: altrimenti la seconda regola —
+          // niente si finge ufficiale — varrebbe per gli spot e non per loro.
+          voce.locale ? t('admin.local') : null,
         ]
           .filter(Boolean)
           .join(' · '),

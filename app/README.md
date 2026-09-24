@@ -390,30 +390,58 @@ scrivere nel database, e una volta online non la si riprende più.
 ## La modalità sviluppatore
 
 «Tu → Avanzate → Accendi la modalità sviluppatore». Compare una fascia ambra in
-testa; toccandola si apre il pannello (`#/admin`). Da lì, senza aprire un
-editor:
+testa; toccandola si apre il pannello (`#/admin`).
 
-- **spot**: cercarli, correggerne nome, descrizione, stato, livello,
-  affollamento, fontanella e coordinate; prenderne il punto dal centro della
-  mappa; crearne di nuovi; toglierne; ripristinare quello che dice il file;
-- **mappa e tessere**: provare dal vivo un altro filtro di colore (chiaro e
-  scuro), un'altra sorgente di tessere, il lato della cella dei gomitoli, lo
-  zoom da cui compaiono le fontanelle;
-- **collegamenti**: l'indirizzo del servizio dei percorsi, le cifre con cui la
-  posizione parte dal telefono, Supabase;
-- **esporta / importa**: un JSON con tutte le modifiche, e un secondo file con
+**Il pannello non ha uno schema scritto a mano.** I campi di una collezione li
+deduce dai dati che ci sono; le impostazioni sono le foglie di
+`js/config.js`. Aggiungere un campo a `build_data.py` lo fa comparire qui
+senza toccare una riga del pannello — ed è il motivo per cui le impostazioni
+correggibili sono ventiquattro invece delle undici che qualcuno aveva elencato
+a mano.
+
+Cinque sezioni, che si aprono e si chiudono:
+
+- **Stato dell'app**: chi sta rispondendo alle domande (l'app o il motore in
+  Python, e perché), quante voci ha ogni collezione e quante ne sono toccate,
+  cosa c'è in cache, quanto spazio si occupa, se il browser ha promesso di non
+  buttarlo via — e il pulsante per chiederglielo;
+- **Dati**, una collezione alla volta: **spot**, **tutorial** e **fontanelle**
+  (in sola lettura: non hanno una chiave propria, si correggono su
+  OpenStreetMap). Si cerca, si corregge, si crea, si toglie, si ripristina —
+  anche un campo solo, con «Riporta al file». Sotto i campi noti c'è
+  l'**ispettore**: le chiavi che lo schema non conosce si vedono, si
+  modificano e se ne aggiungono. Si può segnare una voce **da rivedere** con
+  il motivo, senza cambiarle niente;
+- **Configurazione**: tutte le foglie di `CONFIG`, raggruppate dal percorso
+  vero (`tiles`, `routing`, `supabase`, `filtroTessere`, `partenza`,
+  `andature`, e `altre` per le chiavi di primo livello). Le due che fanno
+  **uscire dati dal dispositivo** — `motore` e `routing.servizio` — lo dicono
+  con un avviso fisso;
+- **Magazzino di questo dispositivo**: i quattro depositi (`kv`, `preferiti`,
+  `note`, `coda`) con chiavi e valori. Si guarda e si cancella; in `note`,
+  `preferiti` e `coda` **non** si crea, perché sarebbe fabbricare il contributo
+  di una persona. Niente di tutto questo entra in un file esportato: lì dentro
+  c'è anche `mappa.vista`, cioè dove è stata una persona;
+- **Esporta e importa**: un JSON con tutte le modifiche, e un secondo file con
   i soli spot da rivedere già nei nomi di campo di
   `scripts/data/webapp_fixed_spots.json`.
+
+Prima di salvare, quando c'è qualcosa da dire, compare un riquadro che dice
+**cosa ne farà l'app** di quei valori — uno stato che nessuna schermata
+conosce, un livello senza traduzione, coordinate fuori intervallo — e offre
+«Salva lo stesso». Avvisa solo su quello che è **cambiato**: un avviso che
+compare sempre è un avviso che non si legge più.
 
 Tre cose che il pannello non fa, e lo dice in testa a sé stesso:
 
 1. **non pubblica niente**: le modifiche restano sul dispositivo finché non le
    esporti, e a portarle nel repository è una persona (principio 5);
-2. **non finge**: ogni spot toccato o creato porta il segno «locale», e quelli
-   nuovi nascono `pending`. Verificato lo diventa uno spot quando una persona
-   lo verifica (principio 2);
-3. **non accetta chiavi segrete**: il campo della publishable key rifiuta
-   quello che sembra una secret key, e lo dice (principio 4).
+2. **non finge**: ogni voce toccata o creata porta il segno «locale» — spot e
+   tutorial — e gli spot nuovi nascono `pending`. Verificato lo diventa uno
+   spot quando una persona lo verifica (principio 2);
+3. **non accetta chiavi segrete**: il rifiuto vale su **ogni** scrittura, non
+   solo sulla casella della publishable key — un campo di uno spot, una voce
+   del magazzino, un file importato (principio 4).
 
 L'indirizzo `#/admin` da solo non basta: senza aver acceso la modalità porta a
 «Tu». Non è una difesa — è un'app che gira sul telefono di chi la usa — ma
