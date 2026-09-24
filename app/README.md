@@ -79,7 +79,8 @@ app/
   mac/                    il guscio macOS: l'eseguibile del bundle e l'avviatore
   tools/                  build_data, build_precache, make_icons, fetch_fonts,
                           serve, desktop, screenshot, build_beta, build_demo,
-                          build_demo_python, build_apk, build_mac_app, qr
+                          build_demo_python, build_apk, build_mac_app, qr,
+                          build_pubblica
   dist/                   le beta e le demo costruite (non versionate)
   demo/                   motore.py: la logica dell'app scritta in Python
   tests/                  prove Playwright: avvio, offline, installabilità
@@ -342,6 +343,41 @@ porta più un Python di serie: se manca, compare una finestra che lo dice.
 Uno `.zip` scaricato da internet arriva in quarantena: la prima volta si apre
 con **tasto destro sull'app → Apri**. Costruirlo sul proprio Mac evita la
 faccenda.
+
+## La demo a un indirizzo pubblico, con accessi veri
+
+```sh
+python3 app/tools/build_pubblica.py --supabase-url https://<progetto>.supabase.co \
+    --supabase-key sb_publishable_...
+```
+
+Prepara in `app/dist/pubblica/` la cartella da servire: file statici, niente
+da installare. È la stessa app, con due differenze — porta l'indirizzo del
+progetto Supabase e la sola chiave pubblicabile, e mette in testa la fascia
+**DEMO PUBBLICA**.
+
+Servita da un indirizzo `https`, quell'app cambia natura: si installa sulla
+schermata Home, funziona offline (il service worker si accende solo su
+contesto sicuro), e **ci si entra davvero** — codice via email o ingresso
+come ospite, con account veri in `auth.users`. Essendo file statici, cento
+telefoni insieme non si accorgono l'uno dell'altro.
+
+A metterla online ci pensa `.github/workflows/pubblica-demo.yml`, che parte
+solo a mano e solo da `main`: mettere l'app online è una scelta di una persona.
+Attenzione, sostituisce il sito servito oggi da `gh-pages`.
+
+I passi, in ordine, con le impostazioni da mettere nel progetto Supabase:
+[`docs/DEMO_PUBBLICA.md`](../docs/DEMO_PUBBLICA.md).
+
+Il QR, una volta che l'indirizzo esiste:
+
+```sh
+python3 app/tools/qr.py --indirizzo https://<utente>.github.io/<repo>/
+```
+
+Una chiave che sembra segreta (`sb_secret`, `service_role`, un JWT) ferma la
+costruzione: pubblicarla vorrebbe dire consegnare a chiunque il potere di
+scrivere nel database, e una volta online non la si riprende più.
 
 ## La modalità sviluppatore
 

@@ -115,6 +115,7 @@ python3 app/tools/desktop.py            # finestra formato telefono sul PC
 python3 app/tools/serve.py              # http://127.0.0.1:8080
 cd app && npm install && npm test       # avvio, offline vero, installabilità
 python3 app/tools/build_beta.py --zip   # la beta da provare sul PC, in app/dist/
+python3 app/tools/build_pubblica.py     # la copia da servire a un indirizzo pubblico
 python3 app/tools/build_demo.py         # la demo in un file solo, da aprire com'è
 python3 app/tools/build_demo_python.py  # la demo con il motore in Python (un .py)
 python3 app/tools/build_apk.py          # l'APK per il telefono (serve ANDROID_HOME e un JDK)

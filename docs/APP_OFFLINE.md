@@ -240,17 +240,37 @@ si può scrivere su Supabase — si esporta e si passa da una persona.
 
 ## Cosa manca per andare online
 
-Sono cose da persona, elencate perché siano decidibili:
+Il codice c'è: `app/tools/build_pubblica.py` prepara la copia da servire,
+`app/public/js/auth.js` fa entrare le persone davvero (codice via email o
+ingresso come ospite, account veri in `auth.users`), e
+`.github/workflows/pubblica-demo.yml` la mette online da `main`.
 
-1. **pubblicare**: un workflow che da `main` copia `app/public/` sotto un
-   percorso di `gh-pages`. Oggi non esiste e non va creato a mano;
-2. **collegare Supabase**: `app/public/js/config.js` nasce con `supabase.url`
-   vuoto. Riempirlo (URL e publishable key, mai la secret key) accende
-   l'accesso e l'invio della coda dei contributi;
-3. **decidere A o B** qui sopra;
-4. **i caratteri**: Fraunces e Karla sono incorporati (OFL 1.1). Se in futuro
-   servono giapponese o cinese, si dichiara il fallback di sistema — l'app è
-   già pronta a farlo (`--testo` in `pk.css`).
+Quello che resta sono **tre decisioni**, e sono di una persona — non perché
+siano difficili, ma perché hanno conseguenze che nessuno script può prendersi:
+
+1. **dove.** Il flusso pubblica su GitHub Pages con l'origine «GitHub
+   Actions», e questo **sostituisce** il sito servito oggi dal branch
+   `gh-pages` (la web app Flutter, la pagina di prova dell'accesso, il
+   catalogo dei tutorial). Il branch non viene toccato, ma smette di essere
+   quello pubblicato. Se deve restare, la stessa cartella si serve da
+   qualunque altro host statico;
+2. **quale progetto Supabase.** Puntare la demo a quello di produzione
+   significa che chi apre il link si iscrive lì, con righe vere. L'alternativa
+   è un secondo progetto per l'anteprima — che è anche quello che AGENTS.md
+   regola 1 presuppone;
+3. **le impostazioni del progetto**: provider email acceso, modello del
+   Magic Link impostato su `{{ .Token }}` (l'app chiede un codice, non un
+   collegamento), ingressi anonimi accesi se si vuole l'ospite, Site URL, e le
+   migrazioni `0001` → `0004` applicate. Si fanno dal pannello di Supabase, a
+   mano.
+
+I passi in ordine, con le variabili da impostare:
+[`DEMO_PUBBLICA.md`](DEMO_PUBBLICA.md).
+
+Resta fuori da questo elenco una cosa sola, che non blocca niente: **i
+caratteri**. Fraunces e Karla sono incorporati (OFL 1.1); se in futuro servono
+giapponese o cinese si dichiara il fallback di sistema, e l'app è già pronta a
+farlo (`--testo` in `pk.css`).
 
 ## Dove guardare
 
@@ -259,4 +279,6 @@ Sono cose da persona, elencate perché siano decidibili:
 - la regola sull'arrotondamento delle coordinate: `docs/ROUTING_PK.md` e
   `remote-service/pkremote/services/routing.py`;
 - come si prova dal telefono l'altra parte del prodotto:
-  [`PROVA_DA_TELEFONO.md`](PROVA_DA_TELEFONO.md).
+  [`PROVA_DA_TELEFONO.md`](PROVA_DA_TELEFONO.md);
+- la demo a un indirizzo pubblico, con accessi veri e più persone insieme:
+  [`DEMO_PUBBLICA.md`](DEMO_PUBBLICA.md).

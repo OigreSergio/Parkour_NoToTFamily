@@ -1,7 +1,7 @@
 {
-  "version": "6f1e6622a69c",
+  "version": "5ea442240d8a",
   "generated_by": "app/tools/build_precache.py",
-  "bytes": 1701419,
+  "bytes": 1725302,
   "files": [
     "build.json",
     "data/fountains.json",
@@ -22,6 +22,7 @@
     "index.html",
     "js/admin.js",
     "js/app.js",
+    "js/auth.js",
     "js/config.js",
     "js/data.js",
     "js/geo.js",

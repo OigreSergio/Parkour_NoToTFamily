@@ -6,13 +6,13 @@
  */
 
 import * as admin from '../admin.js';
-import { CONFIG } from '../config.js';
+import * as auth from '../auth.js';
 import * as dati from '../data.js';
 import { t, LINGUE } from '../i18n.js';
 import { dimentica } from '../legal.js';
 import * as offline from '../offline.js';
 import { accoda, coda, dimenticaTutto, preferiti, scrivi, svuotaCoda } from '../store.js';
-import { avviso, conferma, el, modale, svuota } from '../ui.js';
+import { aggiungi, avviso, conferma, el, modale, svuota } from '../ui.js';
 
 let contesto = null;
 let contenitore = null;
@@ -313,15 +313,153 @@ async function sezioneDati() {
   return scatola;
 }
 
+/** Da un codice d'errore dell'accesso alla frase da mostrare. */
+function messaggioAccesso(errore) {
+  const codice = errore && errore.codice ? errore.codice : 'rifiutato';
+  const frase = t(`auth.err.${codice}`);
+  // `t` restituisce la chiave quando non la conosce: meglio una frase generica
+  // che una stringa con dei punti dentro.
+  return frase.startsWith('auth.err.') ? t('auth.err.rifiutato') : frase;
+}
+
+/**
+ * Entrare con l'email: si chiede il codice, poi lo si scrive.
+ *
+ * Due finestre di fila invece di una sola con due caselle, perché fra la prima
+ * e la seconda c'è un'attesa vera — la posta — e una finestra che resta aperta
+ * mentre si va a cercare il codice in un'altra applicazione è una finestra che
+ * su un telefono si perde.
+ */
+async function entraConEmail() {
+  const casella = el('input', {
+    class: 'pk-input',
+    type: 'email',
+    inputmode: 'email',
+    autocomplete: 'email',
+    placeholder: 'nome@esempio.it',
+    'aria-label': t('you.emailLabel'),
+  });
+  const manda = await modale({
+    titolo: t('you.codeTitle'),
+    sommario: t('you.codeAsk'),
+    corpo: casella,
+    azioni: [
+      { testo: t('you.codeSend'), valore: true, primaria: true },
+      { testo: t('common.cancel'), valore: false },
+    ],
+  });
+  if (!manda) return;
+
+  const indirizzo = casella.value.trim();
+  try {
+    await auth.chiediCodice(indirizzo);
+  } catch (errore) {
+    avviso(messaggioAccesso(errore));
+    return;
+  }
+
+  // Si può sbagliare a copiare sei cifre: si richiede senza rifare tutto.
+  for (;;) {
+    const cifre = el('input', {
+      class: 'pk-input',
+      inputmode: 'numeric',
+      autocomplete: 'one-time-code',
+      maxlength: '8',
+      'aria-label': t('you.codeEnter'),
+    });
+    const entra = await modale({
+      titolo: t('you.codeTitle'),
+      sommario: t('you.codeSent', { email: indirizzo }),
+      corpo: cifre,
+      azioni: [
+        { testo: t('you.codeGo'), valore: true, primaria: true },
+        { testo: t('common.cancel'), valore: false },
+      ],
+    });
+    if (!entra) return;
+    try {
+      await auth.verificaCodice(indirizzo, cifre.value);
+      avviso(t('you.signedIn'));
+      return;
+    } catch (errore) {
+      avviso(messaggioAccesso(errore));
+      if (!errore || errore.codice !== 'codice_errato') return;
+    }
+  }
+}
+
+/**
+ * L'account, quello vero.
+ *
+ * Senza un progetto configurato la sezione resta quella di prima: l'app è
+ * locale e lo dice. Con un progetto configurato si entra davvero — con
+ * l'email o come ospite — e quello che si vede qui viene da `auth.users` e da
+ * `profiles`, non da una finzione locale.
+ */
 function sezioneAccount() {
-  const configurato = Boolean(CONFIG.supabase.url);
-  return el('div', { class: 'pk-card' }, [
-    el('h3', { testo: t('you.account') }),
-    el('p', {
-      class: 'pk-small pk-muted',
-      testo: configurato ? t('you.accountConfigured') : t('you.accountLocal'),
-    }),
-  ]);
+  const scatola = el('div', { class: 'pk-card' }, [el('h3', { testo: t('you.account') })]);
+
+  if (!auth.configurato()) {
+    scatola.append(el('p', { class: 'pk-small pk-muted', testo: t('you.accountLocal') }));
+    return scatola;
+  }
+
+  const chi = auth.utente();
+  if (!chi) {
+    return aggiungi(
+      scatola,
+      el('p', { class: 'pk-small pk-muted', testo: t('you.accountWhy') }),
+      el('button', { class: 'pk-btn pk-btn--largo', onclick: entraConEmail }, [t('you.signIn')]),
+      el('p', {
+        class: 'pk-small pk-muted',
+        style: 'margin-top:16px',
+        testo: t('you.guestWhy'),
+      }),
+      el(
+        'button',
+        {
+          class: 'pk-btn pk-btn--fantasma pk-btn--largo',
+          onclick: async () => {
+            try {
+              await auth.entraComeOspite();
+              avviso(t('you.signedIn'));
+            } catch (errore) {
+              avviso(messaggioAccesso(errore));
+            }
+          },
+        },
+        [t('you.signInGuest')]
+      )
+    );
+  }
+
+  const nome = chi.nome || chi.email || t('you.guestBadge');
+  return aggiungi(
+    scatola,
+    el('p', { testo: t('you.signedAs', { nome }) }),
+    chi.anonimo ? el('p', { class: 'pk-small pk-muted', testo: t('you.guestNow') }) : null,
+    chi.ruolo === 'admin' || chi.ruolo === 'instructor'
+      ? el('p', { class: 'pk-small pk-muted', testo: t(`you.role.${chi.ruolo}`) })
+      : null,
+    el('p', { class: 'pk-small pk-muted', style: 'margin-top:12px', testo: t('you.accountOne') }),
+    el(
+      'button',
+      {
+        class: 'pk-btn pk-btn--fantasma pk-btn--largo',
+        onclick: async () => {
+          const procedi = await conferma(
+            t('you.signOut'),
+            chi.anonimo ? t('you.signOutGuestAsk') : t('you.signOutAsk'),
+            t('you.signOut'),
+            t('common.cancel')
+          );
+          if (!procedi) return;
+          await auth.esci();
+        },
+      },
+      [t('you.signOut')]
+    )
+  );
 }
 
 /**
@@ -422,21 +560,45 @@ function sezioneInformazioni() {
   ]);
 }
 
+/**
+ * Quale ridisegno è l'ultimo partito.
+ *
+ * `disegna` aspetta due volte (lo spazio occupato, i preferiti), e in mezzo
+ * un altro ridisegno può partire: basta entrare mentre la schermata sta già
+ * rispondendo a qualcos'altro. Prima ognuno svuotava e poi ognuno attaccava il
+ * suo, e la schermata compariva doppia — due «Sei dentro come…», due pulsanti
+ * «Esci». Non è un caso di laboratorio: l'accesso avvisa due volte, una quando
+ * la sessione è aperta e una quando arriva il nome dal profilo.
+ */
+let generazione = 0;
+
 async function disegna() {
-  svuota(contenitore).append(
+  const mia = ++generazione;
+  const pezzi = [
     sezioneInstalla(),
     await sezioneOffline(),
     sezioneAspetto(),
     await sezioneDati(),
     sezioneAccount(),
     sezioneAvanzate(),
-    sezioneInformazioni()
-  );
+    sezioneInformazioni(),
+  ];
+  // Vince l'ultimo partito, e il contenitore si svuota solo quando i pezzi
+  // nuovi ci sono già: nessuno vede la schermata vuota per un istante.
+  if (mia !== generazione) return;
+  svuota(contenitore).append(...pezzi);
 }
 
 export function inizializza(ctx) {
   contesto = ctx;
   contenitore = document.getElementById('pk-tu');
+  // Entrare e uscire non passano sempre da qui: il rinnovo di un gettone
+  // scaduto può cadere mentre la schermata è già aperta. Si ridisegna quando
+  // l'accesso cambia, non quando si torna sulla schermata.
+  auth.ascolta(() => {
+    const sezione = contenitore && contenitore.closest('.pk-screen');
+    if (sezione && sezione.dataset.attiva === '1') disegna();
+  });
 }
 
 export function entra() {

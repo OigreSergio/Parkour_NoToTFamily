@@ -1,0 +1,132 @@
+name: Pubblica la demo
+
+# Mette l'app di `app/` a un indirizzo pubblico https, così la si apre da un
+# telefono con un link o un QR, senza installare niente, e più persone insieme.
+#
+# Parte **solo a mano** (`workflow_dispatch`) e **solo da main**: mettere l'app
+# online è una scelta di una persona, non una conseguenza di un commit
+# (AGENTS.md regola 6, masterplan cap. 4.6). Nessun push lo fa scattare.
+#
+# ┌─ Prima di premere il pulsante, tre cose vanno fatte una volta sola ────────┐
+# │                                                                            │
+# │ 1. Settings → Pages → Source: «GitHub Actions».                            │
+# │    ATTENZIONE: questo **sostituisce** il sito servito oggi dal branch       │
+# │    gh-pages. Il branch resta dov'è e non viene toccato da qui, ma smette    │
+# │    di essere quello pubblicato. È irreversibile solo nel senso che per      │
+# │    tornare indietro bisogna rimettere «Deploy from a branch» a mano.        │
+# │                                                                            │
+# │ 2. Settings → Secrets and variables → Actions → Variables:                  │
+# │      PUBBLICA_DEMO           = si                                           │
+# │      SUPABASE_URL            = https://<progetto>.supabase.co               │
+# │      SUPABASE_PUBLISHABLE_KEY = sb_publishable_...                          │
+# │    Sono *variabili*, non segreti: la chiave pubblicabile è pubblica per     │
+# │    progetto e finisce comunque dentro la pagina. La chiave segreta no, mai: │
+# │    `build_pubblica.py` si ferma se ne riconosce una.                        │
+# │    Senza i due valori di Supabase la demo si pubblica lo stesso, ma resta   │
+# │    quella locale: si guarda, non si entra.                                  │
+# │                                                                            │
+# │ 3. Nel progetto Supabase (lo fa una persona, non questo flusso):            │
+# │      Authentication → Providers → Email: acceso, «Confirm email» acceso     │
+# │      Authentication → Providers → Anonymous sign-ins: acceso, se si vuole   │
+# │        l'ingresso come ospite                                               │
+# │      Authentication → Emails → Magic Link: il corpo deve contenere          │
+# │        {{ .Token }} — l'app chiede un codice, non un collegamento           │
+# │      Authentication → URL Configuration → Site URL: l'indirizzo pubblicato  │
+# │      SQL Editor: le migrazioni 0001 → 0004 di supabase/migrations/          │
+# └────────────────────────────────────────────────────────────────────────────┘
+#
+# Dopo la prima pubblicazione, il QR per il telefono si fa da qui:
+#   python3 app/tools/qr.py --indirizzo https://<utente>.github.io/<repo>/
+
+on:
+  workflow_dispatch:
+    inputs:
+      nota:
+        description: "La riga che l'app mostra nella fascia (facoltativa)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Due pubblicazioni insieme si sovrascriverebbero a vicenda. Non si annulla
+# quella in corso: a metà strada lascerebbe online mezza app.
+concurrency:
+  group: pagine
+  cancel-in-progress: false
+
+jobs:
+  pubblica:
+    name: Prepara e metti online
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pagine.outputs.page_url }}
+    steps:
+      - name: "Il secondo interruttore: la variabile PUBBLICA_DEMO"
+        # Il primo è aver premuto il pulsante. Questo serve perché il pulsante
+        # si preme anche per sbaglio, e questo flusso sostituisce un sito.
+        if: vars.PUBBLICA_DEMO != 'si'
+        run: |
+          echo "::error::PUBBLICA_DEMO non vale 'si'. Leggi l'intestazione di questo file"
+          echo "::error::prima di pubblicare: il sito servito da gh-pages viene sostituito."
+          exit 1
+
+      - name: Solo da main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "::error::Questo flusso pubblica solo da main (AGENTS.md regola 6)."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+
+      - name: I file generati sono aggiornati
+        # Pubblicare dati vecchi è peggio che non pubblicare: nessuno se ne
+        # accorge, e la demo racconta una mappa che non esiste più.
+        run: |
+          python3 app/tools/build_data.py --check
+          python3 app/tools/make_icons.py --check
+          python3 app/tools/build_precache.py --check
+
+      - name: Prepara la copia da servire
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ vars.SUPABASE_PUBLISHABLE_KEY }}
+        run: python3 app/tools/build_pubblica.py --cartella sito --nota "${{ inputs.nota }}"
+
+      - name: "Controllo finale: nessuna chiave segreta nella cartella"
+        # `build_pubblica.py` già si ferma da solo. Questo è il controllo di chi
+        # non si fida del proprio controllo: guarda i file veri, quelli che fra
+        # un minuto saranno leggibili da chiunque.
+        run: |
+          if grep -rIl -e 'sb_secret' -e 'service_role' sito/; then
+            echo "::error::Trovata una chiave segreta nella cartella da pubblicare."
+            exit 1
+          fi
+          echo "Nessuna chiave segreta nei file da pubblicare."
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: sito
+
+      - id: pagine
+        uses: actions/deploy-pages@v4
+
+      - name: L'indirizzo, per il QR
+        run: |
+          echo "### La demo è online" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.pagine.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo 'Il QR per il telefono:' >> "$GITHUB_STEP_SUMMARY"
+          echo '```sh' >> "$GITHUB_STEP_SUMMARY"
+          echo "python3 app/tools/qr.py --indirizzo ${{ steps.pagine.outputs.page_url }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

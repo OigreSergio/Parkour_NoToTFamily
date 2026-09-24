@@ -10,9 +10,11 @@
  */
 
 import * as admin from './admin.js';
+import * as auth from './auth.js';
 import { CONFIG } from './config.js';
 import * as dati from './data.js';
 import * as i18n from './i18n.js';
+import { sembraSegreta } from './ispettore.js';
 import { leggi, scrivi } from './store.js';
 import { el, svuota } from './ui.js';
 
@@ -57,6 +59,16 @@ const contesto = {
 /** Da dove viene questa copia: sviluppo dal repository, oppure una beta. */
 let costruzione = { canale: 'sviluppo', versione: '', quando: '' };
 
+/** Che cosa scrive la fascia per ogni canale. `sviluppo` non ne ha: è il caso normale. */
+const FASCE = new Map([
+  ['beta', 'band.beta'],
+  ['demo', 'band.demo'],
+  ['python', 'band.python'],
+  ['apk', 'band.apk'],
+  ['mac', 'band.mac'],
+  ['pubblica', 'band.pubblica'],
+]);
+
 /**
  * La fascia in testa dice sempre che cosa stai guardando: una beta, la
  * modalità sviluppatore, o tutte e due. Toccandola si va dove si agisce.
@@ -65,20 +77,8 @@ function disegnaFascia() {
   const fascia = document.getElementById('pk-fascia');
   if (!fascia) return;
   const pezzi = [];
-  if (costruzione.canale === 'beta') {
-    pezzi.push(i18n.t('band.beta', { v: costruzione.versione || '?' }));
-  }
-  if (costruzione.canale === 'demo') {
-    pezzi.push(i18n.t('band.demo', { v: costruzione.versione || '?' }));
-  }
-  if (costruzione.canale === 'python') {
-    pezzi.push(i18n.t('band.python', { v: costruzione.versione || '?' }));
-  }
-  if (costruzione.canale === 'apk') {
-    pezzi.push(i18n.t('band.apk', { v: costruzione.versione || '?' }));
-  }
-  if (costruzione.canale === 'mac') {
-    pezzi.push(i18n.t('band.mac', { v: costruzione.versione || '?' }));
+  if (FASCE.has(costruzione.canale)) {
+    pezzi.push(i18n.t(FASCE.get(costruzione.canale), { v: costruzione.versione || '?' }));
   }
   if (admin.attiva()) pezzi.push(i18n.t('band.dev'));
 
@@ -106,12 +106,32 @@ function accendiMotore(indirizzo) {
   admin.aggiornaFabbrica('motore', indirizzo);
 }
 
+/**
+ * Collega l'app al progetto Supabase indicato dalla costruzione.
+ *
+ * Stesso motivo di `accendiMotore`: i valori arrivano dopo che il pannello ha
+ * già fotografato CONFIG. Qui però c'è anche una regola di sicurezza — una
+ * chiave che sembra segreta non viene messa in CONFIG per niente, così non
+ * finisce in un'esportazione, in un avviso o in una chiamata. Meglio un'app
+ * che resta locale di un'app che pubblica una chiave.
+ */
+function accendiSupabase(impostazioni) {
+  const url = String(impostazioni.url || '');
+  const chiave = String(impostazioni.publishableKey || '');
+  if (!url || !chiave || sembraSegreta(chiave)) return;
+  CONFIG.supabase.url = url;
+  CONFIG.supabase.publishableKey = chiave;
+  admin.aggiornaFabbrica('supabase.url', url);
+  admin.aggiornaFabbrica('supabase.publishableKey', chiave);
+}
+
 /** Legge `build.json`: c'è sempre, ed è precaricato con il resto dell'app. */
 async function leggiCostruzione() {
   const dentro = globalThis.__PK_INLINE__ && globalThis.__PK_INLINE__['build.json'];
   if (dentro) {
     costruzione = { ...costruzione, ...dentro };
     if (costruzione.motore) accendiMotore(costruzione.motore);
+    if (costruzione.supabase) accendiSupabase(costruzione.supabase);
     contesto.costruzione = costruzione;
     return;
   }
@@ -124,6 +144,10 @@ async function leggiCostruzione() {
   // La demo con il motore in Python dice qui dove trovarlo: da quel momento
   // le domande pesanti non le fa più il browser.
   if (costruzione.motore) accendiMotore(costruzione.motore);
+  // La copia pubblicata porta qui l'indirizzo del progetto e la sola chiave
+  // pubblicabile: è il motivo per cui la stessa app, servita da un indirizzo
+  // pubblico, sa dove far entrare le persone.
+  if (costruzione.supabase) accendiSupabase(costruzione.supabase);
   contesto.costruzione = costruzione;
 }
 
@@ -290,6 +314,10 @@ async function avvia() {
   seguiLaRete();
   raccogliInvitoInstallazione();
   await leggiCostruzione();
+  // Dopo la costruzione, perché è lì che la copia pubblicata dice a quale
+  // progetto appartiene. Legge la sessione dal dispositivo e non aspetta la
+  // rete: senza campo si resta dentro come si era.
+  await auth.inizializza();
   disegnaFascia();
 
   if (!location.hash) location.hash = '#/mappa';
