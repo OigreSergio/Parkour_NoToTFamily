@@ -362,9 +362,17 @@ contesto sicuro), e **ci si entra davvero** — codice via email o ingresso
 come ospite, con account veri in `auth.users`. Essendo file statici, cento
 telefoni insieme non si accorgono l'uno dell'altro.
 
-A metterla online ci pensa `.github/workflows/pubblica-demo.yml`, che parte
-solo a mano e solo da `main`: mettere l'app online è una scelta di una persona.
-Attenzione, sostituisce il sito servito oggi da `gh-pages`.
+Due strade per metterla online, e mettere l'app online è comunque una scelta
+di una persona:
+
+- **un host statico esterno** (Cloudflare Pages, Netlify): comando di
+  costruzione `python3 app/tools/build_pubblica.py --cartella sito`, cartella
+  `sito`, le due variabili di Supabase. Non tocca niente di quello che è già
+  pubblicato, ed è il motivo per cui `build_pubblica.py` gira anche sulla 3.11
+  di quelle immagini;
+- **`.github/workflows/pubblica-demo.yml`**, a mano e solo da `main`. Funziona,
+  ma sostituisce il sito servito oggi da `gh-pages` e zittisce `sync-map.yml`,
+  che su quel branch scrive.
 
 I passi, in ordine, con le impostazioni da mettere nel progetto Supabase:
 [`docs/DEMO_PUBBLICA.md`](../docs/DEMO_PUBBLICA.md).

@@ -10,10 +10,16 @@ name: Pubblica la demo
 # ┌─ Prima di premere il pulsante, tre cose vanno fatte una volta sola ────────┐
 # │                                                                            │
 # │ 1. Settings → Pages → Source: «GitHub Actions».                            │
-# │    ATTENZIONE: questo **sostituisce** il sito servito oggi dal branch       │
-# │    gh-pages. Il branch resta dov'è e non viene toccato da qui, ma smette    │
-# │    di essere quello pubblicato. È irreversibile solo nel senso che per      │
-# │    tornare indietro bisogna rimettere «Deploy from a branch» a mano.        │
+# │    ATTENZIONE, due conseguenze:                                            │
+# │    a) questo **sostituisce** il sito servito oggi dal branch gh-pages. Il   │
+# │       branch resta dov'è e non viene toccato da qui, ma smette di essere    │
+# │       quello pubblicato. Per tornare indietro si rimette «Deploy from a     │
+# │       branch» a mano;                                                      │
+# │    b) `sync-map.yml` scrive su gh-pages: continuerebbe a girare senza che   │
+# │       nessuno veda più il risultato. Non fallisce — smette e basta.        │
+# │    Se non si vuole pagare tutto questo, la cartella prodotta da             │
+# │    `build_pubblica.py` si serve da qualunque host statico: vedi la strada   │
+# │    A in docs/DEMO_PUBBLICA.md, che non tocca niente di tutto questo.        │
 # │                                                                            │
 # │ 2. Settings → Secrets and variables → Actions → Variables:                  │
 # │      PUBBLICA_DEMO           = si                                           │

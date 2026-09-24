@@ -26,8 +26,16 @@ La copia porta un `build.json` con canale `pubblica`: l'app se ne accorge e
 mette in testa la fascia, così nessuno confonde una demo con il prodotto.
 
 Questo programma prepara e basta. A metterla online ci pensa il flusso di CI
-`.github/workflows/pubblica-demo.yml`, che parte solo se una persona lo fa
-partire (regola 6 di AGENTS.md).
+`.github/workflows/pubblica-demo.yml`, oppure l'host statico che si è scelto —
+in tutti i casi, perché una persona lo ha deciso (regola 6 di AGENTS.md).
+
+**Questo file resta compatibile dalla 3.9 in su**, ed è la quarta eccezione al
+pavimento 3.14 del repository (AGENTS.md capitolo 1). Il motivo è lo stesso
+degli altri tre: gira dove la versione di Python non la scegliamo noi. Qui non
+è il computer di chi prova l'app, è l'immagine di costruzione di un host
+statico — Cloudflare Pages, Netlify — che offre la 3.11 o la 3.12 e non la
+3.14. Un `Path.copy` qui dentro renderebbe la demo pubblicabile solo da GitHub
+Actions, che in questo repository è proprio la strada che costa cara.
 """
 
 import argparse
@@ -36,8 +44,9 @@ import os
 import re
 import shutil
 import sys
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
@@ -55,7 +64,7 @@ VERSIONE_BASE = "0.1.0"
 SEGRETA = re.compile(r"service_role|sb_secret|^eyJ[\w-]+\.[\w-]+\.[\w-]+$")
 
 
-def sembra_segreta(valore: str) -> bool:
+def sembra_segreta(valore):
     """Questa chiave non deve finire in un file pubblicato?
 
     La vecchia chiave anon di Supabase è un JWT ed è pubblicabile, ma da fuori
@@ -67,7 +76,7 @@ def sembra_segreta(valore: str) -> bool:
     return bool(SEGRETA.search(testo)) and not testo.startswith("sb_publishable")
 
 
-def impostazioni_supabase(url: str | None, chiave: str | None) -> dict[str, str]:
+def impostazioni_supabase(url: Optional[str], chiave: Optional[str]) -> dict:
     """Da argomenti o ambiente, con i controlli che impediscono i due disastri."""
     url = (url or os.environ.get("SUPABASE_URL") or "").strip().rstrip("/")
     chiave = (chiave or os.environ.get("SUPABASE_PUBLISHABLE_KEY") or "").strip()
@@ -87,14 +96,9 @@ def impostazioni_supabase(url: str | None, chiave: str | None) -> dict[str, str]
     return {"url": url, "publishableKey": chiave}
 
 
-def prepara(
-    destinazione: Path,
-    supabase: dict[str, str],
-    nota: str = "",
-    versione: str = "",
-) -> Path:
+def prepara(destinazione, supabase, nota="", versione=""):
     """Scrive in `destinazione` la cartella da servire, e la restituisce."""
-    oggi = datetime.now(UTC)
+    oggi = datetime.now(timezone.utc)
     versione = versione or f"{VERSIONE_BASE}-demo.{oggi:%Y%m%d}"
 
     if destinazione.exists():
@@ -102,9 +106,11 @@ def prepara(
         # precedente resterebbe online senza che nessuno se lo aspetti.
         shutil.rmtree(destinazione)
     destinazione.parent.mkdir(parents=True, exist_ok=True)
-    PUBBLICA.copy(destinazione, preserve_metadata=True)
+    # `shutil.copytree` e non `Path.copy`: quello arriva con la 3.14, e questo
+    # file deve girare anche sull'immagine di costruzione di un host statico.
+    shutil.copytree(str(PUBBLICA), str(destinazione))
 
-    build: dict[str, object] = {
+    build = {
         "canale": "pubblica",
         "versione": versione,
         "quando": oggi.isoformat(timespec="seconds"),

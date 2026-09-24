@@ -25,7 +25,7 @@ Python che gira in remoto è il servizio di supporto in `remote-service/`.
 
 **Quale Python.** Il pavimento del repository è **Python 3.14**:
 `remote-service/` lo dichiara in `requires-python` e gli strumenti di
-`app/tools/` girano sulla stessa versione. Tre eccezioni, e non sono
+`app/tools/` girano sulla stessa versione. Quattro eccezioni, e non sono
 dimenticanze:
 
 - `backend/` resta alla 3.11 perché resta com'è (decisione G).
@@ -34,19 +34,33 @@ dimenticanze:
   `app/mac/avvia.py`, la stringa `AVVIATORE` dentro `app/tools/build_beta.py`,
   l'avviatore incorporato in `app/tools/build_demo_python.py` e
   `app/demo/motore.py`, che quell'avviatore si porta dentro riga per riga. Su
-  questi si correggono errori, non si usano novità del linguaggio. Il solo
-  controllo automatico è in `build_demo_python.py`, ferma la costruzione della
-  demo se la *sintassi* supera la 3.9: non vede le novità che si manifestano
-  all'esecuzione (`datetime.UTC`, `Path.copy`, `itertools.batched`), e la beta
-  e il bundle del Mac non hanno nemmeno quello.
+  questi si correggono errori, non si usano novità del linguaggio.
+- `app/tools/build_pubblica.py` per lo stesso motivo, ma un computer diverso:
+  gira sull'immagine di costruzione dell'host statico che serve la demo
+  (Cloudflare Pages, Netlify), che offre la 3.11 o la 3.12. Un `Path.copy` lì
+  dentro renderebbe la demo pubblicabile solo da GitHub Actions — e in questo
+  repository quella strada sostituisce il sito servito da `gh-pages`. Vedi
+  `docs/DEMO_PUBBLICA.md`.
 - `app/tools/qr.py` e `app/tools/make_icons.py` **non usano sintassi oltre la
   3.9**, pur potendo. Non è un pavimento più basso: girano sulla 3.14 come gli
   altri. È che sono i due che una persona lancia a mano dal proprio computer —
-  `qr.py` è quello che porta l'app sul telefono — e su una Python vecchia una
-  novità di sintassi non dà un messaggio, dà una `SyntaxError` a riga 46. Gli
-  alias di tipo lì si scrivono come assegnamenti (`Moduli = list[list[int]]`),
-  non con la parola chiave `type`. Chi li «moderna» toglie a qualcuno il modo
-  di far partire l'app.
+  `qr.py` è quello che porta l'app sul telefono. Gli alias di tipo lì si
+  scrivono come assegnamenti (`Moduli = list[list[int]]`), non con la parola
+  chiave `type`, e i due file aprono con `from __future__ import annotations`,
+  perché un'annotazione `X | None` su una 3.9 non è una `SyntaxError` ma un
+  `TypeError` all'import. Chi li «moderna» toglie a qualcuno il modo di far
+  partire l'app.
+
+Il controllo automatico è `python3 app/tools/controlla_39.py`, che gira nella
+CI (lavoro `dati` di `app.yml`) e guarda tutti i file dell'elenco, comprese le
+stringhe che contengono un avviatore; `build_demo_python.py` continua a
+controllare da sé il file assemblato. Guarda la sintassi e, in più, tre
+novità che la sintassi non vede: `datetime.UTC`, `itertools.batched` e le
+unioni `X | None` nelle annotazioni di un file senza
+`from __future__ import annotations`. Sono le tre che `ruff` si offre di
+introdurre da solo (`UP017`, `UP045`): un `--fix` distratto trasforma un file
+che gira dappertutto in un file che gira solo qui. Tutto il resto della
+libreria standard — `Path.copy` compreso — resta da guardare a mano.
 
 Prima di scrivere codice leggi, nell'ordine: `docs/PKFAMILY_MASTERPLAN.md`
 capitoli 0 e 2 (le regole), il capitolo del tuo compito, e
@@ -116,6 +130,7 @@ python3 app/tools/serve.py              # http://127.0.0.1:8080
 cd app && npm install && npm test       # avvio, offline vero, installabilità
 python3 app/tools/build_beta.py --zip   # la beta da provare sul PC, in app/dist/
 python3 app/tools/build_pubblica.py     # la copia da servire a un indirizzo pubblico
+python3 app/tools/controlla_39.py       # i file che girano fuori di qui reggono la 3.9
 python3 app/tools/build_demo.py         # la demo in un file solo, da aprire com'è
 python3 app/tools/build_demo_python.py  # la demo con il motore in Python (un .py)
 python3 app/tools/build_apk.py          # l'APK per il telefono (serve ANDROID_HOME e un JDK)

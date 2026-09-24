@@ -73,21 +73,42 @@ ingressi come ospite — non un account passato in giro.
 
 ### 3.1 La scelta che va fatta prima: dove
 
-Il flusso `.github/workflows/pubblica-demo.yml` pubblica su **GitHub Pages**
-usando l'origine «GitHub Actions».
+Due strade. **La prima è quella consigliata**, e non per gusto: la seconda ha
+un costo che si paga una volta sola e non si vede subito.
 
-⚠️ **Questo sostituisce il sito servito oggi dal branch `gh-pages`**, che
-contiene la web app Flutter (`/t/<id>/`), la pagina di prova dell'accesso
+#### A. Un host statico esterno — non si perde niente
+
+Cloudflare Pages, Netlify, Vercel: si collega il repository e si imposta
+
+```
+Comando di costruzione:      python3 app/tools/build_pubblica.py --cartella sito
+Cartella da pubblicare:      sito
+Variabili d'ambiente:        SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY
+```
+
+Niente da cambiare nel repository, niente che smette di funzionare, e la demo
+si aggiorna a ogni push su `main`. `build_pubblica.py` è scritto apposta per
+girare anche sulla 3.11 o 3.12 di quelle immagini di costruzione, non solo
+sulla 3.14 di qui (AGENTS.md capitolo 1).
+
+#### B. GitHub Pages di questo repository — costa due cose
+
+Il flusso `.github/workflows/pubblica-demo.yml` pubblica su GitHub Pages con
+l'origine «GitHub Actions». Funziona, ma:
+
+⚠️ **1. Sostituisce il sito servito oggi dal branch `gh-pages`**, che è online
+e contiene la web app Flutter (`/t/<id>/`), la pagina di prova dell'accesso
 (`/t/prova-accesso/`), il catalogo dei tutorial e le schede degli spot. Il
 branch non viene toccato — nessuno ci scrive, resta leggibile con
-`git show origin/gh-pages:<file>` — ma smette di essere quello pubblicato.
-Per tornare indietro si rimette «Deploy from a branch» a mano.
+`git show origin/gh-pages:<file>` — ma smette di essere quello pubblicato. Per
+tornare indietro si rimette «Deploy from a branch» a mano.
 
-Se quella roba deve restare online, **non usare questo flusso**: la stessa
-cartella prodotta da `build_pubblica.py` si serve da qualunque host statico
-(Cloudflare Pages, Netlify, un secondo repository con le sue Pages). Il
-flusso cambia solo negli ultimi due passi; il resto di questo documento vale
-identico.
+⚠️ **2. Zittisce `sync-map.yml`.** Quel flusso rigenera la mappa e scrive su
+`gh-pages`: continuerebbe a girare e a fare commit, ma nessuno vedrebbe più il
+risultato. È il guaio peggiore dei due, perché non fallisce — smette e basta.
+
+Da scegliere solo sapendo queste due cose. Il resto di questo documento vale
+identico per tutte e due le strade.
 
 ### 3.2 Il progetto Supabase
 
@@ -117,7 +138,12 @@ JWT è pubblicabile anche lei, ma da fuori è **indistinguibile** dalla
 `build_pubblica.py` sia `app/public/js/ispettore.js` la rifiutano. Se il
 progetto ha solo quella vecchia, se ne genera una nuova dal pannello.
 
-### 3.3 Le variabili del repository
+### 3.3 Le variabili
+
+Con la strada **A** sono le variabili d'ambiente dell'host, e finisce qui:
+`SUPABASE_URL` e `SUPABASE_PUBLISHABLE_KEY`. I capitoli 3.4 e 3.5 non servono.
+
+Con la strada **B**, nel repository:
 
 Settings → Secrets and variables → Actions → **Variables** (non Secrets: la
 chiave pubblicabile finisce comunque dentro la pagina, e un valore che deve

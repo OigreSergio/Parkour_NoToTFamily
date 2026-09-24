@@ -30,7 +30,15 @@ una persona lancia a mano dal proprio computer, e là la versione di Python non
 la scegliamo noi. Una novità di sintassi non dà un messaggio: dà una
 `SyntaxError` prima ancora di arrivare al `main`. Gli alias di tipo qui sono
 assegnamenti, non `type X = ...` (vedi AGENTS.md, «Quale Python»).
+
+`from __future__ import annotations` per la stessa ragione: le annotazioni
+`X | None` si scrivono, ma su una 3.9 verrebbero *valutate* alla definizione
+della funzione e darebbero un `TypeError` all'import — un messaggio ancora più
+oscuro di una `SyntaxError`. Con quella riga restano stringhe e non le guarda
+nessuno.
 """
+
+from __future__ import annotations
 
 import argparse
 import hashlib

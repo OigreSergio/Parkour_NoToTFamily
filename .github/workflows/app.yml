@@ -67,6 +67,8 @@ jobs:
         run: python3 app/tools/fetch_fonts.py --check
       - name: Elenco dei file da tenere offline e versione
         run: python3 app/tools/build_precache.py --check
+      - name: "Sintassi 3.9 dove la versione non la scegliamo noi"
+        run: python3 app/tools/controlla_39.py
 
   prove:
     name: Avvio, offline e installabilità
