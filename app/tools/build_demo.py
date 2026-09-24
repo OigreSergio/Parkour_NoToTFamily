@@ -25,7 +25,10 @@ import base64
 import json
 import mimetypes
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -53,6 +56,10 @@ ESPORTAZIONE = re.compile(
     r"^export\s+(?:async\s+)?(?:function|const|let|class)\s+(?P<nome>[A-Za-z_$][\w$]*)",
     re.MULTILINE,
 )
+# `export { a, b as c };` in fondo a un modulo: rimanda fuori un nome che il
+# modulo ha ricevuto da qualcun altro. La regola qui sopra non lo vede, perché
+# non c'è nessuna `function` né `const` da cui prenderlo.
+RIESPORTAZIONE = re.compile(r"^export\s*\{(?P<nomi>[^}]*)\}\s*;?\s*$", re.MULTILINE)
 
 
 def _chiave(percorso: Path) -> str:
@@ -71,11 +78,18 @@ def moduli() -> dict[str, dict]:
         dipendenze = [
             _risolvi(percorso, m.group("da")) for m in IMPORTAZIONE.finditer(sorgente)
         ]
+        nomi = {m.group("nome") for m in ESPORTAZIONE.finditer(sorgente)}
+        for riesportazione in RIESPORTAZIONE.finditer(sorgente):
+            for pezzo in riesportazione.group("nomi").split(","):
+                # `a as b` esce con il nome `b`, che è quello che vedono fuori.
+                etichetta = pezzo.split(" as ")[-1].strip()
+                if etichetta:
+                    nomi.add(etichetta)
         trovati[_chiave(percorso)] = {
             "percorso": percorso,
             "sorgente": sorgente,
             "dipendenze": dipendenze,
-            "esporta": sorted({m.group("nome") for m in ESPORTAZIONE.finditer(sorgente)}),
+            "esporta": sorted(nomi),
         }
     return trovati
 
@@ -116,8 +130,19 @@ def in_registro(sorgente: str, percorso: Path) -> str:
         da = _risolvi(percorso, m.group("da"))
         if m.group("spazio"):
             return f"const {m.group('spazio')} = __PK_MOD['{da}'];"
-        nomi = " ".join(m.group("nomi").split())
-        return f"const {{ {nomi} }} = __PK_MOD['{da}'];"
+        # `import {a as b}` si scompone con i due punti, non con `as`:
+        # `const {a as b} = ...` non è JavaScript, e l'errore non si vedeva
+        # finché non si apriva la demo in un browser.
+        pezzi = []
+        for grezzo in m.group("nomi").split(","):
+            pezzo = " ".join(grezzo.split())
+            if not pezzo:
+                continue
+            if " as " in pezzo:
+                originale, alias = pezzo.split(" as ", 1)
+                pezzo = f"{originale.strip()}: {alias.strip()}"
+            pezzi.append(pezzo)
+        return f"const {{ {', '.join(pezzi)} }} = __PK_MOD['{da}'];"
 
     return IMPORTAZIONE.sub(scambia, sorgente)
 
@@ -191,6 +216,7 @@ def costruisci(canale: str = "demo", versione: str | None = None) -> str:
         + ";\n"
         + assembla(moduli())
     )
+    print(f"  {controlla_sintassi(codice)}")
 
     # Il guscio resta quello vero: cambiano solo i modi in cui prende le cose.
     pagina = pagina.replace(
@@ -214,6 +240,35 @@ def costruisci(canale: str = "demo", versione: str | None = None) -> str:
         "<title>PkFAMILY</title>", "<title>PkFAMILY — demo</title>"
     )
     return pagina
+
+
+def controlla_sintassi(codice: str) -> str:
+    """Il codice assemblato è JavaScript valido?
+
+    Serve perché l'assemblatore riscrive gli `import`, e una riscrittura
+    sbagliata produce un file che si costruisce senza un lamento e poi muore
+    all'apertura con un `SyntaxError`. È successo: `import {a as b}` diventava
+    `const {a as b}`, e nessuno se ne accorgeva finché non si apriva la demo.
+
+    Il controllo usa `node --check`, se c'è. Dove non c'è (una macchina senza
+    Node) si dice invece di fingere di aver controllato.
+    """
+    nodo = shutil.which("node")
+    if not nodo:
+        return "sintassi non controllata: su questa macchina non c'è Node"
+    with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as scratch:
+        scratch.write(codice)
+        provvisorio = Path(scratch.name)
+    try:
+        esito = subprocess.run(  # noqa: S603 - percorso da `which`, nessuna shell
+            [nodo, "--check", str(provvisorio)], capture_output=True, text=True, check=False
+        )
+    finally:
+        provvisorio.unlink(missing_ok=True)
+    if esito.returncode != 0:
+        prima = (esito.stderr or "").strip().splitlines()
+        sys.exit("Il codice assemblato non è JavaScript valido:\n" + "\n".join(prima[:8]))
+    return "sintassi controllata con node --check"
 
 
 def main() -> int:

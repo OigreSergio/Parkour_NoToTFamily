@@ -92,12 +92,26 @@ function disegnaFascia() {
   fascia.onclick = () => contesto.vaiA(admin.attiva() ? '#/admin' : '#/tu');
 }
 
+/**
+ * Punta l'app al motore in Python, e dice al pannello che quello è il valore
+ * «di fabbrica».
+ *
+ * Serve perché `build.json` si legge **dopo** `admin.inizializza()`, che ha già
+ * guardato CONFIG per sapere com'era prima di sovrascriverlo. Senza dirglielo,
+ * un azzeramento delle sovrascritture rimetterebbe la stringa vuota e
+ * spegnerebbe il motore della demo.
+ */
+function accendiMotore(indirizzo) {
+  CONFIG.motore = indirizzo;
+  admin.aggiornaFabbrica('motore', indirizzo);
+}
+
 /** Legge `build.json`: c'è sempre, ed è precaricato con il resto dell'app. */
 async function leggiCostruzione() {
   const dentro = globalThis.__PK_INLINE__ && globalThis.__PK_INLINE__['build.json'];
   if (dentro) {
     costruzione = { ...costruzione, ...dentro };
-    if (costruzione.motore) CONFIG.motore = costruzione.motore;
+    if (costruzione.motore) accendiMotore(costruzione.motore);
     contesto.costruzione = costruzione;
     return;
   }
@@ -109,7 +123,7 @@ async function leggiCostruzione() {
   }
   // La demo con il motore in Python dice qui dove trovarlo: da quel momento
   // le domande pesanti non le fa più il browser.
-  if (costruzione.motore) CONFIG.motore = costruzione.motore;
+  if (costruzione.motore) accendiMotore(costruzione.motore);
   contesto.costruzione = costruzione;
 }
 

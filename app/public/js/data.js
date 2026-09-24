@@ -27,11 +27,39 @@ const DATI = {
   /** Gli spot come li vede l'app: base più le modifiche locali, se ce ne sono. */
   spot: [],
   perId: new Map(),
+  /** I tutorial come stanno nel file, e come li vede l'app. Due liste, non una:
+   *  sovrapporre le modifiche su quella già sovrapposta vorrebbe dire non poter
+   *  più far tornare indietro un tutorial cancellato. */
+  baseTutorial: [],
   tutorial: [],
   fontanelle: null,
   fontanelleUniche: null,
   verificati: 0,
 };
+
+/**
+ * Le collezioni che il pannello sviluppatore sa mostrare e correggere.
+ *
+ * Le registra questo modulo perché è l'unico che sa dove stanno i dati: così
+ * `admin.js` non importa `data.js`, e il verso delle dipendenze resta uno solo
+ * — un ciclo fermerebbe la costruzione della demo in un file solo.
+ *
+ * `base` è una funzione e non una lista: alla registrazione i dati non sono
+ * ancora stati letti (`admin.inizializza()` viene prima di `carica()`), e una
+ * lista catturata adesso resterebbe vuota per sempre.
+ *
+ * Le fontanelle sono in sola lettura: 3.687 voci senza chiave propria, la
+ * stessa fontanella accanto a più spot. Una chiave inventata si romperebbe
+ * alla prima rigenerazione dei dati.
+ */
+admin.registra({ nome: 'spot', base: () => DATI.base });
+admin.registra({ nome: 'tutorial', base: () => DATI.baseTutorial });
+admin.registra({
+  nome: 'fontanelle',
+  base: () => DATI.fontanelleUniche || [],
+  chiave: null,
+  soloLettura: true,
+});
 
 /** Toglie accenti e maiuscole: "Città" e "citta" devono trovarsi. */
 function normalizza(testo) {
@@ -62,7 +90,7 @@ export async function carica() {
   ]);
 
   DATI.base = spot.spots;
-  DATI.tutorial = tutorial.tutorials;
+  DATI.baseTutorial = tutorial.tutorials;
   riapplica();
   return DATI;
 }
@@ -73,12 +101,15 @@ export async function carica() {
  * quelle cambiano, così non serve riavviare l'app per vederle.
  */
 export function riapplica() {
-  DATI.spot = admin.applicaAgliSpot(DATI.base).map((voce) => ({
+  DATI.spot = admin.applica('spot', DATI.base).map((voce) => ({
     ...voce,
     cerca: normalizza(`${voce.name} ${voce.description || ''}`),
   }));
   DATI.verificati = DATI.spot.filter((voce) => voce.status === 'verified').length;
   DATI.perId = new Map(DATI.spot.map((voce) => [voce.id, voce]));
+  // Anche i tutorial: se le modifiche locali valessero solo per gli spot, la
+  // regola «niente si finge verificato» varrebbe a metà.
+  DATI.tutorial = admin.applica('tutorial', DATI.baseTutorial);
   return DATI.spot.length;
 }
 

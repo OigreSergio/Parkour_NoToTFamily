@@ -112,8 +112,16 @@ function schedaSpot(voce) {
           class: 'pk-btn',
           onclick: async () => {
             const campi = leggi();
-            if (voce.id) await admin.salvaSpot(voce.id, campi);
-            else spotScelto = await admin.creaSpot(campi);
+            try {
+              if (voce.id) await admin.salvaSpot(voce.id, campi);
+              else spotScelto = await admin.creaSpot(campi);
+            } catch (errore) {
+              // Il controllo sulle chiavi segrete adesso vale su ogni campo,
+              // non solo sulla casella della chiave pubblicabile: bastava
+              // incollare un token nella descrizione per aggirarlo.
+              avviso(errore.code === 'secret_refused' ? t('admin.secretRefused') : errore.message);
+              return;
+            }
             dati.riapplica();
             if (voce.id) spotScelto = dati.spotPerId(voce.id) || spotScelto;
             avviso(t('admin.saved'));
