@@ -285,4 +285,6 @@ farlo (`--testo` in `pk.css`).
 - come si prova dal telefono l'altra parte del prodotto:
   [`PROVA_DA_TELEFONO.md`](PROVA_DA_TELEFONO.md);
 - la demo a un indirizzo pubblico, con accessi veri e più persone insieme:
-  [`DEMO_PUBBLICA.md`](DEMO_PUBBLICA.md).
+  [`DEMO_PUBBLICA.md`](DEMO_PUBBLICA.md);
+- cosa manca davvero per uno store, letto dal codice:
+  [`PUBBLICAZIONE_STORE.md`](PUBBLICAZIONE_STORE.md).

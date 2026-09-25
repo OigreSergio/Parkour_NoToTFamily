@@ -476,10 +476,20 @@ evita di darsi i poteri per sbaglio.
 
 Sta scritto qui perché non sembri un'omissione:
 
-- **non c'è l'accesso** con email e codice: l'app funziona senza account, e i
-  contributi scritti offline restano in coda sul dispositivo finché non sarà
-  collegata a Supabase;
+- **l'accesso c'è** — codice via email o ingresso come ospite — ma solo se la
+  copia dell'app porta l'indirizzo di un progetto Supabase e la sua chiave
+  pubblicabile. Quella del repository non li porta e non li porterà: si mettono
+  al momento di pubblicare ([`docs/DEMO_PUBBLICA.md`](../docs/DEMO_PUBBLICA.md)).
+  Senza, l'app resta locale e lo dice;
+- **i contributi scritti offline non partono ancora**: restano in coda sul
+  dispositivo. Mandarli è una funzione di prodotto, e le funzioni di prodotto
+  stanno in Supabase, non qui;
 - **non c'è la chat, non c'è la community**: quelle vivono online;
+- **non è ancora pubblicabile su uno store**: mancano la cancellazione
+  dell'account e una privacy policy, che sono obbligatorie per tutti e due, e
+  Play vuole un AAB invece di un APK. La ricognizione completa, con l'ordine
+  delle cose da fare, sta in
+  [`docs/PUBBLICAZIONE_STORE.md`](../docs/PUBBLICAZIONE_STORE.md);
 - **i video dei tutorial** si guardano su YouTube, quindi con la rete: offline
   restano titolo, livello, durata e canale;
 - **non sostituisce la build Flutter** pubblicata su `gh-pages`: le sta
