@@ -468,8 +468,9 @@ function sezioneAccount() {
  * una rete, da un cookie o da un indirizzo.
  *
  * C'è un secondo modo di arrivare a questo tocco, e non è un'eccezione:
- * `#/sviluppatore` (il QR di `qr.py --admin`) apre la stessa finestra di
- * conferma di questo pulsante. Offre, non accende. `#/admin` invece non
+ * `#/sviluppatore` (il QR di `qr.py --admin`) mette davanti la stessa
+ * decisione di questo pulsante, spiegata con le parole di chi ci è arrivato
+ * da un QR (`admin.qrAsk` invece di `you.devAsk`). Offre, non accende. `#/admin` invece non
  * accende niente in nessun caso — un indirizzo scritto a mano, o arrivato in
  * un messaggio, non deve dare poteri a nessuno.
  */

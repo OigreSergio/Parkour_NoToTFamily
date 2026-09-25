@@ -453,9 +453,12 @@ C'è un secondo indirizzo, ed è quello che un QR può portare sul telefono:
 python3 app/tools/qr.py --admin      # serve l'app e disegna il QR
 ```
 
-Il QR apre `#/sviluppatore`, che **non accende niente**: apre la stessa
-finestra di conferma del pulsante qui sopra. Toccando «Accendi» si entra nel
-pannello, toccando «Annulla» si resta sulla mappa. Il QR fa risparmiare gli
+Il QR apre `#/sviluppatore`, che **non accende niente**: mette davanti la
+stessa decisione del pulsante qui sopra, con un testo che dice da dove si è
+arrivati. Toccando «Accendi» si entra nel pannello, toccando «Annulla» si
+resta sulla mappa. In tutti e due i casi l'indirizzo della porta **sparisce
+dalla cronologia**: il tasto indietro del telefono torna dove tornerebbe
+accendendo dal pulsante, invece di rimbalzare per sempre sul pannello. Il QR fa risparmiare gli
 scroll, non il consenso — e `#/admin` continua a non accendere niente in
 nessun caso, perché un indirizzo arrivato in un messaggio non deve dare poteri
 a nessuno.

@@ -48,10 +48,16 @@ import socket
 import sys
 import zlib
 from pathlib import Path
+from typing import Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from serve import avvia as servi_app  # noqa: E402 - dopo aver sistemato il percorso
+
+# La rotta che apre la finestra del permesso. In una costante perché la usano
+# in due — chi costruisce l'indirizzo e chi stampa cosa quell'indirizzo fa — e
+# due copie della stessa stringa sono due decisioni che possono divergere.
+ROTTA_SVILUPPATORE = "#/sviluppatore"
 
 RADICE = Path(__file__).resolve().parents[2]
 USCITA_PREDEFINITA = RADICE / "app" / "dist"
@@ -60,7 +66,7 @@ USCITA_PREDEFINITA = RADICE / "app" / "dist"
 # costruisce certe caselle sono ancora da riempire — `None` vuol dire «qui ci
 # vanno i dati» — quindi i due tipi non sono lo stesso, e conviene dargli un nome.
 Moduli = list[list[int]]
-Griglia = list[list[int | None]]
+Griglia = list[list[Optional[int]]]
 
 # ---------------------------------------------------------------------------
 # Il codificatore
@@ -657,11 +663,19 @@ def main() -> int:
     cartella = Path(argomenti.cartella).resolve()
 
     # `--admin` è `--app '#/sviluppatore'` scritto in modo che si ricordi. Quella
-    # rotta non accende niente da sola: apre la finestra che chiede il permesso,
-    # la stessa del pulsante in «Tu → Avanzate». Il QR fa risparmiare gli scroll,
-    # non il consenso.
-    if argomenti.admin and argomenti.app is None:
-        argomenti.app = "#/sviluppatore"
+    # rotta non accende niente da sola: apre la finestra che chiede il permesso.
+    # Il QR fa risparmiare gli scroll, non il consenso.
+    #
+    # Chiesto insieme a `--app` o a `--indirizzo` ci si ferma, invece di
+    # sceglierne uno in silenzio: prima lo zucchero cedeva sull'indirizzo ma non
+    # sul messaggio, e il QR portava da una parte mentre lo schermo annunciava
+    # l'altra. Peggio, `--admin --indirizzo` metteva in piedi un server sulla
+    # rete di casa che nessuno aveva chiesto, perché il controllo di uscita
+    # guarda `--app`, che lo zucchero aveva appena riempito.
+    if argomenti.admin and (argomenti.app is not None or argomenti.indirizzo):
+        sys.exit("--admin chiede una cosa, --app e --indirizzo un'altra: scegline una.")
+    if argomenti.admin:
+        argomenti.app = ROTTA_SVILUPPATORE
 
     apk = None
     if argomenti.indirizzo:
@@ -692,7 +706,9 @@ def main() -> int:
     print(f"  immagini: {cartella / 'pkfamily-qr.png'} e .svg")
 
     if argomenti.app is not None:
-        if argomenti.admin:
+        # Si guarda l'indirizzo finito nel QR, non il flag che l'ha chiesto: il
+        # foglio che qualcuno inquadra è quello, e deve dire la verità.
+        if indirizzo.endswith(ROTTA_SVILUPPATORE):
             print("  la porta della modalità sviluppatore: il telefono chiede conferma, poi apre il pannello.")
         else:
             print("  l'app, così com'è adesso: niente da installare, si apre nel browser.")

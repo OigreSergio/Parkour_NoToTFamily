@@ -16,7 +16,7 @@ import * as dati from './data.js';
 import * as i18n from './i18n.js';
 import { sembraSegreta } from './ispettore.js';
 import { leggi, scrivi } from './store.js';
-import { conferma, el, svuota } from './ui.js';
+import { el, modale, svuota } from './ui.js';
 
 import * as schermataMappa from './screens/map.js';
 import * as schermataSpot from './screens/spots.js';
@@ -196,34 +196,99 @@ function mostraSchermata(nome) {
  * È la porta che un QR può aprire, e la differenza con `#/admin` non è
  * cosmetica: `#/admin` non accende niente e non accenderà mai niente — un
  * indirizzo scritto a mano, o arrivato in un messaggio, non deve dare poteri a
- * nessuno. Questo invece **chiede**, con la stessa finestra del pulsante in
- * «Tu → Avanzate», e senza un tocco non succede niente.
+ * nessuno. Questo invece **chiede**: la stessa decisione del pulsante in
+ * «Tu → Avanzate», con un testo che dice da dove si è arrivati
+ * (`admin.qrAsk`, non `you.devAsk`), e senza un tocco non succede niente.
  *
  * Il tocco resta perché la modalità cambia quello che l'app mostra: da lì in
  * poi la mappa è il file più le modifiche locali. Chi ci finisce senza saperlo
  * vedrebbe dati che non tornano con quelli di nessun altro, e non avrebbe modo
  * di capire perché.
  */
+/**
+ * Sostituisce l'indirizzo corrente invece di impilarne uno nuovo.
+ *
+ * `vaiA` fa `location.hash = …`, che **aggiunge** una voce di cronologia.
+ * Per la porta è la cosa sbagliata: `#/sviluppatore` resterebbe dietro, e
+ * tornandoci con il tasto indietro rimbalzerebbe di nuovo in avanti — su un
+ * telefono aperto dal QR quella è la prima voce della scheda, quindi il tasto
+ * indietro non uscirebbe più né dal pannello né dall'app.
+ *
+ * `replaceState` non fa scattare `hashchange`, perciò la schermata la si apre
+ * a mano. Da `file://` (la demo in un file solo) può essere rifiutato: lì si
+ * ripiega su `vaiA`, dove una cronologia impilata non fa danni perché non c'è
+ * un tasto indietro di sistema a cui dar fastidio.
+ */
+function soloIndirizzo(indirizzo) {
+  try {
+    history.replaceState(null, '', indirizzo);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function sostituisci(indirizzo) {
+  if (soloIndirizzo(indirizzo)) return apri(indirizzo);
+  contesto.vaiA(indirizzo);
+  return Promise.resolve();
+}
+
+/** Sta già chiedendo il permesso? Due finestre sovrapposte non servono a nessuno. */
+let chiedendoSviluppo = false;
+/** La finestra aperta adesso, per poterla chiudere se la rotta cambia sotto. */
+let finestraSviluppo = null;
+
 async function offriSviluppo() {
   if (admin.attiva()) {
-    contesto.vaiA('#/admin');
+    sostituisci('#/admin');
     return;
   }
-  const procedi = await conferma(
-    i18n.t('you.devOn'),
-    i18n.t('admin.qrAsk'),
-    i18n.t('you.devGo'),
-    i18n.t('common.cancel')
-  );
-  if (!procedi) {
-    contesto.vaiA('#/mappa');
-    return;
+  // Due `hashchange` di fila sulla stessa rotta aprivano due finestre, ognuna
+  // con la sua promessa e il suo ascoltatore della tastiera.
+  if (chiedendoSviluppo) return;
+  chiedendoSviluppo = true;
+
+  try {
+    // Sotto la velina ci deve essere qualcosa: uscendo prima di
+    // `mostraSchermata`, all'avvio a freddo dal QR nessuna schermata era mai
+    // stata marcata attiva e dietro la domanda c'era il vuoto.
+    await apri('#/mappa');
+
+    const finestra = modale({
+      titolo: i18n.t('you.devOn'),
+      sommario: i18n.t('admin.qrAsk'),
+      azioni: [
+        { testo: i18n.t('you.devGo'), valore: true, primaria: true },
+        { testo: i18n.t('common.cancel'), valore: false },
+      ],
+    });
+    finestraSviluppo = finestra;
+    const procedi = await finestra;
+    finestraSviluppo = null;
+
+    // `undefined` vuol dire che l'ha chiusa `apri()` perché la rotta è
+    // cambiata: la domanda non vale più, e la risposta nemmeno.
+    if (procedi === undefined) return;
+    if (!procedi) {
+      sostituisci('#/mappa');
+      return;
+    }
+    await admin.accendi(true);
+    dati.riapplica();
+    if (contesto.mappa) contesto.mappa.ridisegna();
+    disegnaFascia();
+    // La voce della porta diventa «Tu», poi il pannello si impila sopra: è la
+    // stessa cronologia che lascia il pulsante in «Tu → Avanzate», quindi la
+    // freccia in testa al pannello torna dove ci si aspetta invece di uscire
+    // dall'app — che è l'unica cosa che potrebbe fare, in una scheda aperta
+    // dal QR, se la porta si fosse limitata a sostituirsi con il pannello.
+    if (soloIndirizzo('#/tu')) contesto.vaiA('#/admin');
+    else await sostituisci('#/admin');
+  } finally {
+    chiedendoSviluppo = false;
+    finestraSviluppo = null;
   }
-  await admin.accendi(true);
-  dati.riapplica();
-  if (contesto.mappa) contesto.mappa.ridisegna();
-  disegnaFascia();
-  contesto.vaiA('#/admin');
 }
 
 async function apri(indirizzo) {
@@ -232,6 +297,9 @@ async function apri(indirizzo) {
     await offriSviluppo();
     return;
   }
+  // Si è andati altrove mentre la porta chiedeva: la domanda se ne va con la
+  // schermata a cui apparteneva, invece di restare sospesa sopra un'altra.
+  if (finestraSviluppo) finestraSviluppo.chiudi();
 
   const { nome, parametri } = rotta(indirizzo);
   const schermata = SCHERMATE[nome];

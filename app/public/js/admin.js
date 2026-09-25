@@ -393,8 +393,20 @@ export async function inizializza() {
   return accesa;
 }
 
+/**
+ * Accende o spegne la modalità, e rimette CONFIG com'era di conseguenza.
+ *
+ * Prima scriveva solo il flag, e le impostazioni sovrascritte entravano in
+ * vigore **solo** all'avvio successivo (`inizializza()` era l'unico posto che
+ * chiamava `applicaConfig()`). Accendendo la modalità con delle impostazioni
+ * già salvate, il pannello le contava fra le «Impostazioni cambiate» e la
+ * mappa continuava a disegnarsi con i valori del file: due schermate che
+ * dicevano cose diverse sullo stesso stato, senza che niente lo spiegasse.
+ */
 export async function accendi(valore) {
   accesa = Boolean(valore);
+  if (accesa) applicaConfig();
+  else for (const [via, originale] of fabbrica.entries()) poni(CONFIG, via, originale);
   await scrivi(CHIAVE_STATO, accesa);
   return accesa;
 }

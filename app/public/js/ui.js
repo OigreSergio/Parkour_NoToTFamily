@@ -100,7 +100,8 @@ function radiceModali() {
  * `azioni` è un elenco di {testo, valore, primaria}.
  */
 export function modale({ titolo, sommario, punti = [], corpo = null, azioni = [] }) {
-  return new Promise((risolvi) => {
+  let chiudiDaFuori = null;
+  const promessa = new Promise((risolvi) => {
     const chiudi = (valore) => {
       finestra.remove();
       document.removeEventListener('keydown', suTasto);
@@ -153,9 +154,23 @@ export function modale({ titolo, sommario, punti = [], corpo = null, azioni = []
 
     radiceModali().append(finestra);
     document.addEventListener('keydown', suTasto);
+    chiudiDaFuori = () => chiudi(undefined);
     const primo = scatola.querySelector('button');
     if (primo) primo.focus();
   });
+
+  /**
+   * Chiude la finestra da fuori; la promessa si risolve con `undefined`.
+   *
+   * Serve a chi ha aperto una domanda che nel frattempo ha perso senso — la
+   * rotta è cambiata, la schermata sotto non è più quella. Senza, la finestra
+   * resterebbe lì a chiedere una cosa che non vale più, e a tenersi il suo
+   * ascoltatore della tastiera.
+   */
+  promessa.chiudi = () => {
+    if (chiudiDaFuori) chiudiDaFuori();
+  };
+  return promessa;
 }
 
 /** Conferma breve: sì/no, con le parole che le si danno. */

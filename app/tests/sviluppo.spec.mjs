@@ -283,3 +283,80 @@ test('con la modalità già accesa, la porta del QR non richiede il permesso', a
   await expect(page.locator('#pk-admin')).toBeVisible();
   await expect(page.locator('.pk-modal')).toHaveCount(0);
 });
+
+test('dopo il QR il tasto indietro esce dal pannello, non ci rimbalza dentro', async ({ page }) => {
+  // `contesto.vaiA` impila una voce di cronologia. Lasciando `#/sviluppatore`
+  // dietro, ogni indietro ci tornava sopra e la porta rispingeva in avanti sul
+  // pannello: in una scheda aperta dal QR quella è la prima voce, quindi il
+  // tasto indietro non usciva più né dal pannello né dall'app.
+  await page.goto('/index.html#/sviluppatore');
+  await attendiPronta(page);
+  await page.locator('.pk-modal').getByRole('button', { name: 'Accendi', exact: true }).click();
+  await expect(page.locator('#pk-admin')).toBeVisible();
+
+  // L'indirizzo della porta non è più in cronologia: al suo posto c'è «Tu»,
+  // cioè dove si tornerebbe accendendo dal pulsante.
+  await page.goBack();
+  await expect(page.locator('#pk-titolo')).toHaveText('Tu');
+  expect(page.url()).not.toContain('sviluppatore');
+});
+
+test('rifiutando, la porta sparisce dalla cronologia e dietro c’è la mappa', async ({ page }) => {
+  await page.goto('/index.html#/sviluppatore');
+  await attendiPronta(page);
+
+  // Dietro la finestra c'è una schermata vera: l'intercettazione usciva prima
+  // di `mostraSchermata`, e all'avvio a freddo sotto la velina non c'era niente.
+  await expect(page.locator('.pk-screen[data-schermata="mappa"][data-attiva="1"]')).toBeAttached();
+
+  await page.locator('.pk-modal').getByRole('button', { name: 'Annulla' }).click();
+  await expect(page.locator('#pk-titolo')).toHaveText('Mappa');
+  expect(page.url()).not.toContain('sviluppatore');
+});
+
+test('la porta non impila due finestre, e la sua domanda non sopravvive alla rotta', async ({ page }) => {
+  // `offriSviluppo` non aveva guardia di rientro, e `modale` non è un
+  // singleton: due ingressi di fila lasciavano due finestre vive, ognuna con
+  // la sua promessa e il suo ascoltatore della tastiera.
+  await page.goto('/index.html#/sviluppatore');
+  await attendiPronta(page);
+  await expect(page.locator('.pk-modal')).toHaveCount(1);
+
+  await page.evaluate(() => {
+    location.hash = '#/mappa';
+    location.hash = '#/sviluppatore';
+    location.hash = '#/sviluppatore';
+  });
+  await expect(page.locator('.pk-modal')).toHaveCount(1);
+
+  // Andando altrove la domanda se ne va con la schermata a cui apparteneva.
+  await page.evaluate(() => { location.hash = '#/spot'; });
+  await expect(page.locator('.pk-modal')).toHaveCount(0);
+  expect(
+    await page.evaluate(async () => (await import('./js/admin.js')).attiva())
+  ).toBe(false);
+});
+
+test('accendendo la modalità le impostazioni salvate entrano subito in vigore', async ({ page }) => {
+  // `accendi()` scriveva solo il flag: le sovrascritture di CONFIG partivano
+  // all'avvio successivo. Il pannello le contava fra le «Impostazioni
+  // cambiate» e la mappa si disegnava con i valori del file.
+  await page.goto('/index.html');
+  await attendiPronta(page);
+  await accendiSviluppo(page);
+  await page.evaluate(async () => {
+    const admin = await import('./js/admin.js');
+    await admin.impostaConfig('partenza.zoom', 7);
+    await admin.accendi(false);
+  });
+
+  const zoomSpenta = await page.evaluate(async () => (await import('./js/config.js')).CONFIG.partenza.zoom);
+  expect(zoomSpenta).toBe(11);
+
+  const zoomAccesa = await page.evaluate(async () => {
+    const admin = await import('./js/admin.js');
+    await admin.accendi(true);
+    return (await import('./js/config.js')).CONFIG.partenza.zoom;
+  });
+  expect(zoomAccesa).toBe(7);
+});

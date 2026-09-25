@@ -113,6 +113,38 @@ def annotazioni_rimandate(albero: ast.Module) -> bool:
     return False
 
 
+# I nomi che, dentro un `|`, dicono «qui si sta parlando di tipi». Serve a
+# distinguere `list[int] | None` da `maschera | BIT`, che è un OR fra numeri e
+# va benissimo su qualunque versione.
+NOMI_DI_TIPO = frozenset(
+    """int str float bool bytes bytearray complex object type list dict set
+    frozenset tuple Path Any Callable Sequence Mapping Iterable Iterator""".split()
+)
+
+
+def sembra_un_tipo(nodo: ast.BinOp) -> bool:
+    """Questo `|` unisce tipi, o numeri?
+
+    Basta che **un** lato sia riconoscibile come tipo: `int | None` lo è per il
+    `None`, `list[int] | str` per il pedice e per `str`. Un lato solo è
+    sufficiente perché l'altro è spesso un nome nostro (`Colore | None`), che
+    da qui non si può distinguere da una costante.
+    """
+
+    def lato(n):
+        if isinstance(n, ast.Constant) and n.value is None:
+            return True
+        if isinstance(n, ast.Name):
+            return n.id in NOMI_DI_TIPO
+        if isinstance(n, ast.Subscript):
+            return isinstance(n.value, ast.Name) and n.value.id in NOMI_DI_TIPO
+        if isinstance(n, ast.BinOp) and isinstance(n.op, ast.BitOr):
+            return sembra_un_tipo(n)
+        return False
+
+    return lato(nodo.left) or lato(nodo.right)
+
+
 def novita(albero: ast.Module):
     """I guai che la sintassi non vede. Restituisce (riga, spiegazione)."""
     # `from datetime import UTC` e `import datetime` + `datetime.UTC`.
@@ -127,20 +159,38 @@ def novita(albero: ast.Module):
             if spiegazione:
                 yield nodo.lineno, spiegazione
 
-    # `str | None` in un'annotazione: la riga si legge, la funzione non si
-    # definisce. Fuori dalle annotazioni `|` è solo un OR fra interi o insiemi,
-    # e va benissimo — per questo si guardano le annotazioni e non tutto.
-    if annotazioni_rimandate(albero):
-        return
+    # `X | Y` scritto come tipo. Due casi, e confonderli è costato caro:
+    #
+    #  - **in un'annotazione**: con `from __future__ import annotations` resta
+    #    una stringa e non la valuta nessuno, quindi va bene anche sulla 3.9;
+    #  - **fuori da un'annotazione** — un alias di tipo scritto come
+    #    assegnamento, che è la forma che AGENTS.md impone al posto di
+    #    `type X = …` — viene **valutato all'import**, e quell'import su una
+    #    3.9 muore. Il futuro non lo copre, perché non è un'annotazione.
+    #
+    # La prima versione di questo controllo usciva dal file appena trovava
+    # `from __future__ import annotations`, e così ha lasciato passare
+    # `Griglia = list[list[int | None]]` in cima a `qr.py` — cioè proprio lo
+    # strumento che porta l'app sul telefono, che su una 3.9 non si importava.
+    rimandate = annotazioni_rimandate(albero)
+    dentro_annotazioni = set()
     for annotazione in annotazioni(albero):
-        for dentro in ast.walk(annotazione):
-            if isinstance(dentro, ast.BinOp) and isinstance(dentro.op, ast.BitOr):
-                yield (
-                    dentro.lineno,
-                    "l'unione `X | Y` in un'annotazione arriva con la 3.10: "
-                    "usa Optional[X] o Union[X, Y]",
-                )
-                break
+        for nodo in ast.walk(annotazione):
+            dentro_annotazioni.add(id(nodo))
+
+    for nodo in ast.walk(albero):
+        if not isinstance(nodo, ast.BinOp) or not isinstance(nodo.op, ast.BitOr):
+            continue
+        in_annotazione = id(nodo) in dentro_annotazioni
+        if in_annotazione and rimandate:
+            continue
+        if not in_annotazione and not sembra_un_tipo(nodo):
+            continue
+        yield (
+            nodo.lineno,
+            "l'unione `X | Y` fra tipi arriva con la 3.10: usa Optional[X] o Union[X, Y]"
+            + ("" if in_annotazione else " (qui è un assegnamento: lo valuta l'import)"),
+        )
 
 
 def guarda(etichetta: str, sorgente: str) -> str:
