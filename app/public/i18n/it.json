@@ -304,5 +304,6 @@
   "admin.migrated": "File di formato vecchio riconosciuto e convertito.",
   "admin.importDropped": "Ho scartato {n} impostazioni che il pannello non espone.",
   "common.yes": "sì",
-  "common.no": "no"
+  "common.no": "no",
+  "admin.qrAsk": "Hai aperto l’indirizzo che accende la modalità sviluppatore. Da qui in avanti l’app ti mostra il file più le tue modifiche locali, e puoi cambiare spot, tutorial e impostazioni. Niente viene pubblicato: si esportano dei file, e a portarli nel prodotto è una persona."
 }

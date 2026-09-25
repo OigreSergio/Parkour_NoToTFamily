@@ -304,5 +304,6 @@
   "admin.migrated": "Old-format file recognised and converted.",
   "admin.importDropped": "I dropped {n} settings the panel doesn’t expose.",
   "common.yes": "yes",
-  "common.no": "no"
+  "common.no": "no",
+  "admin.qrAsk": "You opened the address that turns on developer mode. From here on the app shows you the file plus your local changes, and you can edit spots, tutorials and settings. Nothing gets published: you export files, and a person carries them into the product."
 }

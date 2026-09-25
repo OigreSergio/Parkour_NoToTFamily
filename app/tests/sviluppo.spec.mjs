@@ -233,3 +233,53 @@ test('la posizione non esce mai dal dispositivo a precisione piena', async ({ pa
   expect(chieste.join(' ')).not.toContain('41.9028123');
   expect(chieste.join(' ')).not.toContain('12.4963456');
 });
+
+test('l’indirizzo del QR offre la modalità, non la accende da solo', async ({ page }) => {
+  // `#/sviluppatore` è la porta che un QR può aprire. Deve chiedere: la
+  // modalità cambia quello che l'app mostra, e chi ci finisce senza saperlo
+  // vedrebbe dati che non tornano con quelli di nessun altro.
+  await page.goto('/index.html#/sviluppatore');
+  await attendiPronta(page);
+
+  const finestra = page.locator('.pk-modal');
+  await expect(finestra).toBeVisible();
+  await expect(finestra).toContainText('accende la modalità sviluppatore');
+
+  // Finché non si tocca, non è acceso: né la fascia, né il pannello.
+  await expect(page.locator('#pk-admin')).toBeHidden();
+  expect(
+    await page.evaluate(async () => (await import('./js/admin.js')).attiva())
+  ).toBe(false);
+
+  await finestra.getByRole('button', { name: 'Accendi', exact: true }).click();
+  await expect(page.locator('#pk-admin')).toBeVisible();
+  await expect(page.locator('#pk-fascia')).toContainText('MODALITÀ SVILUPPATORE');
+});
+
+test('rifiutare la porta del QR lascia l’app com’era', async ({ page }) => {
+  await page.goto('/index.html#/sviluppatore');
+  await attendiPronta(page);
+  await page.locator('.pk-modal').getByRole('button', { name: 'Annulla' }).click();
+
+  await expect(page.locator('#pk-titolo')).toHaveText('Mappa');
+  await expect(page.locator('#pk-fascia')).toBeHidden();
+  expect(
+    await page.evaluate(async () => (await import('./js/admin.js')).attiva())
+  ).toBe(false);
+
+  // E l'indirizzo secco del pannello continua a non aprire niente.
+  await page.goto('/index.html#/admin');
+  await attendiPronta(page);
+  await expect(page.locator('#pk-admin')).toBeHidden();
+});
+
+test('con la modalità già accesa, la porta del QR non richiede il permesso', async ({ page }) => {
+  await page.goto('/index.html');
+  await attendiPronta(page);
+  await accendiSviluppo(page);
+
+  await page.goto('/index.html#/sviluppatore');
+  await attendiPronta(page);
+  await expect(page.locator('#pk-admin')).toBeVisible();
+  await expect(page.locator('.pk-modal')).toHaveCount(0);
+});

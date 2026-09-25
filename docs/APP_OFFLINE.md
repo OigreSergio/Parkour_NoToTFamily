@@ -220,8 +220,10 @@ proprio Mac evita del tutto la faccenda.
 
 ## La modalità sviluppatore
 
-Si accende da «Tu → Avanzate» e apre un pannello (`#/admin`) che copre **tutte
-le collezioni registrate** (spot, tutorial, e le fontanelle in sola lettura),
+Si accende da «Tu → Avanzate» — oppure inquadrando il QR di
+`python3 app/tools/qr.py --admin`, che apre `#/sviluppatore` e **chiede la
+stessa conferma** invece di scavalcarla — e apre un pannello (`#/admin`) che
+copre **tutte le collezioni registrate** (spot, tutorial, e le fontanelle in sola lettura),
 **tutte** le impostazioni di `js/config.js` e il magazzino del dispositivo. Lo
 schema non è scritto da nessuna parte: i campi si deducono dai dati, le
 impostazioni sono le foglie di `CONFIG`. Dettagli in

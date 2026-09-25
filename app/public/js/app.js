@@ -16,7 +16,7 @@ import * as dati from './data.js';
 import * as i18n from './i18n.js';
 import { sembraSegreta } from './ispettore.js';
 import { leggi, scrivi } from './store.js';
-import { el, svuota } from './ui.js';
+import { conferma, el, svuota } from './ui.js';
 
 import * as schermataMappa from './screens/map.js';
 import * as schermataSpot from './screens/spots.js';
@@ -190,7 +190,49 @@ function mostraSchermata(nome) {
   }
 }
 
+/**
+ * `#/sviluppatore`: l'indirizzo che **offre** la modalità sviluppatore.
+ *
+ * È la porta che un QR può aprire, e la differenza con `#/admin` non è
+ * cosmetica: `#/admin` non accende niente e non accenderà mai niente — un
+ * indirizzo scritto a mano, o arrivato in un messaggio, non deve dare poteri a
+ * nessuno. Questo invece **chiede**, con la stessa finestra del pulsante in
+ * «Tu → Avanzate», e senza un tocco non succede niente.
+ *
+ * Il tocco resta perché la modalità cambia quello che l'app mostra: da lì in
+ * poi la mappa è il file più le modifiche locali. Chi ci finisce senza saperlo
+ * vedrebbe dati che non tornano con quelli di nessun altro, e non avrebbe modo
+ * di capire perché.
+ */
+async function offriSviluppo() {
+  if (admin.attiva()) {
+    contesto.vaiA('#/admin');
+    return;
+  }
+  const procedi = await conferma(
+    i18n.t('you.devOn'),
+    i18n.t('admin.qrAsk'),
+    i18n.t('you.devGo'),
+    i18n.t('common.cancel')
+  );
+  if (!procedi) {
+    contesto.vaiA('#/mappa');
+    return;
+  }
+  await admin.accendi(true);
+  dati.riapplica();
+  if (contesto.mappa) contesto.mappa.ridisegna();
+  disegnaFascia();
+  contesto.vaiA('#/admin');
+}
+
 async function apri(indirizzo) {
+  // Prima di tutto il resto: non è una schermata, è una domanda.
+  if (/^#?\/?sviluppatore\/?$/.test(indirizzo || '')) {
+    await offriSviluppo();
+    return;
+  }
+
   const { nome, parametri } = rotta(indirizzo);
   const schermata = SCHERMATE[nome];
   mostraSchermata(nome);

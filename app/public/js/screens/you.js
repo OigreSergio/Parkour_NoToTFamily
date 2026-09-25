@@ -464,8 +464,14 @@ function sezioneAccount() {
 
 /**
  * La prova e i poteri: da qui si dice all'app che chi la sta usando la sta
- * costruendo. Sta in fondo, e si accende a mano — non si eredita da un
- * indirizzo, da una rete o da un cookie.
+ * costruendo. Sta in fondo, e **si accende con un tocco**: non si eredita da
+ * una rete, da un cookie o da un indirizzo.
+ *
+ * C'è un secondo modo di arrivare a questo tocco, e non è un'eccezione:
+ * `#/sviluppatore` (il QR di `qr.py --admin`) apre la stessa finestra di
+ * conferma di questo pulsante. Offre, non accende. `#/admin` invece non
+ * accende niente in nessun caso — un indirizzo scritto a mano, o arrivato in
+ * un messaggio, non deve dare poteri a nessuno.
  */
 function sezioneAvanzate() {
   const costruzione = contesto.costruzione || { canale: 'sviluppo' };

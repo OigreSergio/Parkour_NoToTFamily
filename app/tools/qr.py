@@ -6,6 +6,7 @@
     python3 app/tools/qr.py --file altro.apk
     python3 app/tools/qr.py --app              # serve l'app, senza installare niente
     python3 app/tools/qr.py --app '#/spot/<id>'    # e la apre dritta su uno spot
+    python3 app/tools/qr.py --admin            # e la apre sulla porta della modalità sviluppatore
     python3 app/tools/qr.py --indirizzo https://esempio/x   # QR e basta, per un indirizzo qualunque
     python3 app/tools/qr.py --prova            # controlla il codificatore
 
@@ -639,6 +640,11 @@ def main() -> int:
         metavar="ROTTA",
         help="serve l'app invece dell'APK; con una rotta la apre lì (es. '#/spot/<id>')",
     )
+    parser.add_argument(
+        "--admin",
+        action="store_true",
+        help="come --app, ma il QR apre la porta della modalità sviluppatore",
+    )
     parser.add_argument("--https", action="store_true", help="con --app: certificato locale")
     parser.add_argument("--indirizzo", help="un indirizzo qualunque: fa il QR e si ferma")
     parser.add_argument("--ip", help="l'indirizzo di questo computer, se non lo indovina")
@@ -649,6 +655,13 @@ def main() -> int:
         return prova()
 
     cartella = Path(argomenti.cartella).resolve()
+
+    # `--admin` è `--app '#/sviluppatore'` scritto in modo che si ricordi. Quella
+    # rotta non accende niente da sola: apre la finestra che chiede il permesso,
+    # la stessa del pulsante in «Tu → Avanzate». Il QR fa risparmiare gli scroll,
+    # non il consenso.
+    if argomenti.admin and argomenti.app is None:
+        argomenti.app = "#/sviluppatore"
 
     apk = None
     if argomenti.indirizzo:
@@ -679,7 +692,10 @@ def main() -> int:
     print(f"  immagini: {cartella / 'pkfamily-qr.png'} e .svg")
 
     if argomenti.app is not None:
-        print("  l'app, così com'è adesso: niente da installare, si apre nel browser.")
+        if argomenti.admin:
+            print("  la porta della modalità sviluppatore: il telefono chiede conferma, poi apre il pannello.")
+        else:
+            print("  l'app, così com'è adesso: niente da installare, si apre nel browser.")
         if not argomenti.https:
             print("  (in HTTP l'offline resta spento: con --https si prova anche quello)")
         print()
