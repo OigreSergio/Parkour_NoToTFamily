@@ -2,6 +2,14 @@
 
 A social app for the parkour community: find spots on a map, chat with traceurs nearby, and follow curated training and recovery videos. Spots are reviewed before they go public.
 
+[![Last update](https://img.shields.io/github/last-commit/OigreSergio/Parkour_NoToTFamily/main?label=last%20update&display_timestamp=committer)](https://github.com/OigreSergio/Parkour_NoToTFamily/commit/main)
+
+**Latest update:** https://github.com/OigreSergio/Parkour_NoToTFamily/commit/main
+opens the most recent change that reached `main`; for a merged pull request it shows
+the whole change and links to the pull request. The link never changes, so it can be
+bookmarked or shared. Every update, newest first:
+https://github.com/OigreSergio/Parkour_NoToTFamily/commits/main
+
 ## Monorepo layout
 
 ```
